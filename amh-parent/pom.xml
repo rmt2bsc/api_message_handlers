@@ -1,0 +1,92 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.rmt2.api.handlers</groupId>
+	<artifactId>api-message-handler-parent</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<name>api-message-handler-parent</name>
+	<description>Parent project that manages specifi API message handlers</description>
+	<url>http://maven.apache.org</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	<modules>
+		<module>amh_addressbook</module>
+		<module>amh_accounting</module>
+		<module>amh_media</module>
+		<module>amh_projecttracker</module>
+		<module>amh_security</module>
+	</modules>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>javax.servlet</groupId>
+				<artifactId>javax.servlet-api</artifactId>
+				<version>3.0.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.rmt2.framework</groupId>
+				<artifactId>fw-core</artifactId>
+				<version>1.1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.rmt2.framework</groupId>
+				<artifactId>fw-messaging</artifactId>
+				<version>2.0.1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.rmt2.messaging</groupId>
+				<artifactId>service-message-dto-model</artifactId>
+				<version>1.0-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>4.12</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-all</artifactId>
+				<version>1.10.19</version>
+			</dependency>
+			<dependency>
+				<groupId>org.powermock</groupId>
+				<artifactId>powermock-api-mockito</artifactId>
+				<version>1.7.0RC4</version>
+			</dependency>
+			<dependency>
+				<groupId>org.powermock</groupId>
+				<artifactId>powermock-module-junit4</artifactId>
+				<version>1.7.0RC4</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	<build>
+		<extensions>
+      <!-- Enabling the use of FTP -->
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+         <artifactId>wagon-ftp</artifactId>
+         <version>2.12</version>
+      </extension>
+    </extensions>
+	</build>
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ftp-snapshot-repository</id>
+			<name>Internal Snapshots</name>
+			<!-- IP Address for RMTDALSYS01 -->
+			<url>ftp://192.168.0.4/repo/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ftp-release-repository</id>
+			<name>Internal Releases</name>
+			<!-- IP Address for RMTDALSYS01 -->
+			<url>ftp://192.168.0.4/repo/releases</url>
+		</repository>
+	</distributionManagement>
+</project>
