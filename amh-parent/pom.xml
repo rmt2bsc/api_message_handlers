@@ -7,7 +7,7 @@
 	<version>1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<name>api-message-handler-parent</name>
+	<name>amh-parent</name>
 	<description>Parent project that manages specifi API message handlers</description>
 	<url>http://maven.apache.org</url>
 
