@@ -1,21 +1,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	<artifactId>amh-core</artifactId>
 	<version>1.0-SNAPSHOT</version>
-	<description>Routes messages to the appropriate project tracker API module</description>
+	<name>api-message-handler-core</name>
+	<description>Contains core functionality for all API Message Handlers</description>
 	<parent>
 		<groupId>org.rmt2.api.handlers</groupId>
 		<artifactId>amh-parent</artifactId>
 		<version>1.0-SNAPSHOT</version>
 	</parent>
-
 	<dependencies>
-		<dependency>
-			<groupId>org.rmt2.api</groupId>
-			<artifactId>api-project-tracker</artifactId>
-			<version>2.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
+			<dependency>
 				<groupId>org.rmt2.framework</groupId>
 				<artifactId>fw-core</artifactId>
 			</dependency>
@@ -47,7 +43,7 @@
 				<artifactId>powermock-module-junit4</artifactId>
 				<scope>test</scope>
 			</dependency>
-	</dependencies>
+		</dependencies>
 	<build>
 		<plugins>
 			<plugin>
@@ -82,6 +78,4 @@
 			<url>ftp://192.168.0.4/repo/releases</url>
 		</repository>
 	</distributionManagement>
-	<name>api-message-handler-projecttracker</name>
-	<artifactId>amh-projecttracker</artifactId>
 </project>
