@@ -1,0 +1,17 @@
+<LookupCodesRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>addressbook</application>
+        <module>lookup</module>
+        <transaction>UPDATE_LOOKUP_CODE</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>06/22/2018 15:51:33</delivery_date>
+    </header>
+    <detail_codes label="Label Test">
+        <code_id>200</code_id>
+        <group_id>100</group_id>
+        <shortdesc>Code detail short description Test</shortdesc>
+        <longdesc>Code detail long description Test</longdesc>
+    </detail_codes>
+</LookupCodesRequest>

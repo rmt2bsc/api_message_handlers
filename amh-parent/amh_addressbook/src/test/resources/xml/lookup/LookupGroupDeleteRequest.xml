@@ -1,0 +1,14 @@
+<LookupCodesRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>addressbook</application>
+        <module>lookup</module>
+        <transaction>DELETE_LOOKUP_GROUP</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>06/22/2018 15:51:32</delivery_date>
+    </header>
+    <criteria>
+        <group>200</group>
+    </criteria>
+</LookupCodesRequest>

@@ -1,0 +1,19 @@
+<AddressBookRequest>
+    <header>
+      <routing>JMS: addressbook-p2p-dest</routing>
+      <application>addressbook</application>
+      <module>profile</module>
+      <transaction>GET_CONTACT</transaction>
+      <delivery_mode>SYNC</delivery_mode>
+      <message_mode>REQUEST</message_mode>
+      <delivery_date>2017-04-16 02:01:12</delivery_date>
+    </header>
+    <criteria>
+        <business_criteria>
+            <business_name>ABC Company</business_name>
+            <contact_fname>john</contact_fname>
+            <contact_lname>smith</contact_lname>
+            <contact_email>johnn.smith@gte.net</contact_email>
+        </business_criteria>
+    </criteria>
+</AddressBookRequest>

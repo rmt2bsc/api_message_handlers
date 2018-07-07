@@ -1,0 +1,35 @@
+<AddressBookRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>App Name</application>
+        <module>unknown</module>
+        <transaction>UPDATE_CONTACT</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>06/21/2018 16:52:20</delivery_date>
+    </header>
+    <profile>
+        <business_contacts>
+            <business_id>0</business_id>
+            <long_name>ABC Company</long_name>
+            <contact_firstname>john</contact_firstname>
+            <contact_lastname>smith</contact_lastname>
+            <contact_phone>2149999999</contact_phone>
+            <contact_email>johnn.smith@gte.net</contact_email>
+            <taxId>88-8888888</taxId>
+            <address>
+                <addr_id>0</addr_id>
+                <addr1>Address Line 1</addr1>
+                <addr2>Address Line 2</addr2>
+                <addr3>Address Line 3</addr3>
+                <addr4>Address Line 4</addr4>
+                <zip>
+                    <zipcode>75232</zipcode>
+                    <city>Dallas</city>
+                    <state>Tx</state>
+                </zip>
+                <phone_main>2147777777</phone_main>
+            </address>
+        </business_contacts>
+    </profile>
+</AddressBookRequest>

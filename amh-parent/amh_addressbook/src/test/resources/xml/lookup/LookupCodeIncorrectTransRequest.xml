@@ -1,0 +1,14 @@
+<LookupCodesRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>addressbook</application>
+        <module>lookup</module>
+        <transaction>INCORRECT_TRANS_CODE</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>06/25/2018 15:36:24</delivery_date>
+    </header>
+    <criteria>
+        <code>0</code>
+    </criteria>
+</LookupCodesRequest>
