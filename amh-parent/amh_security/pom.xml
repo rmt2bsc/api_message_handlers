@@ -1,7 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	<artifactId>amh-security</artifactId>
 	<version>1.0-SNAPSHOT</version>
+	<name>api-message-handler-security</name>
 	<description>Routes messages to the appropriate security API module</description>
 	<parent>
 		<groupId>org.rmt2.api.handlers</groupId>
@@ -15,6 +17,12 @@
 			<artifactId>api-security</artifactId>
 			<version>2.0-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+      <groupId>org.rmt2.api.handlers</groupId>
+      <artifactId>amh-core</artifactId>
+      <version>1.0-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
 		<dependency>
 				<groupId>org.rmt2.framework</groupId>
 				<artifactId>fw-core</artifactId>
@@ -82,6 +90,4 @@
 			<url>ftp://192.168.0.4/repo/releases</url>
 		</repository>
 	</distributionManagement>
-	<name>api-message-handler-security</name>
-	<artifactId>amh-security</artifactId>
 </project>

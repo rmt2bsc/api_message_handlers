@@ -1,6 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	<artifactId>amh-addressbook</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<name>api-message-handler-addressbook</name>
 	<description>Routes messages to the appropriate address book API module</description>
@@ -11,12 +12,49 @@
 	</parent>
 
 	<dependencies>
-		<dependency>
-			<groupId>org.rmt2.api</groupId>
-			<artifactId>api-address-book</artifactId>
-			<version>2.0-SNAPSHOT</version>
-		</dependency>
-	</dependencies>
+	<dependency>
+		<groupId>org.rmt2.api</groupId>
+		<artifactId>api-address-book</artifactId>
+		<version>2.0-SNAPSHOT</version>
+	</dependency>
+	<dependency>
+		<groupId>org.rmt2.api.handlers</groupId>
+		<artifactId>amh-core</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</dependency>
+	<dependency>
+		<groupId>org.rmt2.framework</groupId>
+		<artifactId>fw-core</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>org.rmt2.framework</groupId>
+		<artifactId>fw-messaging</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>org.rmt2.messaging</groupId>
+		<artifactId>service-message-dto-model</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>junit</groupId>
+		<artifactId>junit</artifactId>
+		<scope>test</scope>
+	</dependency>
+	<dependency>
+		<groupId>org.mockito</groupId>
+		<artifactId>mockito-all</artifactId>
+		<scope>test</scope>
+	</dependency>
+	<dependency>
+		<groupId>org.powermock</groupId>
+		<artifactId>powermock-api-mockito</artifactId>
+		<scope>test</scope>
+	</dependency>
+	<dependency>
+		<groupId>org.powermock</groupId>
+		<artifactId>powermock-module-junit4</artifactId>
+		<scope>test</scope>
+	</dependency>
+</dependencies>
 	<build>
 		<plugins>
 			<plugin>
@@ -51,5 +89,4 @@
 			<url>ftp://192.168.0.4/repo/releases</url>
 		</repository>
 	</distributionManagement>
-	<artifactId>amh-addressbook</artifactId>
 </project>
