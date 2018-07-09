@@ -6,7 +6,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
-import org.dto.RegionDto;
+import org.dto.CountryRegionDto;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -87,8 +87,8 @@ public class RegionMessageHandlerTest extends BaseMessageHandlerTest {
         String request = RMT2File.getFileContentsAsString("xml/postal/RegionSearchRequest.xml");
         
         try {
-            List<RegionDto> apiResults = AddressBookMockData.createMockRegionDto();
-            when(this.mockApi.getRegion(isA(RegionDto.class))).thenReturn(apiResults);
+            List<CountryRegionDto> apiResults = AddressBookMockData.createMockCountryRegionDto();
+            when(this.mockApi.getCountryRegion(isA(CountryRegionDto.class))).thenReturn(apiResults);
         } catch (PostalApiException e) {
             e.printStackTrace();
             Assert.fail("All Region/State/Province fetch test case failed");
@@ -119,6 +119,7 @@ public class RegionMessageHandlerTest extends BaseMessageHandlerTest {
         for (int ndx = 0; ndx < actualRepsonse.getStates().size(); ndx++) {
             Assert.assertEquals(10 + (ndx), actualRepsonse.getStates().get(ndx).getStateId().intValue());
             Assert.assertEquals(100, actualRepsonse.getStates().get(ndx).getCountryId().intValue());
+            Assert.assertEquals("CountryName1", actualRepsonse.getStates().get(ndx).getCountryName());
             Assert.assertEquals("StateName" + (ndx+1), actualRepsonse.getStates().get(ndx).getStateName());
             Assert.assertEquals("AbbrCode" + (ndx+1), actualRepsonse.getStates().get(ndx).getStateCode());
         }
@@ -130,7 +131,7 @@ public class RegionMessageHandlerTest extends BaseMessageHandlerTest {
         this.setupMockApiCall();
         String request = RMT2File.getFileContentsAsString("xml/postal/RegionSearchRequest.xml");
         try {
-            when(this.mockApi.getRegion(isA(RegionDto.class))).thenReturn(null);
+            when(this.mockApi.getCountryRegion(isA(CountryRegionDto.class))).thenReturn(null);
         } catch (PostalApiException e) {
             e.printStackTrace();
             Assert.fail("All Region fetch test case failed");
@@ -159,7 +160,7 @@ public class RegionMessageHandlerTest extends BaseMessageHandlerTest {
         this.setupMockApiCall();
         String request = RMT2File.getFileContentsAsString("xml/postal/RegionSearchRequest.xml");
         try {
-            when(this.mockApi.getRegion(isA(RegionDto.class)))
+            when(this.mockApi.getCountryRegion(isA(CountryRegionDto.class)))
                 .thenThrow(new PostalApiException("A region API error occurred"));
         } catch (PostalApiException e) {
             e.printStackTrace();

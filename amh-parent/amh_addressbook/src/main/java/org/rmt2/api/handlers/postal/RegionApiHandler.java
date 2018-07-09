@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.dto.RegionDto;
+import org.dto.CountryRegionDto;
 import org.dto.adapter.orm.Rmt2AddressBookDtoFactory;
 import org.dto.converter.jaxb.ContactsJaxbFactory;
 import org.modules.AddressBookConstants;
@@ -79,11 +79,15 @@ public class RegionApiHandler extends AbstractJaxbMessageHandler<PostalRequest, 
     }
 
     /**
-     * Handler for invoking the appropriate API in order to fetch one or more Zipcode objects.
+     * Handler for invoking the appropriate API in order to fetch one or more
+     * State objects.
+     * <p>
+     * Targets the API method responsible for returning a result set composed of
+     * detailed state/province and country information.
      * 
      * @param req
      *            an instance of {@link PostalRequest}
-     * @return an instance of {@link MessageHandlerResults}           
+     * @return an instance of {@link MessageHandlerResults}
      */
     protected MessageHandlerResults fetchStateRegion(PostalRequest req) {
         MessageHandlerResults results = new MessageHandlerResults();
@@ -92,10 +96,10 @@ public class RegionApiHandler extends AbstractJaxbMessageHandler<PostalRequest, 
 
         try {
             this.validateCriteria(req);
-            RegionDto criteriaDto = this.extractSelectionCriteria(req.getPostalCriteria().getProvince());
+            CountryRegionDto criteriaDto = this.extractSelectionCriteria(req.getPostalCriteria().getProvince());
             
             PostalApi api = PostalApiFactory.createApi(AddressBookConstants.APP_NAME);
-            List<RegionDto> dtoList = api.getRegion(criteriaDto);
+            List<CountryRegionDto> dtoList = api.getCountryRegion(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage("No Region/State/Province data found!");
                 rs.setReturnCode(0);
@@ -121,9 +125,9 @@ public class RegionApiHandler extends AbstractJaxbMessageHandler<PostalRequest, 
     }
     
     
-    private List<StateType> buildJaxbListData(List<RegionDto> results) {
+    private List<StateType> buildJaxbListData(List<CountryRegionDto> results) {
         List<StateType> list = new ArrayList<>();
-        for (RegionDto item : results) {
+        for (CountryRegionDto item : results) {
             StateType jaxbObj = ContactsJaxbFactory.createStateTypeInstance(item.getStateId(), 
                     item.getStateName(), item.getStateCode(), item.getCountryId(), 
                     item.getCountryName());
@@ -137,8 +141,8 @@ public class RegionApiHandler extends AbstractJaxbMessageHandler<PostalRequest, 
     * @param criteria
     * @return
     */
-   private RegionDto extractSelectionCriteria(StatesCriteriaType criteria) {
-       RegionDto criteriaDto = Rmt2AddressBookDtoFactory.getNewRegionInstance();
+   private CountryRegionDto extractSelectionCriteria(StatesCriteriaType criteria) {
+       CountryRegionDto criteriaDto = Rmt2AddressBookDtoFactory.getNewCountryRegionInstance();
        if (criteria != null) {
             if (criteria.getCountryId() != null) {
                 criteriaDto.setCountryId(criteria.getCountryId().intValue());
