@@ -32,7 +32,7 @@ import com.api.util.assistants.Verifier;
 import com.api.util.assistants.VerifyException;
 
 /**
- * Handles and routes ZipCode related messages to the AddressBook
+ * Handles and routes Country related messages to the AddressBook
  * API.
  * 
  * @author roy.terrell
