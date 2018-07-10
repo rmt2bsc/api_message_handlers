@@ -11,6 +11,7 @@ import org.dto.BusinessContactDto;
 import org.dto.ContactDto;
 import org.dto.CountryDto;
 import org.dto.CountryRegionDto;
+import org.dto.IpLocationDto;
 import org.dto.LookupCodeDto;
 import org.dto.LookupGroupDto;
 import org.dto.RegionDto;
@@ -487,4 +488,34 @@ public class AddressBookMockData {
         return list;
     }
     
+    /**
+     * 
+     * @param id
+     * @param standardIp
+     * @param longitude
+     * @param latitude
+     * @param countyName
+     * @param state
+     * @param city
+     * @param zip
+     * @param areaCode
+     * @return
+     */
+    public static final IpLocationDto createMockIpLocationDto(Integer id, String standardIp, double longitude,
+            double latitude, String countryName, String state, String city,
+            String zip, String areaCode) {
+        IpLocationDto dto = Rmt2AddressBookDtoFactory.getNewIpLocationInstance();
+        dto.setIpRangeId(id);
+        dto.setStandardIp(standardIp);
+        dto.setCity(city);
+        dto.setPostalCode(zip);
+        dto.setCountry(countryName);
+        dto.setRegion(state);
+        dto.setAreaCode(areaCode);
+        dto.setLatitude(latitude);
+        dto.setLongitude(longitude);
+        dto.setIpFrom(100000);
+        dto.setIpTo(200000);
+        return dto;
+    }
 }

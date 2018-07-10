@@ -1,0 +1,14 @@
+<PostalRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>addressbook</application>
+        <module>postal</module>
+        <transaction>GET_IP_INFO</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>07/09/2018 19:03:49</delivery_date>
+    </header>
+    <postal_criteria>
+        <ip_addr/>
+    </postal_criteria>
+</PostalRequest>
