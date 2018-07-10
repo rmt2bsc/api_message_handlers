@@ -10,6 +10,8 @@ import org.dao.mapping.orm.rmt2.Zipcode;
 import org.dto.BusinessContactDto;
 import org.dto.ContactDto;
 import org.dto.CountryDto;
+import org.dto.CountryRegionDto;
+import org.dto.IpLocationDto;
 import org.dto.LookupCodeDto;
 import org.dto.LookupGroupDto;
 import org.dto.RegionDto;
@@ -436,5 +438,84 @@ public class AddressBookMockData {
         o.setCountryId(100);
         list.add(o);
         return list;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public static final List<CountryRegionDto> createMockCountryRegionDto() {
+        List<CountryRegionDto> list = new ArrayList<CountryRegionDto>();
+        CountryRegionDto o = Rmt2AddressBookDtoFactory.getNewCountryRegionInstance();
+        o.setStateId(10);
+        o.setStateCode("AbbrCode1");
+        o.setStateName("StateName1");
+        o.setCountryId(100);
+        o.setCountryName("CountryName1");
+        list.add(o);
+
+        o = Rmt2AddressBookDtoFactory.getNewCountryRegionInstance();
+        o.setStateId(11);
+        o.setStateCode("AbbrCode2");
+        o.setStateName("StateName2");
+        o.setCountryId(100);
+        o.setCountryName("CountryName1");
+        list.add(o);
+        
+        o = Rmt2AddressBookDtoFactory.getNewCountryRegionInstance();
+        o.setStateId(12);
+        o.setStateCode("AbbrCode3");
+        o.setStateName("StateName3");
+        o.setCountryId(100);
+        o.setCountryName("CountryName1");
+        list.add(o);
+        
+        o = Rmt2AddressBookDtoFactory.getNewCountryRegionInstance();
+        o.setStateId(13);
+        o.setStateCode("AbbrCode4");
+        o.setStateName("StateName4");
+        o.setCountryId(100);
+        o.setCountryName("CountryName1");
+        list.add(o);
+        
+        o = Rmt2AddressBookDtoFactory.getNewCountryRegionInstance();
+        o.setStateId(14);
+        o.setStateCode("AbbrCode5");
+        o.setStateName("StateName5");
+        o.setCountryId(100);
+        o.setCountryName("CountryName1");
+        list.add(o);
+        return list;
+    }
+    
+    /**
+     * 
+     * @param id
+     * @param standardIp
+     * @param longitude
+     * @param latitude
+     * @param countyName
+     * @param state
+     * @param city
+     * @param zip
+     * @param areaCode
+     * @return
+     */
+    public static final IpLocationDto createMockIpLocationDto(Integer id, String standardIp, double longitude,
+            double latitude, String countryName, String state, String city,
+            String zip, String areaCode) {
+        IpLocationDto dto = Rmt2AddressBookDtoFactory.getNewIpLocationInstance();
+        dto.setIpRangeId(id);
+        dto.setStandardIp(standardIp);
+        dto.setCity(city);
+        dto.setPostalCode(zip);
+        dto.setCountry(countryName);
+        dto.setRegion(state);
+        dto.setAreaCode(areaCode);
+        dto.setLatitude(latitude);
+        dto.setLongitude(longitude);
+        dto.setIpFrom(100000);
+        dto.setIpTo(200000);
+        return dto;
     }
 }

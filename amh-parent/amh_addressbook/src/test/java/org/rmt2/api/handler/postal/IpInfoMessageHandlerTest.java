@@ -4,9 +4,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.when;
 
-import java.util.List;
-
-import org.dto.CountryRegionDto;
+import org.dto.IpLocationDto;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -22,7 +20,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.rmt2.api.handler.AddressBookMockData;
 import org.rmt2.api.handler.BaseMessageHandlerTest;
-import org.rmt2.api.handlers.postal.RegionApiHandler;
+import org.rmt2.api.handlers.postal.IpInfoApiHandler;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.jaxb.PostalResponse;
 
@@ -34,14 +32,14 @@ import com.api.persistence.db.orm.Rmt2OrmClientFactory;
 import com.api.util.RMT2File;
 
 /**
- * Tests the API Handler for Region/State/Province API functionality.
+ * Tests the API Handler for IP API functionality.
  * 
  * @author roy.terrell
  *
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ AbstractDaoClientImpl.class, Rmt2OrmClientFactory.class, PostalApiFactory.class })
-public class RegionMessageHandlerTest extends BaseMessageHandlerTest {
+public class IpInfoMessageHandlerTest extends BaseMessageHandlerTest {
 
     private PostalApi mockApi;
   
@@ -49,7 +47,7 @@ public class RegionMessageHandlerTest extends BaseMessageHandlerTest {
     /**
      * 
      */
-    public RegionMessageHandlerTest() {
+    public IpInfoMessageHandlerTest() {
         return;
     }
 
@@ -81,66 +79,64 @@ public class RegionMessageHandlerTest extends BaseMessageHandlerTest {
     }
 
     @Test
-    public void testSuccess_Fetch_Multiple() {
+    public void testSuccess_Fetch_With_Standard_IP() {
         this.setupMockApiCall();
         
-        String request = RMT2File.getFileContentsAsString("xml/postal/RegionSearchRequest.xml");
+        String request = RMT2File.getFileContentsAsString("xml/postal/IpInfoStandardSearchRequest.xml");
         
         try {
-            List<CountryRegionDto> apiResults = AddressBookMockData.createMockCountryRegionDto();
-            when(this.mockApi.getCountryRegion(isA(CountryRegionDto.class))).thenReturn(apiResults);
+            IpLocationDto apiResults = AddressBookMockData.createMockIpLocationDto(null, "111.222.333.444", 90333.333,
+                            29393.392838, "United States", "TX", "Dallas", "75240", "214");
+            when(this.mockApi.getIpInfo(isA(String.class))).thenReturn(apiResults);
         } catch (PostalApiException e) {
             e.printStackTrace();
-            Assert.fail("All Region/State/Province fetch test case failed");
+            Assert.fail("All IP fetch test case failed");
         }
         
         MessageHandlerResults results = null;
-        RegionApiHandler handler = new RegionApiHandler();
+        IpInfoApiHandler handler = new IpInfoApiHandler();
         try {
-            results = handler.processMessage(ApiTransactionCodes.REGION_GET, request);
+            results = handler.processMessage(ApiTransactionCodes.IP_INFO_GET, request);
         } catch (MessageHandlerCommandException e) {
             e.printStackTrace();
             Assert.fail("An unexpected exception was thrown");
         }
         Assert.assertNotNull(results);
         Assert.assertNotNull(results.getPayload());
-        Assert.assertEquals(5, results.getReturnCode());
+        Assert.assertEquals(1, results.getReturnCode());
 
         PostalResponse actualRepsonse = 
                 (PostalResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-        Assert.assertNotNull(actualRepsonse.getStates());
-        Assert.assertEquals(5, actualRepsonse.getStates().size());
-        Assert.assertEquals(actualRepsonse.getReplyStatus().getReturnCode().intValue(),
-                actualRepsonse.getStates().size());
+        Assert.assertNotNull(actualRepsonse.getIpData());
+        Assert.assertEquals(actualRepsonse.getReplyStatus().getReturnCode().intValue(), 1);
         Assert.assertEquals(WebServiceConstants.RETURN_STATUS_SUCCESS,
                 actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals("Region/State/Province record(s) found", actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals("IP record(s) found", actualRepsonse.getReplyStatus().getMessage());
         
-        for (int ndx = 0; ndx < actualRepsonse.getStates().size(); ndx++) {
-            Assert.assertEquals(10 + (ndx), actualRepsonse.getStates().get(ndx).getStateId().intValue());
-            Assert.assertEquals(100, actualRepsonse.getStates().get(ndx).getCountryId().intValue());
-            Assert.assertEquals("CountryName1", actualRepsonse.getStates().get(ndx).getCountryName());
-            Assert.assertEquals("StateName" + (ndx+1), actualRepsonse.getStates().get(ndx).getStateName());
-            Assert.assertEquals("AbbrCode" + (ndx+1), actualRepsonse.getStates().get(ndx).getStateCode());
-        }
+        Assert.assertEquals(actualRepsonse.getIpData().getCity(), "Dallas");
+        Assert.assertEquals(actualRepsonse.getIpData().getCountryName(), "United States");
+        Assert.assertEquals(actualRepsonse.getIpData().getRegion(), "TX");
+        Assert.assertEquals(actualRepsonse.getIpData().getZip(), "75240");
+        Assert.assertEquals(actualRepsonse.getIpData().getLongitude(), "90333.333");
+        Assert.assertEquals(actualRepsonse.getIpData().getLatitude(), "29393.392838");
     }
     
     
     @Test
-    public void testSuccess_Fetch_NoDataFound() {
+    public void testSuccess_Fetch_With_Standard_IP_NoDataFound() {
         this.setupMockApiCall();
-        String request = RMT2File.getFileContentsAsString("xml/postal/RegionSearchRequest.xml");
+        String request = RMT2File.getFileContentsAsString("xml/postal/IpInfoStandardSearchRequest.xml");
         try {
-            when(this.mockApi.getCountryRegion(isA(CountryRegionDto.class))).thenReturn(null);
+            when(this.mockApi.getIpInfo(isA(String.class))).thenReturn(null);
         } catch (PostalApiException e) {
             e.printStackTrace();
-            Assert.fail("All Region fetch test case failed");
+            Assert.fail("All IP fetch test case failed");
         }
         
         MessageHandlerResults results = null;
-        RegionApiHandler handler = new RegionApiHandler();
+        IpInfoApiHandler handler = new IpInfoApiHandler();
         try {
-            results = handler.processMessage(ApiTransactionCodes.REGION_GET, request);
+            results = handler.processMessage(ApiTransactionCodes.IP_INFO_GET, request);
         } catch (MessageHandlerCommandException e) {
             e.printStackTrace();
             Assert.fail("An unexpected exception was thrown");
@@ -148,29 +144,29 @@ public class RegionMessageHandlerTest extends BaseMessageHandlerTest {
         Assert.assertNotNull(results);
         PostalResponse actualRepsonse = 
                 (PostalResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-        Assert.assertNotNull(actualRepsonse.getStates());
+        Assert.assertNotNull(actualRepsonse.getCountries());
         Assert.assertEquals(0, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(WebServiceConstants.RETURN_STATUS_SUCCESS,
                 actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals("No Region/State/Province data found!", actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals("No IP data found!", actualRepsonse.getReplyStatus().getMessage());
     }
     
     @Test
-    public void testError_Fetch_API_Error() {
+    public void testError_Fetch_With_Standard_IP_API_Error() {
         this.setupMockApiCall();
-        String request = RMT2File.getFileContentsAsString("xml/postal/RegionSearchRequest.xml");
+        String request = RMT2File.getFileContentsAsString("xml/postal/IpInfoStandardSearchRequest.xml");
         try {
-            when(this.mockApi.getCountryRegion(isA(CountryRegionDto.class)))
-                .thenThrow(new PostalApiException("A region API error occurred"));
+            when(this.mockApi.getIpInfo(isA(String.class)))
+                .thenThrow(new PostalApiException("A IP API error occurred"));
         } catch (PostalApiException e) {
             e.printStackTrace();
-            Assert.fail("All Region fetch test case failed");
+            Assert.fail("All IP fetch test case failed");
         }
         
         MessageHandlerResults results = null;
-        RegionApiHandler handler = new RegionApiHandler();
+        IpInfoApiHandler handler = new IpInfoApiHandler();
         try {
-            results = handler.processMessage(ApiTransactionCodes.REGION_GET, request);
+            results = handler.processMessage(ApiTransactionCodes.IP_INFO_GET, request);
         } catch (MessageHandlerCommandException e) {
             e.printStackTrace();
             Assert.fail("An unexpected exception was thrown");
@@ -181,8 +177,8 @@ public class RegionMessageHandlerTest extends BaseMessageHandlerTest {
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(WebServiceConstants.RETURN_STATUS_ERROR,
                 actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals("Failure to retrieve Region/State/Province data", actualRepsonse.getReplyStatus().getMessage());
-        Assert.assertEquals("A region API error occurred", actualRepsonse.getReplyStatus().getExtMessage());
+        Assert.assertEquals("Failure to retrieve IP data", actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals("A IP API error occurred", actualRepsonse.getReplyStatus().getExtMessage());
     }
  
 }

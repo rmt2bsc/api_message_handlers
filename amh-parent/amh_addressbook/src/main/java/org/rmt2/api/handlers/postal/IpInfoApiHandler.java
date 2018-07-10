@@ -1,11 +1,9 @@
 package org.rmt2.api.handlers.postal;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.dto.CountryRegionDto;
+import org.dto.IpLocationDto;
 import org.dto.adapter.orm.Rmt2AddressBookDtoFactory;
 import org.dto.converter.jaxb.ContactsJaxbFactory;
 import org.modules.AddressBookConstants;
@@ -14,12 +12,12 @@ import org.modules.postal.PostalApiFactory;
 import org.rmt2.api.handlers.util.MessageHandlerUtility;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
+import org.rmt2.jaxb.IpCriteriaType;
+import org.rmt2.jaxb.IpDetails;
 import org.rmt2.jaxb.ObjectFactory;
 import org.rmt2.jaxb.PostalRequest;
 import org.rmt2.jaxb.PostalResponse;
 import org.rmt2.jaxb.ReplyStatusType;
-import org.rmt2.jaxb.StateType;
-import org.rmt2.jaxb.StatesCriteriaType;
 
 import com.InvalidDataException;
 import com.api.messaging.InvalidRequestException;
@@ -32,25 +30,25 @@ import com.api.util.assistants.Verifier;
 import com.api.util.assistants.VerifyException;
 
 /**
- * Handles and routes Region/State/Province related messages to the AddressBook
+ * Handles and routes IP information related messages to the AddressBook
  * API.
  * 
  * @author roy.terrell
  *
  */
-public class RegionApiHandler extends AbstractJaxbMessageHandler<PostalRequest, PostalResponse, List<StateType>> {
+public class IpInfoApiHandler extends AbstractJaxbMessageHandler<PostalRequest, PostalResponse, IpDetails> {
     
-    private static final Logger logger = Logger.getLogger(RegionApiHandler.class);
+    private static final Logger logger = Logger.getLogger(IpInfoApiHandler.class);
     private ObjectFactory jaxbObjFactory;
 
     /**
      * @param payload
      */
-    public RegionApiHandler() {
+    public IpInfoApiHandler() {
         super();
         this.jaxbObjFactory = new ObjectFactory();
         this.responseObj = jaxbObjFactory.createPostalResponse();
-        logger.info(RegionApiHandler.class.getName() + " was instantiated successfully");
+        logger.info(IpInfoApiHandler.class.getName() + " was instantiated successfully");
     }
 
     /*
@@ -69,8 +67,8 @@ public class RegionApiHandler extends AbstractJaxbMessageHandler<PostalRequest, 
             return r;
         }
         switch (command) {
-            case ApiTransactionCodes.REGION_GET:
-                r = this.fetchStateRegion(this.requestObj);
+            case ApiTransactionCodes.IP_INFO_GET:
+                r = this.fetch(this.requestObj);
                 break;
             default:
                 r = this.createErrorReply(-1, ERROR_MSG_TRANS_NOT_FOUND + command);
@@ -79,35 +77,36 @@ public class RegionApiHandler extends AbstractJaxbMessageHandler<PostalRequest, 
     }
 
     /**
-     * Handler for invoking the appropriate API in order to fetch one or more
-     * State objects.
-     * <p>
-     * Targets the API method responsible for returning a result set composed of
-     * detailed state/province and country information.
+     * Handler for invoking the appropriate API in order to fetch IP information.
      * 
      * @param req
      *            an instance of {@link PostalRequest}
      * @return an instance of {@link MessageHandlerResults}
      */
-    protected MessageHandlerResults fetchStateRegion(PostalRequest req) {
+    protected MessageHandlerResults fetch(PostalRequest req) {
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
-        List<StateType> queryResults = null;
+        IpDetails queryResults = null;
 
         try {
-            this.validateCriteria(req);
-            CountryRegionDto criteriaDto = this.extractSelectionCriteria(req.getPostalCriteria().getProvince());
+            this.validateRequest(req);
+            IpLocationDto criteriaDto = this.extractSelectionCriteria(req.getPostalCriteria().getIpAddr());
             
             PostalApi api = PostalApiFactory.createApi(AddressBookConstants.APP_NAME);
-            List<CountryRegionDto> dtoList = api.getCountryRegion(criteriaDto);
+            IpLocationDto dtoList = null;
+            if (!criteriaDto.getStandardIp().isEmpty()) {
+                dtoList = api.getIpInfo(criteriaDto.getStandardIp());    
+            } else {
+                dtoList = api.getIpInfo(criteriaDto.getIpRangeId());
+            }
             if (dtoList == null) {
-                rs.setMessage("No Region/State/Province data found!");
+                rs.setMessage("No IP data found!");
                 rs.setReturnCode(0);
             }
             else {
                 queryResults = this.buildJaxbListData(dtoList);
-                rs.setMessage("Region/State/Province record(s) found");
-                rs.setReturnCode(dtoList.size());
+                rs.setMessage("IP record(s) found");
+                rs.setReturnCode(1);
             }
             this.responseObj.setHeader(req.getHeader());
             // Set reply status
@@ -115,7 +114,7 @@ public class RegionApiHandler extends AbstractJaxbMessageHandler<PostalRequest, 
         } catch (Exception e) {
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_ERROR);
-            rs.setMessage("Failure to retrieve Region/State/Province data");
+            rs.setMessage("Failure to retrieve IP data");
             rs.setExtMessage(e.getMessage());
         }
         results.setReturnCode(rs.getReturnCode());
@@ -125,15 +124,9 @@ public class RegionApiHandler extends AbstractJaxbMessageHandler<PostalRequest, 
     }
     
     
-    private List<StateType> buildJaxbListData(List<CountryRegionDto> results) {
-        List<StateType> list = new ArrayList<>();
-        for (CountryRegionDto item : results) {
-            StateType jaxbObj = ContactsJaxbFactory.createStateTypeInstance(item.getStateId(), 
-                    item.getStateName(), item.getStateCode(), item.getCountryId(), 
-                    item.getCountryName());
-            list.add(jaxbObj);
-        }
-        return list;
+    private IpDetails buildJaxbListData(IpLocationDto results) {
+        IpDetails jaxbObj = ContactsJaxbFactory.getIpDetailsInstance(results);
+        return jaxbObj;
     }
     
    /**
@@ -141,20 +134,14 @@ public class RegionApiHandler extends AbstractJaxbMessageHandler<PostalRequest, 
     * @param criteria
     * @return
     */
-   private CountryRegionDto extractSelectionCriteria(StatesCriteriaType criteria) {
-       CountryRegionDto criteriaDto = Rmt2AddressBookDtoFactory.getNewCountryRegionInstance();
-       if (criteria != null) {
-            if (criteria.getCountryId() != null) {
-                criteriaDto.setCountryId(criteria.getCountryId().intValue());
-            }
-            if (criteria.getStateId() != null) {
-                criteriaDto.setStateId(criteria.getStateId().intValue());
-            }
-            criteriaDto.setStateName(criteria.getStateName());
-            criteriaDto.setStateCode(criteria.getStateCode());
-       }
-       return criteriaDto;
-   }
+    private IpLocationDto extractSelectionCriteria(IpCriteriaType criteria) {
+        IpLocationDto criteriaDto = Rmt2AddressBookDtoFactory.getNewIpLocationInstance();
+        if (criteria != null) {
+            criteriaDto.setStandardIp(criteria.getIpStandard());
+            criteriaDto.setIpRangeId(criteria.getIpNetwork());
+        }
+        return criteriaDto;
+    }
    
     
     @Override
@@ -165,35 +152,47 @@ public class RegionApiHandler extends AbstractJaxbMessageHandler<PostalRequest, 
         catch (VerifyException e) {
             throw new InvalidRequestException("PostalRequest message request element is invalid", e);
         }
-    }
-    
-    private void validateCriteria(PostalRequest req) throws InvalidRequestException {
+        
         try {
             Verifier.verifyNotNull(req.getPostalCriteria());
-            Verifier.verifyNotNull(req.getPostalCriteria().getProvince());
+            Verifier.verifyNotNull(req.getPostalCriteria().getIpAddr());
         }
         catch (VerifyException e) {
-            throw new InvalidRequestException("PostalRequest stae/province criteria element is invalid", e);
+            throw new InvalidRequestException("PostalRequest IP criteria element is invalid", e);
+        }
+        
+        try {
+            Verifier.verifyFalse(req.getPostalCriteria().getIpAddr().getIpNetwork() == null && req.getPostalCriteria().getIpAddr().getIpStandard() == null);
+        }
+        catch (VerifyException e) {
+            throw new InvalidRequestException("The PostalRequest IP criteria element must contain value", e);
+        }
+        
+        try {
+            Verifier.verifyFalse(req.getPostalCriteria().getIpAddr().getIpNetwork() != null && req.getPostalCriteria().getIpAddr().getIpStandard() != null);
+        }
+        catch (VerifyException e) {
+            throw new InvalidRequestException("The standard IP String value and the numerical representation of the IP address must be mutually exclusive in PostalRequest IP criteria element", e);
         }
     }
-
+    
     /**
-     * Builds the response payload as a List<CountryType> type.
+     * Builds the response payload as a IpDetails type.
      * 
      * @param payload
-     *            a raw List masked as a List<CountryType>.
+     *            a raw List masked as a IpDetails.
      * @param replyStatus
      * @return XML String
      */
     @Override
-    protected String buildResponse(List<StateType> payload,  MessageHandlerCommonReplyStatus replyStatus) {
+    protected String buildResponse(IpDetails payload,  MessageHandlerCommonReplyStatus replyStatus) {
         if (replyStatus != null) {
             ReplyStatusType rs = MessageHandlerUtility.createReplyStatus(replyStatus);
-            this.responseObj.setReplyStatus(rs);
+            this.responseObj.setReplyStatus(rs);   
         }
         
         if (payload != null) {
-            this.responseObj.getStates().addAll(payload);  
+            this.responseObj.setIpData(payload);
         }
         
         String xml = this.jaxb.marshalMessage(this.responseObj);
