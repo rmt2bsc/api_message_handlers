@@ -125,6 +125,7 @@ public class LookupGroupApiHandler extends
             }
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
+            logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to retrieve Lookup Group(s)");
             rs.setExtMessage(e.getMessage());
@@ -176,6 +177,7 @@ public class LookupGroupApiHandler extends
                 rs.setExtMessage("Total number of rows modified: " + rc);
             }
         } catch (LookupDataApiException | NotFoundException | InvalidDataException e) {
+            logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to update " + (newRec ? "new" : "existing")  + " Lookup Group");
             rs.setExtMessage(e.getMessage());
@@ -216,6 +218,7 @@ public class LookupGroupApiHandler extends
             rs.setMessage("Lookup Group was deleted successfully");
             rs.setExtMessage("Lookup Group Id deleted was " + criteriaDto.getGrpId());
         } catch (LookupDataApiException | InvalidDataException e) {
+            logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to delelte Lookup Group by group id, " + criteriaDto.getGrpId());
             rs.setExtMessage(e.getMessage());

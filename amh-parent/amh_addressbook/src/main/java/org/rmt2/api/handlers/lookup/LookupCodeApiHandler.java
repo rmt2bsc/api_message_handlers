@@ -125,6 +125,7 @@ public class LookupCodeApiHandler extends
             this.responseObj.setHeader(req.getHeader());
             
         } catch (Exception e) {
+            logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to retrieve Lookup Code Detail(s)");
             rs.setExtMessage(e.getMessage());
@@ -177,6 +178,7 @@ public class LookupCodeApiHandler extends
                 rs.setExtMessage("Total number of rows modified: " + rc);
             }
         } catch (LookupDataApiException | NotFoundException | InvalidDataException e) {
+            logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to update " + (newRec ? "new" : "existing")  + " Lookup Code");
             rs.setExtMessage(e.getMessage());
@@ -217,6 +219,7 @@ public class LookupCodeApiHandler extends
             rs.setMessage("Lookup Code was deleted successfully");
             rs.setExtMessage("Lookup Code Id deleted was " + criteriaDto.getCodeId());
         } catch (LookupDataApiException | InvalidDataException e) {
+            logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to delelte Lookup Code by code id, " + criteriaDto.getCodeId());
             rs.setExtMessage(e.getMessage());

@@ -115,6 +115,7 @@ public class IpInfoApiHandler extends AbstractJaxbMessageHandler<PostalRequest, 
             this.responseObj.setHeader(req.getHeader());
             
         } catch (Exception e) {
+            logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to retrieve IP data");
             rs.setExtMessage(e.getMessage());

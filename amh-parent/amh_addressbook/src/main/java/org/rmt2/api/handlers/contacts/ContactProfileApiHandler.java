@@ -139,6 +139,7 @@ public class ContactProfileApiHandler extends
             }
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
+            logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to retrieve contact(s)");
             rs.setExtMessage(e.getMessage());
@@ -193,6 +194,7 @@ public class ContactProfileApiHandler extends
                 rs.setExtMessage("Total number of rows modified: " + rc);
             }
         } catch (ContactsApiException | NotFoundException | InvalidDataException e) {
+            logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to update " + (newContact ? "new" : "existing")  + " contact");
             rs.setExtMessage(e.getMessage());
@@ -235,6 +237,7 @@ public class ContactProfileApiHandler extends
             rs.setMessage("Contact was deleted successfully");
             rs.setExtMessage("Contact Id deleted was " + criteriaDto.getContactId());
         } catch (ContactsApiException | InvalidDataException e) {
+            logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to delelte contact");
             rs.setExtMessage(e.getMessage());
