@@ -25,6 +25,7 @@ import org.rmt2.api.handlers.lookup.LookupCodeApiHandler;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.jaxb.LookupCodesResponse;
 
+import com.api.config.SystemConfigurator;
 import com.api.messaging.handler.MessageHandlerCommandException;
 import com.api.messaging.handler.MessageHandlerResults;
 import com.api.messaging.webservice.WebServiceConstants;
@@ -40,7 +41,7 @@ import com.api.util.RMT2File;
  *
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ AbstractDaoClientImpl.class, Rmt2OrmClientFactory.class})
+@PrepareForTest({ AbstractDaoClientImpl.class, Rmt2OrmClientFactory.class, SystemConfigurator.class})
 public class LookupCodeMessageHandlerTest extends BaseMessageHandlerTest {
 
     private static final int CODE_ID = 555;

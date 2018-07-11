@@ -32,6 +32,7 @@ import org.rmt2.api.handlers.contacts.ContactProfileApiHandler;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.jaxb.AddressBookResponse;
 
+import com.api.config.SystemConfigurator;
 import com.api.messaging.handler.MessageHandlerCommandException;
 import com.api.messaging.handler.MessageHandlerResults;
 import com.api.persistence.AbstractDaoClientImpl;
@@ -44,7 +45,9 @@ import com.api.util.RMT2File;
  *
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ AbstractDaoClientImpl.class, Rmt2OrmClientFactory.class , ContactProfileApiHandler.class, PostalApiFactory.class })
+@PrepareForTest({ AbstractDaoClientImpl.class, Rmt2OrmClientFactory.class,
+        ContactProfileApiHandler.class, PostalApiFactory.class,
+        SystemConfigurator.class })
 public class ContactProfileMessageHandlerTest extends BaseMessageHandlerTest {
 
     private ContactsApiFactory mockContactsApiFactory;
