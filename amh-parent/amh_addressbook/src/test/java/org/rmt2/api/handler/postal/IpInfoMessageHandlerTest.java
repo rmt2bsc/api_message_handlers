@@ -22,6 +22,7 @@ import org.rmt2.api.handler.AddressBookMockData;
 import org.rmt2.api.handler.BaseMessageHandlerTest;
 import org.rmt2.api.handlers.postal.IpInfoApiHandler;
 import org.rmt2.constants.ApiTransactionCodes;
+import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.PostalResponse;
 
 import com.api.config.SystemConfigurator;
@@ -182,4 +183,31 @@ public class IpInfoMessageHandlerTest extends BaseMessageHandlerTest {
         Assert.assertEquals("Failure to retrieve IP data", actualRepsonse.getReplyStatus().getMessage());
         Assert.assertEquals("A IP API error occurred", actualRepsonse.getReplyStatus().getExtMessage());
     }
+    
+    @Test
+    public void testValidation_Fetch_Bad_Request() {
+        this.setupMockApiCall();
+        String request = RMT2File.getFileContentsAsString("xml/InvalidRequest.xml");
+        
+        MessageHandlerResults results = null;
+        IpInfoApiHandler handler = new IpInfoApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.IP_INFO_GET, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        PostalResponse actualRepsonse = 
+                (PostalResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_BAD_REQUEST,
+                actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(WebServiceConstants.RETURN_STATUS_ERROR,
+                actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals("An invalid request message was encountered.  Please payload.",
+                actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertTrue(actualRepsonse.getReplyStatus().getExtMessage()
+                .contains("Error unmarshalling XML document"));
+    }
+ 
 }
