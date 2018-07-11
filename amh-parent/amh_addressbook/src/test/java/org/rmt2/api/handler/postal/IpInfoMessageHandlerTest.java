@@ -210,4 +210,149 @@ public class IpInfoMessageHandlerTest extends BaseMessageHandlerTest {
                 .contains("Error unmarshalling XML document"));
     }
  
+    @Test
+    public void testValidation_Fetch_Null_PostalCriteria() {
+        this.setupMockApiCall();
+        String request = RMT2File.getFileContentsAsString("xml/postal/PostalNullCriteriaRequest.xml");
+        
+        MessageHandlerResults results = null;
+        IpInfoApiHandler handler = new IpInfoApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.IP_INFO_GET, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        PostalResponse actualRepsonse = 
+                (PostalResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_BAD_REQUEST,
+                actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(WebServiceConstants.RETURN_STATUS_ERROR,
+                actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals("PostalRequest criteria and IP Address criteria elements are required",
+                actualRepsonse.getReplyStatus().getMessage());
+    }
+    
+    @Test
+    public void testValidation_Fetch_Missing_IPAddressCriteria_SingleXMLTag() {
+        this.setupMockApiCall();
+        String request = RMT2File.getFileContentsAsString("xml/postal/PostalEmptyCriteriaRequest.xml");
+        
+        MessageHandlerResults results = null;
+        IpInfoApiHandler handler = new IpInfoApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.IP_INFO_GET, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        PostalResponse actualRepsonse = 
+                (PostalResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_BAD_REQUEST,
+                actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(WebServiceConstants.RETURN_STATUS_ERROR,
+                actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals("PostalRequest criteria and IP Address criteria elements are required",
+                actualRepsonse.getReplyStatus().getMessage());
+    }
+    
+    @Test
+    public void testValidation_Fetch_Missing_IPAddressCriteria_OpenClosingXMLTags() {
+        this.setupMockApiCall();
+        String request = RMT2File.getFileContentsAsString("xml/postal/PostalEmptyCriteriaRequest2.xml");
+        
+        MessageHandlerResults results = null;
+        IpInfoApiHandler handler = new IpInfoApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.IP_INFO_GET, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        PostalResponse actualRepsonse = 
+                (PostalResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_BAD_REQUEST,
+                actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(WebServiceConstants.RETURN_STATUS_ERROR,
+                actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals("An invalid request message was encountered.  Please payload.",
+                actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertTrue(actualRepsonse.getReplyStatus().getExtMessage()
+                .contains("Error unmarshalling XML document"));
+    }
+    
+    @Test
+    public void testValidation_Fetch_IPAddressCriteria_NoValues_SingleXMLTag() {
+        this.setupMockApiCall();
+        String request = RMT2File.getFileContentsAsString("xml/postal/IpInfoCriteriaNotExistSearchRequest.xml");
+        
+        MessageHandlerResults results = null;
+        IpInfoApiHandler handler = new IpInfoApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.IP_INFO_GET, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        PostalResponse actualRepsonse = 
+                (PostalResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_BAD_REQUEST,
+                actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(WebServiceConstants.RETURN_STATUS_ERROR,
+                actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals("The PostalRequest IP Address criteria element must contain value",
+                actualRepsonse.getReplyStatus().getMessage());
+    }
+    
+    @Test
+    public void testValidation_Fetch_IPAddressCriteria_NoValues_OpenClosingXMLTags() {
+        this.setupMockApiCall();
+        String request = RMT2File.getFileContentsAsString("xml/postal/IpInfoCriteriaNotExistSearchRequest2.xml");
+        
+        MessageHandlerResults results = null;
+        IpInfoApiHandler handler = new IpInfoApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.IP_INFO_GET, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        PostalResponse actualRepsonse = 
+                (PostalResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_BAD_REQUEST,
+                actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(WebServiceConstants.RETURN_STATUS_ERROR,
+                actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals("The PostalRequest IP Address criteria element must contain value",
+                actualRepsonse.getReplyStatus().getMessage());
+    }
+    
+    @Test
+    public void testValidation_Fetch_IPAddressCriteria_All_Criteria_Values_Provided() {
+        this.setupMockApiCall();
+        String request = RMT2File.getFileContentsAsString("xml/postal/IpInfoTooManyCriteriaSearchRequest.xml");
+        
+        MessageHandlerResults results = null;
+        IpInfoApiHandler handler = new IpInfoApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.IP_INFO_GET, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        PostalResponse actualRepsonse = 
+                (PostalResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_BAD_REQUEST,
+                actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(WebServiceConstants.RETURN_STATUS_ERROR,
+                actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals("The standard IP String value and the numerical representation of the IP address must be mutually exclusive in PostalRequest IP Address criteria element",
+                actualRepsonse.getReplyStatus().getMessage());
+    }
 }
