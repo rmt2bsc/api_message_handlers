@@ -15,6 +15,7 @@ import org.dto.IpLocationDto;
 import org.dto.LookupCodeDto;
 import org.dto.LookupGroupDto;
 import org.dto.RegionDto;
+import org.dto.TimeZoneDto;
 import org.dto.ZipcodeDto;
 import org.dto.adapter.orm.Rmt2AddressBookDtoFactory;
 
@@ -517,5 +518,38 @@ public class AddressBookMockData {
         dto.setIpFrom(100000);
         dto.setIpTo(200000);
         return dto;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public static final List<TimeZoneDto> createMockTimezoneDto() {
+        List<TimeZoneDto> list = new ArrayList<>();
+        TimeZoneDto dto = Rmt2AddressBookDtoFactory.getNewTimezoneInstance();
+        dto.setTimeZoneId(1000);
+        dto.setTimeZoneDescr("Timezone1");
+        list.add(dto);
+        
+        dto = Rmt2AddressBookDtoFactory.getNewTimezoneInstance();
+        dto.setTimeZoneId(1001);
+        dto.setTimeZoneDescr("Timezone2");
+        list.add(dto);
+        
+        dto = Rmt2AddressBookDtoFactory.getNewTimezoneInstance();
+        dto.setTimeZoneId(1002);
+        dto.setTimeZoneDescr("Timezone3");
+        list.add(dto);
+        
+        dto = Rmt2AddressBookDtoFactory.getNewTimezoneInstance();
+        dto.setTimeZoneId(1003);
+        dto.setTimeZoneDescr("Timezone4");
+        list.add(dto);
+        
+        dto = Rmt2AddressBookDtoFactory.getNewTimezoneInstance();
+        dto.setTimeZoneId(1004);
+        dto.setTimeZoneDescr("Timezone5");
+        list.add(dto);
+        return list;
     }
 }
