@@ -73,13 +73,16 @@ public class TimezoneApiHandler extends AbstractJaxbMessageHandler<PostalRequest
                 r = this.fetch(this.requestObj);
                 break;
             default:
-                r = this.createErrorReply(-1, ERROR_MSG_TRANS_NOT_FOUND + command);
+                r = this.createErrorReply(MessagingConstants.RETURN_CODE_FAILURE,
+                        MessagingConstants.RETURN_STATUS_BAD_REQUEST,
+                        ERROR_MSG_TRANS_NOT_FOUND + command);
         }
         return r;
     }
 
     /**
-     * Handler for invoking the appropriate API in order to fetch IP information.
+     * Handler for invoking the appropriate API in order to fetch Timezone
+     * information.
      * 
      * @param req
      *            an instance of {@link PostalRequest}
@@ -91,6 +94,8 @@ public class TimezoneApiHandler extends AbstractJaxbMessageHandler<PostalRequest
         List<TimezoneType> queryResults = null;
 
         try {
+            // Set reply status
+            rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_SUCCESS);
             this.validateRequest(req);
             TimeZoneDto criteriaDto = this.extractSelectionCriteria(req.getPostalCriteria().getTimezone());
             
@@ -104,14 +109,13 @@ public class TimezoneApiHandler extends AbstractJaxbMessageHandler<PostalRequest
             else {
                 queryResults = this.buildJaxbListData(dtoList);
                 rs.setMessage("Timezone record(s) found");
-                rs.setReturnCode(1);
+                rs.setReturnCode(queryResults.size());
             }
             this.responseObj.setHeader(req.getHeader());
-            // Set reply status
-            rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_SUCCESS);
+            
         } catch (Exception e) {
+            logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_ERROR);
             rs.setMessage("Failure to retrieve Timezone data");
             rs.setExtMessage(e.getMessage());
         }
@@ -142,7 +146,7 @@ public class TimezoneApiHandler extends AbstractJaxbMessageHandler<PostalRequest
     private TimeZoneDto extractSelectionCriteria(TimezoneCriteriaType criteria) {
         TimeZoneDto criteriaDto = Rmt2AddressBookDtoFactory.getNewTimezoneInstance();
         if (criteria != null) {
-            criteriaDto.setTimeZoneId(criteria.getTimezoneId());
+            criteriaDto.setTimeZoneId(criteria.getTimezoneId() == null ? 0 : criteria.getTimezoneId());
             criteriaDto.setTimeZoneDescr(criteria.getTimezoneDesc());
         }
         return criteriaDto;
@@ -160,10 +164,10 @@ public class TimezoneApiHandler extends AbstractJaxbMessageHandler<PostalRequest
         
         try {
             Verifier.verifyNotNull(req.getPostalCriteria());
-            Verifier.verifyNotNull(req.getPostalCriteria().getIpAddr());
+            Verifier.verifyNotNull(req.getPostalCriteria().getTimezone());
         }
         catch (VerifyException e) {
-            throw new InvalidRequestException("PostalRequest IP criteria element is required", e);
+            throw new InvalidRequestException("PostalRequest Timezone criteria element is required", e);
         }
     }
     
