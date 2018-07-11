@@ -150,7 +150,7 @@ public class IpInfoApiHandler extends AbstractJaxbMessageHandler<PostalRequest, 
             Verifier.verifyNotNull(req);
         }
         catch (VerifyException e) {
-            throw new InvalidRequestException("PostalRequest message request element is invalid", e);
+            throw new InvalidRequestException("PostalRequest message cannot be empty", e);
         }
         
         try {
@@ -158,21 +158,21 @@ public class IpInfoApiHandler extends AbstractJaxbMessageHandler<PostalRequest, 
             Verifier.verifyNotNull(req.getPostalCriteria().getIpAddr());
         }
         catch (VerifyException e) {
-            throw new InvalidRequestException("PostalRequest IP criteria element is invalid", e);
+            throw new InvalidRequestException("PostalRequest criteria and IP Address criteria elements are required", e);
         }
         
         try {
             Verifier.verifyFalse(req.getPostalCriteria().getIpAddr().getIpNetwork() == null && req.getPostalCriteria().getIpAddr().getIpStandard() == null);
         }
         catch (VerifyException e) {
-            throw new InvalidRequestException("The PostalRequest IP criteria element must contain value", e);
+            throw new InvalidRequestException("The PostalRequest IP Address criteria element must contain value", e);
         }
         
         try {
             Verifier.verifyFalse(req.getPostalCriteria().getIpAddr().getIpNetwork() != null && req.getPostalCriteria().getIpAddr().getIpStandard() != null);
         }
         catch (VerifyException e) {
-            throw new InvalidRequestException("The standard IP String value and the numerical representation of the IP address must be mutually exclusive in PostalRequest IP criteria element", e);
+            throw new InvalidRequestException("The standard IP String value and the numerical representation of the IP address must be mutually exclusive in PostalRequest IP Address criteria element", e);
         }
     }
     

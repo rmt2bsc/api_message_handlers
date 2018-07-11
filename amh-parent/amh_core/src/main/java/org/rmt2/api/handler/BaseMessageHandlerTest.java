@@ -3,6 +3,7 @@ package org.rmt2.api.handler;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
+import org.apache.log4j.PropertyConfigurator;
 import org.junit.Before;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
@@ -23,29 +24,30 @@ import com.api.xml.jaxb.JaxbUtil;
  *
  */
 public class BaseMessageHandlerTest {
-
-    private static String APP_CONFIG_FILENAME;
+    private static String LOGGER_CONFIG_PATH;
     protected JaxbUtil jaxb;
     protected PersistenceClient mockPersistenceClient;
     
 
     @Before
     public void setUp() throws Exception {
+        // Setup Logging environment
         String curDir = RMT2File.getCurrentDirectory();
-        APP_CONFIG_FILENAME = curDir + "/src/test/resources/config/TestAddressBook-AppServerConfig.xml";
-        SystemConfigurator appConfig = new SystemConfigurator();
-        appConfig.start(APP_CONFIG_FILENAME);
-        
+        LOGGER_CONFIG_PATH = curDir + "/src/test/resources/config/log4j.properties";
+        PropertyConfigurator.configure(LOGGER_CONFIG_PATH);
+
         try {
             this.jaxb = SystemConfigurator.getJaxb(ConfigConstants.JAXB_CONTEXNAME_DEFAULT);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             this.jaxb = new JaxbUtil(MessagingConstants.JAXB_RMT2_PKG);
         }
-        
+
         PowerMockito.mockStatic(Rmt2OrmClientFactory.class);
+        PowerMockito.mockStatic(SystemConfigurator.class);
         this.mockPersistenceClient = Mockito.mock(PersistenceClient.class);
-        when(Rmt2OrmClientFactory.createOrmClientInstance(any(String.class))).thenReturn(this.mockPersistenceClient);
+        when(Rmt2OrmClientFactory.createOrmClientInstance(any(String.class)))
+                .thenReturn(this.mockPersistenceClient);
+        when(SystemConfigurator.getJaxb(any(String.class))).thenReturn(this.jaxb);
         return;
     }
    

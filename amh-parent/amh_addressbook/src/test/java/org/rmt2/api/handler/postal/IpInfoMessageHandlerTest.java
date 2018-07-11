@@ -24,6 +24,7 @@ import org.rmt2.api.handlers.postal.IpInfoApiHandler;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.jaxb.PostalResponse;
 
+import com.api.config.SystemConfigurator;
 import com.api.messaging.handler.MessageHandlerCommandException;
 import com.api.messaging.handler.MessageHandlerResults;
 import com.api.messaging.webservice.WebServiceConstants;
@@ -38,7 +39,8 @@ import com.api.util.RMT2File;
  *
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ AbstractDaoClientImpl.class, Rmt2OrmClientFactory.class, PostalApiFactory.class })
+@PrepareForTest({ AbstractDaoClientImpl.class, Rmt2OrmClientFactory.class,
+        PostalApiFactory.class, SystemConfigurator.class })
 public class IpInfoMessageHandlerTest extends BaseMessageHandlerTest {
 
     private PostalApi mockApi;
@@ -180,5 +182,4 @@ public class IpInfoMessageHandlerTest extends BaseMessageHandlerTest {
         Assert.assertEquals("Failure to retrieve IP data", actualRepsonse.getReplyStatus().getMessage());
         Assert.assertEquals("A IP API error occurred", actualRepsonse.getReplyStatus().getExtMessage());
     }
- 
 }
