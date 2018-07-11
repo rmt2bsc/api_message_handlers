@@ -97,7 +97,9 @@ public class ContactProfileApiHandler extends
                 r = this.fetchContact(this.requestObj);
                 break;
             default:
-                r = this.createErrorReply(-1, ERROR_MSG_TRANS_NOT_FOUND + command);
+                r = this.createErrorReply(MessagingConstants.RETURN_CODE_FAILURE,
+                        MessagingConstants.RETURN_STATUS_BAD_REQUEST,
+                        ERROR_MSG_TRANS_NOT_FOUND + command);
         }
         return r;
     }
