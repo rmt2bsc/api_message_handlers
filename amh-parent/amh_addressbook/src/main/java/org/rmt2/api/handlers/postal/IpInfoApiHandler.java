@@ -89,6 +89,8 @@ public class IpInfoApiHandler extends AbstractJaxbMessageHandler<PostalRequest, 
         IpDetails queryResults = null;
 
         try {
+            // Set reply status
+            rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_SUCCESS);
             this.validateRequest(req);
             IpLocationDto criteriaDto = this.extractSelectionCriteria(req.getPostalCriteria().getIpAddr());
             
@@ -109,11 +111,9 @@ public class IpInfoApiHandler extends AbstractJaxbMessageHandler<PostalRequest, 
                 rs.setReturnCode(1);
             }
             this.responseObj.setHeader(req.getHeader());
-            // Set reply status
-            rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_SUCCESS);
+            
         } catch (Exception e) {
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_ERROR);
             rs.setMessage("Failure to retrieve IP data");
             rs.setExtMessage(e.getMessage());
         }

@@ -23,6 +23,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.rmt2.api.handler.BaseAddressBookMessageHandlerTest;
 import org.rmt2.api.handlers.lookup.LookupCodeApiHandler;
 import org.rmt2.constants.ApiTransactionCodes;
+import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.LookupCodesResponse;
 
 import com.api.config.SystemConfigurator;
@@ -273,7 +274,7 @@ public class LookupCodeMessageHandlerTest extends BaseAddressBookMessageHandlerT
         Assert.assertTrue(actualRepsonse.getGroupCodes().isEmpty());
         Assert.assertTrue(actualRepsonse.getDetailCodes().isEmpty());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(WebServiceConstants.RETURN_STATUS_ERROR, actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(WebServiceConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Failure to retrieve Lookup Code Detail(s)", actualRepsonse.getReplyStatus().getMessage());
         Assert.assertEquals("Unable to fetch List of Codes using selection criteria contained in DTO",
                 actualRepsonse.getReplyStatus().getExtMessage());
@@ -337,7 +338,7 @@ public class LookupCodeMessageHandlerTest extends BaseAddressBookMessageHandlerT
         Assert.assertTrue(actualRepsonse.getGroupCodes().isEmpty());
         Assert.assertTrue(!actualRepsonse.getDetailCodes().isEmpty());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(WebServiceConstants.RETURN_STATUS_ERROR, actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(WebServiceConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Failure to update existing Lookup Code", actualRepsonse.getReplyStatus().getMessage());
         Assert.assertTrue(actualRepsonse.getReplyStatus().getExtMessage().contains(
                         "Lookup code targeted for update does not exist [code id="));
@@ -394,7 +395,7 @@ public class LookupCodeMessageHandlerTest extends BaseAddressBookMessageHandlerT
         Assert.assertTrue(actualRepsonse.getGroupCodes().isEmpty());
         Assert.assertTrue(actualRepsonse.getDetailCodes().isEmpty());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(WebServiceConstants.RETURN_STATUS_ERROR, actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Unable to identify transaction code: INCORRECT_TRANS_CODE", actualRepsonse.getReplyStatus().getMessage());
     }
     
@@ -451,7 +452,7 @@ public class LookupCodeMessageHandlerTest extends BaseAddressBookMessageHandlerT
         Assert.assertTrue(actualRepsonse.getDetailCodes().isEmpty());
         Assert.assertTrue(actualRepsonse.getGroupCodes().isEmpty());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(WebServiceConstants.RETURN_STATUS_ERROR, actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(WebServiceConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Failure to delelte Lookup Code by code id, 0", actualRepsonse.getReplyStatus().getMessage());
     }
     

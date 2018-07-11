@@ -103,6 +103,8 @@ public class LookupCodeApiHandler extends
         List<CodeDetailType> cdtList = null;
 
         try {
+            // Set reply status
+            rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_SUCCESS);            
             this.validateRequest(req);
             LookupCodeDto criteriaDto = this.extractSelectionCriteria(req.getCriteria());
             
@@ -119,11 +121,9 @@ public class LookupCodeApiHandler extends
                 rs.setReturnCode(dtoList.size());
             }
             this.responseObj.setHeader(req.getHeader());
-            // Set reply status
-            rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_SUCCESS);
+            
         } catch (Exception e) {
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_ERROR);
             rs.setMessage("Failure to retrieve Lookup Code Detail(s)");
             rs.setExtMessage(e.getMessage());
         }
@@ -150,6 +150,7 @@ public class LookupCodeApiHandler extends
         LookupDataApi api = f.createApi(AddressBookConstants.APP_NAME);
         int rc = 0;
         try {
+            rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             this.validateRequest(req); 
             LookupCodeDto dataObjDto = this.extractJaxbObject(req.getDetailCodes());
             newRec = (dataObjDto.getCodeId() == 0);
@@ -164,7 +165,7 @@ public class LookupCodeApiHandler extends
             
             // Return code is either the total number of rows updated or the new code id
             rs.setReturnCode(rc);
-            rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            
             if (newRec) {
                 rs.setMessage("Lookup Code was created successfully");
                 rs.setExtMessage("The new code id is " + rc);
@@ -175,7 +176,6 @@ public class LookupCodeApiHandler extends
             }
         } catch (LookupDataApiException | NotFoundException | InvalidDataException e) {
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_ERROR);
             rs.setMessage("Failure to update " + (newRec ? "new" : "existing")  + " Lookup Code");
             rs.setExtMessage(e.getMessage());
             cdtList = req.getDetailCodes();
@@ -203,6 +203,7 @@ public class LookupCodeApiHandler extends
         int rc = 0;
         LookupCodeDto criteriaDto = null;
         try {
+            rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             this.validateRequest(req); 
             criteriaDto = this.extractSelectionCriteria(req.getCriteria());
             
@@ -211,12 +212,10 @@ public class LookupCodeApiHandler extends
             
             // Return code is either the total number of rows deleted
             rs.setReturnCode(rc);
-            rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             rs.setMessage("Lookup Code was deleted successfully");
             rs.setExtMessage("Lookup Code Id deleted was " + criteriaDto.getCodeId());
         } catch (LookupDataApiException | InvalidDataException e) {
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_ERROR);
             rs.setMessage("Failure to delelte Lookup Code by code id, " + criteriaDto.getCodeId());
             rs.setExtMessage(e.getMessage());
         }

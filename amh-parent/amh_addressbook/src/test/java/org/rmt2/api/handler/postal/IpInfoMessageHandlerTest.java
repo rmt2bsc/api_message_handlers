@@ -178,7 +178,7 @@ public class IpInfoMessageHandlerTest extends BaseAddressBookMessageHandlerTest 
         PostalResponse actualRepsonse = 
                 (PostalResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(WebServiceConstants.RETURN_STATUS_ERROR,
+        Assert.assertEquals(WebServiceConstants.RETURN_STATUS_SUCCESS,
                 actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Failure to retrieve IP data", actualRepsonse.getReplyStatus().getMessage());
         Assert.assertEquals("A IP API error occurred", actualRepsonse.getReplyStatus().getExtMessage());
@@ -200,9 +200,9 @@ public class IpInfoMessageHandlerTest extends BaseAddressBookMessageHandlerTest 
         Assert.assertNotNull(results);
         PostalResponse actualRepsonse = 
                 (PostalResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-        Assert.assertEquals(MessagingConstants.RETURN_CODE_BAD_REQUEST,
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_FAILURE,
                 actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(WebServiceConstants.RETURN_STATUS_ERROR,
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST,
                 actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("An invalid request message was encountered.  Please payload.",
                 actualRepsonse.getReplyStatus().getMessage());
@@ -226,9 +226,9 @@ public class IpInfoMessageHandlerTest extends BaseAddressBookMessageHandlerTest 
         Assert.assertNotNull(results);
         PostalResponse actualRepsonse = 
                 (PostalResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-        Assert.assertEquals(MessagingConstants.RETURN_CODE_BAD_REQUEST,
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_FAILURE,
                 actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(WebServiceConstants.RETURN_STATUS_ERROR,
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST,
                 actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("PostalRequest criteria and IP Address criteria elements are required",
                 actualRepsonse.getReplyStatus().getMessage());
@@ -250,9 +250,9 @@ public class IpInfoMessageHandlerTest extends BaseAddressBookMessageHandlerTest 
         Assert.assertNotNull(results);
         PostalResponse actualRepsonse = 
                 (PostalResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-        Assert.assertEquals(MessagingConstants.RETURN_CODE_BAD_REQUEST,
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_FAILURE,
                 actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(WebServiceConstants.RETURN_STATUS_ERROR,
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST,
                 actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("PostalRequest criteria and IP Address criteria elements are required",
                 actualRepsonse.getReplyStatus().getMessage());
@@ -274,9 +274,9 @@ public class IpInfoMessageHandlerTest extends BaseAddressBookMessageHandlerTest 
         Assert.assertNotNull(results);
         PostalResponse actualRepsonse = 
                 (PostalResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-        Assert.assertEquals(MessagingConstants.RETURN_CODE_BAD_REQUEST,
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_FAILURE,
                 actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(WebServiceConstants.RETURN_STATUS_ERROR,
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST,
                 actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("An invalid request message was encountered.  Please payload.",
                 actualRepsonse.getReplyStatus().getMessage());
@@ -300,9 +300,9 @@ public class IpInfoMessageHandlerTest extends BaseAddressBookMessageHandlerTest 
         Assert.assertNotNull(results);
         PostalResponse actualRepsonse = 
                 (PostalResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-        Assert.assertEquals(MessagingConstants.RETURN_CODE_BAD_REQUEST,
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_FAILURE,
                 actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(WebServiceConstants.RETURN_STATUS_ERROR,
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST,
                 actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("The PostalRequest IP Address criteria element must contain value",
                 actualRepsonse.getReplyStatus().getMessage());
@@ -324,9 +324,9 @@ public class IpInfoMessageHandlerTest extends BaseAddressBookMessageHandlerTest 
         Assert.assertNotNull(results);
         PostalResponse actualRepsonse = 
                 (PostalResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-        Assert.assertEquals(MessagingConstants.RETURN_CODE_BAD_REQUEST,
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_FAILURE,
                 actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(WebServiceConstants.RETURN_STATUS_ERROR,
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST,
                 actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("The PostalRequest IP Address criteria element must contain value",
                 actualRepsonse.getReplyStatus().getMessage());
@@ -348,9 +348,9 @@ public class IpInfoMessageHandlerTest extends BaseAddressBookMessageHandlerTest 
         Assert.assertNotNull(results);
         PostalResponse actualRepsonse = 
                 (PostalResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-        Assert.assertEquals(MessagingConstants.RETURN_CODE_BAD_REQUEST,
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_FAILURE,
                 actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(WebServiceConstants.RETURN_STATUS_ERROR,
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST,
                 actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("The standard IP String value and the numerical representation of the IP address must be mutually exclusive in PostalRequest IP Address criteria element",
                 actualRepsonse.getReplyStatus().getMessage());

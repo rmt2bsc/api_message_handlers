@@ -180,7 +180,7 @@ public class RegionMessageHandlerTest extends BaseAddressBookMessageHandlerTest 
         PostalResponse actualRepsonse = 
                 (PostalResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(WebServiceConstants.RETURN_STATUS_ERROR,
+        Assert.assertEquals(WebServiceConstants.RETURN_STATUS_SUCCESS,
                 actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Failure to retrieve Region/State/Province data", actualRepsonse.getReplyStatus().getMessage());
         Assert.assertEquals("A region API error occurred", actualRepsonse.getReplyStatus().getExtMessage());

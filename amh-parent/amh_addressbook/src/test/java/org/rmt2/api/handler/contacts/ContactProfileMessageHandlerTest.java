@@ -30,6 +30,7 @@ import org.rmt2.api.handler.AddressBookMockData;
 import org.rmt2.api.handler.BaseAddressBookMessageHandlerTest;
 import org.rmt2.api.handlers.contacts.ContactProfileApiHandler;
 import org.rmt2.constants.ApiTransactionCodes;
+import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.AddressBookResponse;
 
 import com.api.config.SystemConfigurator;
@@ -197,7 +198,7 @@ public class ContactProfileMessageHandlerTest extends BaseAddressBookMessageHand
                 (AddressBookResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertEquals(1, actualRepsonse.getProfile().getBusinessContacts().size());
         Assert.assertEquals(1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals("SUCCESS", actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Contact record(s) found",
                 actualRepsonse.getReplyStatus().getMessage());
         Assert.assertEquals("firstname_1",
@@ -281,7 +282,7 @@ public class ContactProfileMessageHandlerTest extends BaseAddressBookMessageHand
                 (AddressBookResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertEquals(3, actualRepsonse.getProfile().getBusinessContacts().size());
         Assert.assertEquals(3, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals("SUCCESS", actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Contact record(s) found",
                 actualRepsonse.getReplyStatus().getMessage());
         
@@ -354,7 +355,7 @@ public class ContactProfileMessageHandlerTest extends BaseAddressBookMessageHand
                 (AddressBookResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertNull(actualRepsonse.getProfile());
         Assert.assertEquals(0, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals("SUCCESS", actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Contact data not found!", actualRepsonse.getReplyStatus().getMessage());
     }
     
@@ -384,7 +385,7 @@ public class ContactProfileMessageHandlerTest extends BaseAddressBookMessageHand
         AddressBookResponse actualRepsonse = 
                 (AddressBookResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertNull(actualRepsonse.getProfile());
-        Assert.assertEquals("ERROR", actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals("Failure to retrieve contact(s)", actualRepsonse.getReplyStatus().getMessage());
         Assert.assertEquals(
@@ -418,7 +419,7 @@ public class ContactProfileMessageHandlerTest extends BaseAddressBookMessageHand
                 (AddressBookResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertEquals(1, actualRepsonse.getProfile().getBusinessContacts().size());
         Assert.assertEquals(1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals("SUCCESS", actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Contact was modified successfully",
                 actualRepsonse.getReplyStatus().getMessage());
         Assert.assertEquals("Total number of rows modified: " + actualRepsonse.getReplyStatus().getReturnCode().intValue(),
@@ -454,7 +455,7 @@ public class ContactProfileMessageHandlerTest extends BaseAddressBookMessageHand
                 (AddressBookResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertEquals(1, actualRepsonse.getProfile().getBusinessContacts().size());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals("ERROR", actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Failure to update existing contact",
                 actualRepsonse.getReplyStatus().getMessage());
         Assert.assertTrue(actualRepsonse.getReplyStatus().getExtMessage()
@@ -481,7 +482,7 @@ public class ContactProfileMessageHandlerTest extends BaseAddressBookMessageHand
                 (AddressBookResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertEquals(1, actualRepsonse.getProfile().getBusinessContacts().size());
         Assert.assertEquals(1351, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals("SUCCESS", actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Contact was created successfully",
                 actualRepsonse.getReplyStatus().getMessage());
         Assert.assertEquals("The new contact id is " + actualRepsonse.getReplyStatus().getReturnCode().intValue(),
@@ -516,7 +517,7 @@ public class ContactProfileMessageHandlerTest extends BaseAddressBookMessageHand
         AddressBookResponse actualRepsonse = (AddressBookResponse) jaxb.unMarshalMessage(results.getPayload()
                 .toString());
         Assert.assertNull(actualRepsonse.getProfile());
-        Assert.assertEquals("ERROR", actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(ContactProfileApiHandler.ERROR_MSG_TRANS_NOT_FOUND + "GET_INCORRECT_TRANS", actualRepsonse
                 .getReplyStatus().getMessage());
@@ -549,7 +550,7 @@ public class ContactProfileMessageHandlerTest extends BaseAddressBookMessageHand
                 (AddressBookResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertNull(actualRepsonse.getProfile());
         Assert.assertEquals(1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals("SUCCESS", actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Contact was deleted successfully", actualRepsonse.getReplyStatus().getMessage());
     }
     
@@ -574,11 +575,10 @@ public class ContactProfileMessageHandlerTest extends BaseAddressBookMessageHand
                 (AddressBookResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertNull(actualRepsonse.getProfile());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals("ERROR", actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Failure to delelte contact", actualRepsonse.getReplyStatus().getMessage());
         Assert.assertEquals("A valid Contact Id is required when deleting a contact from the database",
                 actualRepsonse.getReplyStatus().getExtMessage());
-        
     }
     
 }

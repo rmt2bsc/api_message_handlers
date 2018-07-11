@@ -96,6 +96,8 @@ public class ZipCodeApiHandler extends AbstractJaxbMessageHandler<PostalRequest,
         List queryResults = null;
 
         try {
+            // Set reply status
+            rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_SUCCESS);
             this.validateCriteria(req);
             this.queryResultFormat = req.getPostalCriteria().getZipcode().getResultFormat();
             ZipcodeDto criteriaDto = this.extractSelectionCriteria(req.getPostalCriteria().getZipcode());
@@ -112,11 +114,9 @@ public class ZipCodeApiHandler extends AbstractJaxbMessageHandler<PostalRequest,
                 rs.setReturnCode(dtoList.size());
             }
             this.responseObj.setHeader(req.getHeader());
-            // Set reply status
-            rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_SUCCESS);
+            
         } catch (Exception e) {
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_ERROR);
             rs.setMessage("Failure to retrieve Zipcode data");
             rs.setExtMessage(e.getMessage());
         }

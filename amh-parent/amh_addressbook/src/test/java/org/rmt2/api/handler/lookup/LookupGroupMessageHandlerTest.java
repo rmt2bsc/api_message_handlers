@@ -23,6 +23,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.rmt2.api.handler.BaseAddressBookMessageHandlerTest;
 import org.rmt2.api.handlers.lookup.LookupGroupApiHandler;
 import org.rmt2.constants.ApiTransactionCodes;
+import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.LookupCodesResponse;
 
 import com.api.config.SystemConfigurator;
@@ -186,7 +187,7 @@ public class LookupGroupMessageHandlerTest extends BaseAddressBookMessageHandler
         Assert.assertTrue(actualRepsonse.getDetailCodes().isEmpty());
         Assert.assertEquals(4, actualRepsonse.getGroupCodes().size());
         Assert.assertEquals(4, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals("SUCCESS", actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Group Lookup record(s) found", actualRepsonse.getReplyStatus().getMessage());
         for (int ndx = 0; ndx < actualRepsonse.getGroupCodes().size(); ndx++) {
             Assert.assertEquals(100 + (ndx),
@@ -224,7 +225,7 @@ public class LookupGroupMessageHandlerTest extends BaseAddressBookMessageHandler
         Assert.assertTrue(actualRepsonse.getGroupCodes().isEmpty());
         Assert.assertTrue(actualRepsonse.getDetailCodes().isEmpty());
         Assert.assertEquals(0, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals("SUCCESS", actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Group Lookup data not found!", actualRepsonse.getReplyStatus().getMessage());
     }
     
@@ -257,7 +258,7 @@ public class LookupGroupMessageHandlerTest extends BaseAddressBookMessageHandler
         Assert.assertTrue(actualRepsonse.getGroupCodes().isEmpty());
         Assert.assertTrue(actualRepsonse.getDetailCodes().isEmpty());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals("ERROR", actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Failure to retrieve Lookup Group(s)", actualRepsonse.getReplyStatus().getMessage());
         Assert.assertEquals("Unable to fetch List of Code Groups using selection criteria contained in DTO",
                 actualRepsonse.getReplyStatus().getExtMessage());
@@ -286,7 +287,7 @@ public class LookupGroupMessageHandlerTest extends BaseAddressBookMessageHandler
         Assert.assertTrue(!actualRepsonse.getGroupCodes().isEmpty());
         Assert.assertTrue(actualRepsonse.getDetailCodes().isEmpty());
         Assert.assertEquals(1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals("SUCCESS", actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Lookup Group was modified successfully", actualRepsonse.getReplyStatus().getMessage());
         Assert.assertEquals("Total number of rows modified: " + actualRepsonse.getReplyStatus().getReturnCode().intValue(),
                 actualRepsonse.getReplyStatus().getExtMessage());
@@ -321,7 +322,7 @@ public class LookupGroupMessageHandlerTest extends BaseAddressBookMessageHandler
         Assert.assertTrue(!actualRepsonse.getGroupCodes().isEmpty());
         Assert.assertTrue(actualRepsonse.getDetailCodes().isEmpty());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(WebServiceConstants.RETURN_STATUS_ERROR, actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Failure to update existing Lookup Group", actualRepsonse.getReplyStatus().getMessage());
         Assert.assertTrue(actualRepsonse.getReplyStatus().getExtMessage().contains(
                         "Lookup group targeted for update does not exist [group id="));
@@ -378,7 +379,7 @@ public class LookupGroupMessageHandlerTest extends BaseAddressBookMessageHandler
         Assert.assertTrue(actualRepsonse.getGroupCodes().isEmpty());
         Assert.assertTrue(actualRepsonse.getDetailCodes().isEmpty());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(WebServiceConstants.RETURN_STATUS_ERROR, actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Unable to identify transaction code: INCORRECT_TRANS_CODE", actualRepsonse.getReplyStatus().getMessage());
     }
     
@@ -435,7 +436,7 @@ public class LookupGroupMessageHandlerTest extends BaseAddressBookMessageHandler
         Assert.assertTrue(actualRepsonse.getDetailCodes().isEmpty());
         Assert.assertTrue(actualRepsonse.getGroupCodes().isEmpty());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(WebServiceConstants.RETURN_STATUS_ERROR, actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Failure to delelte Lookup Group by group id, 0", actualRepsonse.getReplyStatus().getMessage());
     }
     

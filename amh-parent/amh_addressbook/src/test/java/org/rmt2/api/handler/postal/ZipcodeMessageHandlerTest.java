@@ -24,6 +24,7 @@ import org.rmt2.api.handler.AddressBookMockData;
 import org.rmt2.api.handler.BaseAddressBookMessageHandlerTest;
 import org.rmt2.api.handlers.postal.ZipCodeApiHandler;
 import org.rmt2.constants.ApiTransactionCodes;
+import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.PostalResponse;
 
 import com.api.config.SystemConfigurator;
@@ -114,7 +115,7 @@ public class ZipcodeMessageHandlerTest extends BaseAddressBookMessageHandlerTest
         Assert.assertEquals(5, actualRepsonse.getZipFull().size());
         Assert.assertEquals(actualRepsonse.getReplyStatus().getReturnCode().intValue(),
                 actualRepsonse.getZipFull().size());
-        Assert.assertEquals(WebServiceConstants.RETURN_STATUS_SUCCESS,
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS,
                 actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Zipcode record(s) found", actualRepsonse.getReplyStatus().getMessage());
         
@@ -276,7 +277,7 @@ public class ZipcodeMessageHandlerTest extends BaseAddressBookMessageHandlerTest
         PostalResponse actualRepsonse = 
                 (PostalResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(WebServiceConstants.RETURN_STATUS_ERROR,
+        Assert.assertEquals(WebServiceConstants.RETURN_STATUS_SUCCESS,
                 actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Failure to retrieve Zipcode data", actualRepsonse.getReplyStatus().getMessage());
         Assert.assertEquals("Postal API error occurred", actualRepsonse.getReplyStatus().getExtMessage());
@@ -308,7 +309,7 @@ public class ZipcodeMessageHandlerTest extends BaseAddressBookMessageHandlerTest
         PostalResponse actualRepsonse = 
                 (PostalResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(WebServiceConstants.RETURN_STATUS_ERROR,
+        Assert.assertEquals(WebServiceConstants.RETURN_STATUS_SUCCESS,
                 actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Failure to retrieve Zipcode data", actualRepsonse.getReplyStatus().getMessage());
         Assert.assertEquals("The Result Format indicator is required and must be valid", actualRepsonse.getReplyStatus().getExtMessage());
@@ -340,7 +341,7 @@ public class ZipcodeMessageHandlerTest extends BaseAddressBookMessageHandlerTest
         PostalResponse actualRepsonse = 
                 (PostalResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(WebServiceConstants.RETURN_STATUS_ERROR,
+        Assert.assertEquals(WebServiceConstants.RETURN_STATUS_SUCCESS,
                 actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Failure to retrieve Zipcode data", actualRepsonse.getReplyStatus().getMessage());
         Assert.assertEquals("The Result Format indicator is required and must be valid", actualRepsonse.getReplyStatus().getExtMessage());

@@ -95,6 +95,8 @@ public class RegionApiHandler extends AbstractJaxbMessageHandler<PostalRequest, 
         List<StateType> queryResults = null;
 
         try {
+            // Set reply status
+            rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_SUCCESS);
             this.validateCriteria(req);
             CountryRegionDto criteriaDto = this.extractSelectionCriteria(req.getPostalCriteria().getProvince());
             
@@ -110,11 +112,9 @@ public class RegionApiHandler extends AbstractJaxbMessageHandler<PostalRequest, 
                 rs.setReturnCode(dtoList.size());
             }
             this.responseObj.setHeader(req.getHeader());
-            // Set reply status
-            rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_SUCCESS);
+            
         } catch (Exception e) {
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_ERROR);
             rs.setMessage("Failure to retrieve Region/State/Province data");
             rs.setExtMessage(e.getMessage());
         }

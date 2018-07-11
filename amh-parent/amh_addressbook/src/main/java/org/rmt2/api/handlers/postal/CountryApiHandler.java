@@ -27,7 +27,6 @@ import com.api.messaging.handler.AbstractJaxbMessageHandler;
 import com.api.messaging.handler.MessageHandlerCommandException;
 import com.api.messaging.handler.MessageHandlerCommonReplyStatus;
 import com.api.messaging.handler.MessageHandlerResults;
-import com.api.messaging.webservice.WebServiceConstants;
 import com.api.util.assistants.Verifier;
 import com.api.util.assistants.VerifyException;
 
@@ -91,6 +90,9 @@ public class CountryApiHandler extends AbstractJaxbMessageHandler<PostalRequest,
         List<CountryType> queryResults = null;
 
         try {
+            // Set reply status
+            rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            
             this.validateCriteria(req);
             CountryDto criteriaDto = this.extractSelectionCriteria(req.getPostalCriteria().getCountry());
             
@@ -106,14 +108,11 @@ public class CountryApiHandler extends AbstractJaxbMessageHandler<PostalRequest,
                 rs.setReturnCode(dtoList.size());
             }
             this.responseObj.setHeader(req.getHeader());
-            // Set reply status
-            rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_SUCCESS);
         } catch (Exception e) {
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_ERROR);
             rs.setMessage("Failure to retrieve Country data");
             rs.setExtMessage(e.getMessage());
-        }
+        }        
         results.setReturnCode(rs.getReturnCode());
         String xml = this.buildResponse(queryResults, rs);
         results.setPayload(xml);

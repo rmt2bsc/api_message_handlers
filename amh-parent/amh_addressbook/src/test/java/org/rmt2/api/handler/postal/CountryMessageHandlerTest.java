@@ -24,6 +24,7 @@ import org.rmt2.api.handler.AddressBookMockData;
 import org.rmt2.api.handler.BaseAddressBookMessageHandlerTest;
 import org.rmt2.api.handlers.postal.CountryApiHandler;
 import org.rmt2.constants.ApiTransactionCodes;
+import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.PostalResponse;
 
 import com.api.config.SystemConfigurator;
@@ -180,7 +181,7 @@ public class CountryMessageHandlerTest extends BaseAddressBookMessageHandlerTest
         PostalResponse actualRepsonse = 
                 (PostalResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(WebServiceConstants.RETURN_STATUS_ERROR,
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS,
                 actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Failure to retrieve Country data", actualRepsonse.getReplyStatus().getMessage());
         Assert.assertEquals("A country API error occurred", actualRepsonse.getReplyStatus().getExtMessage());

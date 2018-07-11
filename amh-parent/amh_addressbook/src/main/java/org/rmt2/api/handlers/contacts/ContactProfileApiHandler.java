@@ -41,7 +41,6 @@ import com.api.messaging.handler.AbstractJaxbMessageHandler;
 import com.api.messaging.handler.MessageHandlerCommandException;
 import com.api.messaging.handler.MessageHandlerCommonReplyStatus;
 import com.api.messaging.handler.MessageHandlerResults;
-import com.api.messaging.webservice.WebServiceConstants;
 import com.api.util.assistants.Verifier;
 import com.api.util.assistants.VerifyException;
 
@@ -119,6 +118,8 @@ public class ContactProfileApiHandler extends
         ContactDetailGroup cdg = null;
 
         try {
+            // Set reply status
+            rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             this.validateRequest(req);
             ContactDto criteriaDto = this.extractSelectionCriteria(req.getCriteria());
             
@@ -135,11 +136,8 @@ public class ContactProfileApiHandler extends
                 rs.setReturnCode(dtoList.size());
             }
             this.responseObj.setHeader(req.getHeader());
-            // Set reply status
-            rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_SUCCESS);
         } catch (Exception e) {
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_ERROR);
             rs.setMessage("Failure to retrieve contact(s)");
             rs.setExtMessage(e.getMessage());
         }
@@ -169,6 +167,7 @@ public class ContactProfileApiHandler extends
         ContactsApi api = cf.createApi();
         int rc = 0;
         try {
+            rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             this.validateRequest(req); 
             ContactDto contactDto = this.extractContactObject(req.getProfile());
             newContact = (contactDto.getContactId() == 0);
@@ -183,7 +182,6 @@ public class ContactProfileApiHandler extends
             
             // Return code is either the total number of rows updated or the business id of the contact created
             rs.setReturnCode(rc);
-            rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_SUCCESS);
             if (newContact) {
                 rs.setMessage("Contact was created successfully");
                 rs.setExtMessage("The new contact id is " + rc);
@@ -194,7 +192,6 @@ public class ContactProfileApiHandler extends
             }
         } catch (ContactsApiException | NotFoundException | InvalidDataException e) {
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_ERROR);
             rs.setMessage("Failure to update " + (newContact ? "new" : "existing")  + " contact");
             rs.setExtMessage(e.getMessage());
             cdg = req.getProfile();
@@ -224,6 +221,7 @@ public class ContactProfileApiHandler extends
         ContactsApi api = cf.createApi();
         int rc = 0;
         try {
+            rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             this.validateRequest(req); 
             ContactDto criteriaDto = this.extractSelectionCriteria(req.getCriteria());
             
@@ -232,12 +230,10 @@ public class ContactProfileApiHandler extends
             
             // Return code is either the total number of rows deleted
             rs.setReturnCode(rc);
-            rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_SUCCESS);
             rs.setMessage("Contact was deleted successfully");
             rs.setExtMessage("Contact Id deleted was " + criteriaDto.getContactId());
         } catch (ContactsApiException | InvalidDataException e) {
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_ERROR);
             rs.setMessage("Failure to delelte contact");
             rs.setExtMessage(e.getMessage());
         }

@@ -31,7 +31,6 @@ import com.api.messaging.handler.AbstractJaxbMessageHandler;
 import com.api.messaging.handler.MessageHandlerCommandException;
 import com.api.messaging.handler.MessageHandlerCommonReplyStatus;
 import com.api.messaging.handler.MessageHandlerResults;
-import com.api.messaging.webservice.WebServiceConstants;
 import com.api.util.assistants.Verifier;
 import com.api.util.assistants.VerifyException;
 
@@ -105,6 +104,8 @@ public class LookupGroupApiHandler extends
         List<CodeGroupType> cdgList = null;
 
         try {
+            // Set reply status
+            rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             this.validateRequest(req);
             LookupGroupDto criteriaDto = this.extractSelectionCriteria(req.getCriteria());
             
@@ -121,11 +122,8 @@ public class LookupGroupApiHandler extends
                 rs.setReturnCode(dtoList.size());
             }
             this.responseObj.setHeader(req.getHeader());
-            // Set reply status
-            rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_SUCCESS);
         } catch (Exception e) {
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_ERROR);
             rs.setMessage("Failure to retrieve Lookup Group(s)");
             rs.setExtMessage(e.getMessage());
         }
@@ -152,6 +150,7 @@ public class LookupGroupApiHandler extends
         LookupDataApi api = f.createApi(AddressBookConstants.APP_NAME);
         int rc = 0;
         try {
+            rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             this.validateRequest(req); 
             LookupGroupDto dataObjDto = this.extractJaxbObject(req.getGroupCodes());
             newRec = (dataObjDto.getGrpId() == 0);
@@ -166,7 +165,6 @@ public class LookupGroupApiHandler extends
             
             // Return code is either the total number of rows updated or the new group id
             rs.setReturnCode(rc);
-            rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_SUCCESS);
             if (newRec) {
                 rs.setMessage("Lookup Group was created successfully");
                 rs.setExtMessage("The new group id is " + rc);
@@ -177,7 +175,6 @@ public class LookupGroupApiHandler extends
             }
         } catch (LookupDataApiException | NotFoundException | InvalidDataException e) {
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_ERROR);
             rs.setMessage("Failure to update " + (newRec ? "new" : "existing")  + " Lookup Group");
             rs.setExtMessage(e.getMessage());
             cdgList = req.getGroupCodes();
@@ -205,6 +202,7 @@ public class LookupGroupApiHandler extends
         int rc = 0;
         LookupGroupDto criteriaDto = null;
         try {
+            rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             this.validateRequest(req); 
             criteriaDto = this.extractSelectionCriteria(req.getCriteria());
             
@@ -213,12 +211,10 @@ public class LookupGroupApiHandler extends
             
             // Return code is either the total number of rows deleted
             rs.setReturnCode(rc);
-            rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_SUCCESS);
             rs.setMessage("Lookup Group was deleted successfully");
             rs.setExtMessage("Lookup Group Id deleted was " + criteriaDto.getGrpId());
         } catch (LookupDataApiException | InvalidDataException e) {
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_ERROR);
             rs.setMessage("Failure to delelte Lookup Group by group id, " + criteriaDto.getGrpId());
             rs.setExtMessage(e.getMessage());
         }
