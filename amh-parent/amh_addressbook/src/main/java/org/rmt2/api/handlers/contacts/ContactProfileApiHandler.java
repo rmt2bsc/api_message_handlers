@@ -16,7 +16,7 @@ import org.dto.converter.jaxb.ContactsJaxbFactory;
 import org.modules.contacts.ContactsApi;
 import org.modules.contacts.ContactsApiException;
 import org.modules.contacts.ContactsApiFactory;
-import org.rmt2.api.handlers.util.MessageHandlerUtility;
+import org.rmt2.api.handler.util.MessageHandlerUtility;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.AddressBookRequest;

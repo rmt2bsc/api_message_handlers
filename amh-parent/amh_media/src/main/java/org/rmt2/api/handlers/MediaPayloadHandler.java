@@ -1,7 +1,7 @@
 package org.rmt2.api.handlers;
 
 import org.apache.log4j.Logger;
-import org.rmt2.api.handlers.util.MessageHandlerUtility;
+import org.rmt2.api.handler.util.MessageHandlerUtility;
 import org.rmt2.jaxb.MimeContentType;
 import org.rmt2.jaxb.MultimediaRequest;
 import org.rmt2.jaxb.MultimediaResponse;

@@ -12,7 +12,7 @@ import org.modules.AddressBookConstants;
 import org.modules.lookup.LookupDataApi;
 import org.modules.lookup.LookupDataApiException;
 import org.modules.lookup.LookupDataApiFactory;
-import org.rmt2.api.handlers.util.MessageHandlerUtility;
+import org.rmt2.api.handler.util.MessageHandlerUtility;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.CodeDetailType;

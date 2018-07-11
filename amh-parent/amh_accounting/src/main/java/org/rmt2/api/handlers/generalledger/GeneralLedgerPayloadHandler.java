@@ -1,7 +1,7 @@
 package org.rmt2.api.handlers.generalledger;
 
 import org.apache.log4j.Logger;
-import org.rmt2.api.handlers.util.MessageHandlerUtility;
+import org.rmt2.api.handler.util.MessageHandlerUtility;
 import org.rmt2.jaxb.AccountingGeneralLedgerRequest;
 import org.rmt2.jaxb.AccountingGeneralLedgerResponse;
 import org.rmt2.jaxb.GlDetailGroup;

@@ -1,5 +1,5 @@
 
-package org.rmt2.api.handlers.util;
+package org.rmt2.api.handler.util;
 
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.ReplyStatusType;

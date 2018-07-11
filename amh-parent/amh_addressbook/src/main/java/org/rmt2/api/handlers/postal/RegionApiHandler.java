@@ -11,7 +11,7 @@ import org.dto.converter.jaxb.ContactsJaxbFactory;
 import org.modules.AddressBookConstants;
 import org.modules.postal.PostalApi;
 import org.modules.postal.PostalApiFactory;
-import org.rmt2.api.handlers.util.MessageHandlerUtility;
+import org.rmt2.api.handler.util.MessageHandlerUtility;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.ObjectFactory;
