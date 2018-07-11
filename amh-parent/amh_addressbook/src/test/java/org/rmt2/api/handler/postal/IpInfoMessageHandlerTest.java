@@ -19,7 +19,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.rmt2.api.handler.AddressBookMockData;
-import org.rmt2.api.handler.BaseMessageHandlerTest;
+import org.rmt2.api.handler.BaseAddressBookMessageHandlerTest;
 import org.rmt2.api.handlers.postal.IpInfoApiHandler;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
@@ -42,7 +42,7 @@ import com.api.util.RMT2File;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ AbstractDaoClientImpl.class, Rmt2OrmClientFactory.class,
         PostalApiFactory.class, SystemConfigurator.class })
-public class IpInfoMessageHandlerTest extends BaseMessageHandlerTest {
+public class IpInfoMessageHandlerTest extends BaseAddressBookMessageHandlerTest {
 
     private PostalApi mockApi;
   

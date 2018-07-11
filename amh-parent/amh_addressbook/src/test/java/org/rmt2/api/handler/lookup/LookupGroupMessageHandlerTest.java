@@ -20,7 +20,7 @@ import org.modules.lookup.LookupDataApiFactory;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.rmt2.api.handler.BaseMessageHandlerTest;
+import org.rmt2.api.handler.BaseAddressBookMessageHandlerTest;
 import org.rmt2.api.handlers.lookup.LookupGroupApiHandler;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.jaxb.LookupCodesResponse;
@@ -42,7 +42,7 @@ import com.api.util.RMT2File;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ AbstractDaoClientImpl.class, Rmt2OrmClientFactory.class, SystemConfigurator.class })
-public class LookupGroupMessageHandlerTest extends BaseMessageHandlerTest {
+public class LookupGroupMessageHandlerTest extends BaseAddressBookMessageHandlerTest {
 
     private static final int GROUP_ID = 555;
     private LookupDataApiFactory mockApiFactory;

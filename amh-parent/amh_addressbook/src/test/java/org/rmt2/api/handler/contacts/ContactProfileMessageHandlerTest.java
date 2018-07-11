@@ -27,7 +27,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.rmt2.api.handler.AddressBookMockData;
-import org.rmt2.api.handler.BaseMessageHandlerTest;
+import org.rmt2.api.handler.BaseAddressBookMessageHandlerTest;
 import org.rmt2.api.handlers.contacts.ContactProfileApiHandler;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.jaxb.AddressBookResponse;
@@ -48,7 +48,7 @@ import com.api.util.RMT2File;
 @PrepareForTest({ AbstractDaoClientImpl.class, Rmt2OrmClientFactory.class,
         ContactProfileApiHandler.class, PostalApiFactory.class,
         SystemConfigurator.class })
-public class ContactProfileMessageHandlerTest extends BaseMessageHandlerTest {
+public class ContactProfileMessageHandlerTest extends BaseAddressBookMessageHandlerTest {
 
     private ContactsApiFactory mockContactsApiFactory;
     private ContactsApi mockApi;
