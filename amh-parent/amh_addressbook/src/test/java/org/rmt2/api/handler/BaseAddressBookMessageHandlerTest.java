@@ -23,7 +23,7 @@ import com.api.xml.jaxb.JaxbUtil;
  * @author royterrell
  *
  */
-public class BaseMessageHandlerTest {
+public class BaseAddressBookMessageHandlerTest {
     private static String LOGGER_CONFIG_PATH;
     protected JaxbUtil jaxb;
     protected PersistenceClient mockPersistenceClient;
