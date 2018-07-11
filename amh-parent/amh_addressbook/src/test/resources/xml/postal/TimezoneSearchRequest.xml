@@ -1,0 +1,17 @@
+<PostalRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>addressbook</application>
+        <module>postal</module>
+        <transaction>GET_TIMEZONE</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>07/11/2018 17:25:17</delivery_date>
+    </header>
+    <postal_criteria>
+        <timezone>
+            <timezone_id>1000</timezone_id>
+            <timezone_desc>America/Chicago</timezone_desc>
+        </timezone>
+    </postal_criteria>
+</PostalRequest>
