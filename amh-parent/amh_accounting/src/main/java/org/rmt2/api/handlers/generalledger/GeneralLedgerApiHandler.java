@@ -19,19 +19,19 @@ import com.api.messaging.handler.MessageHandlerCommonReplyStatus;
  * @author roy.terrell
  *
  */
-public class GeneralLedgerPayloadHandler extends
+public class GeneralLedgerApiHandler extends
         AbstractJaxbMessageHandler<AccountingGeneralLedgerRequest, AccountingGeneralLedgerResponse, GlDetailGroup> {
-    private static final Logger logger = Logger.getLogger(GeneralLedgerPayloadHandler.class);
+    private static final Logger logger = Logger.getLogger(GeneralLedgerApiHandler.class);
     private ObjectFactory jaxbObjFactory;
 
     /**
      * @param payload
      */
-    public GeneralLedgerPayloadHandler() {
+    public GeneralLedgerApiHandler() {
         super();
         this.jaxbObjFactory = new ObjectFactory();
         this.responseObj = jaxbObjFactory.createAccountingGeneralLedgerResponse();
-        logger.info(GeneralLedgerPayloadHandler.class.getName() + " was instantiated successfully");
+        logger.info(GeneralLedgerApiHandler.class.getName() + " was instantiated successfully");
     }
 
     @Override
