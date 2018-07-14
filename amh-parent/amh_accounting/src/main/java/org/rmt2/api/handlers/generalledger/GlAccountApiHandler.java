@@ -44,12 +44,15 @@ public class GlAccountApiHandler extends
     
     private static final Logger logger = Logger.getLogger(GlAccountApiHandler.class);
     private ObjectFactory jaxbObjFactory;
+    private GlAccountApi api;
 
     /**
      * @param payload
      */
     public GlAccountApiHandler() {
         super();
+        GeneralLedgerApiFactory f = new GeneralLedgerApiFactory();
+        this.api = f.createApi(CommonAccountingConst.APP_NAME);
         this.jaxbObjFactory = new ObjectFactory();
         this.responseObj = jaxbObjFactory.createAccountingGeneralLedgerResponse();
         logger.info(GlAccountApiHandler.class.getName() + " was instantiated successfully");
@@ -110,9 +113,7 @@ public class GlAccountApiHandler extends
             AccountDto criteriaDto = AccountingJaxbDtoFactory
                     .createGlAccountJaxbCriteriaInstance(req.getCriteria().getCriteria());
             
-            GeneralLedgerApiFactory f = new GeneralLedgerApiFactory();
-            GlAccountApi api = f.createApi(CommonAccountingConst.APP_NAME);
-            List<AccountDto> dtoList = api.getAccount(criteriaDto);
+            List<AccountDto> dtoList = this.api.getAccount(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage("GL Account data not found!");
                 rs.setReturnCode(0);
@@ -148,8 +149,6 @@ public class GlAccountApiHandler extends
         List<GlAccountType> updateData = null;
         
         boolean newRec = false;
-        GeneralLedgerApiFactory f = new GeneralLedgerApiFactory();
-        GlAccountApi api = f.createApi(CommonAccountingConst.APP_NAME);
         int rc = 0;
         try {
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
@@ -159,7 +158,7 @@ public class GlAccountApiHandler extends
             newRec = (dataObjDto.getAcctId() == 0);
             
             // call api
-            rc = api.updateAccount(dataObjDto);
+            rc = this.api.updateAccount(dataObjDto);
             
             // prepare response with updated contact data
             List<AccountDto> updateList = new ArrayList<>();
@@ -201,8 +200,6 @@ public class GlAccountApiHandler extends
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         
-        GeneralLedgerApiFactory f = new GeneralLedgerApiFactory();
-        GlAccountApi api = f.createApi(CommonAccountingConst.APP_NAME);
         int rc = 0;
         AccountDto criteriaDto = null;
         try {
@@ -212,7 +209,7 @@ public class GlAccountApiHandler extends
                     .createGlAccountJaxbInstance(req.getProfile().getAccounts().get(0));
             
             // call api
-            rc = api.deleteAccount(criteriaDto.getAcctId());
+            rc = this.api.deleteAccount(criteriaDto.getAcctId());
             
             // Return code is either the total number of rows deleted
             rs.setReturnCode(rc);
@@ -238,59 +235,6 @@ public class GlAccountApiHandler extends
         }
         return list;
     }
-//   /**
-//    * 
-//    * @param criteria
-//    * @return
-//    */
-//   private AccountDto extractSelectionCriteria(GlCriteriaType criteria) {
-//       AccountDto criteriaDto = Rmt2AccountDtoFactory.createAccountInstance(null);
-//       if (criteria != null) {
-//           if (criteria.getAcctId() != null) {
-//               criteriaDto.setAcctId(criteria.getAcctId().intValue());    
-//           }
-//           if (criteria.getAcctType() != null && criteria.getAcctType().getAcctTypeId() != null) {
-//               criteriaDto.setAcctTypeId(criteria.getAcctType().getAcctTypeId().intValue());    
-//           }
-//           if (criteria.getAcctCatg() != null && criteria.getAcctCatg().getAcctCatgId() != null) {
-//               criteriaDto.setAcctCatgId(criteria.getAcctCatg().getAcctCatgId().intValue());    
-//           }
-//           criteriaDto.setAcctNo(criteria.getAccountNo());
-//           criteriaDto.setAcctCode(criteria.getAccountNo());
-//           criteriaDto.setAcctName(criteria.getAccountName());
-//       }
-//       return criteriaDto;
-//   }
-//   
-//   private LookupGroupDto extractJaxbObject(GlCriteriaType cgtList) {
-//       AccountDto dto = Rmt2AddressBookDtoFactory.getNewCodeGroupInstance();
-//       
-//       if (jaxbObj.getGroupId() != null) {
-//           dto.setGrpId(jaxbObj.getGroupId().intValue());    
-//       }
-//       dto.setGrpDescr(jaxbObj.getGroupDesc());
-//       return dto;
-//   }
-   
-//    /**
-//     * Validates the request's list of Lookup Groups.
-//     */
-//    private CodeGroupType validateJaxbData(List<CodeGroupType> cgtList) {
-//        try {
-//            Verifier.verifyNotEmpty(cgtList);
-//        }
-//        catch (VerifyException e) {
-//            throw new InvalidDataException("AddressBook Lookup Group List is required");
-//        }
-//        
-//        try {
-//            Verifier.verifyTrue(cgtList.size() == 1);
-//        }
-//        catch (VerifyException e) {
-//            throw new InvalidDataException("Only one Lookup Group object can be updated at a time");
-//        }
-//        return cgtList.get(0);
-//    }
     
     
     @Override
