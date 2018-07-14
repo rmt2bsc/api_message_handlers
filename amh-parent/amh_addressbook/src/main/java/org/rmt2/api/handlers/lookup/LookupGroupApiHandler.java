@@ -159,6 +159,7 @@ public class LookupGroupApiHandler extends
             newRec = (dataObjDto.getGrpId() == 0);
             
             // call api
+            api.beginTrans();
             rc = api.updateGroup(dataObjDto);
             
             // prepare response with updated contact data
@@ -176,12 +177,16 @@ public class LookupGroupApiHandler extends
                 rs.setMessage("Lookup Group was modified successfully");
                 rs.setExtMessage("Total number of rows modified: " + rc);
             }
+            api.commitTrans();
         } catch (LookupDataApiException | NotFoundException | InvalidDataException e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to update " + (newRec ? "new" : "existing")  + " Lookup Group");
             rs.setExtMessage(e.getMessage());
             cdgList = req.getGroupCodes();
+            api.rollbackTrans();
+        } finally {
+            api.close();
         }
         
         String xml = this.buildResponse(cdgList, rs);
@@ -211,17 +216,22 @@ public class LookupGroupApiHandler extends
             criteriaDto = this.extractSelectionCriteria(req.getCriteria());
             
             // call api
+            api.beginTrans();
             rc = api.deleteGroup(criteriaDto.getGrpId());
             
             // Return code is either the total number of rows deleted
             rs.setReturnCode(rc);
             rs.setMessage("Lookup Group was deleted successfully");
             rs.setExtMessage("Lookup Group Id deleted was " + criteriaDto.getGrpId());
+            api.commitTrans();
         } catch (LookupDataApiException | InvalidDataException e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to delelte Lookup Group by group id, " + criteriaDto.getGrpId());
             rs.setExtMessage(e.getMessage());
+            api.rollbackTrans();
+        } finally {
+            api.close();
         }
         
         String xml = this.buildResponse(null, rs);

@@ -159,6 +159,7 @@ public class LookupCodeApiHandler extends
             newRec = (dataObjDto.getCodeId() == 0);
             
             // call api
+            api.beginTrans();
             rc = api.updateCode(dataObjDto);
             
             // prepare response with updated contact data
@@ -177,12 +178,14 @@ public class LookupCodeApiHandler extends
                 rs.setMessage("Lookup Code was modified successfully");
                 rs.setExtMessage("Total number of rows modified: " + rc);
             }
+            api.commitTrans();
         } catch (LookupDataApiException | NotFoundException | InvalidDataException e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to update " + (newRec ? "new" : "existing")  + " Lookup Code");
             rs.setExtMessage(e.getMessage());
             cdtList = req.getDetailCodes();
+            api.rollbackTrans();
         }
         
         String xml = this.buildResponse(cdtList, rs);
@@ -212,17 +215,22 @@ public class LookupCodeApiHandler extends
             criteriaDto = this.extractSelectionCriteria(req.getCriteria());
             
             // call api
+            api.beginTrans();
             rc = api.deleteCode(criteriaDto.getCodeId());
             
             // Return code is either the total number of rows deleted
             rs.setReturnCode(rc);
             rs.setMessage("Lookup Code was deleted successfully");
             rs.setExtMessage("Lookup Code Id deleted was " + criteriaDto.getCodeId());
+            api.commitTrans();
         } catch (LookupDataApiException | InvalidDataException e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to delelte Lookup Code by code id, " + criteriaDto.getCodeId());
             rs.setExtMessage(e.getMessage());
+            api.rollbackTrans();
+        } finally {
+            api.close();
         }
         
         String xml = this.buildResponse(null, rs);

@@ -13,7 +13,6 @@ import org.dto.ContactDto;
 import org.dto.PersonalContactDto;
 import org.dto.converter.jaxb.ContactsJaxbFactory;
 import org.modules.contacts.ContactsApi;
-import org.modules.contacts.ContactsApiException;
 import org.modules.contacts.ContactsApiFactory;
 import org.rmt2.api.adapters.jaxb.JaxbAddressBookFactory;
 import org.rmt2.api.handler.util.MessageHandlerUtility;
@@ -35,7 +34,6 @@ import org.rmt2.jaxb.ReplyStatusType;
 //import org.slf4j.LoggerFactory;
 
 import com.InvalidDataException;
-import com.NotFoundException;
 import com.api.messaging.InvalidRequestException;
 import com.api.messaging.handler.AbstractJaxbMessageHandler;
 import com.api.messaging.handler.MessageHandlerCommandException;
@@ -138,8 +136,7 @@ public class ContactProfileApiHandler extends
                 rs.setReturnCode(dtoList.size());
             }
             this.responseObj.setHeader(req.getHeader());
-            String xml = this.buildResponse(cdg, rs);
-            results.setPayload(xml);
+
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
@@ -148,6 +145,8 @@ public class ContactProfileApiHandler extends
         } finally {
             api.close();
         }
+        String xml = this.buildResponse(cdg, rs);
+        results.setPayload(xml);
         return results;
     }
     
@@ -196,10 +195,8 @@ public class ContactProfileApiHandler extends
                 rs.setMessage("Contact was modified successfully");
                 rs.setExtMessage("Total number of rows modified: " + rc);
             }
-            String xml = this.buildResponse(cdg, rs);
-            results.setPayload(xml);
             api.commitTrans();
-        } catch (ContactsApiException | NotFoundException | InvalidDataException e) {
+        } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to update " + (newContact ? "new" : "existing")  + " contact");
@@ -209,6 +206,9 @@ public class ContactProfileApiHandler extends
         } finally {
             api.close();
         }
+
+        String xml = this.buildResponse(cdg, rs);
+        results.setPayload(xml);
         return results;
     }
     
@@ -243,10 +243,8 @@ public class ContactProfileApiHandler extends
             rs.setReturnCode(rc);
             rs.setMessage("Contact was deleted successfully");
             rs.setExtMessage("Contact Id deleted was " + criteriaDto.getContactId());
-            String xml = this.buildResponse(null, rs);
-            results.setPayload(xml);
             api.commitTrans();
-        } catch (ContactsApiException | InvalidDataException e) {
+        } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to delelte contact");
@@ -255,6 +253,8 @@ public class ContactProfileApiHandler extends
         } finally {
             api.close();
         }
+        String xml = this.buildResponse(null, rs);
+        results.setPayload(xml);
         return results;
     }
     
