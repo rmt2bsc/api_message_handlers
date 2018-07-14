@@ -124,14 +124,17 @@ public class GlAccountApiHandler extends
                 rs.setReturnCode(dtoList.size());
             }
             this.responseObj.setHeader(req.getHeader());
+            String xml = this.buildResponse(queryDtoResults, rs);
+            results.setPayload(xml);
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to retrieve GL Account(s)");
             rs.setExtMessage(e.getMessage());
+        } finally {
+            this.api.close();
         }
-        String xml = this.buildResponse(queryDtoResults, rs);
-        results.setPayload(xml);
+        
         return results;
     }
     
@@ -158,6 +161,7 @@ public class GlAccountApiHandler extends
             newRec = (dataObjDto.getAcctId() == 0);
             
             // call api
+            this.api.beginTrans();
             rc = this.api.updateAccount(dataObjDto);
             
             // prepare response with updated contact data
@@ -175,16 +179,20 @@ public class GlAccountApiHandler extends
                 rs.setMessage("GL Account was modified successfully");
                 rs.setExtMessage("Total number of rows modified: " + rc);
             }
+            String xml = this.buildResponse(updateData, rs);
+            results.setPayload(xml);
+            this.api.commitTrans();
+            
         } catch (GeneralLedgerApiException | NotFoundException | InvalidDataException e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to update " + (newRec ? "new" : "existing")  + " GL Account");
             rs.setExtMessage(e.getMessage());
             updateData = req.getProfile().getAccounts();
+            this.api.rollbackTrans();
+        } finally {
+            this.api.close();
         }
-        
-        String xml = this.buildResponse(updateData, rs);
-        results.setPayload(xml);
         return results;
     }
     
@@ -209,21 +217,25 @@ public class GlAccountApiHandler extends
                     .createGlAccountJaxbInstance(req.getProfile().getAccounts().get(0));
             
             // call api
+            this.api.beginTrans();
             rc = this.api.deleteAccount(criteriaDto.getAcctId());
             
             // Return code is either the total number of rows deleted
             rs.setReturnCode(rc);
             rs.setMessage("GL Account was deleted successfully");
             rs.setExtMessage("GL Account Id deleted was " + criteriaDto.getAcctId());
+            String xml = this.buildResponse(null, rs);
+            results.setPayload(xml);
+            this.api.commitTrans();
         } catch (GeneralLedgerApiException | InvalidDataException e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to delelte GL Account by acct id, " + criteriaDto.getAcctId());
             rs.setExtMessage(e.getMessage());
+            this.api.rollbackTrans();
+        } finally {
+            this.api.close();
         }
-        
-        String xml = this.buildResponse(null, rs);
-        results.setPayload(xml);
         return results;
     }
     

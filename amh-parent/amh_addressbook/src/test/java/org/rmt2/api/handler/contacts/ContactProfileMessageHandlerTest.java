@@ -2,6 +2,7 @@ package org.rmt2.api.handler.contacts;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import java.math.BigInteger;
@@ -90,6 +91,7 @@ public class ContactProfileMessageHandlerTest extends BaseAddressBookMessageHand
           e.printStackTrace();
       }
       when(this.mockContactsApiFactory.createApi()).thenReturn(this.mockApi);
+      doNothing().when(this.mockApi).close();
     }
     
     private void setupMockForContactInsert() {

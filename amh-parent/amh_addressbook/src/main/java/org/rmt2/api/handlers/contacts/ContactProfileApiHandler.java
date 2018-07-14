@@ -88,13 +88,13 @@ public class ContactProfileApiHandler extends
         }
         switch (command) {
             case ApiTransactionCodes.CONTACTS_UPDATE:
-                 r = this.updateContact(this.requestObj);
+                 r = this.update(this.requestObj);
                 break;
             case ApiTransactionCodes.CONTACTS_DELETE:
-                 r = this.deleteContact(this.requestObj);
+                 r = this.delete(this.requestObj);
                 break;
             case ApiTransactionCodes.CONTACTS_GET:
-                r = this.fetchContact(this.requestObj);
+                r = this.fetch(this.requestObj);
                 break;
             default:
                 r = this.createErrorReply(MessagingConstants.RETURN_CODE_FAILURE,
@@ -114,19 +114,19 @@ public class ContactProfileApiHandler extends
      *            The request used to build the ContactDto selection criteria
      * @return an instance of {@link MessageHandlerResults}           
      */
-    protected MessageHandlerResults fetchContact(AddressBookRequest req) {
+    protected MessageHandlerResults fetch(AddressBookRequest req) {
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         ContactDetailGroup cdg = null;
 
+        ContactsApiFactory cf = new ContactsApiFactory();
+        ContactsApi api = cf.createApi();
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             this.validateRequest(req);
             ContactDto criteriaDto = this.extractSelectionCriteria(req.getCriteria());
             
-            ContactsApiFactory cf = new ContactsApiFactory();
-            ContactsApi api = cf.createApi();
             List<ContactDto> dtoList = api.getContact(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage("Contact data not found!");
@@ -138,14 +138,16 @@ public class ContactProfileApiHandler extends
                 rs.setReturnCode(dtoList.size());
             }
             this.responseObj.setHeader(req.getHeader());
+            String xml = this.buildResponse(cdg, rs);
+            results.setPayload(xml);
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to retrieve contact(s)");
             rs.setExtMessage(e.getMessage());
+        } finally {
+            api.close();
         }
-        String xml = this.buildResponse(cdg, rs);
-        results.setPayload(xml);
         return results;
     }
     
@@ -160,7 +162,7 @@ public class ContactProfileApiHandler extends
      *            The request used to build the ContactDto selection criteria
      * @return an instance of {@link MessageHandlerResults}
      */
-    protected MessageHandlerResults updateContact(AddressBookRequest req) {
+    protected MessageHandlerResults update(AddressBookRequest req) {
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         ContactDetailGroup cdg = null;
@@ -176,6 +178,7 @@ public class ContactProfileApiHandler extends
             newContact = (contactDto.getContactId() == 0);
             
             // call api
+            api.beginTrans();
             rc = api.updateContact(contactDto);
             
             // prepare response with updated contact data
@@ -193,16 +196,19 @@ public class ContactProfileApiHandler extends
                 rs.setMessage("Contact was modified successfully");
                 rs.setExtMessage("Total number of rows modified: " + rc);
             }
+            String xml = this.buildResponse(cdg, rs);
+            results.setPayload(xml);
+            api.commitTrans();
         } catch (ContactsApiException | NotFoundException | InvalidDataException e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to update " + (newContact ? "new" : "existing")  + " contact");
             rs.setExtMessage(e.getMessage());
             cdg = req.getProfile();
+            api.rollbackTrans();
+        } finally {
+            api.close();
         }
-        
-        String xml = this.buildResponse(cdg, rs);
-        results.setPayload(xml);
         return results;
     }
     
@@ -217,7 +223,7 @@ public class ContactProfileApiHandler extends
      *            The request used to build the ContactDto selection criteria
      * @return an instance of {@link MessageHandlerResults}
      */
-    protected MessageHandlerResults deleteContact(AddressBookRequest req) {
+    protected MessageHandlerResults delete(AddressBookRequest req) {
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         
@@ -230,21 +236,25 @@ public class ContactProfileApiHandler extends
             ContactDto criteriaDto = this.extractSelectionCriteria(req.getCriteria());
             
             // call api
+            api.beginTrans();
             rc = api.deleteContact(criteriaDto);
             
             // Return code is either the total number of rows deleted
             rs.setReturnCode(rc);
             rs.setMessage("Contact was deleted successfully");
             rs.setExtMessage("Contact Id deleted was " + criteriaDto.getContactId());
+            String xml = this.buildResponse(null, rs);
+            results.setPayload(xml);
+            api.commitTrans();
         } catch (ContactsApiException | InvalidDataException e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to delelte contact");
             rs.setExtMessage(e.getMessage());
+            api.rollbackTrans();
+        } finally {
+            api.close();
         }
-        
-        String xml = this.buildResponse(null, rs);
-        results.setPayload(xml);
         return results;
     }
     
