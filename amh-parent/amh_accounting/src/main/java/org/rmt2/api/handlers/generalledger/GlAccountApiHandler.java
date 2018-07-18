@@ -258,7 +258,7 @@ public class GlAccountApiHandler extends
             throw new InvalidRequestException("LookupCodes message request element is invalid");
         }
         
-        // Vakudate request for update/delete operation
+        // Validate request for update/delete operation
         switch (this.command) {
             case ApiTransactionCodes.GL_ACCOUNT_UPDATE:
             case ApiTransactionCodes.GL_ACCOUNT_DELETE:
