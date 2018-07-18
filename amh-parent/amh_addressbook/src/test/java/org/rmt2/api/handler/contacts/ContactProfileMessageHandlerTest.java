@@ -52,7 +52,7 @@ import com.api.util.RMT2File;
         SystemConfigurator.class })
 public class ContactProfileMessageHandlerTest extends BaseAddressBookMessageHandlerTest {
 
-    private ContactsApiFactory mockContactsApiFactory;
+    private ContactsApiFactory mockApiFactory;
     private ContactsApi mockApi;
 
 
@@ -83,14 +83,14 @@ public class ContactProfileMessageHandlerTest extends BaseAddressBookMessageHand
     }
 
     private void setupMockContactApiCall() {
-      this.mockContactsApiFactory = Mockito.mock(ContactsApiFactory.class);
+      this.mockApiFactory = Mockito.mock(ContactsApiFactory.class);
       this.mockApi = Mockito.mock(ContactsApi.class);
       try {
-          PowerMockito.whenNew(ContactsApiFactory.class).withNoArguments().thenReturn(this.mockContactsApiFactory);
+          PowerMockito.whenNew(ContactsApiFactory.class).withNoArguments().thenReturn(this.mockApiFactory);
       } catch (Exception e) {
           e.printStackTrace();
       }
-      when(this.mockContactsApiFactory.createApi()).thenReturn(this.mockApi);
+      when(this.mockApiFactory.createApi()).thenReturn(this.mockApi);
       doNothing().when(this.mockApi).close();
     }
     
