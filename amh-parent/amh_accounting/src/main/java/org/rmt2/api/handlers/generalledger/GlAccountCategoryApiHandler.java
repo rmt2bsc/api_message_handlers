@@ -271,7 +271,7 @@ public class GlAccountCategoryApiHandler extends
                     Verifier.verifyTrue(req.getProfile().getAccountCategory().size() == 1);
                 }
                 catch (VerifyException e) {
-                    throw new InvalidRequestException("Only one (1) GL Account record is required for update/delete operation");
+                    throw new InvalidRequestException("Only one (1) GL Account Category record is required for update/delete operation");
                 }
                 
                 if (this.command.equals(ApiTransactionCodes.GL_ACCOUNT_CATG_DELETE)) {

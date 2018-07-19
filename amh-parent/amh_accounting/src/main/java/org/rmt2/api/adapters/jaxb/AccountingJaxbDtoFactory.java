@@ -209,7 +209,7 @@ public class AccountingJaxbDtoFactory extends RMT2Base {
             return null;
         }
         AccountCategoryDto dto = Rmt2AccountDtoFactory.createAccountCategoryInstance(null);
-        if (jaxbObj.getAcctType().getAcctTypeId() != null) {
+        if (jaxbObj.getAcctType() != null && jaxbObj.getAcctType().getAcctTypeId() != null) {
             dto.setAcctTypeId(jaxbObj.getAcctType().getAcctTypeId().intValue());
         }
         if (jaxbObj.getAcctCatgId() != null) {
