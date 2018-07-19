@@ -7,6 +7,7 @@ import org.dto.adapter.orm.account.generalledger.Rmt2AccountDtoFactory;
 import org.rmt2.jaxb.GlAccountType;
 import org.rmt2.jaxb.GlAccountcatgType;
 import org.rmt2.jaxb.GlAccounttypeType;
+import org.rmt2.jaxb.GlBalancetypeType;
 import org.rmt2.jaxb.GlCriteriaType;
 import org.rmt2.jaxb.ObjectFactory;
 
@@ -43,6 +44,9 @@ public class AccountingJaxbDtoFactory extends RMT2Base {
         if (jaxbCriteria.getAcctCatg() != null && jaxbCriteria.getAcctCatg().getAcctCatgId() != null) {
             dto.setAcctCatgId(jaxbCriteria.getAcctCatg().getAcctCatgId().intValue());    
         }
+        if (jaxbCriteria.getBalanceType() != null && jaxbCriteria.getBalanceType().getAccountBaltypeId() != null) {
+            dto.setBalanceTypeId(jaxbCriteria.getBalanceType().getAccountBaltypeId().intValue());    
+        }
         dto.setAcctNo(jaxbCriteria.getAccountNo());
         dto.setAcctCode(jaxbCriteria.getAccountNo());
         dto.setAcctName(jaxbCriteria.getAccountName());
@@ -68,6 +72,9 @@ public class AccountingJaxbDtoFactory extends RMT2Base {
         if (jaxbObj.getAcctCatg() != null && jaxbObj.getAcctCatg().getAcctCatgId() != null) {
             dto.setAcctCatgId(jaxbObj.getAcctCatg().getAcctCatgId().intValue());    
         }
+        if (jaxbObj.getBalanceType() != null && jaxbObj.getBalanceType().getAccountBaltypeId() != null) {
+            dto.setBalanceTypeId(jaxbObj.getBalanceType().getAccountBaltypeId().intValue());    
+        }
         dto.setAcctNo(jaxbObj.getAccountNo());
         dto.setAcctCode(jaxbObj.getAccountNo());
         dto.setAcctName(jaxbObj.getAccountName());
@@ -84,11 +91,15 @@ public class AccountingJaxbDtoFactory extends RMT2Base {
         GlAccountType jaxbObj = jaxbObjFactory.createGlAccountType();
         jaxbObj.setAcctId(BigInteger.valueOf(dto.getAcctId()));
         GlAccounttypeType gatt = jaxbObjFactory.createGlAccounttypeType();
-        gatt.setAcctTypeId(BigInteger.valueOf(dto.getAcctId()));
+        gatt.setAcctTypeId(BigInteger.valueOf(dto.getAcctTypeId()));
         jaxbObj.setAcctType(gatt);
         GlAccountcatgType gact = jaxbObjFactory.createGlAccountcatgType();
-        gact.setAcctCatgId(BigInteger.valueOf(dto.getAcctId()));
+        gact.setAcctCatgId(BigInteger.valueOf(dto.getAcctCatgId()));
         jaxbObj.setAcctCatg(gact);
+        GlBalancetypeType gbtt = jaxbObjFactory.createGlBalancetypeType();
+        gbtt.setAccountBaltypeId(BigInteger.valueOf(dto.getBalanceTypeId()));
+        jaxbObj.setBalanceType(gbtt);
+        jaxbObj.setAcctSeq(BigInteger.valueOf(dto.getAcctSeq()));
         jaxbObj.setAccountCode(dto.getAcctCode());
         jaxbObj.setAccountDescription(dto.getAcctDescription());
         jaxbObj.setAccountName(dto.getAcctName());

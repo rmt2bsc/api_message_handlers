@@ -24,21 +24,21 @@ public class AccountingMockData {
     public static final List<AccountDto> createMockGlAccounts() {
         List<AccountDto> list = new ArrayList<>();
         GlAccounts p = AccountingMockDataFactory.createMockOrmGlAccounts(100, 1, 120, 1, "AccountNo1", "AccountName1",
-                "AccoutCode1", "AccountDescription1", 1);
+                "AccountCode1", "AccountDescription1", 1);
         AccountDto dto = Rmt2AccountDtoFactory.createAccountInstance(p);
         list.add(dto);
 
-        p = AccountingMockDataFactory.createMockOrmGlAccounts(101, 2, 121, 1, "AccountNo2", "AccountName2", "AccoutCode2",
-                "AccountDescription2", 2);
+        p = AccountingMockDataFactory.createMockOrmGlAccounts(101, 2, 121, 1, "AccountNo2", "AccountName2", "AccountCode2",
+                "AccountDescription2", 1);
         dto = Rmt2AccountDtoFactory.createAccountInstance(p);
         list.add(dto);
 
-        p = AccountingMockDataFactory.createMockOrmGlAccounts(102, 3, 122, 1, "AccountNo3", "AccountName3", "AccoutCode3",
-                "AccountDescription3", 2);
+        p = AccountingMockDataFactory.createMockOrmGlAccounts(102, 3, 122, 1, "AccountNo3", "AccountName3", "AccountCode3",
+                "AccountDescription3", 1);
         dto = Rmt2AccountDtoFactory.createAccountInstance(p);
         list.add(dto);
 
-        p = AccountingMockDataFactory.createMockOrmGlAccounts(103, 4, 123, 1, "AccountNo4", "AccountName4", "AccoutCode4",
+        p = AccountingMockDataFactory.createMockOrmGlAccounts(103, 4, 123, 1, "AccountNo4", "AccountName4", "AccountCode4",
                 "AccountDescription4", 1);
         dto = Rmt2AccountDtoFactory.createAccountInstance(p);
         list.add(dto);
