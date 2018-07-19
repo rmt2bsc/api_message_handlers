@@ -3,6 +3,7 @@ package org.rmt2.api.adapters.jaxb;
 import java.math.BigInteger;
 
 import org.dto.AccountDto;
+import org.dto.AccountTypeDto;
 import org.dto.adapter.orm.account.generalledger.Rmt2AccountDtoFactory;
 import org.rmt2.jaxb.GlAccountType;
 import org.rmt2.jaxb.GlAccountcatgType;
@@ -107,5 +108,61 @@ public class AccountingJaxbDtoFactory extends RMT2Base {
         return jaxbObj;
     }
     
-   
+    /**
+     * Creates an instance of <i>AccountTypeDto</i> using a valid
+     * <i>GlCriteriaType</i> JAXB object.
+     * 
+     * @param criteria
+     *            an instance of {@link GlCriteriaType}
+     * @return an instance of {@link AccountTypeDto}
+     */
+    public static final AccountTypeDto createGlAccountTypeJaxbCriteriaInstance(GlCriteriaType jaxbCriteria) {
+        if (jaxbCriteria == null) {
+            return null;
+        }
+        AccountTypeDto dto = Rmt2AccountDtoFactory.createAccountTypeInstance(null);
+        if (jaxbCriteria.getAcctType() != null) {
+            if (jaxbCriteria.getAcctType().getAcctTypeId() != null) {
+                dto.setAcctTypeId(jaxbCriteria.getAcctType().getAcctTypeId().intValue());    
+            }
+            if (jaxbCriteria.getAcctType().getDescription() != null) {
+                dto.setAcctTypeDescription(jaxbCriteria.getAcctType().getDescription());    
+            }   
+        }
+        return dto;
+    }
+    
+    /**
+     * 
+     * @param jaxbObj
+     * @return
+     */
+    public static final AccountTypeDto createGlAccountTypeDtoInstance(GlAccounttypeType jaxbObj) {
+        if (jaxbObj == null) {
+            return null;
+        }
+        AccountTypeDto dto = Rmt2AccountDtoFactory.createAccountTypeInstance(null);
+        if (jaxbObj.getAcctTypeId() != null) {
+            dto.setAcctTypeId(jaxbObj.getAcctTypeId().intValue());
+        }
+        if (jaxbObj.getDescription() != null) {
+            dto.setAcctTypeDescription(jaxbObj.getDescription());
+        }
+        return dto;
+    }
+    
+    /**
+     * 
+     * @param dto
+     * @return
+     */
+    public static final GlAccounttypeType createGlAccountTypeJaxbInstance(AccountTypeDto dto) {
+        ObjectFactory jaxbObjFactory = new ObjectFactory();
+        GlAccounttypeType jaxbObj = jaxbObjFactory.createGlAccounttypeType();
+        jaxbObj.setAcctTypeId(BigInteger.valueOf(dto.getAcctTypeId()));
+        GlBalancetypeType gbtt = jaxbObjFactory.createGlBalancetypeType();
+        gbtt.setAccountBaltypeId(BigInteger.valueOf(dto.getBalanceTypeId()));
+        jaxbObj.setBalanceType(gbtt);
+        return jaxbObj;
+    }
 }
