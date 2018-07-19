@@ -145,7 +145,7 @@ public class GlAccountTypeApiHandler extends
             Verifier.verifyNotNull(req);
         }
         catch (VerifyException e) {
-            throw new InvalidRequestException("LookupCodes message request element is invalid");
+            throw new InvalidRequestException("GL Account Type message request element is invalid");
         }
         
         // Validate that the request contains an AccountType criteria element
@@ -155,7 +155,7 @@ public class GlAccountTypeApiHandler extends
             Verifier.verifyNotNull(req.getCriteria().getCriteria().getAcctType());
         }
         catch (VerifyException e) {
-            throw new InvalidRequestException("GL Account data is required for update/delete operation");
+            throw new InvalidRequestException("GL Account Type criteria is required");
         }
     }
 

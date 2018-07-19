@@ -252,7 +252,7 @@ public class GlAccountApiHandler extends
             Verifier.verifyNotNull(req);
         }
         catch (VerifyException e) {
-            throw new InvalidRequestException("LookupCodes message request element is invalid");
+            throw new InvalidRequestException("GL Account message request element is invalid");
         }
         
         // Validate request for update/delete operation
