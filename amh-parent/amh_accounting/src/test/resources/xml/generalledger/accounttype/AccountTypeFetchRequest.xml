@@ -6,17 +6,17 @@
         <transaction>GET_GL_ACCOUNT_TYPE</transaction>
         <delivery_mode>XXXXXXX</delivery_mode>
         <message_mode>REQUEST</message_mode>
-        <delivery_date>07/19/2018 13:46:50</delivery_date>
+        <delivery_date>07/19/2018 15:28:22</delivery_date>
     </header>
     <criteria>
         <criteria>
             <acct_type>
                 <acct_type_id>111</acct_type_id>
                 <description>GL Account Type Description Test</description>
+                <balance_type>
+                    <account_baltype_id>1</account_baltype_id>
+                </balance_type>
             </acct_type>
-            <balance_type>
-                <account_baltype_id>1</account_baltype_id>
-            </balance_type>
         </criteria>
     </criteria>
 </AccountingGeneralLedgerRequest>

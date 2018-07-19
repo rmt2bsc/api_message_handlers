@@ -9,10 +9,6 @@
         <delivery_date>07/19/2018 13:46:50</delivery_date>
     </header>
     <criteria>
-        <criteria>
-            <balance_type>
-                <account_baltype_id>1</account_baltype_id>
-            </balance_type>
-        </criteria>
+        <criteria></criteria>
     </criteria>
 </AccountingGeneralLedgerRequest>

@@ -13,10 +13,10 @@
             <acct_type>
                 <acct_type_id>111</acct_type_id>
                 <description>GL Account Type Description Test</description>
+                <balance_type>
+                    <account_baltype_id>1</account_baltype_id>
+                </balance_type>
             </acct_type>
-            <balance_type>
-                <account_baltype_id>1</account_baltype_id>
-            </balance_type>
         </criteria>
     </criteria>
 </AccountingGeneralLedgerRequest>
