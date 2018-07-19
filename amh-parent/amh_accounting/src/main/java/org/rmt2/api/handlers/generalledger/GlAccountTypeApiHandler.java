@@ -101,7 +101,7 @@ public class GlAccountTypeApiHandler extends
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             this.validateRequest(req);
             AccountTypeDto criteriaDto = AccountingJaxbDtoFactory
-                    .createGlAccountTypeJaxbCriteriaInstance(req.getCriteria().getCriteria());
+                    .createGlAccountTypeDtoCriteriaInstance(req.getCriteria().getCriteria());
             
             List<AccountTypeDto> dtoList = this.api.getAccountType(criteriaDto);
             if (dtoList == null) {

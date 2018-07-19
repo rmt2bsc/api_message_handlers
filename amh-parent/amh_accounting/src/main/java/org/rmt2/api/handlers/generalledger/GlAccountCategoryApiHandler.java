@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.dto.AccountDto;
+import org.dto.AccountCategoryDto;
 import org.modules.CommonAccountingConst;
 import org.modules.generalledger.GeneralLedgerApiException;
 import org.modules.generalledger.GeneralLedgerApiFactory;
@@ -16,7 +16,7 @@ import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.AccountingGeneralLedgerRequest;
 import org.rmt2.jaxb.AccountingGeneralLedgerResponse;
-import org.rmt2.jaxb.GlAccountType;
+import org.rmt2.jaxb.GlAccountcatgType;
 import org.rmt2.jaxb.GlDetailGroup;
 import org.rmt2.jaxb.ObjectFactory;
 import org.rmt2.jaxb.ReplyStatusType;
@@ -40,23 +40,23 @@ import com.api.util.assistants.VerifyException;
  * @author roy.terrell
  *
  */
-public class GlAccountApiHandler extends 
-                  AbstractJaxbMessageHandler<AccountingGeneralLedgerRequest, AccountingGeneralLedgerResponse, List<GlAccountType>> {
+public class GlAccountCategoryApiHandler extends 
+                  AbstractJaxbMessageHandler<AccountingGeneralLedgerRequest, AccountingGeneralLedgerResponse, List<GlAccountcatgType>> {
     
-    private static final Logger logger = Logger.getLogger(GlAccountApiHandler.class);
+    private static final Logger logger = Logger.getLogger(GlAccountCategoryApiHandler.class);
     private ObjectFactory jaxbObjFactory;
     private GlAccountApi api;
 
     /**
      * @param payload
      */
-    public GlAccountApiHandler() {
+    public GlAccountCategoryApiHandler() {
         super();
         GeneralLedgerApiFactory f = new GeneralLedgerApiFactory();
         this.api = f.createApi(CommonAccountingConst.APP_NAME);
         this.jaxbObjFactory = new ObjectFactory();
         this.responseObj = jaxbObjFactory.createAccountingGeneralLedgerResponse();
-        logger.info(GlAccountApiHandler.class.getName() + " was instantiated successfully");
+        logger.info(GlAccountCategoryApiHandler.class.getName() + " was instantiated successfully");
     }
 
     /*
@@ -75,13 +75,13 @@ public class GlAccountApiHandler extends
             return r;
         }
         switch (command) {
-            case ApiTransactionCodes.GL_ACCOUNT_GET:
+            case ApiTransactionCodes.GL_ACCOUNT_CATG_GET:
                 r = this.fetch(this.requestObj);
                 break;
-            case ApiTransactionCodes.GL_ACCOUNT_UPDATE:
+            case ApiTransactionCodes.GL_ACCOUNT_CATG_UPDATE:
                 r = this.update(this.requestObj);
                 break;
-            case ApiTransactionCodes.GL_ACCOUNT_DELETE:
+            case ApiTransactionCodes.GL_ACCOUNT_CATG_DELETE:
                 r = this.delete(this.requestObj);
                 
                 break;
@@ -94,38 +94,39 @@ public class GlAccountApiHandler extends
     }
 
     /**
-     * Handler for invoking the appropriate API in order to fetch one or more GL Account objects.
+     * Handler for invoking the appropriate API in order to fetch one or more GL
+     * Account Category objects.
      * 
      * @param req
      *            an instance of {@link AccountingGeneralLedgerRequest}
-     * @return an instance of {@link MessageHandlerResults}           
+     * @return an instance of {@link MessageHandlerResults}
      */
     protected MessageHandlerResults fetch(AccountingGeneralLedgerRequest req) {
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
-        List<GlAccountType> queryDtoResults = null;
+        List<GlAccountcatgType> queryDtoResults = null;
 
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
-            AccountDto criteriaDto = AccountingJaxbDtoFactory
-                    .createGlAccountDtoCriteriaInstance(req.getCriteria().getCriteria());
+            AccountCategoryDto criteriaDto = AccountingJaxbDtoFactory
+                    .createGlAccountCatgDtoCriteriaInstance(req.getCriteria().getCriteria());
             
-            List<AccountDto> dtoList = this.api.getAccount(criteriaDto);
+            List<AccountCategoryDto> dtoList = this.api.getAccountCategory(criteriaDto);
             if (dtoList == null) {
-                rs.setMessage("GL Account data not found!");
+                rs.setMessage("GL Account Category data not found!");
                 rs.setReturnCode(0);
             }
             else {
                 queryDtoResults = this.buildJaxbListData(dtoList);
-                rs.setMessage("GL Account record(s) found");
+                rs.setMessage("GL Account Category record(s) found");
                 rs.setReturnCode(dtoList.size());
             }
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setMessage("Failure to retrieve GL Account(s)");
+            rs.setMessage("Failure to retrieve GL Account Category(s)");
             rs.setExtMessage(e.getMessage());
         } finally {
             this.api.close();
@@ -138,7 +139,7 @@ public class GlAccountApiHandler extends
     
     /**
      * Handler for invoking the appropriate API in order to update the specified
-     * GL Account.
+     * GL Account Category.
      * 
      * @param req
      *            an instance of {@link AccountingGeneralLedgerRequest}
@@ -147,33 +148,33 @@ public class GlAccountApiHandler extends
     protected MessageHandlerResults update(AccountingGeneralLedgerRequest req) {
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
-        List<GlAccountType> updateData = null;
+        List<GlAccountcatgType> updateData = null;
         
         boolean newRec = false;
         int rc = 0;
         try {
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
-            AccountDto dataObjDto = AccountingJaxbDtoFactory
-                    .createGlAccountDtoInstance(req.getProfile().getAccount().get(0));
-            newRec = (dataObjDto.getAcctId() == 0);
+            AccountCategoryDto dataObjDto = AccountingJaxbDtoFactory
+                    .createGlAccountCatgDtoInstance(req.getProfile().getAccountCategory().get(0));
+            newRec = (dataObjDto.getAcctCatgId() == 0);
             
             // call api
             this.api.beginTrans();
-            rc = this.api.updateAccount(dataObjDto);
+            rc = this.api.updateCategory(dataObjDto);
             
             // prepare response with updated contact data
-            List<AccountDto> updateList = new ArrayList<>();
+            List<AccountCategoryDto> updateList = new ArrayList<>();
             updateList.add(dataObjDto);
             updateData = this.buildJaxbListData(updateList);
             
             // Return code is either the total number of rows updated or the new group id
             rs.setReturnCode(rc);
             if (newRec) {
-                rs.setMessage("GL Account was created successfully");
-                rs.setExtMessage("The new acct id is " + rc);
+                rs.setMessage("GL Account Category was created successfully");
+                rs.setExtMessage("The new acct category id is " + rc);
             }
             else {
-                rs.setMessage("GL Account was modified successfully");
+                rs.setMessage("GL Account Category was modified successfully");
                 rs.setExtMessage("Total number of rows modified: " + rc);
             }
             this.api.commitTrans();
@@ -181,9 +182,9 @@ public class GlAccountApiHandler extends
         } catch (GeneralLedgerApiException | NotFoundException | InvalidDataException e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setMessage("Failure to update " + (newRec ? "new" : "existing")  + " GL Account");
+            rs.setMessage("Failure to update " + (newRec ? "new" : "existing")  + " GL Account Category");
             rs.setExtMessage(e.getMessage());
-            updateData = req.getProfile().getAccount();
+            updateData = req.getProfile().getAccountCategory();
             this.api.rollbackTrans();
         } finally {
             this.api.close();
@@ -195,7 +196,7 @@ public class GlAccountApiHandler extends
     
     /**
      * Handler for invoking the appropriate API in order to delete the specified
-     * GL Account.
+     * GL Account Category.
      * 
      * @param req
      *            an instance of {@link AccountingGeneralLedgerRequest}
@@ -206,25 +207,25 @@ public class GlAccountApiHandler extends
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         
         int rc = 0;
-        AccountDto criteriaDto = null;
+        AccountCategoryDto criteriaDto = null;
         try {
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             criteriaDto = AccountingJaxbDtoFactory
-                    .createGlAccountDtoInstance(req.getProfile().getAccount().get(0));
+                    .createGlAccountCatgDtoInstance(req.getProfile().getAccountCategory().get(0));
             
             // call api
             this.api.beginTrans();
-            rc = this.api.deleteAccount(criteriaDto.getAcctId());
+            rc = this.api.deleteCategory(criteriaDto.getAcctCatgId());
             
             // Return code is either the total number of rows deleted
             rs.setReturnCode(rc);
-            rs.setMessage("GL Account was deleted successfully");
-            rs.setExtMessage("GL Account Id deleted was " + criteriaDto.getAcctId());
+            rs.setMessage("GL Account Category was deleted successfully");
+            rs.setExtMessage("GL Account Category Id deleted was " + criteriaDto.getAcctCatgId());
             this.api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setMessage("Failure to delelte GL Account");
+            rs.setMessage("Failure to delelte GL Account Category");
             rs.setExtMessage(e.getMessage());
             this.api.rollbackTrans();
         } finally {
@@ -236,10 +237,10 @@ public class GlAccountApiHandler extends
         return results;
     }
     
-    private List<GlAccountType> buildJaxbListData(List<AccountDto> results) {
-        List<GlAccountType> list = new ArrayList<>();
-        for (AccountDto item : results) {
-            GlAccountType jaxbObj = AccountingJaxbDtoFactory.createGlAccountJaxbInstance(item);
+    private List<GlAccountcatgType> buildJaxbListData(List<AccountCategoryDto> results) {
+        List<GlAccountcatgType> list = new ArrayList<>();
+        for (AccountCategoryDto item : results) {
+            GlAccountcatgType jaxbObj = AccountingJaxbDtoFactory.createGlAccountCatgJaxbInstance(item);
             list.add(jaxbObj);
         }
         return list;
@@ -252,34 +253,34 @@ public class GlAccountApiHandler extends
             Verifier.verifyNotNull(req);
         }
         catch (VerifyException e) {
-            throw new InvalidRequestException("GL Account message request element is invalid");
+            throw new InvalidRequestException("GL Account Category message request element is invalid");
         }
         
         // Validate request for update/delete operation
         switch (this.command) {
-            case ApiTransactionCodes.GL_ACCOUNT_UPDATE:
-            case ApiTransactionCodes.GL_ACCOUNT_DELETE:
+            case ApiTransactionCodes.GL_ACCOUNT_CATG_UPDATE:
+            case ApiTransactionCodes.GL_ACCOUNT_CATG_DELETE:
                 try {
                     Verifier.verifyNotNull(req.getProfile());
-                    Verifier.verifyNotEmpty(req.getProfile().getAccount());
+                    Verifier.verifyNotEmpty(req.getProfile().getAccountCategory());
                 }
                 catch (VerifyException e) {
-                    throw new InvalidRequestException("GL Account data is required for update/delete operation");
+                    throw new InvalidRequestException("GL Account Category data is required for update/delete operation");
                 }
                 try {
-                    Verifier.verifyTrue(req.getProfile().getAccount().size() == 1);
+                    Verifier.verifyTrue(req.getProfile().getAccountCategory().size() == 1);
                 }
                 catch (VerifyException e) {
                     throw new InvalidRequestException("Only one (1) GL Account record is required for update/delete operation");
                 }
                 
-                if (this.command.equals(ApiTransactionCodes.GL_ACCOUNT_DELETE)) {
+                if (this.command.equals(ApiTransactionCodes.GL_ACCOUNT_CATG_DELETE)) {
                     try {
-                        Verifier.verifyNotNull(req.getProfile().getAccount().get(0).getAcctId());
-                        Verifier.verifyPositive(req.getProfile().getAccount().get(0).getAcctId());
+                        Verifier.verifyNotNull(req.getProfile().getAccountCategory().get(0).getAcctCatgId());
+                        Verifier.verifyPositive(req.getProfile().getAccountCategory().get(0).getAcctCatgId());
                     }
                     catch (VerifyException e) {
-                        throw new InvalidRequestException("A valid account id is required when deleting a GL Account from the database");
+                        throw new InvalidRequestException("A valid account category id is required when deleting a GL Account Category from the database");
                     }   
                 }
                 break;
@@ -289,7 +290,7 @@ public class GlAccountApiHandler extends
     }
 
     @Override
-    protected String buildResponse(List<GlAccountType> payload,  MessageHandlerCommonReplyStatus replyStatus) {
+    protected String buildResponse(List<GlAccountcatgType> payload,  MessageHandlerCommonReplyStatus replyStatus) {
         if (replyStatus != null) {
             ReplyStatusType rs = MessageHandlerUtility.createReplyStatus(replyStatus);
             this.responseObj.setReplyStatus(rs);    
@@ -298,7 +299,7 @@ public class GlAccountApiHandler extends
         if (payload != null) {
             GlDetailGroup profile = this.jaxbObjFactory.createGlDetailGroup();
             this.responseObj.setProfile(profile);
-            this.responseObj.getProfile().getAccount().addAll(payload);
+            this.responseObj.getProfile().getAccountCategory().addAll(payload);
         }
         
         String xml = this.jaxb.marshalMessage(this.responseObj);

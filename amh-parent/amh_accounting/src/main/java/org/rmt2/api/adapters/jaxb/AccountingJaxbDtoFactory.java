@@ -2,6 +2,7 @@ package org.rmt2.api.adapters.jaxb;
 
 import java.math.BigInteger;
 
+import org.dto.AccountCategoryDto;
 import org.dto.AccountDto;
 import org.dto.AccountTypeDto;
 import org.dto.adapter.orm.account.generalledger.Rmt2AccountDtoFactory;
@@ -31,7 +32,7 @@ public class AccountingJaxbDtoFactory extends RMT2Base {
      *            an instance of {@link GlCriteriaType}
      * @return an instance of {@link AccountDto}
      */
-    public static final AccountDto createGlAccountJaxbCriteriaInstance(GlCriteriaType jaxbCriteria) {
+    public static final AccountDto createGlAccountDtoCriteriaInstance(GlCriteriaType jaxbCriteria) {
         if (jaxbCriteria == null) {
             return null;
         }
@@ -116,7 +117,7 @@ public class AccountingJaxbDtoFactory extends RMT2Base {
      *            an instance of {@link GlCriteriaType}
      * @return an instance of {@link AccountTypeDto}
      */
-    public static final AccountTypeDto createGlAccountTypeJaxbCriteriaInstance(GlCriteriaType jaxbCriteria) {
+    public static final AccountTypeDto createGlAccountTypeDtoCriteriaInstance(GlCriteriaType jaxbCriteria) {
         if (jaxbCriteria == null) {
             return null;
         }
@@ -163,6 +164,77 @@ public class AccountingJaxbDtoFactory extends RMT2Base {
         GlBalancetypeType gbtt = jaxbObjFactory.createGlBalancetypeType();
         gbtt.setAccountBaltypeId(BigInteger.valueOf(dto.getBalanceTypeId()));
         jaxbObj.setBalanceType(gbtt);
+        return jaxbObj;
+    }
+    
+    
+    /**
+     * Creates an instance of <i>AccountCategoryDto</i> using a valid
+     * <i>GlCriteriaType</i> JAXB object.
+     * 
+     * @param criteria
+     *            an instance of {@link GlCriteriaType}
+     * @return an instance of {@link AccountCategoryDto}
+     */
+    public static final AccountCategoryDto createGlAccountCatgDtoCriteriaInstance(GlCriteriaType jaxbCriteria) {
+        if (jaxbCriteria == null) {
+            return null;
+        }
+        AccountCategoryDto dto = Rmt2AccountDtoFactory.createAccountCategoryInstance(null);
+        if (jaxbCriteria.getAcctType() != null) {
+            if (jaxbCriteria.getAcctType().getAcctTypeId() != null) {
+                dto.setAcctTypeId(jaxbCriteria.getAcctType().getAcctTypeId().intValue());    
+            }
+        }
+        
+        if (jaxbCriteria.getAcctCatg() != null) {
+            if (jaxbCriteria.getAcctCatg().getAcctCatgId() != null) {
+                dto.setAcctCatgId(jaxbCriteria.getAcctCatg().getAcctCatgId().intValue());
+            }
+            if (jaxbCriteria.getAcctCatg().getDescription() != null) {
+                dto.setAcctCatgDescription(jaxbCriteria.getAcctCatg().getDescription());
+            }
+        }
+        
+        return dto;
+    }
+    
+    /**
+     * 
+     * @param jaxbObj
+     * @return
+     */
+    public static final AccountCategoryDto createGlAccountCatgDtoInstance(GlAccountcatgType jaxbObj) {
+        if (jaxbObj == null) {
+            return null;
+        }
+        AccountCategoryDto dto = Rmt2AccountDtoFactory.createAccountCategoryInstance(null);
+        if (jaxbObj.getAcctType().getAcctTypeId() != null) {
+            dto.setAcctTypeId(jaxbObj.getAcctType().getAcctTypeId().intValue());
+        }
+        if (jaxbObj.getAcctCatgId() != null) {
+            dto.setAcctCatgId(jaxbObj.getAcctCatgId().intValue());
+        }
+        if (jaxbObj.getDescription() != null) {
+            dto.setAcctCatgDescription(jaxbObj.getDescription());
+        }
+        return dto;
+    }
+    
+    /**
+     * 
+     * @param dto
+     * @return
+     */
+    public static final GlAccountcatgType createGlAccountCatgJaxbInstance(AccountCategoryDto dto) {
+        ObjectFactory jaxbObjFactory = new ObjectFactory();
+        GlAccountcatgType jaxbObj = jaxbObjFactory.createGlAccountcatgType();
+        jaxbObj.setAcctCatgId(BigInteger.valueOf(dto.getAcctCatgId()));
+        jaxbObj.setDescription(dto.getAcctCatgDescription());
+        GlAccounttypeType gatt = jaxbObjFactory.createGlAccounttypeType();
+        gatt.setAcctTypeId(BigInteger.valueOf(dto.getAcctTypeId()));
+        jaxbObj.setAcctType(gatt);
+        jaxbObj.setAcctType(gatt);
         return jaxbObj;
     }
 }
