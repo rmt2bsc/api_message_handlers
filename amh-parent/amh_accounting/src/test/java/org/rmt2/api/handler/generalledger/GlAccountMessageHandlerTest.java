@@ -321,7 +321,7 @@ public class GlAccountMessageHandlerTest extends BaseAccountingMessageHandlerTes
     }
     
     @Test
-    public void testError_Delete_AcctId_Zero() {
+    public void testValidation_Delete_AcctId_Zero() {
         String request = RMT2File.getFileContentsAsString("xml/generalledger/account/AccountDeleteAcctIdZeroRequest.xml");
     try {
         when(this.mockApi.deleteAccount(isA(Integer.class))).thenReturn(1);
@@ -350,7 +350,7 @@ public class GlAccountMessageHandlerTest extends BaseAccountingMessageHandlerTes
     }
     
     @Test
-    public void testError_Delete_AcctId_Blank() {
+    public void testValidation_Delete_AcctId_Blank() {
         String request = RMT2File
                 .getFileContentsAsString("xml/generalledger/account/AccountDeleteAcctIdBlankRequest.xml");
         try {
@@ -381,7 +381,7 @@ public class GlAccountMessageHandlerTest extends BaseAccountingMessageHandlerTes
     }
 
     @Test
-    public void testError_Delete_AcctId_Missing() {
+    public void testValidation_Delete_AcctId_Missing() {
         String request = RMT2File
                 .getFileContentsAsString("xml/generalledger/account/AccountDeleteAcctIdMissingRequest.xml");
         try {
@@ -409,5 +409,35 @@ public class GlAccountMessageHandlerTest extends BaseAccountingMessageHandlerTes
                 .getReturnStatus());
         Assert.assertEquals("A valid account id is required when deleting a GL Account from the database",
                 actualRepsonse.getReplyStatus().getMessage());
+    }
+
+    @Test
+    public void testValidation_InvalidRequest() {
+        String request = RMT2File.getFileContentsAsString("xml/InvalidRequest.xml");
+        try {
+            when(this.mockApi.deleteAccount(isA(Integer.class))).thenReturn(1);
+        } catch (GeneralLedgerApiException e) {
+            Assert.fail("Unable to setup mock stub for deleting a GL Account");
+        }
+
+        MessageHandlerResults results = null;
+        GlAccountApiHandler handler = new GlAccountApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.GL_ACCOUNT_DELETE, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingGeneralLedgerResponse actualRepsonse = (AccountingGeneralLedgerResponse) jaxb
+                .unMarshalMessage(results.getPayload().toString());
+        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus()
+                .getReturnStatus());
+        Assert.assertEquals("An invalid request message was encountered.  Please payload.", actualRepsonse
+                .getReplyStatus().getMessage());
     }
 }
