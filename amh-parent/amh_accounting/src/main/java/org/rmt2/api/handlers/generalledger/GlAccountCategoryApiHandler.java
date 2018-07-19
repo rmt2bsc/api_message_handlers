@@ -34,7 +34,7 @@ import com.api.util.assistants.Verifier;
 import com.api.util.assistants.VerifyException;
 
 /**
- * Handles and routes General Ledger Account related messages to the Accounting
+ * Handles and routes General Ledger Account Category related messages to the Accounting
  * API.
  * 
  * @author roy.terrell
