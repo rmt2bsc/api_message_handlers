@@ -111,7 +111,6 @@ public class GlAccountApiHandler extends
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
-            this.validateRequest(req);
             AccountDto criteriaDto = AccountingJaxbDtoFactory
                     .createGlAccountJaxbCriteriaInstance(req.getCriteria().getCriteria());
             
@@ -157,7 +156,6 @@ public class GlAccountApiHandler extends
         int rc = 0;
         try {
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
-            this.validateRequest(req); 
             AccountDto dataObjDto = AccountingJaxbDtoFactory
                     .createGlAccountDtoInstance(req.getProfile().getAccount().get(0));
             newRec = (dataObjDto.getAcctId() == 0);
@@ -214,7 +212,6 @@ public class GlAccountApiHandler extends
         AccountDto criteriaDto = null;
         try {
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
-            this.validateRequest(req); 
             criteriaDto = AccountingJaxbDtoFactory
                     .createGlAccountDtoInstance(req.getProfile().getAccount().get(0));
             
