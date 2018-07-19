@@ -58,7 +58,7 @@ public class AccountingJaxbDtoFactory extends RMT2Base {
      * @param jaxbObj
      * @return
      */
-    public static final AccountDto createGlAccountJaxbInstance(GlAccountType jaxbObj) {
+    public static final AccountDto createGlAccountDtoInstance(GlAccountType jaxbObj) {
         if (jaxbObj == null) {
             return null;
         }
