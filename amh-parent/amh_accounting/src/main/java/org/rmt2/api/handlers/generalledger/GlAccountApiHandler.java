@@ -95,9 +95,6 @@ public class GlAccountApiHandler extends
 
     /**
      * Handler for invoking the appropriate API in order to fetch one or more GL Account objects.
-     * <p>
-     * This method is capable of processing personal, business, or generic
-     * contact types.
      * 
      * @param req
      *            an instance of {@link AccountingGeneralLedgerRequest}
