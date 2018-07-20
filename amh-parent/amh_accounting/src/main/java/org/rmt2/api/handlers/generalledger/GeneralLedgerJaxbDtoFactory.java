@@ -1,4 +1,4 @@
-package org.rmt2.api.adapters.jaxb;
+package org.rmt2.api.handlers.generalledger;
 
 import java.math.BigInteger;
 
@@ -22,7 +22,7 @@ import com.RMT2Base;
  * @author Roy Terrell.
  * 
  */
-public class AccountingJaxbDtoFactory extends RMT2Base {
+public class GeneralLedgerJaxbDtoFactory extends RMT2Base {
 
     /**
      * Creates an instance of <i>AccountDto</i> using a valid

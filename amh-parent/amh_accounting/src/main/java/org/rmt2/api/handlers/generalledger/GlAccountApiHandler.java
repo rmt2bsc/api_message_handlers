@@ -10,7 +10,6 @@ import org.modules.CommonAccountingConst;
 import org.modules.generalledger.GeneralLedgerApiException;
 import org.modules.generalledger.GeneralLedgerApiFactory;
 import org.modules.generalledger.GlAccountApi;
-import org.rmt2.api.adapters.jaxb.AccountingJaxbDtoFactory;
 import org.rmt2.api.handler.util.MessageHandlerUtility;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
@@ -108,7 +107,7 @@ public class GlAccountApiHandler extends
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
-            AccountDto criteriaDto = AccountingJaxbDtoFactory
+            AccountDto criteriaDto = GeneralLedgerJaxbDtoFactory
                     .createGlAccountDtoCriteriaInstance(req.getCriteria().getCriteria());
             
             List<AccountDto> dtoList = this.api.getAccount(criteriaDto);
@@ -153,7 +152,7 @@ public class GlAccountApiHandler extends
         int rc = 0;
         try {
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
-            AccountDto dataObjDto = AccountingJaxbDtoFactory
+            AccountDto dataObjDto = GeneralLedgerJaxbDtoFactory
                     .createGlAccountDtoInstance(req.getProfile().getAccount().get(0));
             newRec = (dataObjDto.getAcctId() == 0);
             
@@ -209,7 +208,7 @@ public class GlAccountApiHandler extends
         AccountDto criteriaDto = null;
         try {
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
-            criteriaDto = AccountingJaxbDtoFactory
+            criteriaDto = GeneralLedgerJaxbDtoFactory
                     .createGlAccountDtoInstance(req.getProfile().getAccount().get(0));
             
             // call api
@@ -239,7 +238,7 @@ public class GlAccountApiHandler extends
     private List<GlAccountType> buildJaxbListData(List<AccountDto> results) {
         List<GlAccountType> list = new ArrayList<>();
         for (AccountDto item : results) {
-            GlAccountType jaxbObj = AccountingJaxbDtoFactory.createGlAccountJaxbInstance(item);
+            GlAccountType jaxbObj = GeneralLedgerJaxbDtoFactory.createGlAccountJaxbInstance(item);
             list.add(jaxbObj);
         }
         return list;

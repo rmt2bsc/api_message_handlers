@@ -9,7 +9,6 @@ import org.dto.AccountTypeDto;
 import org.modules.CommonAccountingConst;
 import org.modules.generalledger.GeneralLedgerApiFactory;
 import org.modules.generalledger.GlAccountApi;
-import org.rmt2.api.adapters.jaxb.AccountingJaxbDtoFactory;
 import org.rmt2.api.handler.util.MessageHandlerUtility;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
@@ -100,7 +99,7 @@ public class GlAccountTypeApiHandler extends
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             this.validateRequest(req);
-            AccountTypeDto criteriaDto = AccountingJaxbDtoFactory
+            AccountTypeDto criteriaDto = GeneralLedgerJaxbDtoFactory
                     .createGlAccountTypeDtoCriteriaInstance(req.getCriteria().getCriteria());
             
             List<AccountTypeDto> dtoList = this.api.getAccountType(criteriaDto);
@@ -132,7 +131,7 @@ public class GlAccountTypeApiHandler extends
     private List<GlAccounttypeType> buildJaxbListData(List<AccountTypeDto> results) {
         List<GlAccounttypeType> list = new ArrayList<>();
         for (AccountTypeDto item : results) {
-            GlAccounttypeType jaxbObj = AccountingJaxbDtoFactory.createGlAccountTypeJaxbInstance(item);
+            GlAccounttypeType jaxbObj = GeneralLedgerJaxbDtoFactory.createGlAccountTypeJaxbInstance(item);
             list.add(jaxbObj);
         }
         return list;

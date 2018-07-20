@@ -10,7 +10,6 @@ import org.modules.CommonAccountingConst;
 import org.modules.generalledger.GeneralLedgerApiException;
 import org.modules.generalledger.GeneralLedgerApiFactory;
 import org.modules.generalledger.GlAccountApi;
-import org.rmt2.api.adapters.jaxb.AccountingJaxbDtoFactory;
 import org.rmt2.api.handler.util.MessageHandlerUtility;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
@@ -109,7 +108,7 @@ public class GlAccountCategoryApiHandler extends
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
-            AccountCategoryDto criteriaDto = AccountingJaxbDtoFactory
+            AccountCategoryDto criteriaDto = GeneralLedgerJaxbDtoFactory
                     .createGlAccountCatgDtoCriteriaInstance(req.getCriteria().getCriteria());
             
             List<AccountCategoryDto> dtoList = this.api.getAccountCategory(criteriaDto);
@@ -154,7 +153,7 @@ public class GlAccountCategoryApiHandler extends
         int rc = 0;
         try {
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
-            AccountCategoryDto dataObjDto = AccountingJaxbDtoFactory
+            AccountCategoryDto dataObjDto = GeneralLedgerJaxbDtoFactory
                     .createGlAccountCatgDtoInstance(req.getProfile().getAccountCategory().get(0));
             newRec = (dataObjDto.getAcctCatgId() == 0);
             
@@ -210,7 +209,7 @@ public class GlAccountCategoryApiHandler extends
         AccountCategoryDto criteriaDto = null;
         try {
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
-            criteriaDto = AccountingJaxbDtoFactory
+            criteriaDto = GeneralLedgerJaxbDtoFactory
                     .createGlAccountCatgDtoInstance(req.getProfile().getAccountCategory().get(0));
             
             // call api
@@ -240,7 +239,7 @@ public class GlAccountCategoryApiHandler extends
     private List<GlAccountcatgType> buildJaxbListData(List<AccountCategoryDto> results) {
         List<GlAccountcatgType> list = new ArrayList<>();
         for (AccountCategoryDto item : results) {
-            GlAccountcatgType jaxbObj = AccountingJaxbDtoFactory.createGlAccountCatgJaxbInstance(item);
+            GlAccountcatgType jaxbObj = GeneralLedgerJaxbDtoFactory.createGlAccountCatgJaxbInstance(item);
             list.add(jaxbObj);
         }
         return list;
