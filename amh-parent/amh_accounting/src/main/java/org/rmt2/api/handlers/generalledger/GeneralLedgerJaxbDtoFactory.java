@@ -16,8 +16,8 @@ import org.rmt2.jaxb.ObjectFactory;
 import com.RMT2Base;
 
 /**
- * A factory containing several adapter methods for transforming JAXB objects to
- * DTO's.
+ * A factory for converting general ledger related JAXB objects to DTO and vice
+ * versa.
  * 
  * @author Roy Terrell.
  * 
