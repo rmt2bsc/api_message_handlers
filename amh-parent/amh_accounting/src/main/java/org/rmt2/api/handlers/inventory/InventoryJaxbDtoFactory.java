@@ -3,13 +3,20 @@ package org.rmt2.api.handlers.inventory;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import org.dao.mapping.orm.rmt2.ItemMaster;
+import org.dto.ItemMasterDto;
 import org.dto.ItemMasterStatusHistDto;
 import org.dto.adapter.orm.inventory.Rmt2ItemMasterDtoFactory;
+import org.rmt2.jaxb.CreditorType;
 import org.rmt2.jaxb.InventoryItemStatusType;
 import org.rmt2.jaxb.InventoryItemType;
+import org.rmt2.jaxb.InventoryItemtypeType;
 import org.rmt2.jaxb.InventoryStatusHistoryType;
+import org.rmt2.jaxb.ItemCriteriaType;
 import org.rmt2.jaxb.ItemStatusHistoryCriteriaType;
 import org.rmt2.jaxb.ObjectFactory;
+import org.rmt2.jaxb.RecordTrackingType;
+import org.rmt2.util.RecordTrackingTypeBuilder;
 
 import com.RMT2Base;
 import com.api.util.RMT2Date;
@@ -22,6 +29,91 @@ import com.api.util.RMT2Date;
  */
 public class InventoryJaxbDtoFactory extends RMT2Base {
 
+    /**
+     * Creates an instance of <i>ItemMasterDto</i> using a valid
+     * <i>ItemCriteriaType</i> JAXB object.
+     * 
+     * @param criteria
+     *            an instance of {@link ItemCriteriaType}
+     * @return an instance of {@link ItemMasterDto}
+     */
+    public static final ItemMasterDto createItemMasterDtoCriteriaInstance(ItemCriteriaType jaxbCriteria) {
+        if (jaxbCriteria == null) {
+            return null;
+        }
+        ItemMaster nullItemMaster = null;
+        ItemMasterDto dto = Rmt2ItemMasterDtoFactory.createItemMasterInstance(nullItemMaster);
+        if (jaxbCriteria.getItemId() != null) {
+            dto.setItemId(jaxbCriteria.getItemId().intValue());    
+        }
+        if (jaxbCriteria.getItemName() != null) {
+            dto.setItemName(jaxbCriteria.getItemName());    
+        }
+        if (jaxbCriteria.getItemSerialNo() != null) {
+            dto.setItemSerialNo(jaxbCriteria.getItemSerialNo());    
+        }
+        if (jaxbCriteria.getItemType() != null) {
+            if (jaxbCriteria.getItemType().getItemTypeId() != null) {
+                dto.setItemTypeId(jaxbCriteria.getItemType().getItemTypeId().intValue());
+            }
+        }
+        if (jaxbCriteria.getVendor() != null) {
+            if (jaxbCriteria.getVendor().getCreditorId() != null) {
+                dto.setVendorId(jaxbCriteria.getVendor().getCreditorId().intValue());
+            }
+        }
+        if (jaxbCriteria.getMarkup() != null) {
+            dto.setMarkup(jaxbCriteria.getMarkup().doubleValue());
+        }
+        if (jaxbCriteria.getUnitCost() != null) {
+            dto.setUnitCost(jaxbCriteria.getUnitCost().doubleValue());
+        }
+        if (jaxbCriteria.getQtyOnHand() != null) {
+            dto.setQtyOnHand(jaxbCriteria.getQtyOnHand().intValue());
+        }
+        if (jaxbCriteria.getVendorItemNo() != null) {
+            dto.setVendorItemNo(jaxbCriteria.getVendorItemNo());
+        }
+        return dto;
+    }
+    
+    /**
+     * 
+     * @param dto
+     * @return
+     */
+    public static final InventoryItemType createItemMasterJaxbInstance(ItemMasterDto dto) {
+        ObjectFactory jaxbObjFactory = new ObjectFactory();
+        InventoryItemType jaxbObj = jaxbObjFactory.createInventoryItemType();
+        jaxbObj.setItemId(BigInteger.valueOf(dto.getItemId()));
+        
+        CreditorType cred = jaxbObjFactory.createCreditorType();
+        cred.setCreditorId(BigInteger.valueOf(dto.getVendorId()));
+        jaxbObj.setCreditor(cred);
+        
+        jaxbObj.setDescription(dto.getItemName());
+        jaxbObj.setItemSerialNo(dto.getItemSerialNo());
+        jaxbObj.setMarkup(BigDecimal.valueOf(dto.getMarkup()));
+        jaxbObj.setUnitCost(BigDecimal.valueOf(dto.getUnitCost()));
+        
+        InventoryItemtypeType item = jaxbObjFactory.createInventoryItemtypeType();
+        item.setItemTypeId(BigInteger.valueOf(dto.getItemTypeId()));
+        jaxbObj.setItemType(item);
+        
+        jaxbObj.setQtyOnHand(BigInteger.valueOf(dto.getQtyOnHand()));
+        jaxbObj.setVendorItemNo(dto.getVendorItemNo());
+        jaxbObj.setActive(BigInteger.valueOf(dto.getActive()));
+        
+        RecordTrackingType tracking = RecordTrackingTypeBuilder.Builder.create()
+                .withDateCreated(RMT2Date.formatDate(dto.getDateCreated(), "yyyy-MM-dd hh:mm:ss"))
+                .withDateUpdate(RMT2Date.formatDate(dto.getDateUpdated(), "yyyy-MM-dd hh:mm:ss"))
+                .withUserId(dto.getUpdateUserId())
+                .build();
+        
+        jaxbObj.setTracking(tracking);
+        return jaxbObj;
+    }
+    
     /**
      * Creates an instance of <i>ItemMasterStatusHistDto</i> using a valid
      * <i>ItemMasterStatusHistoryType</i> JAXB object.
