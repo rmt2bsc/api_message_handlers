@@ -7,7 +7,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.dto.ItemMasterDto;
 import org.modules.CommonAccountingConst;
-import org.modules.generalledger.GeneralLedgerApiException;
 import org.modules.inventory.InventoryApi;
 import org.modules.inventory.InventoryApiFactory;
 import org.rmt2.api.handler.util.MessageHandlerUtility;
@@ -23,7 +22,6 @@ import org.rmt2.jaxb.ReplyStatusType;
 //import org.slf4j.LoggerFactory;
 
 import com.InvalidDataException;
-import com.NotFoundException;
 import com.api.messaging.InvalidRequestException;
 import com.api.messaging.handler.AbstractJaxbMessageHandler;
 import com.api.messaging.handler.MessageHandlerCommandException;
@@ -153,7 +151,7 @@ public class ItemApiHandler extends
         try {
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             ItemMasterDto dataObjDto = InventoryJaxbDtoFactory
-                    .createItemMasterDtoCriteriaInstance(req.getProfile().getInvItem().get(0));
+                    .createItemMasterDtoInstance(req.getProfile().getInvItem().get(0));
             newRec = (dataObjDto.getItemId() == 0);
             
             // call api
@@ -177,7 +175,7 @@ public class ItemApiHandler extends
             }
             this.api.commitTrans();
             
-        } catch (GeneralLedgerApiException | NotFoundException | InvalidDataException e) {
+        } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to update " + (newRec ? "new" : "existing")  + " Item master");

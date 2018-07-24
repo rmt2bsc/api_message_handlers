@@ -79,6 +79,52 @@ public class InventoryJaxbDtoFactory extends RMT2Base {
     
     /**
      * 
+     * @param jaxbObj
+     * @return
+     */
+    public static final ItemMasterDto createItemMasterDtoInstance(InventoryItemType jaxbObj) {
+        if (jaxbObj == null) {
+            return null;
+        }
+        ItemMaster nullItemMaster = null;
+        ItemMasterDto dto = Rmt2ItemMasterDtoFactory.createItemMasterInstance(nullItemMaster);
+        if (jaxbObj.getItemId() != null) {
+            dto.setItemId(jaxbObj.getItemId().intValue());    
+        }
+        if (jaxbObj.getDescription() != null) {
+            dto.setItemName(jaxbObj.getDescription());    
+        }
+        if (jaxbObj.getItemSerialNo() != null) {
+            dto.setItemSerialNo(jaxbObj.getItemSerialNo());    
+        }
+        if (jaxbObj.getItemType() != null) {
+            if (jaxbObj.getItemType().getItemTypeId() != null) {
+                dto.setItemTypeId(jaxbObj.getItemType().getItemTypeId().intValue());
+            }
+        }
+        if (jaxbObj.getCreditor() != null) {
+            if (jaxbObj.getCreditor().getCreditorId() != null) {
+                dto.setVendorId(jaxbObj.getCreditor().getCreditorId().intValue());
+            }
+        }
+        if (jaxbObj.getMarkup() != null) {
+            dto.setMarkup(jaxbObj.getMarkup().doubleValue());
+        }
+        if (jaxbObj.getUnitCost() != null) {
+            dto.setUnitCost(jaxbObj.getUnitCost().doubleValue());
+        }
+        if (jaxbObj.getQtyOnHand() != null) {
+            dto.setQtyOnHand(jaxbObj.getQtyOnHand().intValue());
+        }
+        if (jaxbObj.getVendorItemNo() != null) {
+            dto.setVendorItemNo(jaxbObj.getVendorItemNo());
+        }
+        
+        return dto;
+    }
+    
+    /**
+     * 
      * @param dto
      * @return
      */
