@@ -1,7 +1,5 @@
 package org.rmt2.api.handlers.generalledger;
 
-import java.math.BigInteger;
-
 import org.dto.AccountCategoryDto;
 import org.dto.AccountDto;
 import org.dto.AccountTypeDto;
@@ -11,7 +9,12 @@ import org.rmt2.jaxb.GlAccountcatgType;
 import org.rmt2.jaxb.GlAccounttypeType;
 import org.rmt2.jaxb.GlBalancetypeType;
 import org.rmt2.jaxb.GlCriteriaType;
-import org.rmt2.jaxb.ObjectFactory;
+import org.rmt2.jaxb.RecordTrackingType;
+import org.rmt2.util.RecordTrackingTypeBuilder;
+import org.rmt2.util.accounting.generalledger.GlAccountBalanceTypeBuilder;
+import org.rmt2.util.accounting.generalledger.GlAccountCategoryTypeBuilder;
+import org.rmt2.util.accounting.generalledger.GlAccountTypeBuilder;
+import org.rmt2.util.accounting.generalledger.GlAccounttypeTypeBuilder;
 
 import com.RMT2Base;
 
@@ -80,6 +83,7 @@ public class GeneralLedgerJaxbDtoFactory extends RMT2Base {
         dto.setAcctNo(jaxbObj.getAccountNo());
         dto.setAcctCode(jaxbObj.getAccountNo());
         dto.setAcctName(jaxbObj.getAccountName());
+        dto.setAcctDescription(jaxbObj.getAccountDescription());
         return dto;
     }
     
@@ -89,23 +93,33 @@ public class GeneralLedgerJaxbDtoFactory extends RMT2Base {
      * @return
      */
     public static final GlAccountType createGlAccountJaxbInstance(AccountDto dto) {
-        ObjectFactory jaxbObjFactory = new ObjectFactory();
-        GlAccountType jaxbObj = jaxbObjFactory.createGlAccountType();
-        jaxbObj.setAcctId(BigInteger.valueOf(dto.getAcctId()));
-        GlAccounttypeType gatt = jaxbObjFactory.createGlAccounttypeType();
-        gatt.setAcctTypeId(BigInteger.valueOf(dto.getAcctTypeId()));
-        jaxbObj.setAcctType(gatt);
-        GlAccountcatgType gact = jaxbObjFactory.createGlAccountcatgType();
-        gact.setAcctCatgId(BigInteger.valueOf(dto.getAcctCatgId()));
-        jaxbObj.setAcctCatg(gact);
-        GlBalancetypeType gbtt = jaxbObjFactory.createGlBalancetypeType();
-        gbtt.setAccountBaltypeId(BigInteger.valueOf(dto.getBalanceTypeId()));
-        jaxbObj.setBalanceType(gbtt);
-        jaxbObj.setAcctSeq(BigInteger.valueOf(dto.getAcctSeq()));
-        jaxbObj.setAccountCode(dto.getAcctCode());
-        jaxbObj.setAccountDescription(dto.getAcctDescription());
-        jaxbObj.setAccountName(dto.getAcctName());
-        jaxbObj.setAccountNo(dto.getAcctNo());
+        RecordTrackingType rtt = RecordTrackingTypeBuilder.Builder.create()
+                .withDateCreated(dto.getDateCreated())
+                .withDateUpdate(dto.getDateUpdated())
+                .withUserId(dto.getUpdateUserId())
+                .withIpCreated(dto.getIpCreated())
+                .withIpUpdate(dto.getIpUpdated()).build();
+        
+        GlAccounttypeType gatt = GlAccounttypeTypeBuilder.Builder.create()
+                .withAcctTypeId(dto.getAcctTypeId()).build();
+        
+        GlAccountcatgType gact = GlAccountCategoryTypeBuilder.Builder.create()
+                .withAcctCatgId(dto.getAcctCatgId()).build();
+        
+        GlBalancetypeType gabt = GlAccountBalanceTypeBuilder.Builder.create()
+                .withAcctBalanceTypeId(dto.getBalanceTypeId()).build();
+        
+        GlAccountType jaxbObj = GlAccountTypeBuilder.Builder.create()
+                .withAcctId(dto.getAcctId())
+                .withAcctSeq(dto.getAcctSeq())
+                .withAccountCode(dto.getAcctCode())
+                .withAccountDescription(dto.getAcctDescription())
+                .withAccountName(dto.getAcctName())
+                .withAccountNumber(dto.getAcctNo())
+                .withAccountType(gatt)
+                .withAccountCategory(gact)
+                .withBalanceType(gabt)
+                .withRecordTrackingType(rtt).build();
         return jaxbObj;
     }
     
@@ -158,12 +172,21 @@ public class GeneralLedgerJaxbDtoFactory extends RMT2Base {
      * @return
      */
     public static final GlAccounttypeType createGlAccountTypeJaxbInstance(AccountTypeDto dto) {
-        ObjectFactory jaxbObjFactory = new ObjectFactory();
-        GlAccounttypeType jaxbObj = jaxbObjFactory.createGlAccounttypeType();
-        jaxbObj.setAcctTypeId(BigInteger.valueOf(dto.getAcctTypeId()));
-        GlBalancetypeType gbtt = jaxbObjFactory.createGlBalancetypeType();
-        gbtt.setAccountBaltypeId(BigInteger.valueOf(dto.getBalanceTypeId()));
-        jaxbObj.setBalanceType(gbtt);
+        RecordTrackingType rtt = RecordTrackingTypeBuilder.Builder.create()
+                .withDateCreated(dto.getDateCreated())
+                .withDateUpdate(dto.getDateUpdated())
+                .withUserId(dto.getUpdateUserId())
+                .withIpCreated(dto.getIpCreated())
+                .withIpUpdate(dto.getIpUpdated()).build();
+        
+        GlBalancetypeType gabt = GlAccountBalanceTypeBuilder.Builder.create()
+                .withAcctBalanceTypeId(dto.getBalanceTypeId()).build();
+        
+        GlAccounttypeType jaxbObj = GlAccounttypeTypeBuilder.Builder.create()
+                .withAcctTypeId(dto.getAcctTypeId())
+                .withDescription(dto.getAcctTypeDescription())
+                .withBalanceType(gabt)
+                .withRecordTrackingType(rtt).build();
         return jaxbObj;
     }
     
@@ -227,14 +250,22 @@ public class GeneralLedgerJaxbDtoFactory extends RMT2Base {
      * @return
      */
     public static final GlAccountcatgType createGlAccountCatgJaxbInstance(AccountCategoryDto dto) {
-        ObjectFactory jaxbObjFactory = new ObjectFactory();
-        GlAccountcatgType jaxbObj = jaxbObjFactory.createGlAccountcatgType();
-        jaxbObj.setAcctCatgId(BigInteger.valueOf(dto.getAcctCatgId()));
-        jaxbObj.setDescription(dto.getAcctCatgDescription());
-        GlAccounttypeType gatt = jaxbObjFactory.createGlAccounttypeType();
-        gatt.setAcctTypeId(BigInteger.valueOf(dto.getAcctTypeId()));
-        jaxbObj.setAcctType(gatt);
-        jaxbObj.setAcctType(gatt);
+        RecordTrackingType rtt = RecordTrackingTypeBuilder.Builder.create()
+                .withDateCreated(dto.getDateCreated())
+                .withDateUpdate(dto.getDateUpdated())
+                .withUserId(dto.getUpdateUserId())
+                .withIpCreated(dto.getIpCreated())
+                .withIpUpdate(dto.getIpUpdated()).build();
+        
+        GlAccounttypeType gatt = GlAccounttypeTypeBuilder.Builder.create()
+                .withAcctTypeId(dto.getAcctTypeId()).build();
+        
+        GlAccountcatgType jaxbObj = GlAccountCategoryTypeBuilder.Builder.create()
+                .withAcctCatgId(dto.getAcctCatgId())
+                .withDescription(dto.getAcctCatgDescription())
+                .withAccountType(gatt)
+                .withRecordTrackingType(rtt).build();
+        
         return jaxbObj;
     }
 }

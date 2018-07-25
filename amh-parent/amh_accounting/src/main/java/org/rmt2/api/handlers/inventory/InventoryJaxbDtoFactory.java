@@ -1,25 +1,19 @@
 package org.rmt2.api.handlers.inventory;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-
 import org.dao.mapping.orm.rmt2.ItemMaster;
 import org.dto.ItemMasterDto;
 import org.dto.ItemMasterStatusHistDto;
 import org.dto.adapter.orm.inventory.Rmt2ItemMasterDtoFactory;
-import org.rmt2.jaxb.CreditorType;
-import org.rmt2.jaxb.InventoryItemStatusType;
 import org.rmt2.jaxb.InventoryItemType;
-import org.rmt2.jaxb.InventoryItemtypeType;
 import org.rmt2.jaxb.InventoryStatusHistoryType;
 import org.rmt2.jaxb.ItemCriteriaType;
 import org.rmt2.jaxb.ItemStatusHistoryCriteriaType;
-import org.rmt2.jaxb.ObjectFactory;
 import org.rmt2.jaxb.RecordTrackingType;
 import org.rmt2.util.RecordTrackingTypeBuilder;
+import org.rmt2.util.accounting.inventory.InventoryItemStatusHistTypeBuilder;
+import org.rmt2.util.accounting.inventory.InventoryItemTypeBuilder;
 
 import com.RMT2Base;
-import com.api.util.RMT2Date;
 
 /**
  * A factory for converting inventory related JAXB objects to DTO and vice versa.
@@ -129,34 +123,25 @@ public class InventoryJaxbDtoFactory extends RMT2Base {
      * @return
      */
     public static final InventoryItemType createItemMasterJaxbInstance(ItemMasterDto dto) {
-        ObjectFactory jaxbObjFactory = new ObjectFactory();
-        InventoryItemType jaxbObj = jaxbObjFactory.createInventoryItemType();
-        jaxbObj.setItemId(BigInteger.valueOf(dto.getItemId()));
-        
-        CreditorType cred = jaxbObjFactory.createCreditorType();
-        cred.setCreditorId(BigInteger.valueOf(dto.getVendorId()));
-        jaxbObj.setCreditor(cred);
-        
-        jaxbObj.setDescription(dto.getItemName());
-        jaxbObj.setItemSerialNo(dto.getItemSerialNo());
-        jaxbObj.setMarkup(BigDecimal.valueOf(dto.getMarkup()));
-        jaxbObj.setUnitCost(BigDecimal.valueOf(dto.getUnitCost()));
-        
-        InventoryItemtypeType item = jaxbObjFactory.createInventoryItemtypeType();
-        item.setItemTypeId(BigInteger.valueOf(dto.getItemTypeId()));
-        jaxbObj.setItemType(item);
-        
-        jaxbObj.setQtyOnHand(BigInteger.valueOf(dto.getQtyOnHand()));
-        jaxbObj.setVendorItemNo(dto.getVendorItemNo());
-        jaxbObj.setActive(BigInteger.valueOf(dto.getActive()));
-        
-        RecordTrackingType tracking = RecordTrackingTypeBuilder.Builder.create()
-                .withDateCreated(RMT2Date.formatDate(dto.getDateCreated(), "yyyy-MM-dd hh:mm:ss"))
-                .withDateUpdate(RMT2Date.formatDate(dto.getDateUpdated(), "yyyy-MM-dd hh:mm:ss"))
+        RecordTrackingType rtt = RecordTrackingTypeBuilder.Builder.create()
+                .withDateCreated(dto.getDateCreated())
+                .withDateUpdate(dto.getDateUpdated())
                 .withUserId(dto.getUpdateUserId())
-                .build();
+                .withIpCreated(dto.getIpCreated())
+                .withIpUpdate(dto.getIpUpdated()).build();
         
-        jaxbObj.setTracking(tracking);
+        InventoryItemType jaxbObj = InventoryItemTypeBuilder.Builder.create()
+                .withItemId(dto.getItemId())
+                .withCreditorId(dto.getVendorId())
+                .withItemName(dto.getItemName())
+                .withItemSerialNo(dto.getItemSerialNo())
+                .withMarkup(dto.getMarkup())
+                .withUnitCost(dto.getUnitCost())
+                .withQtyOnHand(dto.getQtyOnHand())
+                .withVendorItemNo(dto.getVendorItemNo())
+                .withActive(dto.getActive() == 1 ? true : false)
+                .withItemTypeId(dto.getItemTypeId())
+                .withRecordTrackingType(rtt).build();
         return jaxbObj;
     }
     
@@ -229,21 +214,22 @@ public class InventoryJaxbDtoFactory extends RMT2Base {
      * @return
      */
     public static final InventoryStatusHistoryType createStatusHistJaxbInstance(ItemMasterStatusHistDto dto) {
-        ObjectFactory jaxbObjFactory = new ObjectFactory();
-        InventoryStatusHistoryType jaxbObj = jaxbObjFactory.createInventoryStatusHistoryType();
-        jaxbObj.setStatusHistId(BigInteger.valueOf(dto.getEntityId()));
-        jaxbObj.setEffectiveDate(RMT2Date.toXmlDate(dto.getEffectiveDate()));
-        jaxbObj.setEndDate(RMT2Date.toXmlDate(dto.getEndDate()));
-        jaxbObj.setMarkup(BigDecimal.valueOf(dto.getMarkup()));
-        jaxbObj.setUnitCost(BigDecimal.valueOf(dto.getUnitCost()));
+        RecordTrackingType rtt = RecordTrackingTypeBuilder.Builder.create()
+                .withDateCreated(dto.getDateCreated())
+                .withDateUpdate(dto.getDateUpdated())
+                .withUserId(dto.getUpdateUserId())
+                .withIpCreated(dto.getIpCreated())
+                .withIpUpdate(dto.getIpUpdated()).build();
         
-        InventoryItemType item = jaxbObjFactory.createInventoryItemType();
-        item.setItemId(BigInteger.valueOf(dto.getItemId()));
-        jaxbObj.setItem(item);
-        
-        InventoryItemStatusType status = jaxbObjFactory.createInventoryItemStatusType();
-        status.setItemStatusId(BigInteger.valueOf(dto.getItemStatusId()));
-        jaxbObj.setStatus(status);
+        InventoryStatusHistoryType jaxbObj = InventoryItemStatusHistTypeBuilder.Builder.create()
+                .withStatusHistId(dto.getEntityId())
+                .withItemId(dto.getItemId())
+                .withItemStatusId(dto.getItemStatusId(), null)
+                .withEffectiveDate(dto.getEffectiveDate())
+                .withEndDate(dto.getEndDate())
+                .withMarkup(dto.getMarkup())
+                .withUnitCost(dto.getUnitCost())
+                .withRecordTrackingType(rtt).build();
         return jaxbObj;
     }
 }
