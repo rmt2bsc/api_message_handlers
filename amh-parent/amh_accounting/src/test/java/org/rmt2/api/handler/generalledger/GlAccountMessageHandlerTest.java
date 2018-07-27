@@ -19,7 +19,6 @@ import org.modules.generalledger.GlAccountApi;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.rmt2.api.handler.AccountingMockData;
 import org.rmt2.api.handler.BaseAccountingMessageHandlerTest;
 import org.rmt2.api.handlers.generalledger.GlAccountApiHandler;
 import org.rmt2.constants.ApiTransactionCodes;
@@ -93,7 +92,7 @@ public class GlAccountMessageHandlerTest extends BaseAccountingMessageHandlerTes
     @Test
     public void testSuccess_Fetch() {
         String request = RMT2File.getFileContentsAsString("xml/generalledger/account/AccountFetchRequest.xml");
-        List<AccountDto> mockListData = AccountingMockData.createMockGlAccounts();
+        List<AccountDto> mockListData = GlAccountMockData.createMockGlAccounts();
 
         try {
             when(this.mockApi.getAccount(isA(AccountDto.class))).thenReturn(mockListData);

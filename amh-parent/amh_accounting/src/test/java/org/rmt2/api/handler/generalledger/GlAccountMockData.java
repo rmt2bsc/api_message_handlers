@@ -1,4 +1,4 @@
-package org.rmt2.api.handler;
+package org.rmt2.api.handler.generalledger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,9 +12,9 @@ import org.dto.AccountTypeDto;
 import org.dto.adapter.orm.account.generalledger.Rmt2AccountDtoFactory;
 import org.rmt2.api.AccountingMockDataFactory;
 
-public class AccountingMockData {
+public class GlAccountMockData {
 
-    public AccountingMockData() {
+    public GlAccountMockData() {
     }
     
     /**
