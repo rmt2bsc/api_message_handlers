@@ -142,6 +142,53 @@ public class ItemStatusHistoryTypeMessageHandlerTest extends BaseAccountingMessa
     }
     
     @Test
+    public void testSuccess_Fetch_Current() {
+        String request = RMT2File.getFileContentsAsString("xml/inventory/ItemStatusHist/CurrentItemStatusHistoryFetchRequest.xml");
+        List<ItemMasterStatusHistDto> mockListData = InventoryMockData.createMockItemStatusHistoryList();
+
+        try {
+            when(this.mockApi.getCurrentItemStatusHist(isA(Integer.class))).thenReturn(mockListData.get(0));
+        } catch (InventoryApiException e) {
+            Assert.fail("Unable to setup mock stub for fetching a Inventory item status history Type");
+        }
+        
+        MessageHandlerResults results = null;
+        ItemStatusHistoryApiHandler handler = new ItemStatusHistoryApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.INVENTORY_ITEM_CURRENT_STATUS_HIST_GET, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        InventoryResponse actualRepsonse = 
+                (InventoryResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertEquals(1, actualRepsonse.getProfile().getInvItemStatusHist().size());
+        Assert.assertEquals(1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals("Current inventory item status history record found", actualRepsonse.getReplyStatus().getMessage());
+        
+        InventoryStatusHistoryType a = actualRepsonse.getProfile().getInvItemStatusHist().get(0);
+        Assert.assertNotNull(a.getStatusHistId());
+        Assert.assertEquals(10, a.getStatusHistId().intValue());
+        Assert.assertNotNull(a.getItem());
+        Assert.assertNotNull(a.getItem().getItemId());
+        Assert.assertEquals(100, a.getItem().getItemId().intValue());
+        Assert.assertNotNull(a.getStatus());
+        Assert.assertNotNull(a.getStatus().getItemStatusId());
+        Assert.assertEquals(1000, a.getStatus().getItemStatusId().intValue());
+        Assert.assertEquals(12.50, a.getUnitCost().doubleValue(), 0);
+        Assert.assertEquals(3, a.getMarkup().doubleValue(), 0);
+        Date dt = RMT2Date.stringToDate("2017-01-01");
+        Assert.assertEquals(dt, a.getEffectiveDate().toGregorianCalendar().getTime());
+        dt = RMT2Date.stringToDate("2017-03-01");
+        Assert.assertEquals(dt, a.getEndDate().toGregorianCalendar().getTime());
+        Assert.assertEquals("Item Status History Description 1", a.getReason());
+    }
+    
+    @Test
     public void testSuccess_Fetch_NoDataFound() {
         String request = RMT2File.getFileContentsAsString("xml/inventory/ItemStatusHist/ItemStatusHistoryFetchRequest.xml");
         List<ItemMasterStatusHistDto> mockListData = InventoryMockData.createMockItemStatusHistoryList();

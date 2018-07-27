@@ -149,12 +149,14 @@ public class ItemStatusHistoryApiHandler extends
             ItemMasterStatusHistDto criteriaDto = InventoryJaxbDtoFactory
                     .createStatusHistDtoCriteriaInstance(req.getCriteria().getItemStatusHistCriteria());
             
-            List<ItemMasterStatusHistDto> dtoList = this.api.getItemStatusHist(criteriaDto);
-            if (dtoList == null) {
+            ItemMasterStatusHistDto dtoObj = this.api.getCurrentItemStatusHist(criteriaDto.getItemId());
+            if (dtoObj == null) {
                 rs.setMessage("Current inventory item status history data not found!");
                 rs.setReturnCode(0);
             }
             else {
+                List<ItemMasterStatusHistDto> dtoList = new ArrayList<>();
+                dtoList.add(dtoObj);
                 queryDtoResults = this.buildJaxbListData(dtoList);
                 rs.setMessage("Current inventory item status history record found");
                 rs.setReturnCode(dtoList.size());
