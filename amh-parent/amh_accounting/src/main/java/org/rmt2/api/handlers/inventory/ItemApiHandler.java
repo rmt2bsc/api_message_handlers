@@ -110,19 +110,19 @@ public class ItemApiHandler extends
             
             List<ItemMasterDto> dtoList = this.api.getItem(criteriaDto);
             if (dtoList == null) {
-                rs.setMessage("Item master data not found!");
+                rs.setMessage("Inventory item data not found!");
                 rs.setReturnCode(0);
             }
             else {
                 queryDtoResults = this.buildJaxbListData(dtoList);
-                rs.setMessage("Item master record(s) found");
+                rs.setMessage("Inventory item record(s) found");
                 rs.setReturnCode(dtoList.size());
             }
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setMessage("Failure to retrieve GL Account(s)");
+            rs.setMessage("Failure to retrieve inventory item(s)");
             rs.setExtMessage(e.getMessage());
         } finally {
             this.api.close();
@@ -166,11 +166,11 @@ public class ItemApiHandler extends
             // Return code is either the total number of rows updated or the new group id
             rs.setReturnCode(rc);
             if (newRec) {
-                rs.setMessage("Item master was created successfully");
+                rs.setMessage("Inventory item was created successfully");
                 rs.setExtMessage("The new acct id is " + rc);
             }
             else {
-                rs.setMessage("Item master was modified successfully");
+                rs.setMessage("Inventory item was modified successfully");
                 rs.setExtMessage("Total number of rows modified: " + rc);
             }
             this.api.commitTrans();
@@ -178,7 +178,7 @@ public class ItemApiHandler extends
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setMessage("Failure to update " + (newRec ? "new" : "existing")  + " Item master");
+            rs.setMessage("Failure to update " + (newRec ? "new" : "existing")  + " inventory item");
             rs.setExtMessage(e.getMessage());
             updateData = req.getProfile().getInvItem();
             this.api.rollbackTrans();
@@ -214,13 +214,13 @@ public class ItemApiHandler extends
             
             // Return code is either the total number of rows deleted
             rs.setReturnCode(rc);
-            rs.setMessage("Item master was deleted successfully");
-            rs.setExtMessage("The item master id deleted was " + criteriaDto.getItemId());
+            rs.setMessage("Inventory item was deleted successfully");
+            rs.setExtMessage("The inventory item id deleted was " + criteriaDto.getItemId());
             this.api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setMessage("Failure to delelte item master");
+            rs.setMessage("Failure to delete inventory item record");
             rs.setExtMessage(e.getMessage());
             this.api.rollbackTrans();
         } finally {
@@ -248,7 +248,7 @@ public class ItemApiHandler extends
             Verifier.verifyNotNull(req);
         }
         catch (VerifyException e) {
-            throw new InvalidRequestException("Item master message request element is invalid");
+            throw new InvalidRequestException("Inventory item message request element is invalid");
         }
         
         // Validate request for update/delete operation
@@ -260,13 +260,13 @@ public class ItemApiHandler extends
                     Verifier.verifyNotEmpty(req.getProfile().getInvItem());
                 }
                 catch (VerifyException e) {
-                    throw new InvalidRequestException("Item master data is required for update/delete operation");
+                    throw new InvalidRequestException("Inventory item data is required for update/delete operation");
                 }
                 try {
                     Verifier.verifyTrue(req.getProfile().getInvItem().size() == 1);
                 }
                 catch (VerifyException e) {
-                    throw new InvalidRequestException("Only one (1) item master record is required for update/delete operation");
+                    throw new InvalidRequestException("Only one (1) inventory item record is required for update/delete operation");
                 }
                 
                 if (this.command.equals(ApiTransactionCodes.INVENTORY_ITEM_MASTER_DELETE)) {
@@ -275,7 +275,7 @@ public class ItemApiHandler extends
                         Verifier.verifyPositive(req.getProfile().getInvItem().get(0).getItemId());
                     }
                     catch (VerifyException e) {
-                        throw new InvalidRequestException("A valid item id is required when deleting an item master from the database");
+                        throw new InvalidRequestException("A valid item id is required when deleting an inventory item from the database");
                     }   
                 }
                 break;

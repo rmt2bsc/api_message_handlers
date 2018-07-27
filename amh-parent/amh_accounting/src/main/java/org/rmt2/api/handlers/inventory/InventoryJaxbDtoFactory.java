@@ -229,6 +229,7 @@ public class InventoryJaxbDtoFactory extends RMT2Base {
                 .withEndDate(dto.getEndDate())
                 .withMarkup(dto.getMarkup())
                 .withUnitCost(dto.getUnitCost())
+                .withReason(dto.getReason())
                 .withRecordTrackingType(rtt).build();
         return jaxbObj;
     }

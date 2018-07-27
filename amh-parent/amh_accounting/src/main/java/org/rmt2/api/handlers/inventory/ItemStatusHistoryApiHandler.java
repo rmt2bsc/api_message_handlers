@@ -107,19 +107,19 @@ public class ItemStatusHistoryApiHandler extends
             
             List<ItemMasterStatusHistDto> dtoList = this.api.getItemStatusHist(criteriaDto);
             if (dtoList == null) {
-                rs.setMessage("Item master status history data not found!");
+                rs.setMessage("Inventory item status history data not found!");
                 rs.setReturnCode(0);
             }
             else {
                 queryDtoResults = this.buildJaxbListData(dtoList);
-                rs.setMessage("Item master status history record(s) found");
+                rs.setMessage("Inventory item  status history record(s) found");
                 rs.setReturnCode(dtoList.size());
             }
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setMessage("Failure to retrieve item master status history");
+            rs.setMessage("Failure to retrieve inventory item status history");
             rs.setExtMessage(e.getMessage());
         } finally {
             this.api.close();
@@ -151,19 +151,19 @@ public class ItemStatusHistoryApiHandler extends
             
             List<ItemMasterStatusHistDto> dtoList = this.api.getItemStatusHist(criteriaDto);
             if (dtoList == null) {
-                rs.setMessage("Current item master status history data not found!");
+                rs.setMessage("Current inventory item status history data not found!");
                 rs.setReturnCode(0);
             }
             else {
                 queryDtoResults = this.buildJaxbListData(dtoList);
-                rs.setMessage("Current item master status history record found");
+                rs.setMessage("Current inventory item status history record found");
                 rs.setReturnCode(dtoList.size());
             }
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setMessage("Failure to retrieve Current item master status history");
+            rs.setMessage("Failure to retrieve current Inventory item status history");
             rs.setExtMessage(e.getMessage());
         } finally {
             this.api.close();
@@ -190,7 +190,7 @@ public class ItemStatusHistoryApiHandler extends
             Verifier.verifyNotNull(req);
         }
         catch (VerifyException e) {
-            throw new InvalidRequestException("GL Account message request element is invalid");
+            throw new InvalidRequestException("Inventory item status history message request element is invalid");
         }
         
         try {
@@ -198,7 +198,7 @@ public class ItemStatusHistoryApiHandler extends
             Verifier.verifyNotNull(req.getCriteria().getItemStatusHistCriteria());
         }
         catch (VerifyException e) {
-            throw new InvalidRequestException("GL Account data is required for update/delete operation");
+            throw new InvalidRequestException("Inventory item status history selection criteria is required for query operation");
         }
     }
 
