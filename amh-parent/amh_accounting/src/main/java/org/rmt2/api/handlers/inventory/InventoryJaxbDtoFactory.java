@@ -141,6 +141,8 @@ public class InventoryJaxbDtoFactory extends RMT2Base {
                 .withVendorItemNo(dto.getVendorItemNo())
                 .withActive(dto.getActive() == 1 ? true : false)
                 .withItemTypeId(dto.getItemTypeId())
+                .withOverrideRetail(dto.getOverrideRetail())
+                .withRetailPrice(dto.getRetailPrice())
                 .withRecordTrackingType(rtt).build();
         return jaxbObj;
     }

@@ -253,6 +253,15 @@ public class ItemApiHandler extends
         
         // Validate request for update/delete operation
         switch (this.command) {
+            case ApiTransactionCodes.INVENTORY_ITEM_MASTER_GET:
+                try {
+                    Verifier.verifyNotNull(req.getCriteria());
+                    Verifier.verifyNotNull(req.getCriteria().getItemCriteria());
+                }
+                catch (VerifyException e) {
+                    throw new InvalidRequestException("Inventory item selection criteria is required for query operation");
+                }
+                break;
             case ApiTransactionCodes.INVENTORY_ITEM_MASTER_UPDATE:
             case ApiTransactionCodes.INVENTORY_ITEM_MASTER_DELETE:
                 try {

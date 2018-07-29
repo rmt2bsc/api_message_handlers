@@ -1,0 +1,29 @@
+<InventoryRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>accounting</application>
+        <module>inventory</module>
+        <transaction>INCORRECT_TRAN_CODE</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>07/27/2018 12:30:45</delivery_date>
+    </header>
+    <criteria>
+        <item_criteria>
+            <item_id>100</item_id>
+            <item_type>
+                <item_type_id>222</item_type_id>
+            </item_type>
+            <vendor>
+                <creditor_id>1234567</creditor_id>
+            </vendor>
+            <item_name>Dell Computer</item_name>
+            <vendor_item_no>1234-4839</vendor_item_no>
+            <item_serial_no>11111111</item_serial_no>
+            <qty_on_hand>10</qty_on_hand>
+            <unit_cost>150.89</unit_cost>
+            <markup>3</markup>
+            <active>1</active>
+        </item_criteria>
+    </criteria>
+</InventoryRequest>
