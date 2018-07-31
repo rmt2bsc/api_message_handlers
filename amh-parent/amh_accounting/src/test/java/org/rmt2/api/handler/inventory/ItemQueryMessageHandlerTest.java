@@ -41,7 +41,7 @@ import com.api.util.RMT2File;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ AbstractDaoClientImpl.class, Rmt2OrmClientFactory.class,
     ItemApiHandler.class, InventoryApiFactory.class, SystemConfigurator.class })
-public class ItemTypeQueryMessageHandlerTest extends BaseAccountingMessageHandlerTest {
+public class ItemQueryMessageHandlerTest extends BaseAccountingMessageHandlerTest {
 
     private InventoryApiFactory mockApiFactory;
     private InventoryApi mockApi;
@@ -50,7 +50,7 @@ public class ItemTypeQueryMessageHandlerTest extends BaseAccountingMessageHandle
     /**
      * 
      */
-    public ItemTypeQueryMessageHandlerTest() {
+    public ItemQueryMessageHandlerTest() {
         return;
     }
 
