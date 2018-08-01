@@ -1,6 +1,7 @@
 package org.rmt2.api.handlers.inventory;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,6 +88,9 @@ public class ItemApiHandler extends
             case ApiTransactionCodes.INVENTORY_ITEM_MASTER_DEACTIVATE:
                 r = this.deactivate(this.requestObj);
                 break;
+            case ApiTransactionCodes.INVENTORY_ITEM_RETAIL_OVERRIDE_ADD:
+                r = this.addInventoryOverride(this.requestObj);
+                break;
             default:
                 r = this.createErrorReply(MessagingConstants.RETURN_CODE_FAILURE,
                         MessagingConstants.RETURN_STATUS_BAD_REQUEST,
@@ -159,6 +163,44 @@ public class ItemApiHandler extends
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to deactivate inventory item, " + criteriaDto.getItemId());
+            rs.setExtMessage(e.getMessage());
+        } finally {
+            this.api.close();
+        }
+
+        String xml = this.buildResponse(null, rs);
+        results.setPayload(xml);
+        return results;
+    }
+    
+    /**
+     * Handler for invoking the appropriate API in order to add inventory item
+     * retail overrided.
+     * 
+     * @param req
+     *            an instance of {@link InventoryRequest}
+     * @return an instance of {@link MessageHandlerResults}
+     */
+    protected MessageHandlerResults addInventoryOverride(InventoryRequest req) {
+        MessageHandlerResults results = new MessageHandlerResults();
+        MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
+        ItemMasterDto criteriaDto = null;
+
+        try {
+            // Set reply status
+            rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            criteriaDto = InventoryJaxbDtoFactory
+                    .createItemMasterDtoCriteriaInstance(req.getCriteria().getItemCriteria());
+            
+           Integer[] itemIdList = this.getItemIdList(req.getCriteria().getItemCriteria().getItemIdList());
+           int rc = this.api.addInventoryOverride(criteriaDto.getVendorId(), itemIdList);
+           rs.setMessage("Inventory item retail override was applied");
+           rs.setReturnCode(rc);
+            this.responseObj.setHeader(req.getHeader());
+        } catch (Exception e) {
+            logger.error("Error occurred during API Message Handler operation, " + this.command, e );
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
+            rs.setMessage("Failure to apply inventory item retail override, " + criteriaDto.getItemId());
             rs.setExtMessage(e.getMessage());
         } finally {
             this.api.close();
@@ -381,6 +423,18 @@ public class ItemApiHandler extends
         }
     }
 
+    private Integer[] getItemIdList(List<BigInteger> itemId) {
+        if (itemId == null) {
+            return null;
+        }
+        Integer[] list = new Integer[itemId.size()];
+        for (int ndx = 0; ndx < itemId.size(); ndx++) {
+            list[ndx] = itemId.get(ndx).intValue();
+        }
+        return list;
+    }
+    
+    
     @Override
     protected String buildResponse(List<InventoryItemType> payload,  MessageHandlerCommonReplyStatus replyStatus) {
         if (replyStatus != null) {
