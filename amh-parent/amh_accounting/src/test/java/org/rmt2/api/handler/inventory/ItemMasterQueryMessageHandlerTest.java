@@ -267,7 +267,7 @@ public class ItemMasterQueryMessageHandlerTest extends BaseAccountingMessageHand
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus()
                 .getReturnStatus());
-        Assert.assertEquals("Inventory item selection criteria is required for query operation",
+        Assert.assertEquals("Inventory item selection criteria is required for query/delete operation",
                 actualRepsonse.getReplyStatus().getMessage());
         
     }

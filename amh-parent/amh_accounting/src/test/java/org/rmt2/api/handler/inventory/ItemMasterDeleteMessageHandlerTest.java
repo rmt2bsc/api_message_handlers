@@ -4,7 +4,6 @@ import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
-import org.dto.ItemMasterDto;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -38,10 +37,11 @@ import com.api.util.RMT2File;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ AbstractDaoClientImpl.class, Rmt2OrmClientFactory.class,
     ItemApiHandler.class, InventoryApiFactory.class, SystemConfigurator.class })
-public class ItemMasterUpdateMessageHandlerTest extends BaseAccountingMessageHandlerTest {
+public class ItemMasterDeleteMessageHandlerTest extends BaseAccountingMessageHandlerTest {
 
-    private static final int UPDATE_RC_EXISTING = 1;
-    private static final int UPDATE_RC_NEW = 1234567;
+    private static final int ITEM_ID = 100;
+    private static final int RC_EXISTING = 1;
+    private static final int RC_NEW = 1234567;
     private InventoryApiFactory mockApiFactory;
     private InventoryApi mockApi;
 
@@ -49,7 +49,7 @@ public class ItemMasterUpdateMessageHandlerTest extends BaseAccountingMessageHan
     /**
      * 
      */
-    public ItemMasterUpdateMessageHandlerTest() {
+    public ItemMasterDeleteMessageHandlerTest() {
         return;
     }
 
@@ -89,12 +89,11 @@ public class ItemMasterUpdateMessageHandlerTest extends BaseAccountingMessageHan
 
     
     @Test
-    public void testSuccess_Update_Existing() {
-        String request = RMT2File.getFileContentsAsString("xml/inventory/item/ItemUpdateExistingRequest.xml");
+    public void testSuccess() {
+        String request = RMT2File.getFileContentsAsString("xml/inventory/item/ItemDeleteRequest.xml");
 
         try {
-            when(this.mockApi.updateItemMaster(isA(ItemMasterDto.class)))
-                  .thenReturn(UPDATE_RC_EXISTING);
+            when(this.mockApi.deleteItemMaster(isA(Integer.class))).thenReturn(RC_EXISTING);
         } catch (InventoryApiException e) {
             Assert.fail("Unable to setup mock stub for update a Inventory item master Type");
         }
@@ -102,7 +101,7 @@ public class ItemMasterUpdateMessageHandlerTest extends BaseAccountingMessageHan
         MessageHandlerResults results = null;
         ItemApiHandler handler = new ItemApiHandler();
         try {
-            results = handler.processMessage(ApiTransactionCodes.INVENTORY_ITEM_MASTER_UPDATE, request);
+            results = handler.processMessage(ApiTransactionCodes.INVENTORY_ITEM_MASTER_DELETE, request);
         } catch (MessageHandlerCommandException e) {
             e.printStackTrace();
             Assert.fail("An unexpected exception was thrown");
@@ -112,51 +111,22 @@ public class ItemMasterUpdateMessageHandlerTest extends BaseAccountingMessageHan
 
         InventoryResponse actualRepsonse = 
                 (InventoryResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-        Assert.assertEquals(UPDATE_RC_EXISTING, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(RC_EXISTING, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS,
                 actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals("Inventory item was modified successfully",
+        Assert.assertEquals("Inventory item was deleted successfully",
                 actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals("The inventory item id deleted was " + ITEM_ID,
+                actualRepsonse.getReplyStatus().getExtMessage());
     }
     
-    @Test
-    public void testSuccess_Update_New() {
-        String request = RMT2File.getFileContentsAsString("xml/inventory/item/ItemUpdateNewRequest.xml");
-
-        try {
-            when(this.mockApi.updateItemMaster(isA(ItemMasterDto.class)))
-                  .thenReturn(UPDATE_RC_NEW);
-        } catch (InventoryApiException e) {
-            Assert.fail("Unable to setup mock stub for update a Inventory item master Type");
-        }
-        
-        MessageHandlerResults results = null;
-        ItemApiHandler handler = new ItemApiHandler();
-        try {
-            results = handler.processMessage(ApiTransactionCodes.INVENTORY_ITEM_MASTER_UPDATE, request);
-        } catch (MessageHandlerCommandException e) {
-            e.printStackTrace();
-            Assert.fail("An unexpected exception was thrown");
-        }
-        Assert.assertNotNull(results);
-        Assert.assertNotNull(results.getPayload());
-
-        InventoryResponse actualRepsonse = 
-                (InventoryResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-        Assert.assertEquals(UPDATE_RC_NEW, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS,
-                actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals("Inventory item was created successfully",
-                actualRepsonse.getReplyStatus().getMessage());
-    }
-    
+       
     @Test
     public void testSuccess_Fetch_NoDataFound() {
-        String request = RMT2File.getFileContentsAsString("xml/inventory/item/ItemUpdateExistingRequest.xml");
+        String request = RMT2File.getFileContentsAsString("xml/inventory/item/ItemDeleteRequest.xml");
 
         try {
-            when(this.mockApi.updateItemMaster(isA(ItemMasterDto.class)))
-                  .thenReturn(0);
+            when(this.mockApi.deleteItemMaster(isA(Integer.class))).thenReturn(0);
         } catch (InventoryApiException e) {
             Assert.fail("Unable to setup mock stub for update a Inventory item master Type");
         }
@@ -164,7 +134,7 @@ public class ItemMasterUpdateMessageHandlerTest extends BaseAccountingMessageHan
         MessageHandlerResults results = null;
         ItemApiHandler handler = new ItemApiHandler();
         try {
-            results = handler.processMessage(ApiTransactionCodes.INVENTORY_ITEM_MASTER_UPDATE, request);
+            results = handler.processMessage(ApiTransactionCodes.INVENTORY_ITEM_MASTER_DELETE, request);
         } catch (MessageHandlerCommandException e) {
             e.printStackTrace();
             Assert.fail("An unexpected exception was thrown");
@@ -177,16 +147,18 @@ public class ItemMasterUpdateMessageHandlerTest extends BaseAccountingMessageHan
         Assert.assertEquals(0, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS,
                 actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals("Inventory item was modified successfully",
+        Assert.assertEquals("Inventory item was not deleted",
                 actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals("The inventory item id was not found: " + ITEM_ID,
+                actualRepsonse.getReplyStatus().getExtMessage());
     }
     
     @Test
     public void testError_Fetch_API_Error() {
-        String request = RMT2File.getFileContentsAsString("xml/inventory/item/ItemUpdateExistingRequest.xml");
+        String request = RMT2File.getFileContentsAsString("xml/inventory/item/ItemDeleteRequest.xml");
         try {
-            when(this.mockApi.updateItemMaster(isA(ItemMasterDto.class)))
-                 .thenThrow(new InventoryApiException("Test validation error: update system error"));    
+            when(this.mockApi.deleteItemMaster(isA(Integer.class)))
+                 .thenThrow(new InventoryApiException("Test validation error: delete system error"));    
         } catch (InventoryApiException e) {
             Assert.fail("Unable to setup mock stub for update a Inventory item master Type");
         }
@@ -194,7 +166,7 @@ public class ItemMasterUpdateMessageHandlerTest extends BaseAccountingMessageHan
         MessageHandlerResults results = null;
         ItemApiHandler handler = new ItemApiHandler();
         try {
-            results = handler.processMessage(ApiTransactionCodes.INVENTORY_ITEM_MASTER_UPDATE, request);
+            results = handler.processMessage(ApiTransactionCodes.INVENTORY_ITEM_MASTER_DELETE, request);
         } catch (MessageHandlerCommandException e) {
             e.printStackTrace();
             Assert.fail("An unexpected exception was thrown");
@@ -205,26 +177,26 @@ public class ItemMasterUpdateMessageHandlerTest extends BaseAccountingMessageHan
 
         InventoryResponse actualRepsonse = 
                 (InventoryResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-        Assert.assertNotNull(actualRepsonse.getProfile());
+        Assert.assertNull(actualRepsonse.getProfile());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS,
                 actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals("Failure to update existing inventory item",
+        Assert.assertEquals("Failure to delete inventory item record",
                 actualRepsonse.getReplyStatus().getMessage());
-        Assert.assertEquals("Test validation error: update system error",
+        Assert.assertEquals("Test validation error: delete system error",
                 actualRepsonse.getReplyStatus().getExtMessage());
     }
     
   
 
     @Test
-    public void testValidation_Update_Missing_InvItem() {
-        String request = RMT2File.getFileContentsAsString("xml/inventory/item/ItemUpdateMissingProfileRequest1.xml");
+    public void testValidation_Missing_ItemCriteria() {
+        String request = RMT2File.getFileContentsAsString("xml/inventory/item/ItemDeleteMissingCriteriaRequest1.xml");
         
         MessageHandlerResults results = null;
         ItemApiHandler handler = new ItemApiHandler();
         try {
-            results = handler.processMessage(ApiTransactionCodes.INVENTORY_ITEM_MASTER_UPDATE, request);
+            results = handler.processMessage(ApiTransactionCodes.INVENTORY_ITEM_MASTER_DELETE, request);
         } catch (MessageHandlerCommandException e) {
             e.printStackTrace();
             Assert.fail("An unexpected exception was thrown");
@@ -239,46 +211,19 @@ public class ItemMasterUpdateMessageHandlerTest extends BaseAccountingMessageHan
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus()
                 .getReturnStatus());
-        Assert.assertEquals("Inventory item data is required for update operation",
-                actualRepsonse.getReplyStatus().getMessage());
-        
-    }
-
-    @Test
-    public void testValidation_Update_Missing_Profile() {
-        String request = RMT2File.getFileContentsAsString("xml/inventory/item/ItemUpdateMissingProfileRequest2.xml");
-        
-        MessageHandlerResults results = null;
-        ItemApiHandler handler = new ItemApiHandler();
-        try {
-            results = handler.processMessage(ApiTransactionCodes.INVENTORY_ITEM_MASTER_UPDATE, request);
-        } catch (MessageHandlerCommandException e) {
-            e.printStackTrace();
-            Assert.fail("An unexpected exception was thrown");
-        }
-        
-        Assert.assertNotNull(results);
-        Assert.assertNotNull(results.getPayload());
-
-        InventoryResponse actualRepsonse = 
-                (InventoryResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-        Assert.assertNull(actualRepsonse.getProfile());
-        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus()
-                .getReturnStatus());
-        Assert.assertEquals("Inventory item data is required for update operation",
+        Assert.assertEquals("Inventory item selection criteria is required for query/delete operation",
                 actualRepsonse.getReplyStatus().getMessage());
         
     }
     
     @Test
-    public void testValidation_Update_Too_Many_Items_In_Profile() {
-        String request = RMT2File.getFileContentsAsString("xml/inventory/item/ItemUpdateExistingTooManyRequest.xml");
+    public void testValidation_Missing_Criteria() {
+        String request = RMT2File.getFileContentsAsString("xml/inventory/item/ItemDeleteMissingCriteriaRequest2.xml");
         
         MessageHandlerResults results = null;
         ItemApiHandler handler = new ItemApiHandler();
         try {
-            results = handler.processMessage(ApiTransactionCodes.INVENTORY_ITEM_MASTER_UPDATE, request);
+            results = handler.processMessage(ApiTransactionCodes.INVENTORY_ITEM_MASTER_DELETE, request);
         } catch (MessageHandlerCommandException e) {
             e.printStackTrace();
             Assert.fail("An unexpected exception was thrown");
@@ -293,10 +238,13 @@ public class ItemMasterUpdateMessageHandlerTest extends BaseAccountingMessageHan
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus()
                 .getReturnStatus());
-        Assert.assertEquals("Only one (1) inventory item record is required for update operation",
+        Assert.assertEquals("Inventory item selection criteria is required for query/delete operation",
                 actualRepsonse.getReplyStatus().getMessage());
         
     }
+
+   
+  
     
     @Test
     public void testValidation_InvalidRequest() {
@@ -304,7 +252,7 @@ public class ItemMasterUpdateMessageHandlerTest extends BaseAccountingMessageHan
         MessageHandlerResults results = null;
         ItemApiHandler handler = new ItemApiHandler();
         try {
-            results = handler.processMessage(ApiTransactionCodes.INVENTORY_ITEM_MASTER_UPDATE, request);
+            results = handler.processMessage(ApiTransactionCodes.INVENTORY_ITEM_MASTER_DELETE, request);
         } catch (MessageHandlerCommandException e) {
             e.printStackTrace();
             Assert.fail("An unexpected exception was thrown");

@@ -214,8 +214,16 @@ public class ItemApiHandler extends
             
             // Return code is either the total number of rows deleted
             rs.setReturnCode(rc);
-            rs.setMessage("Inventory item was deleted successfully");
-            rs.setExtMessage("The inventory item id deleted was " + criteriaDto.getItemId());
+            
+            if (rc > 0) {
+                rs.setMessage("Inventory item was deleted successfully");
+                rs.setExtMessage("The inventory item id deleted was " + criteriaDto.getItemId());    
+            } 
+            else if (rc == 0) {
+                rs.setMessage("Inventory item was not deleted");
+                rs.setExtMessage("The inventory item id was not found: " + criteriaDto.getItemId());    
+            }
+            
             this.api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
@@ -254,38 +262,38 @@ public class ItemApiHandler extends
         // Validate request for update/delete operation
         switch (this.command) {
             case ApiTransactionCodes.INVENTORY_ITEM_MASTER_GET:
+            case ApiTransactionCodes.INVENTORY_ITEM_MASTER_DELETE:
                 try {
                     Verifier.verifyNotNull(req.getCriteria());
                     Verifier.verifyNotNull(req.getCriteria().getItemCriteria());
                 }
                 catch (VerifyException e) {
-                    throw new InvalidRequestException("Inventory item selection criteria is required for query operation");
+                    throw new InvalidRequestException("Inventory item selection criteria is required for query/delete operation");
+                }
+                if (this.command.equals(ApiTransactionCodes.INVENTORY_ITEM_MASTER_DELETE)) {
+                    try {
+                        Verifier.verifyNotNull(req.getCriteria().getItemCriteria().getItemId());
+                        Verifier.verifyPositive(req.getCriteria().getItemCriteria().getItemId());
+                    }
+                    catch (VerifyException e) {
+                        throw new InvalidRequestException("A valid item id is required when deleting an inventory item from the database");
+                    }   
                 }
                 break;
             case ApiTransactionCodes.INVENTORY_ITEM_MASTER_UPDATE:
-            case ApiTransactionCodes.INVENTORY_ITEM_MASTER_DELETE:
+            
                 try {
                     Verifier.verifyNotNull(req.getProfile());
                     Verifier.verifyNotEmpty(req.getProfile().getInvItem());
                 }
                 catch (VerifyException e) {
-                    throw new InvalidRequestException("Inventory item data is required for update/delete operation");
+                    throw new InvalidRequestException("Inventory item data is required for update operation");
                 }
                 try {
                     Verifier.verifyTrue(req.getProfile().getInvItem().size() == 1);
                 }
                 catch (VerifyException e) {
-                    throw new InvalidRequestException("Only one (1) inventory item record is required for update/delete operation");
-                }
-                
-                if (this.command.equals(ApiTransactionCodes.INVENTORY_ITEM_MASTER_DELETE)) {
-                    try {
-                        Verifier.verifyNotNull(req.getProfile().getInvItem().get(0).getItemId());
-                        Verifier.verifyPositive(req.getProfile().getInvItem().get(0).getItemId());
-                    }
-                    catch (VerifyException e) {
-                        throw new InvalidRequestException("A valid item id is required when deleting an inventory item from the database");
-                    }   
+                    throw new InvalidRequestException("Only one (1) inventory item record is required for update operation");
                 }
                 break;
             default:
