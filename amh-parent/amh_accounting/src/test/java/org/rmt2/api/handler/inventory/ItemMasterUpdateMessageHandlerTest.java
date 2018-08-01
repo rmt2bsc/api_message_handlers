@@ -322,4 +322,66 @@ public class ItemMasterUpdateMessageHandlerTest extends BaseAccountingMessageHan
         Assert.assertEquals("An invalid request message was encountered.  Please payload.", actualRepsonse
                 .getReplyStatus().getMessage());
     }
+    
+    @Test
+    public void testSuccess_Activate() {
+        String request = RMT2File.getFileContentsAsString("xml/inventory/item/ItemActivateRequest.xml");
+
+        try {
+            when(this.mockApi.activateItemMaster(isA(Integer.class))).thenReturn(UPDATE_RC_EXISTING);
+        } catch (InventoryApiException e) {
+            Assert.fail("Unable to setup mock stub for activate a Inventory item master Type");
+        }
+        
+        MessageHandlerResults results = null;
+        ItemApiHandler handler = new ItemApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.INVENTORY_ITEM_MASTER_ACTIVATE, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        InventoryResponse actualRepsonse = 
+                (InventoryResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertEquals(UPDATE_RC_EXISTING, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS,
+                actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals("Inventory item was activated successfully",
+                actualRepsonse.getReplyStatus().getMessage());
+    }
+    
+    @Test
+    public void testError_Activate_Item_Already_Activated() {
+        String request = RMT2File.getFileContentsAsString("xml/inventory/item/ItemActivateRequest.xml");
+
+        try {
+            when(this.mockApi.activateItemMaster(isA(Integer.class)))
+                .thenThrow(new InventoryApiException("Item is already activated"));
+        } catch (InventoryApiException e) {
+            Assert.fail("Unable to setup mock stub for activate a Inventory item master Type");
+        }
+        
+        MessageHandlerResults results = null;
+        ItemApiHandler handler = new ItemApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.INVENTORY_ITEM_MASTER_ACTIVATE, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        InventoryResponse actualRepsonse = 
+                (InventoryResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS,
+                actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals("Failure to activate inventory item, 100",
+                actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals("Item is already activated", actualRepsonse.getReplyStatus().getExtMessage());
+    }
 }

@@ -80,7 +80,9 @@ public class ItemApiHandler extends
                 break;
             case ApiTransactionCodes.INVENTORY_ITEM_MASTER_DELETE:
                 r = this.delete(this.requestObj);
-                
+                break;
+            case ApiTransactionCodes.INVENTORY_ITEM_MASTER_ACTIVATE:
+                r = this.activate(this.requestObj);
                 break;
             default:
                 r = this.createErrorReply(MessagingConstants.RETURN_CODE_FAILURE,
@@ -90,6 +92,43 @@ public class ItemApiHandler extends
         return r;
     }
 
+    /**
+     * Handler for invoking the appropriate API in order to activate an
+     * inventory item.
+     * 
+     * @param req
+     *            an instance of {@link InventoryRequest}
+     * @return an instance of {@link MessageHandlerResults}
+     */
+    protected MessageHandlerResults activate(InventoryRequest req) {
+        MessageHandlerResults results = new MessageHandlerResults();
+        MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
+        ItemMasterDto criteriaDto = null;
+
+        try {
+            // Set reply status
+            rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            criteriaDto = InventoryJaxbDtoFactory
+                    .createItemMasterDtoCriteriaInstance(req.getCriteria().getItemCriteria());
+            
+           int rc = this.api.activateItemMaster(criteriaDto.getItemId());
+           rs.setMessage("Inventory item was activated successfully");
+           rs.setReturnCode(rc);
+            this.responseObj.setHeader(req.getHeader());
+        } catch (Exception e) {
+            logger.error("Error occurred during API Message Handler operation, " + this.command, e );
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
+            rs.setMessage("Failure to activate inventory item, " + criteriaDto.getItemId());
+            rs.setExtMessage(e.getMessage());
+        } finally {
+            this.api.close();
+        }
+
+        String xml = this.buildResponse(null, rs);
+        results.setPayload(xml);
+        return results;
+    }
+    
     /**
      * Handler for invoking the appropriate API in order to fetch one or more Item Master objects.
      * 
@@ -263,6 +302,7 @@ public class ItemApiHandler extends
         switch (this.command) {
             case ApiTransactionCodes.INVENTORY_ITEM_MASTER_GET:
             case ApiTransactionCodes.INVENTORY_ITEM_MASTER_DELETE:
+            case ApiTransactionCodes.INVENTORY_ITEM_MASTER_ACTIVATE:
                 try {
                     Verifier.verifyNotNull(req.getCriteria());
                     Verifier.verifyNotNull(req.getCriteria().getItemCriteria());
