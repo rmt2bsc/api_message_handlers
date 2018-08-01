@@ -1,0 +1,21 @@
+<InventoryRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>accounting</application>
+        <module>inventory</module>
+        <transaction>REMOVE_ITEM_RETAIL_OVERRIDE</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>08/01/2018 16:21:49</delivery_date>
+    </header>
+    <criteria>
+        <item_criteria>
+            <item_id_list>100</item_id_list>
+            <item_id_list>200</item_id_list>
+            <item_id_list>300</item_id_list>
+            <vendor>
+                <creditor_id>1234567</creditor_id>
+            </vendor>
+        </item_criteria>
+    </criteria>
+</InventoryRequest>

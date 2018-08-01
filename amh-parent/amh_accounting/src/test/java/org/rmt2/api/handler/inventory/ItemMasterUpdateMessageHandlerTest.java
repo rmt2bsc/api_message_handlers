@@ -478,4 +478,35 @@ public class ItemMasterUpdateMessageHandlerTest extends BaseAccountingMessageHan
         Assert.assertEquals("Inventory item retail override was applied",
                 actualRepsonse.getReplyStatus().getMessage());
     }
+    
+    @Test
+    public void testSuccess_Remove_Inventory_Retail_Override() {
+        String request = RMT2File.getFileContentsAsString("xml/inventory/item/ItemRetailOverrideRemoveRequest.xml");
+
+        try {
+            when(this.mockApi.removeInventoryOverride(isA(Integer.class),
+                    isA(Integer[].class))).thenReturn(UPDATE_RC_EXISTING);
+        } catch (InventoryApiException e) {
+            Assert.fail("Unable to setup mock stub for adding a Inventory item retail override");
+        }
+        
+        MessageHandlerResults results = null;
+        ItemApiHandler handler = new ItemApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.INVENTORY_ITEM_RETAIL_OVERRIDE_REMOVE, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        InventoryResponse actualRepsonse = 
+                (InventoryResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertEquals(UPDATE_RC_EXISTING, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS,
+                actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals("Inventory item retail override was removed",
+                actualRepsonse.getReplyStatus().getMessage());
+    }
 }
