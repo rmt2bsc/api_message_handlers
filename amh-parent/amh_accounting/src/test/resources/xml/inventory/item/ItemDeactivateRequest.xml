@@ -1,0 +1,16 @@
+<InventoryRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>accounting</application>
+        <module>inventory</module>
+        <transaction>DEACTIVATE_ITEM_MASTER</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>08/01/2018 13:20:14</delivery_date>
+    </header>
+    <criteria>
+        <item_criteria>
+            <item_id>100</item_id>
+        </item_criteria>
+    </criteria>
+</InventoryRequest>

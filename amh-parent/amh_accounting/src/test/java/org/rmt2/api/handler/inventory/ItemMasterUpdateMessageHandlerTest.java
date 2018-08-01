@@ -384,4 +384,66 @@ public class ItemMasterUpdateMessageHandlerTest extends BaseAccountingMessageHan
                 actualRepsonse.getReplyStatus().getMessage());
         Assert.assertEquals("Item is already activated", actualRepsonse.getReplyStatus().getExtMessage());
     }
+    
+    @Test
+    public void testSuccess_Deactivate() {
+        String request = RMT2File.getFileContentsAsString("xml/inventory/item/ItemDeactivateRequest.xml");
+
+        try {
+            when(this.mockApi.deactivateItemMaster(isA(Integer.class))).thenReturn(UPDATE_RC_EXISTING);
+        } catch (InventoryApiException e) {
+            Assert.fail("Unable to setup mock stub for deactivate a Inventory item master Type");
+        }
+        
+        MessageHandlerResults results = null;
+        ItemApiHandler handler = new ItemApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.INVENTORY_ITEM_MASTER_DEACTIVATE, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        InventoryResponse actualRepsonse = 
+                (InventoryResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertEquals(UPDATE_RC_EXISTING, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS,
+                actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals("Inventory item was deactivated successfully",
+                actualRepsonse.getReplyStatus().getMessage());
+    }
+    
+    @Test
+    public void testError_Deactivate_Item_Already_Activated() {
+        String request = RMT2File.getFileContentsAsString("xml/inventory/item/ItemDeactivateRequest.xml");
+
+        try {
+            when(this.mockApi.deactivateItemMaster(isA(Integer.class)))
+                .thenThrow(new InventoryApiException("Item is already deactivated"));
+        } catch (InventoryApiException e) {
+            Assert.fail("Unable to setup mock stub for deactivate a Inventory item master Type");
+        }
+        
+        MessageHandlerResults results = null;
+        ItemApiHandler handler = new ItemApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.INVENTORY_ITEM_MASTER_DEACTIVATE, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        InventoryResponse actualRepsonse = 
+                (InventoryResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS,
+                actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals("Failure to deactivate inventory item, 100",
+                actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals("Item is already deactivated", actualRepsonse.getReplyStatus().getExtMessage());
+    }
 }

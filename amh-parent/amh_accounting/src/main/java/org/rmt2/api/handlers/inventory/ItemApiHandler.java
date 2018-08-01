@@ -84,6 +84,9 @@ public class ItemApiHandler extends
             case ApiTransactionCodes.INVENTORY_ITEM_MASTER_ACTIVATE:
                 r = this.activate(this.requestObj);
                 break;
+            case ApiTransactionCodes.INVENTORY_ITEM_MASTER_DEACTIVATE:
+                r = this.deactivate(this.requestObj);
+                break;
             default:
                 r = this.createErrorReply(MessagingConstants.RETURN_CODE_FAILURE,
                         MessagingConstants.RETURN_STATUS_BAD_REQUEST,
@@ -119,6 +122,43 @@ public class ItemApiHandler extends
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to activate inventory item, " + criteriaDto.getItemId());
+            rs.setExtMessage(e.getMessage());
+        } finally {
+            this.api.close();
+        }
+
+        String xml = this.buildResponse(null, rs);
+        results.setPayload(xml);
+        return results;
+    }
+    
+    /**
+     * Handler for invoking the appropriate API in order to deactivate an
+     * inventory item.
+     * 
+     * @param req
+     *            an instance of {@link InventoryRequest}
+     * @return an instance of {@link MessageHandlerResults}
+     */
+    protected MessageHandlerResults deactivate(InventoryRequest req) {
+        MessageHandlerResults results = new MessageHandlerResults();
+        MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
+        ItemMasterDto criteriaDto = null;
+
+        try {
+            // Set reply status
+            rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            criteriaDto = InventoryJaxbDtoFactory
+                    .createItemMasterDtoCriteriaInstance(req.getCriteria().getItemCriteria());
+            
+           int rc = this.api.deactivateItemMaster(criteriaDto.getItemId());
+           rs.setMessage("Inventory item was deactivated successfully");
+           rs.setReturnCode(rc);
+            this.responseObj.setHeader(req.getHeader());
+        } catch (Exception e) {
+            logger.error("Error occurred during API Message Handler operation, " + this.command, e );
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
+            rs.setMessage("Failure to deactivate inventory item, " + criteriaDto.getItemId());
             rs.setExtMessage(e.getMessage());
         } finally {
             this.api.close();
