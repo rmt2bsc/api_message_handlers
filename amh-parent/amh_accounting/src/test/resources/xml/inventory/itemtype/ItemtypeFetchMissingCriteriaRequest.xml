@@ -1,0 +1,12 @@
+<InventoryRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>accounting</application>
+        <module>inventory</module>
+        <transaction>GET_ITEM_TYPE</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>08/02/2018 12:08:31</delivery_date>
+    </header>
+    <criteria/>
+</InventoryRequest>

@@ -7,9 +7,11 @@ import java.util.List;
 import org.dao.mapping.orm.rmt2.ItemMaster;
 import org.dao.mapping.orm.rmt2.ItemMasterStatus;
 import org.dao.mapping.orm.rmt2.ItemMasterStatusHist;
+import org.dao.mapping.orm.rmt2.ItemMasterType;
 import org.dto.ItemMasterDto;
 import org.dto.ItemMasterStatusDto;
 import org.dto.ItemMasterStatusHistDto;
+import org.dto.ItemMasterTypeDto;
 import org.dto.adapter.orm.inventory.Rmt2InventoryDtoFactory;
 
 import com.SystemException;
@@ -194,6 +196,47 @@ public class InventoryMockData {
 
         o = InventoryMockData.createMockOrmItemMasterStatus(104, "Item Status #5");
         p = Rmt2InventoryDtoFactory.createItemStatusInstance(o);
+        list.add(p);
+        return list;
+    }
+    
+    /**
+     * 
+     * @param id
+     * @param description
+     * @return
+     */
+    public static final ItemMasterType createMockOrmItemMasterType(int id, String description) {
+        ItemMasterType i = new ItemMasterType();
+        i.setItemTypeId(id);
+        i.setDescription(description);
+        return i;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public static final List<ItemMasterTypeDto> createMockItemType() {
+        List<ItemMasterTypeDto> list = new ArrayList<>();
+        ItemMasterType o = InventoryMockData.createMockOrmItemMasterType(100, "Item Type #1");
+        ItemMasterTypeDto p = Rmt2InventoryDtoFactory.createItemTypeInstance(o);
+        list.add(p);
+
+        o = InventoryMockData.createMockOrmItemMasterType(101, "Item Type #2");
+        p = Rmt2InventoryDtoFactory.createItemTypeInstance(o);
+        list.add(p);
+
+        o = InventoryMockData.createMockOrmItemMasterType(102, "Item Type #3");
+        p = Rmt2InventoryDtoFactory.createItemTypeInstance(o);
+        list.add(p);
+
+        o = InventoryMockData.createMockOrmItemMasterType(103, "Item Type #4");
+        p = Rmt2InventoryDtoFactory.createItemTypeInstance(o);
+        list.add(p);
+
+        o = InventoryMockData.createMockOrmItemMasterType(104, "Item Type #5");
+        p = Rmt2InventoryDtoFactory.createItemTypeInstance(o);
         list.add(p);
         return list;
     }
