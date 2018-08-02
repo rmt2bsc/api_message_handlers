@@ -1,0 +1,17 @@
+<InventoryRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>accounting</application>
+        <module>inventory</module>
+        <transaction>INCORRECT_TRAN_CODE</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>08/02/2018 10:57:39</delivery_date>
+    </header>
+    <criteria>
+        <item_status_criteria>
+            <item_status_id>200</item_status_id>
+            <item_status_description>QUOTE</item_status_description>
+        </item_status_criteria>
+    </criteria>
+</InventoryRequest>

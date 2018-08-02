@@ -5,8 +5,10 @@ import java.util.Date;
 import java.util.List;
 
 import org.dao.mapping.orm.rmt2.ItemMaster;
+import org.dao.mapping.orm.rmt2.ItemMasterStatus;
 import org.dao.mapping.orm.rmt2.ItemMasterStatusHist;
 import org.dto.ItemMasterDto;
+import org.dto.ItemMasterStatusDto;
 import org.dto.ItemMasterStatusHistDto;
 import org.dto.adapter.orm.inventory.Rmt2InventoryDtoFactory;
 
@@ -155,6 +157,44 @@ public class InventoryMockData {
         return list;
     }
     
-    
-   
+    /**
+     * 
+     * @param id
+     * @param description
+     * @return
+     */
+    public static final ItemMasterStatus createMockOrmItemMasterStatus(int id, String description) {
+        ItemMasterStatus i = new ItemMasterStatus();
+        i.setItemStatusId(id);
+        i.setDescription(description);
+        return i;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public static final List<ItemMasterStatusDto> createMockItemStatus() {
+        List<ItemMasterStatusDto> list = new ArrayList<>();
+        ItemMasterStatus o = InventoryMockData.createMockOrmItemMasterStatus(100, "Item Status #1");
+        ItemMasterStatusDto p = Rmt2InventoryDtoFactory.createItemStatusInstance(o);
+        list.add(p);
+
+        o = InventoryMockData.createMockOrmItemMasterStatus(101, "Item Status #2");
+        p = Rmt2InventoryDtoFactory.createItemStatusInstance(o);
+        list.add(p);
+
+        o = InventoryMockData.createMockOrmItemMasterStatus(102, "Item Status #3");
+        p = Rmt2InventoryDtoFactory.createItemStatusInstance(o);
+        list.add(p);
+
+        o = InventoryMockData.createMockOrmItemMasterStatus(103, "Item Status #4");
+        p = Rmt2InventoryDtoFactory.createItemStatusInstance(o);
+        list.add(p);
+
+        o = InventoryMockData.createMockOrmItemMasterStatus(104, "Item Status #5");
+        p = Rmt2InventoryDtoFactory.createItemStatusInstance(o);
+        list.add(p);
+        return list;
+    }
 }
