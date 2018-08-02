@@ -5,6 +5,8 @@ import org.dto.ItemMasterDto;
 import org.dto.ItemMasterStatusDto;
 import org.dto.ItemMasterStatusHistDto;
 import org.dto.ItemMasterTypeDto;
+import org.dto.VendorItemDto;
+import org.dto.adapter.orm.inventory.Rmt2InventoryDtoFactory;
 import org.dto.adapter.orm.inventory.Rmt2ItemMasterDtoFactory;
 import org.rmt2.jaxb.InventoryItemStatusType;
 import org.rmt2.jaxb.InventoryItemType;
@@ -15,11 +17,14 @@ import org.rmt2.jaxb.ItemStatusCriteriaType;
 import org.rmt2.jaxb.ItemStatusHistoryCriteriaType;
 import org.rmt2.jaxb.ItemtypeCriteriaType;
 import org.rmt2.jaxb.RecordTrackingType;
+import org.rmt2.jaxb.VendorItemCriteriaType;
+import org.rmt2.jaxb.VendorItemType;
 import org.rmt2.util.RecordTrackingTypeBuilder;
 import org.rmt2.util.accounting.inventory.InventoryItemStatusHistTypeBuilder;
 import org.rmt2.util.accounting.inventory.InventoryItemStatusTypeBuilder;
 import org.rmt2.util.accounting.inventory.InventoryItemTypeBuilder;
 import org.rmt2.util.accounting.inventory.InventoryItemtypeTypeBuilder;
+import org.rmt2.util.accounting.inventory.VendorItemTypeBuilder;
 
 import com.RMT2Base;
 
@@ -365,6 +370,77 @@ public class InventoryJaxbDtoFactory extends RMT2Base {
                 .withItemTypeId(dto.getItemTypeId())
                 .withDescription(dto.getItemTypeDescription())
                 .withRecordTrackingType(rtt).build();
+        return jaxbObj;
+    }
+    
+    /**
+     * Creates an instance of <i>VendorItemDto</i> using a valid
+     * <i>VendorItemCriteriaType</i> JAXB object.
+     * 
+     * @param criteria
+     *            an instance of {@link VendorItemCriteriaType}
+     * @return an instance of {@link VendorItemDto}
+     */
+    public static final VendorItemDto createVendorItemDtoCriteriaInstance(VendorItemCriteriaType jaxbCriteria) {
+        if (jaxbCriteria == null) {
+            return null;
+        }
+        VendorItemDto dto = Rmt2InventoryDtoFactory.createVendorItemInstance(null);
+        if (jaxbCriteria.getItemId() != null) {
+            dto.setItemId(jaxbCriteria.getItemId().intValue());    
+        }
+        if (jaxbCriteria.getCreditorId() != null) {
+            dto.setVendorId(jaxbCriteria.getCreditorId().intValue());
+        }
+        if (jaxbCriteria.getItemSerialNo() != null) {
+            dto.setItemSerialNo(jaxbCriteria.getItemSerialNo());
+        }
+        if (jaxbCriteria.getVendorItemNo() != null) {
+            dto.setVendorItemNo(jaxbCriteria.getVendorItemNo());    
+        }
+        
+        return dto;
+    }
+    
+    /**
+     * 
+     * @param jaxbObj
+     * @return
+     */
+    public static final VendorItemDto createVendorItemDtoInstance(VendorItemType jaxbObj) {
+        if (jaxbObj == null) {
+            return null;
+        }
+        VendorItemDto dto = Rmt2InventoryDtoFactory.createVendorItemInstance(null);
+        if (jaxbObj.getItemId() != null) {
+            dto.setItemId(jaxbObj.getItemId().intValue());    
+        }
+        if (jaxbObj.getCreditor() != null && jaxbObj.getCreditor().getCreditorId() != null) {
+            dto.setVendorId(jaxbObj.getCreditor().getCreditorId().intValue());
+        }
+        if (jaxbObj.getUnitCost() != null) {
+            dto.setUnitCost(jaxbObj.getUnitCost().doubleValue());
+        }
+        dto.setItemTypeDescription(jaxbObj.getDescription());
+        dto.setItemSerialNo(jaxbObj.getItemSerialNo());
+        dto.setVendorItemNo(jaxbObj.getVendorItemNo());
+        return dto;
+    }
+    
+    /**
+     * 
+     * @param dto
+     * @return
+     */
+    public static final VendorItemType createVendorItemTypeJaxbInstance(VendorItemDto dto) {
+        VendorItemType jaxbObj = VendorItemTypeBuilder.Builder.create()
+                .withItemId(dto.getItemId())
+                .withDescription(dto.getItemTypeDescription())
+                .withCreditorId(dto.getVendorId())
+                .withItemSerialNo(dto.getItemSerialNo())
+                .withVendorItemNo(dto.getVendorItemNo())
+                .withUnitCost(dto.getUnitCost()).build();
+
         return jaxbObj;
     }
 }

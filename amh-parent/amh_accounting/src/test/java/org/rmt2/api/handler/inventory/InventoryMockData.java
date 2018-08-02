@@ -8,10 +8,12 @@ import org.dao.mapping.orm.rmt2.ItemMaster;
 import org.dao.mapping.orm.rmt2.ItemMasterStatus;
 import org.dao.mapping.orm.rmt2.ItemMasterStatusHist;
 import org.dao.mapping.orm.rmt2.ItemMasterType;
+import org.dao.mapping.orm.rmt2.VwVendorItems;
 import org.dto.ItemMasterDto;
 import org.dto.ItemMasterStatusDto;
 import org.dto.ItemMasterStatusHistDto;
 import org.dto.ItemMasterTypeDto;
+import org.dto.VendorItemDto;
 import org.dto.adapter.orm.inventory.Rmt2InventoryDtoFactory;
 
 import com.SystemException;
@@ -237,6 +239,68 @@ public class InventoryMockData {
 
         o = InventoryMockData.createMockOrmItemMasterType(104, "Item Type #5");
         p = Rmt2InventoryDtoFactory.createItemTypeInstance(o);
+        list.add(p);
+        return list;
+    }
+    
+    
+    /**
+     * 
+     * @param id
+     * @param serialNo
+     * @param vendorItemNo
+     * @param creditorId
+     * @param description
+     * @param qty
+     * @param unitCost
+     * @param active
+     * @return
+     */
+    public static final VwVendorItems createMockOrmVwVendorItems(int id,
+            String serialNo, String vendorItemNo, int creditorId,
+            String description, int qty, double unitCost) {
+        VwVendorItems i = new VwVendorItems();
+        i.setItemId(id);
+        i.setItemSerialNo(serialNo);
+        i.setVendorItemNo(vendorItemNo);
+        i.setCreditorId(creditorId);
+        i.setDescription(description);
+        i.setQtyOnHand(qty);
+        i.setUnitCost(unitCost);
+        i.setOverrideRetail(0);
+        i.setMarkup(3);
+        return i;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public static final List<VendorItemDto> createMockVendorItem() {
+        List<VendorItemDto> list = new ArrayList<>();
+        VwVendorItems o = InventoryMockData.createMockOrmVwVendorItems(
+                100, "111-111-111", "11111111", 1234, "Item # 1", 5, 1.23);
+        VendorItemDto p = Rmt2InventoryDtoFactory.createVendorItemInstance(o);
+        list.add(p);
+
+        o = InventoryMockData.createMockOrmVwVendorItems(200,
+                "222-222-222", "22222222", 1234, "Item # 2", 15, 0.99);
+        p = Rmt2InventoryDtoFactory.createVendorItemInstance(o);
+        list.add(p);
+
+        o = InventoryMockData.createMockOrmVwVendorItems(300,
+                "333-333-333", "3333333", 1234, "Item # 3", 15, 4.55);
+        p = Rmt2InventoryDtoFactory.createVendorItemInstance(o);
+        list.add(p);
+
+        o = InventoryMockData.createMockOrmVwVendorItems(400,
+                "444-444-444", "4444444", 1234, "Item # 4", 100, 10.99);
+        p = Rmt2InventoryDtoFactory.createVendorItemInstance(o);
+        list.add(p);
+
+        o = InventoryMockData.createMockOrmVwVendorItems(500,
+                "555-555-555", "5555555", 1234, "Item # 5", 55, 32.99);
+        p = Rmt2InventoryDtoFactory.createVendorItemInstance(o);
         list.add(p);
         return list;
     }
