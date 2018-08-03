@@ -435,7 +435,7 @@ public class InventoryJaxbDtoFactory extends RMT2Base {
     public static final VendorItemType createVendorItemTypeJaxbInstance(VendorItemDto dto) {
         VendorItemType jaxbObj = VendorItemTypeBuilder.Builder.create()
                 .withItemId(dto.getItemId())
-                .withDescription(dto.getItemTypeDescription())
+                .withDescription(dto.getItemName())
                 .withCreditorId(dto.getVendorId())
                 .withItemSerialNo(dto.getItemSerialNo())
                 .withVendorItemNo(dto.getVendorItemNo())

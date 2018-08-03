@@ -279,27 +279,27 @@ public class InventoryMockData {
     public static final List<VendorItemDto> createMockVendorItem() {
         List<VendorItemDto> list = new ArrayList<>();
         VwVendorItems o = InventoryMockData.createMockOrmVwVendorItems(
-                100, "111-111-111", "11111111", 1234, "Item # 1", 5, 1.23);
+                100, "123-456-789-0", "1234560", 1234, "Item #1", 5, 1.23);
         VendorItemDto p = Rmt2InventoryDtoFactory.createVendorItemInstance(o);
         list.add(p);
 
         o = InventoryMockData.createMockOrmVwVendorItems(200,
-                "222-222-222", "22222222", 1234, "Item # 2", 15, 0.99);
+                "123-456-789-1", "1234561", 1234, "Item #2", 15, 0.99);
         p = Rmt2InventoryDtoFactory.createVendorItemInstance(o);
         list.add(p);
 
         o = InventoryMockData.createMockOrmVwVendorItems(300,
-                "333-333-333", "3333333", 1234, "Item # 3", 15, 4.55);
+                "123-456-789-2", "1234562", 1234, "Item #3", 15, 4.55);
         p = Rmt2InventoryDtoFactory.createVendorItemInstance(o);
         list.add(p);
 
         o = InventoryMockData.createMockOrmVwVendorItems(400,
-                "444-444-444", "4444444", 1234, "Item # 4", 100, 10.99);
+                "123-456-789-3", "1234563", 1234, "Item #4", 100, 10.99);
         p = Rmt2InventoryDtoFactory.createVendorItemInstance(o);
         list.add(p);
 
         o = InventoryMockData.createMockOrmVwVendorItems(500,
-                "555-555-555", "5555555", 1234, "Item # 5", 55, 32.99);
+                "123-456-789-4", "1234564", 1234, "Item #5", 55, 32.99);
         p = Rmt2InventoryDtoFactory.createVendorItemInstance(o);
         list.add(p);
         return list;
