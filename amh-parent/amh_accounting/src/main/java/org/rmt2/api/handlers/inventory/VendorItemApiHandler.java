@@ -75,6 +75,9 @@ public class VendorItemApiHandler extends
             case ApiTransactionCodes.INVENTORY_VENDOR_ITEM_GET:
                 r = this.fetch(this.requestObj);
                 break;
+            case ApiTransactionCodes.INVENTORY_VENDOR_ASSIGNED_ITEMS_GET:
+                r = this.fetchVendorAssignedItems(this.requestObj);
+                break;
             default:
                 r = this.createErrorReply(MessagingConstants.RETURN_CODE_FAILURE,
                         MessagingConstants.RETURN_STATUS_BAD_REQUEST,
@@ -129,7 +132,50 @@ public class VendorItemApiHandler extends
         return results;
     }
     
-   
+    /**
+     * Handler for invoking the appropriate API in order to fetch one or more
+     * Vendor Assigned Item type ojects.
+     * 
+     * @param req
+     *            an instance of {@link InventoryRequest}
+     * @return an instance of {@link MessageHandlerResults}
+     */
+    protected MessageHandlerResults fetchVendorAssignedItems(InventoryRequest req) {
+        MessageHandlerResults results = new MessageHandlerResults();
+        MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
+        List<VendorItemType> queryDtoResults = null;
+        int vendorId = 0;
+        try {
+            // Set reply status
+            rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            VendorItemDto criteriaDto = InventoryJaxbDtoFactory
+                    .createVendorItemDtoCriteriaInstance(req.getCriteria().getVendorItemCriteria());
+            vendorId = criteriaDto.getVendorId();
+            List<VendorItemDto> dtoList = this.api.getVendorAssignItems(criteriaDto.getVendorId());
+            if (dtoList == null) {
+                rs.setMessage("Vendor assigned item data not found for vendor id, " + vendorId);
+                rs.setReturnCode(0);
+            }
+            else {
+                queryDtoResults = this.buildJaxbListData(dtoList);
+                rs.setMessage("Vendor assigned item record(s) found for vendor id, " + vendorId);
+                rs.setReturnCode(dtoList.size());
+            }
+            this.responseObj.setHeader(req.getHeader());
+        } catch (Exception e) {
+            logger.error("Error occurred during API Message Handler operation, " + this.command, e );
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
+            rs.setMessage("Failure to retrieve vendor assigned item data for vendor id, " + vendorId);
+            rs.setExtMessage(e.getMessage());
+        } finally {
+            this.api.close();
+        }
+
+        String xml = this.buildResponse(queryDtoResults, rs);
+        results.setPayload(xml);
+        return results;
+    }
+    
     private List<VendorItemType> buildJaxbListData(List<VendorItemDto> results) {
         List<VendorItemType> list = new ArrayList<>();
         for (VendorItemDto item : results) {
@@ -138,7 +184,6 @@ public class VendorItemApiHandler extends
         }
         return list;
     }
-    
    
     
     @Override
@@ -156,6 +201,15 @@ public class VendorItemApiHandler extends
         }
         catch (VerifyException e) {
             throw new InvalidRequestException("Vendor item selection criteria is required for query operation");
+        }
+        
+        if (this.command.equals(ApiTransactionCodes.INVENTORY_VENDOR_ASSIGNED_ITEMS_GET)) {
+            try {
+                Verifier.verifyNotNull(req.getCriteria().getVendorItemCriteria().getCreditorId());
+            }
+            catch (VerifyException e) {
+                throw new InvalidRequestException("Creditor Id criteria is required for vendor assigned item query operation");
+            }
         }
     }
 

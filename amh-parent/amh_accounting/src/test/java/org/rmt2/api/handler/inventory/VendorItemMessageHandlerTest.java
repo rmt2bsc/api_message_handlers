@@ -43,7 +43,7 @@ import com.api.util.RMT2File;
 @PrepareForTest({ AbstractDaoClientImpl.class, Rmt2OrmClientFactory.class,
     VendorItemApiHandler.class, InventoryApiFactory.class, SystemConfigurator.class })
 public class VendorItemMessageHandlerTest extends BaseAccountingMessageHandlerTest {
-
+    private static final int CREDITOR_ID = 1234567;
     private InventoryApiFactory mockApiFactory;
     private InventoryApi mockApi;
 
@@ -131,7 +131,53 @@ public class VendorItemMessageHandlerTest extends BaseAccountingMessageHandlerTe
         }
     }
     
- 
+    @Test
+    public void testSuccess_FetchVendorAssignedItems() {
+        String request = RMT2File.getFileContentsAsString("xml/inventory/vendoritem/VendorAssignedItemFetchRequest.xml");
+        List<VendorItemDto> mockListData = InventoryMockData.createMockVendorItem();
+
+        // Set creditor id the same for all items.
+        for (VendorItemDto item : mockListData) {
+            item.setVendorId(CREDITOR_ID);
+        }
+        
+        try {
+            when(this.mockApi.getVendorAssignItems(isA(Integer.class))).thenReturn(mockListData);
+        } catch (InventoryApiException e) {
+            Assert.fail("Unable to setup mock stub for fetching a vendor assigned items");
+        }
+        
+        MessageHandlerResults results = null;
+        VendorItemApiHandler handler = new VendorItemApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.INVENTORY_VENDOR_ASSIGNED_ITEMS_GET, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        InventoryResponse actualRepsonse = 
+                (InventoryResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertEquals(5, actualRepsonse.getProfile().getVendorItem().size());
+        Assert.assertEquals(5, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals("Vendor assigned item record(s) found for vendor id, "  + CREDITOR_ID,
+                actualRepsonse.getReplyStatus().getMessage());
+        
+        for (int ndx = 0; ndx < actualRepsonse.getProfile().getVendorItem().size(); ndx++) {
+            VendorItemType a = actualRepsonse.getProfile().getVendorItem().get(ndx);
+            Assert.assertNotNull(a.getItemId());
+            Assert.assertEquals(100 * (ndx + 1), a.getItemId().intValue());
+            Assert.assertEquals(CREDITOR_ID, a.getCreditor().getCreditorId().intValue());
+            Assert.assertEquals("123-456-789-" + ndx, a.getItemSerialNo());
+            Assert.assertEquals("123456" + ndx, a.getVendorItemNo());
+            Assert.assertNotNull(a.getDescription());
+            Assert.assertEquals("Item #" + (ndx + 1), a.getDescription());
+        }
+    }
+    
     @Test
     public void testSuccess_Fetch_NoDataFound() {
         String request = RMT2File.getFileContentsAsString("xml/inventory/vendoritem/VendorItemFetchRequest.xml");
@@ -249,6 +295,56 @@ public class VendorItemMessageHandlerTest extends BaseAccountingMessageHandlerTe
                 actualRepsonse.getReplyStatus().getMessage());
     }
 
+    @Test
+    public void testValidation_Fetch_VendorAssignedItems_CreditorId_Missing() {
+        String request = RMT2File.getFileContentsAsString("xml/inventory/vendoritem/VendorAssignedItemFetchMissingCreditorIdRequest.xml");
+        MessageHandlerResults results = null;
+        VendorItemApiHandler handler = new VendorItemApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.INVENTORY_VENDOR_ASSIGNED_ITEMS_GET, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        InventoryResponse actualRepsonse = 
+                (InventoryResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus()
+                .getReturnStatus());
+        Assert.assertEquals("Creditor Id criteria is required for vendor assigned item query operation",
+                actualRepsonse.getReplyStatus().getMessage());
+    }
+    
+    @Test
+    public void testValidation_Fetch_VendorAssignedItems_Criteria_Missing() {
+        String request = RMT2File.getFileContentsAsString("xml/inventory/vendoritem/VendorAssignedItemFetchMissingCriteriaRequest.xml");
+        MessageHandlerResults results = null;
+        VendorItemApiHandler handler = new VendorItemApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.INVENTORY_VENDOR_ASSIGNED_ITEMS_GET, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        InventoryResponse actualRepsonse = 
+                (InventoryResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus()
+                .getReturnStatus());
+        Assert.assertEquals("Vendor item selection criteria is required for query operation",
+                actualRepsonse.getReplyStatus().getMessage());
+    }
+    
     @Test
     public void testValidation_InvalidRequest() {
         String request = RMT2File.getFileContentsAsString("xml/InvalidRequest.xml");

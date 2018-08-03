@@ -42,7 +42,7 @@ import com.api.util.RMT2File;
 @PrepareForTest({ AbstractDaoClientImpl.class, Rmt2OrmClientFactory.class,
     ItemApiHandler.class, InventoryApiFactory.class, SystemConfigurator.class })
 public class ItemMasterQueryMessageHandlerTest extends BaseAccountingMessageHandlerTest {
-
+    private static final int CREDITOR_ID = 1234567;
     private InventoryApiFactory mockApiFactory;
     private InventoryApi mockApi;
 
@@ -127,6 +127,65 @@ public class ItemMasterQueryMessageHandlerTest extends BaseAccountingMessageHand
             Assert.assertNotNull(a.getCreditor());
             Assert.assertNotNull(a.getCreditor().getCreditorId());
             Assert.assertEquals(1351 + ndx, a.getCreditor().getCreditorId().intValue());
+            Assert.assertEquals("Item" + (ndx + 1), a.getDescription());
+            Assert.assertEquals("10" + ndx + "-111-111", a.getItemSerialNo());
+            Assert.assertEquals("1111111" + ndx, a.getVendorItemNo());
+            Assert.assertNotNull(a.getItemType());
+            Assert.assertNotNull(a.getItemType().getItemTypeId());
+            Assert.assertEquals(1, a.getItemType().getItemTypeId().intValue());
+            Assert.assertEquals(0, a.getOverrideRetail().intValue());
+            Assert.assertEquals(1, a.getActive().intValue());
+            Assert.assertEquals((a.getQtyOnHand().intValue() * a.getUnitCost().doubleValue())
+                            * a.getMarkup().doubleValue(), a.getRetailPrice().doubleValue(), 0);
+            Assert.assertEquals(1 + ndx, a.getQtyOnHand().intValue());
+            Assert.assertEquals(1.23, a.getUnitCost().doubleValue(), 0);
+            Assert.assertEquals(5, a.getMarkup().doubleValue(), 0);
+        }
+    }
+    
+    @Test
+    public void testSuccess_Fetch_VendorUnassignedItems() {
+        String request = RMT2File.getFileContentsAsString("xml/inventory/vendoritem/VendorUnassignedItemFetchRequest.xml");
+        List<ItemMasterDto> mockListData = InventoryMockData.createMockItemMasterList();
+        
+        // Set creditor id the same for all items.
+        for (ItemMasterDto item : mockListData) {
+            item.setVendorId(CREDITOR_ID);
+        }
+
+        try {
+            when(this.mockApi.getVendorUnassignItems(isA(Integer.class))).thenReturn(mockListData);
+        } catch (InventoryApiException e) {
+            Assert.fail("Unable to setup mock stub for fetching a Vendor Unassigned items");
+        }
+        
+        MessageHandlerResults results = null;
+        ItemApiHandler handler = new ItemApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.INVENTORY_VENDOR_UNASSIGNED_ITEMS_GET, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        InventoryResponse actualRepsonse = 
+                (InventoryResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertEquals(5, actualRepsonse.getProfile().getInvItem().size());
+        Assert.assertEquals(5, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS,
+                actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals("Vendor unassigned item record(s) found for vendor id, " + CREDITOR_ID,
+                actualRepsonse.getReplyStatus().getMessage());
+        
+        for (int ndx = 0; ndx < actualRepsonse.getProfile().getInvItem().size(); ndx++) {
+            InventoryItemType a = actualRepsonse.getProfile().getInvItem().get(ndx);
+            Assert.assertNotNull(a.getItemId());
+            Assert.assertEquals(100 + ndx, a.getItemId().intValue());
+            Assert.assertNotNull(a.getCreditor());
+            Assert.assertNotNull(a.getCreditor().getCreditorId());
+            Assert.assertEquals(CREDITOR_ID, a.getCreditor().getCreditorId().intValue());
             Assert.assertEquals("Item" + (ndx + 1), a.getDescription());
             Assert.assertEquals("10" + ndx + "-111-111", a.getItemSerialNo());
             Assert.assertEquals("1111111" + ndx, a.getVendorItemNo());
@@ -269,9 +328,60 @@ public class ItemMasterQueryMessageHandlerTest extends BaseAccountingMessageHand
                 .getReturnStatus());
         Assert.assertEquals("Inventory item selection criteria is required for query/delete operation",
                 actualRepsonse.getReplyStatus().getMessage());
+    }
+    
+    @Test
+    public void testValidation_Fetch_VendorUnassignedItems_CreditorId_Missing() {
+        String request = RMT2File.getFileContentsAsString("xml/inventory/vendoritem/VendorUnassignedItemFetchMissingCreditorIdRequest.xml");
         
+        MessageHandlerResults results = null;
+        ItemApiHandler handler = new ItemApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.INVENTORY_VENDOR_UNASSIGNED_ITEMS_GET, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        InventoryResponse actualRepsonse = 
+                (InventoryResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus()
+                .getReturnStatus());
+        Assert.assertEquals("Vendor Id is required for vendor unassigned item query operation",
+                actualRepsonse.getReplyStatus().getMessage());
     }
 
+    @Test
+    public void testValidation_Fetch_VendorUnassignedItems_Criteria_Missing() {
+        String request = RMT2File.getFileContentsAsString("xml/inventory/vendoritem/VendorUnassignedItemFetchMissingCriteriaRequest.xml");
+        
+        MessageHandlerResults results = null;
+        ItemApiHandler handler = new ItemApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.INVENTORY_VENDOR_UNASSIGNED_ITEMS_GET, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        InventoryResponse actualRepsonse = 
+                (InventoryResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus()
+                .getReturnStatus());
+        Assert.assertEquals("Vendor item selection criteria is required",
+                actualRepsonse.getReplyStatus().getMessage());
+    }
+    
     @Test
     public void testValidation_InvalidRequest() {
         String request = RMT2File.getFileContentsAsString("xml/InvalidRequest.xml");

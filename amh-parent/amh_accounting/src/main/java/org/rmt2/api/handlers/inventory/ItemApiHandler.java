@@ -94,6 +94,9 @@ public class ItemApiHandler extends
             case ApiTransactionCodes.INVENTORY_ITEM_RETAIL_OVERRIDE_REMOVE:
                 r = this.removeInventoryOverride(this.requestObj);
                 break;
+            case ApiTransactionCodes.INVENTORY_VENDOR_UNASSIGNED_ITEMS_GET:
+                r = this.fetchVendorUnassginedItems(this.requestObj);
+                break;
             default:
                 r = this.createErrorReply(MessagingConstants.RETURN_CODE_FAILURE,
                         MessagingConstants.RETURN_STATUS_BAD_REQUEST,
@@ -296,6 +299,49 @@ public class ItemApiHandler extends
     }
     
     /**
+     * Handler for invoking the appropriate API in order to fetch one or more
+     * Vendor Unassigned Items.
+     * 
+     * @param req
+     *            an instance of {@link InventoryRequest}
+     * @return an instance of {@link MessageHandlerResults}
+     */
+    protected MessageHandlerResults fetchVendorUnassginedItems(InventoryRequest req) {
+        MessageHandlerResults results = new MessageHandlerResults();
+        MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
+        List<InventoryItemType> queryDtoResults = null;
+        int vendorId = 0;
+        try {
+            // Set reply status
+            rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            vendorId = req.getCriteria().getVendorItemCriteria().getCreditorId().intValue();
+            
+            List<ItemMasterDto> dtoList = this.api.getVendorUnassignItems(vendorId);
+            if (dtoList == null) {
+                rs.setMessage("Vendor unassigned item data not found for vendor id, " + vendorId);
+                rs.setReturnCode(0);
+            }
+            else {
+                queryDtoResults = this.buildJaxbListData(dtoList);
+                rs.setMessage("Vendor unassigned item record(s) found for vendor id, " + vendorId);
+                rs.setReturnCode(dtoList.size());
+            }
+            this.responseObj.setHeader(req.getHeader());
+        } catch (Exception e) {
+            logger.error("Error occurred during API Message Handler operation, " + this.command, e );
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
+            rs.setMessage("Failure to retrieve Vendor unassigned item(s) for vendor id, " + vendorId);
+            rs.setExtMessage(e.getMessage());
+        } finally {
+            this.api.close();
+        }
+
+        String xml = this.buildResponse(queryDtoResults, rs);
+        results.setPayload(xml);
+        return results;
+    }
+    
+    /**
      * Handler for invoking the appropriate API in order to update the specified
      * GL Account.
      * 
@@ -445,6 +491,23 @@ public class ItemApiHandler extends
                     }   
                 }
                 break;
+                
+            case ApiTransactionCodes.INVENTORY_VENDOR_UNASSIGNED_ITEMS_GET:
+                try {
+                    Verifier.verifyNotNull(req.getCriteria());
+                    Verifier.verifyNotNull(req.getCriteria().getVendorItemCriteria());
+                }
+                catch (VerifyException e) {
+                    throw new InvalidRequestException("Vendor item selection criteria is required");
+                }
+                try {
+                    Verifier.verifyNotNull(req.getCriteria().getVendorItemCriteria().getCreditorId());
+                }
+                catch (VerifyException e) {
+                    throw new InvalidRequestException("Vendor Id is required for vendor unassigned item query operation");
+                }
+                break;
+
             case ApiTransactionCodes.INVENTORY_ITEM_MASTER_UPDATE:
             
                 try {
