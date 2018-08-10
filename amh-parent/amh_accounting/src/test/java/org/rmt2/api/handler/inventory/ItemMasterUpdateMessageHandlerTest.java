@@ -509,4 +509,52 @@ public class ItemMasterUpdateMessageHandlerTest extends BaseAccountingMessageHan
         Assert.assertEquals("Inventory item retail override was removed",
                 actualRepsonse.getReplyStatus().getMessage());
     }
+    
+    @Test
+    public void testValidation_Add_Inventory_Retail_Override_Items_Empty() {
+        String request = RMT2File.getFileContentsAsString("xml/inventory/item/ItemRetailOverrideAddEmptyItemsRequest.xml");
+        MessageHandlerResults results = null;
+        ItemApiHandler handler = new ItemApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.INVENTORY_ITEM_RETAIL_OVERRIDE_ADD, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        InventoryResponse actualRepsonse = 
+                (InventoryResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_FAILURE,
+                actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST,
+                actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals("A valid list of item id's is required when adding or removing item retail override",
+                actualRepsonse.getReplyStatus().getMessage());
+    }
+    
+    @Test
+    public void testValidation_Add_Inventory_Retail_Override_Items_Null() {
+        String request = RMT2File.getFileContentsAsString("xml/inventory/item/ItemRetailOverrideAddNullItemsRequest.xml");
+        MessageHandlerResults results = null;
+        ItemApiHandler handler = new ItemApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.INVENTORY_ITEM_RETAIL_OVERRIDE_ADD, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        InventoryResponse actualRepsonse = 
+                (InventoryResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_FAILURE,
+                actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST,
+                actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals("A valid list of item id's is required when adding or removing item retail override",
+                actualRepsonse.getReplyStatus().getMessage());
+    }
 }
