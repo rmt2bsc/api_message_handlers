@@ -6,13 +6,24 @@
         <transaction>REMOVE_ITEM_RETAIL_OVERRIDE</transaction>
         <delivery_mode>XXXXXXX</delivery_mode>
         <message_mode>REQUEST</message_mode>
-        <delivery_date>08/01/2018 16:21:49</delivery_date>
+        <delivery_date>08/09/2018 03:10:59</delivery_date>
     </header>
     <criteria>
         <item_criteria>
-            <item_id_list>100</item_id_list>
-            <item_id_list>200</item_id_list>
-            <item_id_list>300</item_id_list>
+            <items>
+                <item>
+                    <item_id>100</item_id>
+                    <item_name>Iten Name 1</item_name>
+                </item>
+                <item>
+                    <item_id>200</item_id>
+                    <item_name>Iten Name 2</item_name>
+                </item>
+                <item>
+                    <item_id>300</item_id>
+                    <item_name>Iten Name 3</item_name>
+                </item>
+            </items>
             <vendor>
                 <creditor_id>1234567</creditor_id>
             </vendor>

@@ -1,7 +1,6 @@
 package org.rmt2.api.handlers.inventory;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +20,7 @@ import org.rmt2.jaxb.ObjectFactory;
 import org.rmt2.jaxb.ReplyStatusType;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
+import org.rmt2.jaxb.SimpleItemType;
 
 import com.InvalidDataException;
 import com.api.messaging.InvalidRequestException;
@@ -198,7 +198,7 @@ public class ItemApiHandler extends
             criteriaDto = InventoryJaxbDtoFactory
                     .createItemMasterDtoCriteriaInstance(req.getCriteria().getItemCriteria());
             
-           Integer[] itemIdList = this.getItemIdList(req.getCriteria().getItemCriteria().getItemIdList());
+           Integer[] itemIdList = this.getItemIdList(req.getCriteria().getItemCriteria().getItems().getItem());
            int rc = this.api.addInventoryOverride(criteriaDto.getVendorId(), itemIdList);
            rs.setMessage("Inventory item retail override was applied");
            rs.setReturnCode(rc);
@@ -236,7 +236,7 @@ public class ItemApiHandler extends
             criteriaDto = InventoryJaxbDtoFactory
                     .createItemMasterDtoCriteriaInstance(req.getCriteria().getItemCriteria());
             
-           Integer[] itemIdList = this.getItemIdList(req.getCriteria().getItemCriteria().getItemIdList());
+           Integer[] itemIdList = this.getItemIdList(req.getCriteria().getItemCriteria().getItems().getItem());
            int rc = this.api.removeInventoryOverride(criteriaDto.getVendorId(), itemIdList);
            rs.setMessage("Inventory item retail override was removed");
            rs.setReturnCode(rc);
@@ -490,6 +490,18 @@ public class ItemApiHandler extends
                         throw new InvalidRequestException("A valid item id is required when deleting an inventory item from the database");
                     }   
                 }
+                
+                if (this.command.equals(ApiTransactionCodes.INVENTORY_ITEM_RETAIL_OVERRIDE_ADD)
+                        || this.command.equals(ApiTransactionCodes.INVENTORY_ITEM_RETAIL_OVERRIDE_REMOVE)) {
+                    try {
+                        Verifier.verifyNotNull(req.getCriteria().getItemCriteria().getItems());
+                        Verifier.verifyNotNull(req.getCriteria().getItemCriteria().getItems().getItem());
+                        Verifier.verifyNotEmpty(req.getCriteria().getItemCriteria().getItems().getItem());
+                    }
+                    catch (VerifyException e) {
+                        throw new InvalidRequestException("A valid list of item id's is required when adding or removing item retail override");
+                    }   
+                }
                 break;
                 
             case ApiTransactionCodes.INVENTORY_VENDOR_UNASSIGNED_ITEMS_GET:
@@ -529,13 +541,13 @@ public class ItemApiHandler extends
         }
     }
 
-    private Integer[] getItemIdList(List<BigInteger> itemId) {
-        if (itemId == null) {
+    private Integer[] getItemIdList(List<SimpleItemType> items) {
+        if (items == null) {
             return null;
         }
-        Integer[] list = new Integer[itemId.size()];
-        for (int ndx = 0; ndx < itemId.size(); ndx++) {
-            list[ndx] = itemId.get(ndx).intValue();
+        Integer[] list = new Integer[items.size()];
+        for (int ndx = 0; ndx < items.size(); ndx++) {
+            list[ndx] = items.get(ndx).getItemId().intValue();
         }
         return list;
     }
