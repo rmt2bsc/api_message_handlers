@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.dto.ItemMasterDto;
 import org.dto.VendorItemDto;
 import org.modules.CommonAccountingConst;
 import org.modules.inventory.InventoryApi;
@@ -17,6 +18,7 @@ import org.rmt2.jaxb.InventoryRequest;
 import org.rmt2.jaxb.InventoryResponse;
 import org.rmt2.jaxb.ObjectFactory;
 import org.rmt2.jaxb.ReplyStatusType;
+import org.rmt2.jaxb.SimpleItemType;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 import org.rmt2.jaxb.VendorItemType;
@@ -77,6 +79,9 @@ public class VendorItemApiHandler extends
                 break;
             case ApiTransactionCodes.INVENTORY_VENDOR_ASSIGNED_ITEMS_GET:
                 r = this.fetchVendorAssignedItems(this.requestObj);
+                break;
+            case ApiTransactionCodes.INVENTORY_VENDOR_ITEM_ASSIGN:
+                r = this.assignVendorItems(this.requestObj);
                 break;
             default:
                 r = this.createErrorReply(MessagingConstants.RETURN_CODE_FAILURE,
@@ -176,6 +181,46 @@ public class VendorItemApiHandler extends
         return results;
     }
     
+    /**
+     * Handler for invoking the appropriate API in order to assigne items to a
+     * vendor.
+     * 
+     * @param req
+     *            an instance of {@link InventoryRequest}
+     * @return an instance of {@link MessageHandlerResults}
+     */
+    protected MessageHandlerResults assignVendorItems(InventoryRequest req) {
+        MessageHandlerResults results = new MessageHandlerResults();
+        MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
+        ItemMasterDto criteriaDto = null;
+
+        try {
+            // Set reply status
+            rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            criteriaDto = InventoryJaxbDtoFactory
+                    .createVendorItemDtoCriteriaInstance(req.getCriteria().getVendorItemCriteria());
+            List<SimpleItemType> items = req.getCriteria().getVendorItemCriteria().getItems().getItem();
+            Integer[] itemIdList = InventoryUtility.getItemIdList(items);
+            int rc = this.api.assignVendorItems(criteriaDto.getVendorId(), itemIdList);
+            rs.setMessage(rc + " inventory items were assigned to vendor, " + criteriaDto.getVendorId());
+            rs.setReturnCode(rc);
+            this.responseObj.setHeader(req.getHeader());
+        } catch (Exception e) {
+            logger.error("Error occurred during API Message Handler operation, "
+                    + this.command, e);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
+            rs.setMessage("Failure to assign inventory items to vendor, "
+                    + criteriaDto.getVendorId());
+            rs.setExtMessage(e.getMessage());
+        } finally {
+            this.api.close();
+        }
+
+        String xml = this.buildResponse(null, rs);
+        results.setPayload(xml);
+        return results;
+    }
+    
     private List<VendorItemType> buildJaxbListData(List<VendorItemDto> results) {
         List<VendorItemType> list = new ArrayList<>();
         for (VendorItemDto item : results) {
@@ -210,6 +255,17 @@ public class VendorItemApiHandler extends
             catch (VerifyException e) {
                 throw new InvalidRequestException("Creditor Id criteria is required for vendor assigned item query operation");
             }
+        }
+        
+        if (this.command.equals(ApiTransactionCodes.INVENTORY_VENDOR_ITEM_ASSIGN)) {
+            try {
+                Verifier.verifyNotNull(req.getCriteria().getVendorItemCriteria().getItems());
+                Verifier.verifyNotNull(req.getCriteria().getVendorItemCriteria().getItems().getItem());
+                Verifier.verifyNotEmpty(req.getCriteria().getVendorItemCriteria().getItems().getItem());
+            }
+            catch (VerifyException e) {
+                throw new InvalidRequestException("A valid list of item id's is required when assigning items to a vendor");
+            }   
         }
     }
 
