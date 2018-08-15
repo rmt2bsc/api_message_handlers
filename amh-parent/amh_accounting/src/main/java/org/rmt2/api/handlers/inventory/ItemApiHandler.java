@@ -18,9 +18,6 @@ import org.rmt2.jaxb.InventoryRequest;
 import org.rmt2.jaxb.InventoryResponse;
 import org.rmt2.jaxb.ObjectFactory;
 import org.rmt2.jaxb.ReplyStatusType;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-import org.rmt2.jaxb.SimpleItemType;
 
 import com.InvalidDataException;
 import com.api.messaging.InvalidRequestException;
@@ -198,7 +195,7 @@ public class ItemApiHandler extends
             criteriaDto = InventoryJaxbDtoFactory
                     .createItemMasterDtoCriteriaInstance(req.getCriteria().getItemCriteria());
             
-           Integer[] itemIdList = this.getItemIdList(req.getCriteria().getItemCriteria().getItems().getItem());
+           Integer[] itemIdList = InventoryUtility.getItemIdList(req.getCriteria().getItemCriteria().getItems().getItem());
            int rc = this.api.addInventoryOverride(criteriaDto.getVendorId(), itemIdList);
            rs.setMessage("Inventory item retail override was applied");
            rs.setReturnCode(rc);
@@ -236,7 +233,7 @@ public class ItemApiHandler extends
             criteriaDto = InventoryJaxbDtoFactory
                     .createItemMasterDtoCriteriaInstance(req.getCriteria().getItemCriteria());
             
-           Integer[] itemIdList = this.getItemIdList(req.getCriteria().getItemCriteria().getItems().getItem());
+           Integer[] itemIdList = InventoryUtility.getItemIdList(req.getCriteria().getItemCriteria().getItems().getItem());
            int rc = this.api.removeInventoryOverride(criteriaDto.getVendorId(), itemIdList);
            rs.setMessage("Inventory item retail override was removed");
            rs.setReturnCode(rc);
@@ -541,18 +538,6 @@ public class ItemApiHandler extends
         }
     }
 
-    private Integer[] getItemIdList(List<SimpleItemType> items) {
-        if (items == null) {
-            return null;
-        }
-        Integer[] list = new Integer[items.size()];
-        for (int ndx = 0; ndx < items.size(); ndx++) {
-            list[ndx] = items.get(ndx).getItemId().intValue();
-        }
-        return list;
-    }
-    
-    
     @Override
     protected String buildResponse(List<InventoryItemType> payload,  MessageHandlerCommonReplyStatus replyStatus) {
         if (replyStatus != null) {
