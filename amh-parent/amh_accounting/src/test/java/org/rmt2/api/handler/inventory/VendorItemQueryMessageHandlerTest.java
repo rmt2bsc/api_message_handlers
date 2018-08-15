@@ -42,7 +42,7 @@ import com.api.util.RMT2File;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ AbstractDaoClientImpl.class, Rmt2OrmClientFactory.class,
     VendorItemApiHandler.class, InventoryApiFactory.class, SystemConfigurator.class })
-public class VendorItemMessageHandlerTest extends BaseAccountingMessageHandlerTest {
+public class VendorItemQueryMessageHandlerTest extends BaseAccountingMessageHandlerTest {
     private static final int CREDITOR_ID = 1234567;
     private InventoryApiFactory mockApiFactory;
     private InventoryApi mockApi;
@@ -51,7 +51,7 @@ public class VendorItemMessageHandlerTest extends BaseAccountingMessageHandlerTe
     /**
      * 
      */
-    public VendorItemMessageHandlerTest() {
+    public VendorItemQueryMessageHandlerTest() {
         return;
     }
 
