@@ -83,6 +83,9 @@ public class VendorItemApiHandler extends
             case ApiTransactionCodes.INVENTORY_VENDOR_ITEM_ASSIGN:
                 r = this.assignVendorItems(this.requestObj);
                 break;
+            case ApiTransactionCodes.INVENTORY_VENDOR_ITEM_REMOVE:
+                r = this.removeVendorItems(this.requestObj);
+                break;
             default:
                 r = this.createErrorReply(MessagingConstants.RETURN_CODE_FAILURE,
                         MessagingConstants.RETURN_STATUS_BAD_REQUEST,
@@ -182,7 +185,7 @@ public class VendorItemApiHandler extends
     }
     
     /**
-     * Handler for invoking the appropriate API in order to assigne items to a
+     * Handler for invoking the appropriate API in order to assign items to a
      * vendor.
      * 
      * @param req
@@ -210,6 +213,46 @@ public class VendorItemApiHandler extends
                     + this.command, e);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to assign inventory items to vendor, "
+                    + criteriaDto.getVendorId());
+            rs.setExtMessage(e.getMessage());
+        } finally {
+            this.api.close();
+        }
+
+        String xml = this.buildResponse(null, rs);
+        results.setPayload(xml);
+        return results;
+    }
+    
+    /**
+     * Handler for invoking the appropriate API in order to remove items from a
+     * vendor.
+     * 
+     * @param req
+     *            an instance of {@link InventoryRequest}
+     * @return an instance of {@link MessageHandlerResults}
+     */
+    protected MessageHandlerResults removeVendorItems(InventoryRequest req) {
+        MessageHandlerResults results = new MessageHandlerResults();
+        MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
+        ItemMasterDto criteriaDto = null;
+
+        try {
+            // Set reply status
+            rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            criteriaDto = InventoryJaxbDtoFactory
+                    .createVendorItemDtoCriteriaInstance(req.getCriteria().getVendorItemCriteria());
+            List<SimpleItemType> items = req.getCriteria().getVendorItemCriteria().getItems().getItem();
+            Integer[] itemIdList = InventoryUtility.getItemIdList(items);
+            int rc = this.api.removeVendorItems(criteriaDto.getVendorId(), itemIdList);
+            rs.setMessage(rc + " inventory items were removed from vendor, " + criteriaDto.getVendorId());
+            rs.setReturnCode(rc);
+            this.responseObj.setHeader(req.getHeader());
+        } catch (Exception e) {
+            logger.error("Error occurred during API Message Handler operation, "
+                    + this.command, e);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
+            rs.setMessage("Failure to remove inventory items from vendor, "
                     + criteriaDto.getVendorId());
             rs.setExtMessage(e.getMessage());
         } finally {
@@ -257,14 +300,15 @@ public class VendorItemApiHandler extends
             }
         }
         
-        if (this.command.equals(ApiTransactionCodes.INVENTORY_VENDOR_ITEM_ASSIGN)) {
+        if (this.command.equals(ApiTransactionCodes.INVENTORY_VENDOR_ITEM_ASSIGN)
+                || this.command.equals(ApiTransactionCodes.INVENTORY_VENDOR_ITEM_REMOVE)) {
             try {
                 Verifier.verifyNotNull(req.getCriteria().getVendorItemCriteria().getItems());
                 Verifier.verifyNotNull(req.getCriteria().getVendorItemCriteria().getItems().getItem());
                 Verifier.verifyNotEmpty(req.getCriteria().getVendorItemCriteria().getItems().getItem());
             }
             catch (VerifyException e) {
-                throw new InvalidRequestException("A valid list of item id's is required when assigning items to a vendor");
+                throw new InvalidRequestException("A valid list of item id's is required when assigning/removing items to a vendor");
             }   
         }
     }

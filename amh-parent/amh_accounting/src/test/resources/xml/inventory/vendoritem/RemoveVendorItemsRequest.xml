@@ -1,0 +1,27 @@
+<InventoryRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>accounting</application>
+        <module>inventory</module>
+        <transaction>REMOVE_VENDOR_ITEM</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>08/16/2018 16:00:03</delivery_date>
+    </header>
+    <criteria>
+        <vendor_item_criteria>
+            <items>
+                <item>
+                    <item_id>100</item_id>
+                </item>
+                <item>
+                    <item_id>200</item_id>
+                </item>
+                <item>
+                    <item_id>300</item_id>
+                </item>
+            </items>
+            <creditor_id>1234567</creditor_id>
+        </vendor_item_criteria>
+    </criteria>
+</InventoryRequest>

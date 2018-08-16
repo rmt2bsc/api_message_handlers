@@ -117,7 +117,7 @@ public class VendorItemUpdateMessageHandlerTest extends BaseAccountingMessageHan
     }
    
     @Test
-    public void testError_Fetch_API_Error() {
+    public void testError_AssignVendorItems_API_Error() {
         String request = RMT2File.getFileContentsAsString("xml/inventory/vendoritem/AssignVendorItemsRequest.xml");
         try {
             when(this.mockApi.assignVendorItems(isA(Integer.class), isA(Integer[].class)))
@@ -195,7 +195,7 @@ public class VendorItemUpdateMessageHandlerTest extends BaseAccountingMessageHan
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus()
                 .getReturnStatus());
-        Assert.assertEquals("A valid list of item id's is required when assigning items to a vendor",
+        Assert.assertEquals("A valid list of item id's is required when assigning/removing items to a vendor",
                 actualRepsonse.getReplyStatus().getMessage());
     }
     
@@ -220,7 +220,7 @@ public class VendorItemUpdateMessageHandlerTest extends BaseAccountingMessageHan
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus()
                 .getReturnStatus());
-        Assert.assertEquals("A valid list of item id's is required when assigning items to a vendor",
+        Assert.assertEquals("A valid list of item id's is required when assigning/removing items to a vendor",
                 actualRepsonse.getReplyStatus().getMessage());
     }
     
@@ -247,5 +247,146 @@ public class VendorItemUpdateMessageHandlerTest extends BaseAccountingMessageHan
                 .getReturnStatus());
         Assert.assertEquals("An invalid request message was encountered.  Please payload.", actualRepsonse
                 .getReplyStatus().getMessage());
+    }
+    
+    // Start removal
+    
+    @Test
+    public void testSuccess_RemoveVendorItems() {
+        String request = RMT2File.getFileContentsAsString("xml/inventory/vendoritem/RemoveVendorItemsRequest.xml");
+
+        try {
+            when(this.mockApi.removeVendorItems(isA(Integer.class), isA(Integer[].class)))
+                  .thenReturn(UPDATE_RC);
+        } catch (InventoryApiException e) {
+            Assert.fail("Unable to setup mock stub for removing inventory items from vendor");
+        }
+        
+        MessageHandlerResults results = null;
+        VendorItemApiHandler handler = new VendorItemApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.INVENTORY_VENDOR_ITEM_REMOVE, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        InventoryResponse actualRepsonse = 
+                (InventoryResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertEquals(UPDATE_RC, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS,
+                actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(UPDATE_RC + " inventory items were removed from vendor, " + TEST_VENDOR_ID,
+                actualRepsonse.getReplyStatus().getMessage());
+    }
+    
+    @Test
+    public void testError_RemoveVendorItems_API_Error() {
+        String request = RMT2File.getFileContentsAsString("xml/inventory/vendoritem/RemoveVendorItemsRequest.xml");
+        try {
+            when(this.mockApi.removeVendorItems(isA(Integer.class), isA(Integer[].class)))
+               .thenThrow(new InventoryApiException("Test validation error: selection criteria is required"));
+        } catch (InventoryApiException e) {
+            Assert.fail("Unable to setup mock stub for assigning inventory items to vendor");
+        }
+        
+        MessageHandlerResults results = null;
+        VendorItemApiHandler handler = new VendorItemApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.INVENTORY_VENDOR_ITEM_REMOVE, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        InventoryResponse actualRepsonse = 
+                (InventoryResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals("Failure to remove inventory items from vendor, "
+                        + TEST_VENDOR_ID, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals("Test validation error: selection criteria is required",
+                actualRepsonse.getReplyStatus().getExtMessage());
+    }
+    
+    @Test
+    public void testValidation_RemoveVendorItems_Criteria_Missing() {
+        String request = RMT2File.getFileContentsAsString("xml/inventory/vendoritem/RemoveVendorItemsMissingCriteriaRequest.xml");
+        MessageHandlerResults results = null;
+        VendorItemApiHandler handler = new VendorItemApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.INVENTORY_VENDOR_ITEM_REMOVE, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        InventoryResponse actualRepsonse = 
+                (InventoryResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus()
+                .getReturnStatus());
+        Assert.assertEquals("Vendor item selection criteria is required for query operation",
+                actualRepsonse.getReplyStatus().getMessage());
+    }
+
+    @Test
+    public void testValidation_RemoveVendorItems_ItemCriteria_Missing() {
+        String request = RMT2File.getFileContentsAsString("xml/inventory/vendoritem/RemoveVendorItemsMissingItemCriteriaRequest.xml");
+        MessageHandlerResults results = null;
+        VendorItemApiHandler handler = new VendorItemApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.INVENTORY_VENDOR_ITEM_REMOVE, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        InventoryResponse actualRepsonse = 
+                (InventoryResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus()
+                .getReturnStatus());
+        Assert.assertEquals("A valid list of item id's is required when assigning/removing items to a vendor",
+                actualRepsonse.getReplyStatus().getMessage());
+    }
+    
+    @Test
+    public void testValidation_RemoveVendorItems_ItemCriteria_Empty() {
+        String request = RMT2File.getFileContentsAsString("xml/inventory/vendoritem/RemoveVendorItemsItemCriteriaEmptyRequest.xml");
+        MessageHandlerResults results = null;
+        VendorItemApiHandler handler = new VendorItemApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.INVENTORY_VENDOR_ITEM_REMOVE, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        InventoryResponse actualRepsonse = 
+                (InventoryResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus()
+                .getReturnStatus());
+        Assert.assertEquals("A valid list of item id's is required when assigning/removing items to a vendor",
+                actualRepsonse.getReplyStatus().getMessage());
     }
 }
