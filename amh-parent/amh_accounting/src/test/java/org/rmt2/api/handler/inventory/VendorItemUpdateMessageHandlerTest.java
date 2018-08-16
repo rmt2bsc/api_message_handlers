@@ -4,6 +4,7 @@ import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
+import org.dto.VendorItemDto;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -39,6 +40,7 @@ import com.api.util.RMT2File;
     VendorItemApiHandler.class, InventoryApiFactory.class, SystemConfigurator.class })
 public class VendorItemUpdateMessageHandlerTest extends BaseAccountingMessageHandlerTest {
     private static final int UPDATE_RC = 3;
+    private static final int UPDATE_VENDOR_ITEM_RC = 3;
     private static final int TEST_VENDOR_ID = 1234567;
     private InventoryApiFactory mockApiFactory;
     private InventoryApi mockApi;
@@ -249,7 +251,6 @@ public class VendorItemUpdateMessageHandlerTest extends BaseAccountingMessageHan
                 .getReplyStatus().getMessage());
     }
     
-    // Start removal
     
     @Test
     public void testSuccess_RemoveVendorItems() {
@@ -387,6 +388,37 @@ public class VendorItemUpdateMessageHandlerTest extends BaseAccountingMessageHan
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus()
                 .getReturnStatus());
         Assert.assertEquals("A valid list of item id's is required when assigning/removing items to a vendor",
+                actualRepsonse.getReplyStatus().getMessage());
+    }
+    
+    @Test
+    public void testSuccess_UpdateVendorItem() {
+        String request = RMT2File.getFileContentsAsString("xml/inventory/vendoritem/UpdateVendorItemRequest.xml");
+
+        try {
+            when(this.mockApi.updateVendorItem(isA(VendorItemDto.class))).thenReturn(UPDATE_RC);
+        } catch (InventoryApiException e) {
+            Assert.fail("Unable to setup mock stub for updating vendor inventory item");
+        }
+        
+        MessageHandlerResults results = null;
+        VendorItemApiHandler handler = new VendorItemApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.INVENTORY_VENDOR_ITEM_UPDATE, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        InventoryResponse actualRepsonse = 
+                (InventoryResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertEquals(UPDATE_VENDOR_ITEM_RC,
+                actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS,
+                actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals("Vendor inventory item was updated",
                 actualRepsonse.getReplyStatus().getMessage());
     }
 }

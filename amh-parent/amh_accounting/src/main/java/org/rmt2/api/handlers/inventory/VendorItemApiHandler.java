@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.dto.ItemMasterDto;
 import org.dto.VendorItemDto;
 import org.modules.CommonAccountingConst;
 import org.modules.inventory.InventoryApi;
@@ -85,6 +84,9 @@ public class VendorItemApiHandler extends
                 break;
             case ApiTransactionCodes.INVENTORY_VENDOR_ITEM_REMOVE:
                 r = this.removeVendorItems(this.requestObj);
+                break;
+            case ApiTransactionCodes.INVENTORY_VENDOR_ITEM_UPDATE:
+                r = this.updateVendorItem(this.requestObj);
                 break;
             default:
                 r = this.createErrorReply(MessagingConstants.RETURN_CODE_FAILURE,
@@ -195,7 +197,7 @@ public class VendorItemApiHandler extends
     protected MessageHandlerResults assignVendorItems(InventoryRequest req) {
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
-        ItemMasterDto criteriaDto = null;
+        VendorItemDto criteriaDto = null;
 
         try {
             // Set reply status
@@ -235,7 +237,7 @@ public class VendorItemApiHandler extends
     protected MessageHandlerResults removeVendorItems(InventoryRequest req) {
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
-        ItemMasterDto criteriaDto = null;
+        VendorItemDto criteriaDto = null;
 
         try {
             // Set reply status
@@ -264,6 +266,44 @@ public class VendorItemApiHandler extends
         return results;
     }
     
+    /**
+     * Handler for invoking the appropriate API in order to update a vendor item.
+     * 
+     * @param req
+     *            an instance of {@link InventoryRequest}
+     * @return an instance of {@link MessageHandlerResults}
+     */
+    protected MessageHandlerResults updateVendorItem(InventoryRequest req) {
+        MessageHandlerResults results = new MessageHandlerResults();
+        MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
+        VendorItemDto viDto = null;
+
+        try {
+            // Set reply status
+            rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            viDto = InventoryJaxbDtoFactory
+                    .createVendorItemDtoInstance(req.getProfile().getVendorItem().get(0));
+            int rc = this.api.updateVendorItem(viDto);
+            rs.setMessage("Vendor inventory item was updated");
+            rs.setReturnCode(rc);
+            this.responseObj.setHeader(req.getHeader());
+        } catch (Exception e) {
+            logger.error("Error occurred during API Message Handler operation, "
+                    + this.command, e);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
+            rs.setMessage("Failure to update vendor inventory item");
+            rs.setExtMessage(e.getMessage());
+        } finally {
+            this.api.close();
+        }
+        VendorItemType jaxbVendorItemType =InventoryJaxbDtoFactory.createVendorItemTypeJaxbInstance(viDto);
+        List<VendorItemType> jaxbList = new ArrayList<>();
+        jaxbList.add(jaxbVendorItemType);
+        String xml = this.buildResponse(jaxbList, rs);
+        results.setPayload(xml);
+        return results;
+    }
+    
     private List<VendorItemType> buildJaxbListData(List<VendorItemDto> results) {
         List<VendorItemType> list = new ArrayList<>();
         for (VendorItemDto item : results) {
@@ -283,12 +323,22 @@ public class VendorItemApiHandler extends
             throw new InvalidRequestException("Inventory vendo item type message request element is invalid");
         }
         
-        try {
-            Verifier.verifyNotNull(req.getCriteria());
-            Verifier.verifyNotNull(req.getCriteria().getVendorItemCriteria());
-        }
-        catch (VerifyException e) {
-            throw new InvalidRequestException("Vendor item selection criteria is required for query operation");
+        if (this.command.equals(ApiTransactionCodes.INVENTORY_VENDOR_ITEM_UPDATE)) {
+            try {
+                Verifier.verifyNotNull(req.getProfile());
+                Verifier.verifyNotEmpty(req.getProfile().getVendorItem());
+            }
+            catch (VerifyException e) {
+                throw new InvalidRequestException("Vendor inventory item profile data is required for update operation");
+            }
+        } else {
+            try {
+                Verifier.verifyNotNull(req.getCriteria());
+                Verifier.verifyNotNull(req.getCriteria().getVendorItemCriteria());
+            }
+            catch (VerifyException e) {
+                throw new InvalidRequestException("Vendor item selection criteria is required for query operation");
+            }    
         }
         
         if (this.command.equals(ApiTransactionCodes.INVENTORY_VENDOR_ASSIGNED_ITEMS_GET)) {
