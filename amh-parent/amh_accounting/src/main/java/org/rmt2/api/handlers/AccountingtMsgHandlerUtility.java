@@ -10,20 +10,23 @@ import org.rmt2.jaxb.SimpleItemType;
  * @author roy.terrell
  *
  */
-public class AcctMsgHandlerUtility {
+public class AccountingtMsgHandlerUtility {
 
-    public AcctMsgHandlerUtility() {
+    /**
+     * Default constructor
+     */
+    public AccountingtMsgHandlerUtility() {
     }
     
     /**
-     * Translates all item id's contained in a list of SimpleItemType JAXB
-     * objects to an Integer array
+     * Translates all inventory item id's contained in a list of SimpleItemType
+     * JAXB objects to an Integer array
      * 
      * @param items
      *            an List of {@link SimpleItemType} instances
      * @return Integer[]
      */
-    public static final Integer[] getItemIdList(List<SimpleItemType> items) {
+    public static final Integer[] getInventoryItemIdArray(List<SimpleItemType> items) {
         if (items == null) {
             return null;
         }
