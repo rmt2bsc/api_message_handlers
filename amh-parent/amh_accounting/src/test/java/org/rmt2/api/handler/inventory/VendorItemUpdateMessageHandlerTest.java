@@ -40,7 +40,7 @@ import com.api.util.RMT2File;
     VendorItemApiHandler.class, InventoryApiFactory.class, SystemConfigurator.class })
 public class VendorItemUpdateMessageHandlerTest extends BaseAccountingMessageHandlerTest {
     private static final int UPDATE_RC = 3;
-    private static final int UPDATE_VENDOR_ITEM_RC = 3;
+    private static final int UPDATE_VENDOR_ITEM_RC = 1;
     private static final int TEST_VENDOR_ID = 1234567;
     private InventoryApiFactory mockApiFactory;
     private InventoryApi mockApi;
@@ -396,7 +396,7 @@ public class VendorItemUpdateMessageHandlerTest extends BaseAccountingMessageHan
         String request = RMT2File.getFileContentsAsString("xml/inventory/vendoritem/UpdateVendorItemRequest.xml");
 
         try {
-            when(this.mockApi.updateVendorItem(isA(VendorItemDto.class))).thenReturn(UPDATE_RC);
+            when(this.mockApi.updateVendorItem(isA(VendorItemDto.class))).thenReturn(UPDATE_VENDOR_ITEM_RC);
         } catch (InventoryApiException e) {
             Assert.fail("Unable to setup mock stub for updating vendor inventory item");
         }
@@ -420,5 +420,38 @@ public class VendorItemUpdateMessageHandlerTest extends BaseAccountingMessageHan
                 actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Vendor inventory item was updated",
                 actualRepsonse.getReplyStatus().getMessage());
+    }
+    
+    @Test
+    public void testError_UpdateVendorItem_API_Error() {
+        String request = RMT2File.getFileContentsAsString("xml/inventory/vendoritem/UpdateVendorItemRequest.xml");
+        try {
+            when(this.mockApi.updateVendorItem(isA(VendorItemDto.class)))
+               .thenThrow(new InventoryApiException("Test API error"));
+        } catch (InventoryApiException e) {
+            Assert.fail("Unable to setup mock stub for updating inventory vendor item");
+        }
+        
+        MessageHandlerResults results = null;
+        VendorItemApiHandler handler = new VendorItemApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.INVENTORY_VENDOR_ITEM_UPDATE, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        InventoryResponse actualRepsonse = 
+                (InventoryResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertNotNull(actualRepsonse.getProfile());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS,
+                actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals("Failure to update vendor inventory item",
+                actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals("Test API error", actualRepsonse.getReplyStatus().getExtMessage());
     }
 }
