@@ -4,15 +4,24 @@ import java.util.List;
 
 import org.rmt2.jaxb.SimpleItemType;
 
+/**
+ * Utility class for accounting API Message Handling 
+ * 
+ * @author roy.terrell
+ *
+ */
 public class InventoryUtility {
 
     public InventoryUtility() {
     }
     
     /**
+     * Translates all item id's contained in a list of SimpleItemType JAXB
+     * objects to an Integer array
      * 
      * @param items
-     * @return
+     *            an List of {@link SimpleItemType} instances
+     * @return Integer[]
      */
     public static final Integer[] getItemIdList(List<SimpleItemType> items) {
         if (items == null) {
