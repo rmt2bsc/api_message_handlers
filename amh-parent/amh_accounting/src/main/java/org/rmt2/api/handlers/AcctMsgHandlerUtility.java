@@ -1,4 +1,4 @@
-package org.rmt2.api.handlers.inventory;
+package org.rmt2.api.handlers;
 
 import java.util.List;
 
@@ -10,9 +10,9 @@ import org.rmt2.jaxb.SimpleItemType;
  * @author roy.terrell
  *
  */
-public class InventoryUtility {
+public class AcctMsgHandlerUtility {
 
-    public InventoryUtility() {
+    public AcctMsgHandlerUtility() {
     }
     
     /**

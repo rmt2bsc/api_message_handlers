@@ -10,6 +10,7 @@ import org.modules.CommonAccountingConst;
 import org.modules.inventory.InventoryApi;
 import org.modules.inventory.InventoryApiFactory;
 import org.rmt2.api.handler.util.MessageHandlerUtility;
+import org.rmt2.api.handlers.AcctMsgHandlerUtility;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.InventoryDetailGroup;
@@ -195,7 +196,7 @@ public class ItemApiHandler extends
             criteriaDto = InventoryJaxbDtoFactory
                     .createItemMasterDtoCriteriaInstance(req.getCriteria().getItemCriteria());
             
-           Integer[] itemIdList = InventoryUtility.getItemIdList(req.getCriteria().getItemCriteria().getItems().getItem());
+           Integer[] itemIdList = AcctMsgHandlerUtility.getItemIdList(req.getCriteria().getItemCriteria().getItems().getItem());
            int rc = this.api.addInventoryOverride(criteriaDto.getVendorId(), itemIdList);
            rs.setMessage("Inventory item retail override was applied");
            rs.setReturnCode(rc);
@@ -233,7 +234,7 @@ public class ItemApiHandler extends
             criteriaDto = InventoryJaxbDtoFactory
                     .createItemMasterDtoCriteriaInstance(req.getCriteria().getItemCriteria());
             
-           Integer[] itemIdList = InventoryUtility.getItemIdList(req.getCriteria().getItemCriteria().getItems().getItem());
+           Integer[] itemIdList = AcctMsgHandlerUtility.getItemIdList(req.getCriteria().getItemCriteria().getItems().getItem());
            int rc = this.api.removeInventoryOverride(criteriaDto.getVendorId(), itemIdList);
            rs.setMessage("Inventory item retail override was removed");
            rs.setReturnCode(rc);

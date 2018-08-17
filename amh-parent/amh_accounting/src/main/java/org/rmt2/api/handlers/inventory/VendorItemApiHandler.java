@@ -10,6 +10,7 @@ import org.modules.CommonAccountingConst;
 import org.modules.inventory.InventoryApi;
 import org.modules.inventory.InventoryApiFactory;
 import org.rmt2.api.handler.util.MessageHandlerUtility;
+import org.rmt2.api.handlers.AcctMsgHandlerUtility;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.InventoryDetailGroup;
@@ -205,7 +206,7 @@ public class VendorItemApiHandler extends
             criteriaDto = InventoryJaxbDtoFactory
                     .createVendorItemDtoCriteriaInstance(req.getCriteria().getVendorItemCriteria());
             List<SimpleItemType> items = req.getCriteria().getVendorItemCriteria().getItems().getItem();
-            Integer[] itemIdList = InventoryUtility.getItemIdList(items);
+            Integer[] itemIdList = AcctMsgHandlerUtility.getItemIdList(items);
             int rc = this.api.assignVendorItems(criteriaDto.getVendorId(), itemIdList);
             rs.setMessage(rc + " inventory items were assigned to vendor, " + criteriaDto.getVendorId());
             rs.setReturnCode(rc);
@@ -245,7 +246,7 @@ public class VendorItemApiHandler extends
             criteriaDto = InventoryJaxbDtoFactory
                     .createVendorItemDtoCriteriaInstance(req.getCriteria().getVendorItemCriteria());
             List<SimpleItemType> items = req.getCriteria().getVendorItemCriteria().getItems().getItem();
-            Integer[] itemIdList = InventoryUtility.getItemIdList(items);
+            Integer[] itemIdList = AcctMsgHandlerUtility.getItemIdList(items);
             int rc = this.api.removeVendorItems(criteriaDto.getVendorId(), itemIdList);
             rs.setMessage(rc + " inventory items were removed from vendor, " + criteriaDto.getVendorId());
             rs.setReturnCode(rc);
