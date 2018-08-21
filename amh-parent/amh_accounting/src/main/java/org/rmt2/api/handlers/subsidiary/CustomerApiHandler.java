@@ -101,7 +101,7 @@ public class CustomerApiHandler extends
             CustomerDto criteriaDto = SubsidiaryJaxbDtoFactory
                     .createCustomerDtoCriteriaInstance(req.getCriteria().getCustomerCriteria());
             
-            List<CustomerDto> dtoList = this.api.get(criteriaDto);
+            List<CustomerDto> dtoList = this.api.getExt(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage("Customer data not found!");
                 rs.setReturnCode(0);

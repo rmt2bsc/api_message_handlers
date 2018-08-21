@@ -96,7 +96,7 @@ public class CustomerQueryMessageHandlerTest extends BaseAccountingMessageHandle
         List<CustomerDto> mockListData = SubsidiaryMockData.createMockCustomers();
 
         try {
-            when(this.mockApi.get(isA(CustomerDto.class))).thenReturn(mockListData);
+            when(this.mockApi.getExt(isA(CustomerDto.class))).thenReturn(mockListData);
         } catch (CustomerApiException e) {
             Assert.fail("Unable to setup mock stub for fetching a customer");
         }
