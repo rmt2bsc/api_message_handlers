@@ -41,10 +41,12 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
         }
         CustomerDto dto = Rmt2SubsidiaryDtoFactory.createCustomerInstance(null, null);
         if (jaxbCriteria.getCustomer() != null) {
-            if (!jaxbCriteria.getCustomer().getAccountNo().isEmpty()) {
+            if (jaxbCriteria.getCustomer().getAccountNo() != null
+                    && !jaxbCriteria.getCustomer().getAccountNo().isEmpty()) {
                 dto.setAccountNo(jaxbCriteria.getCustomer().getAccountNo());    
             }
-            if (!jaxbCriteria.getCustomer().getAcctDescription().isEmpty()) {
+            if (jaxbCriteria.getCustomer().getAcctDescription() != null
+                    && !jaxbCriteria.getCustomer().getAcctDescription().isEmpty()) {
                 dto.setDescription(jaxbCriteria.getCustomer().getAcctDescription());    
             }
             if (jaxbCriteria.getCustomer().getAcctId() != null) {
@@ -60,7 +62,8 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
                 if (jaxbCriteria.getCustomer().getBusinessContactDetails().getBusinessId() != null) {
                     dto.setContactId(jaxbCriteria.getCustomer().getBusinessContactDetails().getBusinessId().intValue());    
                 }
-                if (!jaxbCriteria.getCustomer().getBusinessContactDetails().getLongName().isEmpty()) {
+                if (jaxbCriteria.getCustomer().getBusinessContactDetails().getLongName() != null
+                        && !jaxbCriteria.getCustomer().getBusinessContactDetails().getLongName().isEmpty()) {
                     dto.setContactName(jaxbCriteria.getCustomer().getBusinessContactDetails().getLongName());    
                 }
             }

@@ -1,0 +1,18 @@
+<AccountingTransactionRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>accounting</application>
+        <module>subsidiary</module>
+        <transaction>GET_CUSTOMER_TRAN_HIST</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>08/22/2018 14:46:58</delivery_date>
+    </header>
+    <criteria>
+        <customer_criteria>
+            <customer>
+                <customer_id>3333</customer_id>
+            </customer>
+        </customer_criteria>
+    </criteria>
+</AccountingTransactionRequest>

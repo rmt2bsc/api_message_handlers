@@ -1,10 +1,13 @@
 package org.rmt2.api.handler.subsidiary;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.dao.mapping.orm.rmt2.Customer;
+import org.dao.mapping.orm.rmt2.VwCustomerXactHist;
 import org.dto.CustomerDto;
+import org.dto.CustomerXactHistoryDto;
 import org.dto.adapter.orm.account.subsidiary.Rmt2SubsidiaryDtoFactory;
 import org.rmt2.api.AccountingMockDataFactory;
 
@@ -42,6 +45,40 @@ public class SubsidiaryMockData {
         o = AccountingMockDataFactory.createMockOrmCustomer(204, 1355, 0,
                 333, "C1234584", "Customer 5");
         d = Rmt2SubsidiaryDtoFactory.createCustomerInstance(o, null);
+        list.add(d);
+        return list;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public static final List<CustomerXactHistoryDto> createMockCustomerXactHistory() {
+        List<CustomerXactHistoryDto> list = new ArrayList<>();
+        VwCustomerXactHist o = AccountingMockDataFactory
+                .createMockOrmCustomerXactHistory(1200, 100, 1351, 0, "C8434", 1000.00,
+                        new Date(), 1);
+        CustomerXactHistoryDto d = Rmt2SubsidiaryDtoFactory.createCustomerTransactionInstance(o);
+        list.add(d);
+
+        o = AccountingMockDataFactory.createMockOrmCustomerXactHistory(1201, 100, 1351, 0, "C8434", 1000.00,
+                new Date(), 1);
+        d = Rmt2SubsidiaryDtoFactory.createCustomerTransactionInstance(o);
+        list.add(d);
+
+        o = AccountingMockDataFactory.createMockOrmCustomerXactHistory(1202, 100, 1351, 0, "C8434", 2000.00,
+                new Date(), 2);
+        d = Rmt2SubsidiaryDtoFactory.createCustomerTransactionInstance(o);
+        list.add(d);
+
+        o = AccountingMockDataFactory.createMockOrmCustomerXactHistory(1203, 100, 1351, 0, "C8434", 3000.00,
+                new Date(), 3);
+        d = Rmt2SubsidiaryDtoFactory.createCustomerTransactionInstance(o);
+        list.add(d);
+
+        o = AccountingMockDataFactory.createMockOrmCustomerXactHistory(1204, 100, 1351, 0, "C8434", 4000.00,
+                new Date(), 4);
+        d = Rmt2SubsidiaryDtoFactory.createCustomerTransactionInstance(o);
         list.add(d);
         return list;
     }

@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.dto.CustomerDto;
+import org.dto.CustomerXactHistoryDto;
+import org.dto.adapter.orm.account.subsidiary.Rmt2SubsidiaryDtoFactory;
 import org.modules.CommonAccountingConst;
 import org.modules.subsidiary.CustomerApi;
 import org.modules.subsidiary.SubsidiaryApiFactory;
@@ -74,6 +76,9 @@ public class CustomerApiHandler extends
             case ApiTransactionCodes.SUBSIDIARY_CUSTOMER_GET:
                 r = this.fetch(this.requestObj);
                 break;
+            case ApiTransactionCodes.SUBSIDIARY_CUSTOMER_TRAN_HIST_GET:
+                r = this.fetchTransHistory(this.requestObj);
+                break;
             default:
                 r = this.createErrorReply(MessagingConstants.RETURN_CODE_FAILURE,
                         MessagingConstants.RETURN_STATUS_BAD_REQUEST,
@@ -126,6 +131,49 @@ public class CustomerApiHandler extends
         return results;
     }
     
+    /**
+     * Handler for invoking the appropriate API in order to fetch one or more
+     * Customer ojects.
+     * 
+     * @param req
+     *            an instance of {@link AccountingTransactionRequest}
+     * @return an instance of {@link MessageHandlerResults}
+     */
+    protected MessageHandlerResults fetchTransHistory(AccountingTransactionRequest req) {
+        MessageHandlerResults results = new MessageHandlerResults();
+        MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
+        List<CustomerType> queryDtoResults = null;
+
+        try {
+            // Set reply status
+            rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            CustomerDto criteriaDto = SubsidiaryJaxbDtoFactory
+                    .createCustomerDtoCriteriaInstance(req.getCriteria().getCustomerCriteria());
+            
+            List<CustomerXactHistoryDto> dtoList = this.api.getTransactionHistory(criteriaDto.getCustomerId());
+            if (dtoList == null) {
+                rs.setMessage("Customer transaction history data not found!");
+                rs.setReturnCode(0);
+            }
+            else {
+                queryDtoResults = this.buildJaxbListData(criteriaDto.getCustomerId(), dtoList);
+                rs.setMessage("Customer transaction history record(s) found");
+                rs.setReturnCode(dtoList.size());
+            }
+            this.responseObj.setHeader(req.getHeader());
+        } catch (Exception e) {
+            logger.error("Error occurred during API Message Handler operation, " + this.command, e );
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
+            rs.setMessage("Failure to retrieve customer transaction history");
+            rs.setExtMessage(e.getMessage());
+        } finally {
+            this.api.close();
+        }
+
+        String xml = this.buildResponse(queryDtoResults, rs);
+        results.setPayload(xml);
+        return results;
+    }
    
     private List<CustomerType> buildJaxbListData(List<CustomerDto> results) {
         List<CustomerType> list = new ArrayList<>();
@@ -136,7 +184,14 @@ public class CustomerApiHandler extends
         return list;
     }
     
-   
+    private List<CustomerType> buildJaxbListData(int customerId, List<CustomerXactHistoryDto> transHistory) {
+        List<CustomerType> list = new ArrayList<>();
+        CustomerDto dto = Rmt2SubsidiaryDtoFactory.createCustomerInstance(null, null);
+        dto.setCustomerId(customerId);
+        CustomerType cust = SubsidiaryJaxbDtoFactory.createCustomerJaxbInstance(dto, 0.00, transHistory);
+        list.add(cust);
+        return list;
+    }
     
     @Override
     protected void validateRequest(AccountingTransactionRequest req) throws InvalidDataException {

@@ -1,0 +1,12 @@
+<AccountingTransactionRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>accounting</application>
+        <module>subsidiary</module>
+        <transaction>INCORRECT_TRANS_CODE</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>08/22/2018 14:46:58</delivery_date>
+    </header>
+    <criteria/>
+</AccountingTransactionRequest>
