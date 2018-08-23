@@ -42,6 +42,7 @@ public class CustomerApiHandler extends
                   AbstractJaxbMessageHandler<AccountingTransactionRequest, AccountingTransactionResponse, List<CustomerType>> {
     
     private static final Logger logger = Logger.getLogger(CustomerApiHandler.class);
+    public static final String MSG_UPDATE_MISSING_PROFILE = "Customer transaction profile data is required for update/delete operation";
     private ObjectFactory jaxbObjFactory;
     private CustomerApi api;
 
@@ -74,10 +75,13 @@ public class CustomerApiHandler extends
         }
         switch (command) {
             case ApiTransactionCodes.SUBSIDIARY_CUSTOMER_GET:
-                r = this.fetch(this.requestObj);
+                r = this.fetchCustomer(this.requestObj);
                 break;
             case ApiTransactionCodes.SUBSIDIARY_CUSTOMER_TRAN_HIST_GET:
                 r = this.fetchTransHistory(this.requestObj);
+                break;
+            case ApiTransactionCodes.SUBSIDIARY_CUSTOMER_UPDATE:
+                r = this.updateCustomer(this.requestObj);
                 break;
             default:
                 r = this.createErrorReply(MessagingConstants.RETURN_CODE_FAILURE,
@@ -95,7 +99,7 @@ public class CustomerApiHandler extends
      *            an instance of {@link AccountingTransactionRequest}
      * @return an instance of {@link MessageHandlerResults}
      */
-    protected MessageHandlerResults fetch(AccountingTransactionRequest req) {
+    protected MessageHandlerResults fetchCustomer(AccountingTransactionRequest req) {
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         List<CustomerType> queryDtoResults = null;
@@ -126,6 +130,49 @@ public class CustomerApiHandler extends
             this.api.close();
         }
 
+        String xml = this.buildResponse(queryDtoResults, rs);
+        results.setPayload(xml);
+        return results;
+    }
+    
+    /**
+     * Handler for invoking the appropriate API in order to update a customer's
+     * profile.
+     * 
+     * @param req
+     *            an instance of {@link AccountingTransactionRequest}
+     * @return an instance of {@link MessageHandlerResults}
+     */
+    protected MessageHandlerResults updateCustomer(AccountingTransactionRequest req) {
+        MessageHandlerResults results = new MessageHandlerResults();
+        MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
+        int rc = 0;
+
+        try {
+            // Set reply status
+            rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            CustomerDto criteriaDto = SubsidiaryJaxbDtoFactory
+                    .createCustomerDtoInstance(req.getProfile().getCustomers().getCustomer().get(0));
+            
+            rc = this.api.update(criteriaDto);
+            if (rc > 0) {
+                rs.setMessage("Customer profile was updated successfully");    
+            } else {
+                rs.setMessage("Customer profile was not found - No updates performed");
+            }
+            rs.setReturnCode(rc);
+            this.responseObj.setHeader(req.getHeader());
+        } catch (Exception e) {
+            logger.error("Error occurred during API Message Handler operation, " + this.command, e );
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
+            rs.setMessage("Failure to update customer");
+            rs.setExtMessage(e.getMessage());
+        } finally {
+            this.api.close();
+        }
+
+        List<CustomerType> queryDtoResults = new ArrayList<>();
+        queryDtoResults.add(req.getProfile().getCustomers().getCustomer().get(0));
         String xml = this.buildResponse(queryDtoResults, rs);
         results.setPayload(xml);
         return results;
@@ -202,12 +249,32 @@ public class CustomerApiHandler extends
             throw new InvalidRequestException("Customer transaction request element is invalid");
         }
         
-        try {
-            Verifier.verifyNotNull(req.getCriteria());
-            Verifier.verifyNotNull(req.getCriteria().getCustomerCriteria());
-        }
-        catch (VerifyException e) {
-            throw new InvalidRequestException("Customer transaction selection criteria is required for query operation");
+        switch (this.command) {
+            case ApiTransactionCodes.SUBSIDIARY_CUSTOMER_GET:
+            case ApiTransactionCodes.SUBSIDIARY_CUSTOMER_TRAN_HIST_GET:
+                try {
+                    Verifier.verifyNotNull(req.getCriteria());
+                    Verifier.verifyNotNull(req.getCriteria().getCustomerCriteria());
+                }
+                catch (VerifyException e) {
+                    throw new InvalidRequestException("Customer transaction selection criteria is required for query operation");
+                }    
+                break;
+                
+            case ApiTransactionCodes.SUBSIDIARY_CUSTOMER_UPDATE:
+                try {
+                    Verifier.verifyNotNull(req.getProfile());
+                    Verifier.verifyNotNull(req.getProfile().getCustomers());
+                    Verifier.verifyNotEmpty(req.getProfile().getCustomers().getCustomer());
+                }
+                catch (VerifyException e) {
+                    throw new InvalidRequestException("Customer transaction profile data is required for update/delete operation");
+                }    
+                break;
+                
+             default:
+                 logger.warn("Customer API message handler command key, " + this.command + ", could not be validated");
+                 break;
         }
     }
 

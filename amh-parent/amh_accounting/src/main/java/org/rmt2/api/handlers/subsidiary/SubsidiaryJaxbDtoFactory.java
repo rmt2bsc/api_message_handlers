@@ -17,6 +17,7 @@ import org.rmt2.util.accounting.subsidiary.CustomerTypeBuilder;
 import org.rmt2.util.addressbook.BusinessTypeBuilder;
 
 import com.RMT2Base;
+import com.api.util.RMT2String2;
 
 /**
  * A factory for converting subsidiary related JAXB objects such as customers
@@ -84,10 +85,10 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
             return null;
         }
         CustomerDto dto = Rmt2SubsidiaryDtoFactory.createCustomerInstance(null, null);
-        if (!jaxbObj.getAccountNo().isEmpty()) {
+        if (RMT2String2.isNotEmpty(jaxbObj.getAccountNo())) {
             dto.setAccountNo(jaxbObj.getAccountNo());    
         }
-        if (!jaxbObj.getAcctDescription().isEmpty()) {
+        if (RMT2String2.isNotEmpty(jaxbObj.getAcctDescription())) {
             dto.setDescription(jaxbObj.getAcctDescription());    
         }
         if (jaxbObj.getAcctId() != null) {
@@ -103,7 +104,7 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
             if (jaxbObj.getBusinessContactDetails().getBusinessId() != null) {
                 dto.setContactId(jaxbObj.getBusinessContactDetails().getBusinessId().intValue());    
             }
-            if (!jaxbObj.getBusinessContactDetails().getLongName().isEmpty()) {
+            if (RMT2String2.isNotEmpty(jaxbObj.getBusinessContactDetails().getLongName())) {
                 dto.setContactName(jaxbObj.getBusinessContactDetails().getLongName());    
             }
             if (jaxbObj.getBusinessContactDetails().getCategory() != null) {
@@ -111,19 +112,19 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
                     dto.setCategoryId(jaxbObj.getBusinessContactDetails().getCategory().getGroupId().intValue());    
                 }    
             }
-            if (!jaxbObj.getBusinessContactDetails().getContactEmail().isEmpty()) {
+            if (RMT2String2.isNotEmpty(jaxbObj.getBusinessContactDetails().getContactEmail())) {
                 dto.setContactEmail(jaxbObj.getBusinessContactDetails().getContactEmail());    
             }
-            if (!jaxbObj.getBusinessContactDetails().getContactFirstname().isEmpty()) {
+            if (RMT2String2.isNotEmpty(jaxbObj.getBusinessContactDetails().getContactFirstname())) {
                 dto.setContactFirstname(jaxbObj.getBusinessContactDetails().getContactFirstname());    
             }
-            if (!jaxbObj.getBusinessContactDetails().getContactLastname().isEmpty()) {
+            if (RMT2String2.isNotEmpty(jaxbObj.getBusinessContactDetails().getContactLastname())) {
                 dto.setContactLastname(jaxbObj.getBusinessContactDetails().getContactLastname());    
             }
-            if (!jaxbObj.getBusinessContactDetails().getContactPhone().isEmpty()) {
+            if (RMT2String2.isNotEmpty(jaxbObj.getBusinessContactDetails().getContactPhone())) {
                 dto.setContactPhone(jaxbObj.getBusinessContactDetails().getContactPhone());    
             }
-            if (!jaxbObj.getBusinessContactDetails().getContactExt().isEmpty()) {
+            if (RMT2String2.isNotEmpty(jaxbObj.getBusinessContactDetails().getContactExt())) {
                 dto.setContactExt(jaxbObj.getBusinessContactDetails().getContactExt());    
             }
             if (jaxbObj.getBusinessContactDetails().getEntityType() != null) {
@@ -136,48 +137,48 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
                     dto.setServTypeId(jaxbObj.getBusinessContactDetails().getServiceType().getCodeId().intValue());    
                 }
             }
-            if (!jaxbObj.getBusinessContactDetails().getShortName().isEmpty()) {
+            if (RMT2String2.isNotEmpty(jaxbObj.getBusinessContactDetails().getShortName())) {
                 dto.setShortName(jaxbObj.getBusinessContactDetails().getShortName());    
             }
-            if (!jaxbObj.getBusinessContactDetails().getTaxId().isEmpty()) {
+            if (RMT2String2.isNotEmpty(jaxbObj.getBusinessContactDetails().getTaxId())) {
                 dto.setTaxId(jaxbObj.getBusinessContactDetails().getTaxId());    
             }
-            if (!jaxbObj.getBusinessContactDetails().getWebsite().isEmpty()) {
+            if (RMT2String2.isNotEmpty(jaxbObj.getBusinessContactDetails().getWebsite())) {
                 dto.setWebsite(jaxbObj.getBusinessContactDetails().getWebsite());    
             }
             if (jaxbObj.getBusinessContactDetails().getAddress() != null) {
                 if (jaxbObj.getBusinessContactDetails().getAddress().getAddrId() != null) {
                     dto.setAddrId(jaxbObj.getBusinessContactDetails().getAddress().getAddrId().intValue());    
                 }
-                if (!jaxbObj.getBusinessContactDetails().getAddress().getAddr1().isEmpty()) {
+                if (RMT2String2.isNotEmpty(jaxbObj.getBusinessContactDetails().getAddress().getAddr1())) {
                     dto.setAddr1(jaxbObj.getBusinessContactDetails().getAddress().getAddr1());    
                 }
-                if (!jaxbObj.getBusinessContactDetails().getAddress().getAddr2().isEmpty()) {
+                if (RMT2String2.isNotEmpty(jaxbObj.getBusinessContactDetails().getAddress().getAddr2())) {
                     dto.setAddr2(jaxbObj.getBusinessContactDetails().getAddress().getAddr2());    
                 }
-                if (!jaxbObj.getBusinessContactDetails().getAddress().getAddr3().isEmpty()) {
+                if (RMT2String2.isNotEmpty(jaxbObj.getBusinessContactDetails().getAddress().getAddr3())) {
                     dto.setAddr3(jaxbObj.getBusinessContactDetails().getAddress().getAddr3());    
                 }
-                if (!jaxbObj.getBusinessContactDetails().getAddress().getAddr4().isEmpty()) {
+                if (RMT2String2.isNotEmpty(jaxbObj.getBusinessContactDetails().getAddress().getAddr4())) {
                     dto.setAddr4(jaxbObj.getBusinessContactDetails().getAddress().getAddr4());    
                 }
-                if (!jaxbObj.getBusinessContactDetails().getAddress().getPhoneMain().isEmpty()) {
+                if (RMT2String2.isNotEmpty(jaxbObj.getBusinessContactDetails().getAddress().getPhoneMain())) {
                     dto.setPhoneCompany(jaxbObj.getBusinessContactDetails().getAddress().getPhoneMain());    
                 }
-                if (!jaxbObj.getBusinessContactDetails().getAddress().getPhonePager().isEmpty()) {
+                if (RMT2String2.isNotEmpty(jaxbObj.getBusinessContactDetails().getAddress().getPhonePager())) {
                     dto.setPhonePager(jaxbObj.getBusinessContactDetails().getAddress().getPhonePager());    
                 }
-                if (!jaxbObj.getBusinessContactDetails().getAddress().getPhoneFax().isEmpty()) {
+                if (RMT2String2.isNotEmpty(jaxbObj.getBusinessContactDetails().getAddress().getPhoneFax())) {
                     dto.setPhoneFax(jaxbObj.getBusinessContactDetails().getAddress().getPhoneFax());    
                 }
-                if (!jaxbObj.getBusinessContactDetails().getAddress().getPhoneFax().isEmpty()) {
+                if (RMT2String2.isNotEmpty(jaxbObj.getBusinessContactDetails().getAddress().getPhoneFax())) {
                     dto.setPhoneFax(jaxbObj.getBusinessContactDetails().getAddress().getPhoneFax());    
                 }
                 if (jaxbObj.getBusinessContactDetails().getAddress().getZip() != null) {
-                    if (!jaxbObj.getBusinessContactDetails().getAddress().getZip().getCity().isEmpty()) {
+                    if (RMT2String2.isNotEmpty(jaxbObj.getBusinessContactDetails().getAddress().getZip().getCity())) {
                         dto.setCity(jaxbObj.getBusinessContactDetails().getAddress().getZip().getCity());    
                     }
-                    if (!jaxbObj.getBusinessContactDetails().getAddress().getZip().getState().isEmpty()) {
+                    if (RMT2String2.isNotEmpty(jaxbObj.getBusinessContactDetails().getAddress().getZip().getState())) {
                         dto.setState(jaxbObj.getBusinessContactDetails().getAddress().getZip().getState());    
                     }
                     if (jaxbObj.getBusinessContactDetails().getAddress().getZip().getZipcode() != null) {
