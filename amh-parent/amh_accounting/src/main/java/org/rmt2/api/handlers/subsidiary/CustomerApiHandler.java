@@ -133,7 +133,7 @@ public class CustomerApiHandler extends
     
     /**
      * Handler for invoking the appropriate API in order to fetch one or more
-     * Customer ojects.
+     * Customer transaction history ojects.
      * 
      * @param req
      *            an instance of {@link AccountingTransactionRequest}
