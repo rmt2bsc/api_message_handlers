@@ -42,7 +42,7 @@ public class CustomerApiHandler extends
                   AbstractJaxbMessageHandler<AccountingTransactionRequest, AccountingTransactionResponse, List<CustomerType>> {
     
     private static final Logger logger = Logger.getLogger(CustomerApiHandler.class);
-    public static final String MSG_UPDATE_MISSING_CRITERIA = "Customer transaction selection criteria is required for query operation";
+    public static final String MSG_UPDATE_MISSING_CRITERIA = "Customer transaction selection criteria is required for query/delete operation";
     public static final String MSG_UPDATE_MISSING_PROFILE = "Customer transaction profile data is required for update operation";
     private ObjectFactory jaxbObjFactory;
     private CustomerApi api;
@@ -83,6 +83,9 @@ public class CustomerApiHandler extends
                 break;
             case ApiTransactionCodes.SUBSIDIARY_CUSTOMER_UPDATE:
                 r = this.updateCustomer(this.requestObj);
+                break;
+            case ApiTransactionCodes.SUBSIDIARY_CUSTOMER_DELETE:
+                r = this.deleteCustomer(this.requestObj);
                 break;
             default:
                 r = this.createErrorReply(MessagingConstants.RETURN_CODE_FAILURE,
@@ -180,6 +183,45 @@ public class CustomerApiHandler extends
     }
     
     /**
+     * Handler for invoking the appropriate API in order to delete a
+     * Customer ojects.
+     * 
+     * @param req
+     *            an instance of {@link AccountingTransactionRequest}
+     * @return an instance of {@link MessageHandlerResults}
+     */
+    protected MessageHandlerResults deleteCustomer(AccountingTransactionRequest req) {
+        MessageHandlerResults results = new MessageHandlerResults();
+        MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
+        int rc = 0;
+        CustomerDto criteriaDto = null;
+
+        try {
+            // Set reply status
+            rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            criteriaDto = SubsidiaryJaxbDtoFactory
+                    .createCustomerDtoCriteriaInstance(req.getCriteria().getCustomerCriteria());
+            
+            rc = this.api.delete(criteriaDto);
+            rs.setMessage("Customer delete operation completed!");
+            rs.setExtMessage("Total records deleted: " + rc);
+            rs.setReturnCode(rc);
+            this.responseObj.setHeader(req.getHeader());
+        } catch (Exception e) {
+            logger.error("Error occurred during API Message Handler operation, " + this.command, e );
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
+            rs.setMessage("Failure to delete customer: " + criteriaDto.getCustomerId());
+            rs.setExtMessage(e.getMessage());
+        } finally {
+            this.api.close();
+        }
+
+        String xml = this.buildResponse(null, rs);
+        results.setPayload(xml);
+        return results;
+    }
+    
+    /**
      * Handler for invoking the appropriate API in order to fetch one or more
      * Customer transaction history ojects.
      * 
@@ -252,6 +294,7 @@ public class CustomerApiHandler extends
         
         switch (this.command) {
             case ApiTransactionCodes.SUBSIDIARY_CUSTOMER_GET:
+            case ApiTransactionCodes.SUBSIDIARY_CUSTOMER_DELETE:
             case ApiTransactionCodes.SUBSIDIARY_CUSTOMER_TRAN_HIST_GET:
                 try {
                     Verifier.verifyNotNull(req.getCriteria());

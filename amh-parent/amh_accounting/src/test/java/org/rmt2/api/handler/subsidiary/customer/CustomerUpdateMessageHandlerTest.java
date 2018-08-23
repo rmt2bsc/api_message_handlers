@@ -183,7 +183,7 @@ public class CustomerUpdateMessageHandlerTest extends BaseAccountingMessageHandl
   
 
     @Test
-    public void testValidation_Fetch_Profile_Missing() {
+    public void testValidation_Update_Profile_Missing() {
         String request = RMT2File.getFileContentsAsString("xml/subsidiary/customer/CustomerUpdateMissingProfileRequest.xml");
         MessageHandlerResults results = null;
         CustomerApiHandler handler = new CustomerApiHandler();
@@ -208,7 +208,7 @@ public class CustomerUpdateMessageHandlerTest extends BaseAccountingMessageHandl
     }
 
     @Test
-    public void testValidation_Fetch_CustomerList_Missing() {
+    public void testValidation_Update_CustomerList_Missing() {
         String request = RMT2File.getFileContentsAsString("xml/subsidiary/customer/CustomerUpdateMissingCustomerListRequest.xml");
         MessageHandlerResults results = null;
         CustomerApiHandler handler = new CustomerApiHandler();
@@ -233,7 +233,7 @@ public class CustomerUpdateMessageHandlerTest extends BaseAccountingMessageHandl
     }
     
     @Test
-    public void testValidation_Fetch_CustomerList_Empty() {
+    public void testValidation_Update_CustomerList_Empty() {
         String request = RMT2File.getFileContentsAsString("xml/subsidiary/customer/CustomerUpdateEmptyCustomerListRequest.xml");
         MessageHandlerResults results = null;
         CustomerApiHandler handler = new CustomerApiHandler();
@@ -258,12 +258,126 @@ public class CustomerUpdateMessageHandlerTest extends BaseAccountingMessageHandl
     }
     
     @Test
+    public void testSuccess_DeleteCustomer() {
+        String request = RMT2File.getFileContentsAsString("xml/subsidiary/customer/CustomerDeleteRequest.xml");
+        try {
+            when(this.mockApi.delete(isA(CustomerDto.class)))
+                    .thenReturn(WebServiceConstants.RETURN_CODE_SUCCESS);
+        } catch (CustomerApiException e) {
+            Assert.fail("Unable to setup mock stub for delete a customer");
+        }
+        
+        MessageHandlerResults results = null;
+        CustomerApiHandler handler = new CustomerApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.SUBSIDIARY_CUSTOMER_DELETE, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingTransactionResponse actualRepsonse = 
+                (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertEquals(WebServiceConstants.RETURN_CODE_SUCCESS,
+                actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS,
+                actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals("Customer delete operation completed!",
+                actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals("Total records deleted: " + WebServiceConstants.RETURN_CODE_SUCCESS,
+                actualRepsonse.getReplyStatus().getExtMessage());
+    }
+    
+    @Test
+    public void testError_DeleteCustomer_API_Error() {
+        String request = RMT2File.getFileContentsAsString("xml/subsidiary/customer/CustomerDeleteRequest.xml");
+        try {
+            when(this.mockApi.delete(isA(CustomerDto.class)))
+               .thenThrow(new CustomerApiException("API error occurred"));
+        } catch (CustomerApiException e) {
+            Assert.fail("Unable to setup mock stub for updating a Customer");
+        }
+        
+        MessageHandlerResults results = null;
+        CustomerApiHandler handler = new CustomerApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.SUBSIDIARY_CUSTOMER_DELETE, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingTransactionResponse actualRepsonse = 
+                (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals("Failure to delete customer: " + 3333, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals("API error occurred", actualRepsonse.getReplyStatus().getExtMessage());
+    }
+    
+    @Test
+    public void testValidation_Delete_Criteria_Missing() {
+        String request = RMT2File.getFileContentsAsString("xml/subsidiary/customer/CustomerDeleteCriteriaMissingRequest.xml");
+        MessageHandlerResults results = null;
+        CustomerApiHandler handler = new CustomerApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.SUBSIDIARY_CUSTOMER_DELETE, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingTransactionResponse actualRepsonse = 
+                (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus()
+                .getReturnStatus());
+        Assert.assertEquals(CustomerApiHandler.MSG_UPDATE_MISSING_CRITERIA,
+                actualRepsonse.getReplyStatus().getMessage());
+    }
+
+    @Test
+    public void testValidation_Delete_CustomerCriteria_Missing() {
+        String request = RMT2File.getFileContentsAsString("xml/subsidiary/customer/CustomerDeleteCustomerCriteriaMissingRequest.xml");
+        MessageHandlerResults results = null;
+        CustomerApiHandler handler = new CustomerApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.SUBSIDIARY_CUSTOMER_DELETE, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingTransactionResponse actualRepsonse = 
+                (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus()
+                .getReturnStatus());
+        Assert.assertEquals(CustomerApiHandler.MSG_UPDATE_MISSING_CRITERIA,
+                actualRepsonse.getReplyStatus().getMessage());
+    }
+    
+    @Test
     public void testValidation_InvalidRequest() {
         String request = RMT2File.getFileContentsAsString("xml/InvalidRequest.xml");
         MessageHandlerResults results = null;
         CustomerApiHandler handler = new CustomerApiHandler();
         try {
-            results = handler.processMessage(ApiTransactionCodes.SUBSIDIARY_CUSTOMER_TRAN_HIST_GET, request);
+            results = handler.processMessage(ApiTransactionCodes.SUBSIDIARY_CUSTOMER_DELETE, request);
         } catch (MessageHandlerCommandException e) {
             e.printStackTrace();
             Assert.fail("An unexpected exception was thrown");

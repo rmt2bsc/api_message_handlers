@@ -335,7 +335,7 @@ public class CustomerQueryMessageHandlerTest extends BaseAccountingMessageHandle
 
     @Test
     public void testValidation_Fetch_Criteria_Missing() {
-        String request = RMT2File.getFileContentsAsString("xml/subsidiary/customer/CustomerHandlerCriteriaMissingRequest.xml");
+        String request = RMT2File.getFileContentsAsString("xml/subsidiary/customer/CustomerQueryCriteriaMissingRequest.xml");
         MessageHandlerResults results = null;
         CustomerApiHandler handler = new CustomerApiHandler();
         try {
@@ -360,7 +360,7 @@ public class CustomerQueryMessageHandlerTest extends BaseAccountingMessageHandle
 
     @Test
     public void testValidation_Fetch_CustomerCriteria_Missing() {
-        String request = RMT2File.getFileContentsAsString("xml/subsidiary/customer/CustomerHandlerCustomerCriteriaMissingRequest.xml");
+        String request = RMT2File.getFileContentsAsString("xml/subsidiary/customer/CustomerQueryCustomerCriteriaMissingRequest.xml");
         MessageHandlerResults results = null;
         CustomerApiHandler handler = new CustomerApiHandler();
         try {
