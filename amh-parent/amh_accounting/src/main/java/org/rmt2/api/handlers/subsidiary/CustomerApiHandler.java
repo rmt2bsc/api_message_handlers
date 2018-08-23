@@ -42,7 +42,8 @@ public class CustomerApiHandler extends
                   AbstractJaxbMessageHandler<AccountingTransactionRequest, AccountingTransactionResponse, List<CustomerType>> {
     
     private static final Logger logger = Logger.getLogger(CustomerApiHandler.class);
-    public static final String MSG_UPDATE_MISSING_PROFILE = "Customer transaction profile data is required for update/delete operation";
+    public static final String MSG_UPDATE_MISSING_CRITERIA = "Customer transaction selection criteria is required for query operation";
+    public static final String MSG_UPDATE_MISSING_PROFILE = "Customer transaction profile data is required for update operation";
     private ObjectFactory jaxbObjFactory;
     private CustomerApi api;
 
@@ -257,7 +258,7 @@ public class CustomerApiHandler extends
                     Verifier.verifyNotNull(req.getCriteria().getCustomerCriteria());
                 }
                 catch (VerifyException e) {
-                    throw new InvalidRequestException("Customer transaction selection criteria is required for query operation");
+                    throw new InvalidRequestException(CustomerApiHandler.MSG_UPDATE_MISSING_CRITERIA);
                 }    
                 break;
                 
@@ -268,7 +269,7 @@ public class CustomerApiHandler extends
                     Verifier.verifyNotEmpty(req.getProfile().getCustomers().getCustomer());
                 }
                 catch (VerifyException e) {
-                    throw new InvalidRequestException("Customer transaction profile data is required for update/delete operation");
+                    throw new InvalidRequestException(CustomerApiHandler.MSG_UPDATE_MISSING_PROFILE);
                 }    
                 break;
                 

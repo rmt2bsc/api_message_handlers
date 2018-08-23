@@ -354,7 +354,7 @@ public class CustomerQueryMessageHandlerTest extends BaseAccountingMessageHandle
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus()
                 .getReturnStatus());
-        Assert.assertEquals("Customer transaction selection criteria is required for query operation",
+        Assert.assertEquals(CustomerApiHandler.MSG_UPDATE_MISSING_CRITERIA,
                 actualRepsonse.getReplyStatus().getMessage());
     }
 
@@ -379,7 +379,7 @@ public class CustomerQueryMessageHandlerTest extends BaseAccountingMessageHandle
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus()
                 .getReturnStatus());
-        Assert.assertEquals("Customer transaction selection criteria is required for query operation",
+        Assert.assertEquals(CustomerApiHandler.MSG_UPDATE_MISSING_CRITERIA,
                 actualRepsonse.getReplyStatus().getMessage());
     }
     
