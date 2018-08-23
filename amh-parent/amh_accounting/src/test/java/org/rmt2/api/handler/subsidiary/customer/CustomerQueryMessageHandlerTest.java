@@ -116,13 +116,13 @@ public class CustomerQueryMessageHandlerTest extends BaseAccountingMessageHandle
 
         AccountingTransactionResponse actualRepsonse = 
                 (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-        Assert.assertEquals(5, actualRepsonse.getProfile().getCustomer().size());
+        Assert.assertEquals(5, actualRepsonse.getProfile().getCustomers().getCustomer().size());
         Assert.assertEquals(5, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Customer record(s) found", actualRepsonse.getReplyStatus().getMessage());
         
-        for (int ndx = 0; ndx < actualRepsonse.getProfile().getCustomer().size(); ndx++) {
-            CustomerType a = actualRepsonse.getProfile().getCustomer().get(ndx);
+        for (int ndx = 0; ndx < actualRepsonse.getProfile().getCustomers().getCustomer().size(); ndx++) {
+            CustomerType a = actualRepsonse.getProfile().getCustomers().getCustomer().get(ndx);
             Assert.assertNotNull(a.getCustomerId());
             Assert.assertEquals(200 + ndx, a.getCustomerId().intValue());
             Assert.assertNotNull(a.getBusinessContactDetails());
@@ -222,15 +222,15 @@ public class CustomerQueryMessageHandlerTest extends BaseAccountingMessageHandle
 
         AccountingTransactionResponse actualRepsonse = 
                 (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-        Assert.assertEquals(1, actualRepsonse.getProfile().getCustomer().size());
-        Assert.assertEquals(5, actualRepsonse.getProfile().getCustomer().get(0)
+        Assert.assertEquals(1, actualRepsonse.getProfile().getCustomers().getCustomer().size());
+        Assert.assertEquals(5, actualRepsonse.getProfile().getCustomers().getCustomer().get(0)
                 .getTransactions().getTransaction().size());
         Assert.assertEquals(5, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Customer transaction history record(s) found", actualRepsonse.getReplyStatus().getMessage());
         
-        for (int ndx = 0; ndx < actualRepsonse.getProfile().getCustomer().size(); ndx++) {
-            CustomerType a = actualRepsonse.getProfile().getCustomer().get(ndx);
+        for (int ndx = 0; ndx < actualRepsonse.getProfile().getCustomers().getCustomer().size(); ndx++) {
+            CustomerType a = actualRepsonse.getProfile().getCustomers().getCustomer().get(ndx);
             Assert.assertNotNull(a.getCustomerId());
             Assert.assertEquals(3333, a.getCustomerId().intValue());
             int ndx2 = 0;

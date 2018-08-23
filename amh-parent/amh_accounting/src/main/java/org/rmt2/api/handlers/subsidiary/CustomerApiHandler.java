@@ -220,8 +220,9 @@ public class CustomerApiHandler extends
         
         if (payload != null) {
             TransactionDetailGroup profile = this.jaxbObjFactory.createTransactionDetailGroup();
+            profile.setCustomers(this.jaxbObjFactory.createCustomerListType());
             this.responseObj.setProfile(profile);
-            this.responseObj.getProfile().getCustomer().addAll(payload);
+            this.responseObj.getProfile().getCustomers().getCustomer().addAll(payload);
         }
         
         String xml = this.jaxb.marshalMessage(this.responseObj);
