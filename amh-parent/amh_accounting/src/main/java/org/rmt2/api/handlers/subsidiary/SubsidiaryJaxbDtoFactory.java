@@ -3,10 +3,12 @@ package org.rmt2.api.handlers.subsidiary;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.dto.CreditorDto;
 import org.dto.CustomerDto;
 import org.dto.CustomerXactHistoryDto;
 import org.dto.adapter.orm.account.subsidiary.Rmt2SubsidiaryDtoFactory;
 import org.rmt2.jaxb.BusinessType;
+import org.rmt2.jaxb.CreditorCriteriaType;
 import org.rmt2.jaxb.CustomerActivityType;
 import org.rmt2.jaxb.CustomerCriteriaType;
 import org.rmt2.jaxb.CustomerType;
@@ -239,4 +241,51 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
         return jaxbObj;
     }
     
+    /**
+     * Creates an instance of <i>CreditorDto</i> using a valid
+     * <i>CreditorCriteriaType</i> JAXB object.
+     * 
+     * @param criteria
+     *            an instance of {@link CreditorCriteriaType}
+     * @return an instance of {@link CreditorDto}
+     */
+    public static final CreditorDto createCreditorDtoCriteriaInstance(CreditorCriteriaType jaxbCriteria) {
+        if (jaxbCriteria == null) {
+            return null;
+        }
+        CreditorDto dto = Rmt2SubsidiaryDtoFactory.createCreditorInstance(null, null);
+        if (jaxbCriteria.getCreditor() != null) {
+            if (jaxbCriteria.getCreditor().getAccountNo() != null
+                    && !jaxbCriteria.getCustomer().getAccountNo().isEmpty()) {
+                dto.setAccountNo(jaxbCriteria.getCustomer().getAccountNo());
+            }
+            if (jaxbCriteria.getCustomer().getAcctDescription() != null
+                    && !jaxbCriteria.getCustomer().getAcctDescription().isEmpty()) {
+                dto.setDescription(jaxbCriteria.getCustomer().getAcctDescription());
+            }
+            if (jaxbCriteria.getCustomer().getAcctId() != null) {
+                dto.setAcctId(jaxbCriteria.getCustomer().getAcctId().intValue());
+            }
+            if (jaxbCriteria.getCustomer().getActive() != null) {
+                dto.setActive(jaxbCriteria.getCustomer().getActive().intValue());
+            }
+            if (jaxbCriteria.getCustomer().getCustomerId() != null) {
+                dto.setCustomerId(jaxbCriteria.getCustomer().getCustomerId().intValue());
+            }
+            if (jaxbCriteria.getCustomer().getBusinessContactDetails() != null) {
+                if (jaxbCriteria.getCustomer().getBusinessContactDetails().getBusinessId() != null) {
+                    dto.setContactId(jaxbCriteria.getCustomer().getBusinessContactDetails().getBusinessId().intValue());
+                }
+                if (jaxbCriteria.getCustomer().getBusinessContactDetails().getLongName() != null
+                        && !jaxbCriteria.getCustomer().getBusinessContactDetails().getLongName().isEmpty()) {
+                    dto.setContactName(jaxbCriteria.getCustomer().getBusinessContactDetails().getLongName());
+                }
+            }
+
+            // TODO: In the future, we can make provisions to handle person
+            // related data.
+        }
+
+        return dto;
+    }
 }
