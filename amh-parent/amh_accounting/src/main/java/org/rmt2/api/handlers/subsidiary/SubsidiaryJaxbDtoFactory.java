@@ -258,7 +258,6 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
         if (RMT2String2.isEmpty(jaxbCriteria.getAccountNo())) {
             dto.setAccountNo(jaxbCriteria.getAccountNo());
         }
-
         if (jaxbCriteria.getAcctId() != null) {
             dto.setAcctId(jaxbCriteria.getAcctId().intValue());
         }
@@ -277,7 +276,6 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
         if (jaxbCriteria.getCreditorTypeId() != null) {
             dto.setCreditorTypeId(jaxbCriteria.getCreditorTypeId().intValue());
         }
-        
         return dto;
     }
 }
