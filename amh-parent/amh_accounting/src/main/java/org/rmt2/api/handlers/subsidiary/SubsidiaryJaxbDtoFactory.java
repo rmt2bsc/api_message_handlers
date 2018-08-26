@@ -4,16 +4,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.dto.CreditorDto;
+import org.dto.CreditorXactHistoryDto;
 import org.dto.CustomerDto;
 import org.dto.CustomerXactHistoryDto;
 import org.dto.adapter.orm.account.subsidiary.Rmt2SubsidiaryDtoFactory;
 import org.rmt2.jaxb.BusinessType;
+import org.rmt2.jaxb.CreditorActivityType;
 import org.rmt2.jaxb.CreditorCriteriaType;
+import org.rmt2.jaxb.CreditorType;
 import org.rmt2.jaxb.CustomerActivityType;
 import org.rmt2.jaxb.CustomerCriteriaType;
 import org.rmt2.jaxb.CustomerType;
 import org.rmt2.jaxb.RecordTrackingType;
 import org.rmt2.util.RecordTrackingTypeBuilder;
+import org.rmt2.util.accounting.subsidiary.CreditorActivityTypeBuilder;
+import org.rmt2.util.accounting.subsidiary.CreditorTypeBuilder;
 import org.rmt2.util.accounting.subsidiary.CustomerActivityTypeBuilder;
 import org.rmt2.util.accounting.subsidiary.CustomerTypeBuilder;
 import org.rmt2.util.addressbook.BusinessTypeBuilder;
@@ -278,4 +283,178 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
         }
         return dto;
     }
+    
+    /**
+     * 
+     * @param jaxbObj
+     * @return
+     */
+    public static final CreditorDto createCreditorDtoInstance(CreditorType jaxbObj) {
+        if (jaxbObj == null) {
+            return null;
+        }
+        CreditorDto dto = Rmt2SubsidiaryDtoFactory.createCreditorInstance(null, null);
+        if (jaxbObj.getCreditorId() != null) {
+            dto.setCreditorId(jaxbObj.getCreditorId().intValue());    
+        }
+        if (RMT2String2.isNotEmpty(jaxbObj.getAccountNo())) {
+            dto.setAccountNo(jaxbObj.getAccountNo());    
+        }
+        if (RMT2String2.isNotEmpty(jaxbObj.getExtAccountNo())) {
+            dto.setExtAccountNumber(jaxbObj.getExtAccountNo());    
+        }
+        if (jaxbObj.getAcctId() != null) {
+            dto.setAcctId(jaxbObj.getAcctId().intValue());    
+        }
+        if (jaxbObj.getActive() != null) {
+            dto.setActive(jaxbObj.getActive().intValue());    
+        }
+        if (jaxbObj.getApr() != null) {
+            dto.setApr(jaxbObj.getApr().doubleValue());
+        }
+        if (jaxbObj.getCreditLimit() != null) {
+            dto.setCreditLimit(jaxbObj.getCreditLimit().doubleValue());
+        }
+        if (jaxbObj.getCreditorType() != null) {
+            if (jaxbObj.getCreditorType().getCreditorTypeId() != null) {
+                dto.setCreditorTypeId(jaxbObj.getCreditorType().getCreditorTypeId().intValue());
+            }
+        }
+        if (jaxbObj.getContactDetails() != null) {
+            if (jaxbObj.getContactDetails().getBusinessId() != null) {
+                dto.setContactId(jaxbObj.getContactDetails().getBusinessId().intValue());    
+            }
+            if (RMT2String2.isNotEmpty(jaxbObj.getContactDetails().getLongName())) {
+                dto.setContactName(jaxbObj.getContactDetails().getLongName());    
+            }
+            if (jaxbObj.getContactDetails().getCategory() != null) {
+                if (jaxbObj.getContactDetails().getCategory().getGroupId() != null) {
+                    dto.setCategoryId(jaxbObj.getContactDetails().getCategory().getGroupId().intValue());    
+                }    
+            }
+            if (RMT2String2.isNotEmpty(jaxbObj.getContactDetails().getContactEmail())) {
+                dto.setContactEmail(jaxbObj.getContactDetails().getContactEmail());    
+            }
+            if (RMT2String2.isNotEmpty(jaxbObj.getContactDetails().getContactFirstname())) {
+                dto.setContactFirstname(jaxbObj.getContactDetails().getContactFirstname());    
+            }
+            if (RMT2String2.isNotEmpty(jaxbObj.getContactDetails().getContactLastname())) {
+                dto.setContactLastname(jaxbObj.getContactDetails().getContactLastname());    
+            }
+            if (RMT2String2.isNotEmpty(jaxbObj.getContactDetails().getContactPhone())) {
+                dto.setContactPhone(jaxbObj.getContactDetails().getContactPhone());    
+            }
+            if (RMT2String2.isNotEmpty(jaxbObj.getContactDetails().getContactExt())) {
+                dto.setContactExt(jaxbObj.getContactDetails().getContactExt());    
+            }
+            if (jaxbObj.getContactDetails().getEntityType() != null) {
+                if (jaxbObj.getContactDetails().getEntityType().getCodeId() != null) {
+                    dto.setEntityTypeId(jaxbObj.getContactDetails().getEntityType().getCodeId().intValue());    
+                }
+            }
+            if (jaxbObj.getContactDetails().getServiceType() != null) {
+                if (jaxbObj.getContactDetails().getServiceType().getCodeId() != null) {
+                    dto.setServTypeId(jaxbObj.getContactDetails().getServiceType().getCodeId().intValue());    
+                }
+            }
+            if (RMT2String2.isNotEmpty(jaxbObj.getContactDetails().getShortName())) {
+                dto.setShortName(jaxbObj.getContactDetails().getShortName());    
+            }
+            if (RMT2String2.isNotEmpty(jaxbObj.getContactDetails().getTaxId())) {
+                dto.setTaxId(jaxbObj.getContactDetails().getTaxId());    
+            }
+            if (RMT2String2.isNotEmpty(jaxbObj.getContactDetails().getWebsite())) {
+                dto.setWebsite(jaxbObj.getContactDetails().getWebsite());    
+            }
+            if (jaxbObj.getContactDetails().getAddress() != null) {
+                if (jaxbObj.getContactDetails().getAddress().getAddrId() != null) {
+                    dto.setAddrId(jaxbObj.getContactDetails().getAddress().getAddrId().intValue());    
+                }
+                if (RMT2String2.isNotEmpty(jaxbObj.getContactDetails().getAddress().getAddr1())) {
+                    dto.setAddr1(jaxbObj.getContactDetails().getAddress().getAddr1());    
+                }
+                if (RMT2String2.isNotEmpty(jaxbObj.getContactDetails().getAddress().getAddr2())) {
+                    dto.setAddr2(jaxbObj.getContactDetails().getAddress().getAddr2());    
+                }
+                if (RMT2String2.isNotEmpty(jaxbObj.getContactDetails().getAddress().getAddr3())) {
+                    dto.setAddr3(jaxbObj.getContactDetails().getAddress().getAddr3());    
+                }
+                if (RMT2String2.isNotEmpty(jaxbObj.getContactDetails().getAddress().getAddr4())) {
+                    dto.setAddr4(jaxbObj.getContactDetails().getAddress().getAddr4());    
+                }
+                if (RMT2String2.isNotEmpty(jaxbObj.getContactDetails().getAddress().getPhoneMain())) {
+                    dto.setPhoneCompany(jaxbObj.getContactDetails().getAddress().getPhoneMain());    
+                }
+                if (RMT2String2.isNotEmpty(jaxbObj.getContactDetails().getAddress().getPhonePager())) {
+                    dto.setPhonePager(jaxbObj.getContactDetails().getAddress().getPhonePager());    
+                }
+                if (RMT2String2.isNotEmpty(jaxbObj.getContactDetails().getAddress().getPhoneFax())) {
+                    dto.setPhoneFax(jaxbObj.getContactDetails().getAddress().getPhoneFax());    
+                }
+                if (RMT2String2.isNotEmpty(jaxbObj.getContactDetails().getAddress().getPhoneFax())) {
+                    dto.setPhoneFax(jaxbObj.getContactDetails().getAddress().getPhoneFax());    
+                }
+                if (jaxbObj.getContactDetails().getAddress().getZip() != null) {
+                    if (RMT2String2.isNotEmpty(jaxbObj.getContactDetails().getAddress().getZip().getCity())) {
+                        dto.setCity(jaxbObj.getContactDetails().getAddress().getZip().getCity());    
+                    }
+                    if (RMT2String2.isNotEmpty(jaxbObj.getContactDetails().getAddress().getZip().getState())) {
+                        dto.setState(jaxbObj.getContactDetails().getAddress().getZip().getState());    
+                    }
+                    if (jaxbObj.getContactDetails().getAddress().getZip().getZipcode() != null) {
+                        dto.setZip(jaxbObj.getContactDetails().getAddress().getZip().getZipcode().intValue());    
+                    }
+                }
+            }
+        }
+        return dto;
+    }
+    
+    /**
+     * 
+     * @param dto
+     * @return
+     */
+    public static final CreditorType createCreditorJaxbInstance(CreditorDto dto,
+            double balance, List<CreditorXactHistoryDto> transactions) {
+        
+        RecordTrackingType rtt = RecordTrackingTypeBuilder.Builder.create()
+                .withDateCreated(dto.getDateCreated())
+                .withDateUpdate(dto.getDateUpdated())
+                .withUserId(dto.getUpdateUserId())
+                .withIpCreated(dto.getIpCreated())
+                .withIpUpdate(dto.getIpUpdated()).build();
+        
+        BusinessType businessContactDetails = BusinessTypeBuilder.Builder.create()
+                .withBusinessId(dto.getContactId())
+                .withLongname(dto.getContactName()).build();
+        
+        List<CreditorActivityType> catList = null;
+        if (transactions != null) {
+            catList = new ArrayList<>();
+            for (CreditorXactHistoryDto trans : transactions) {
+                CreditorActivityType cat = CreditorActivityTypeBuilder.Builder.create()
+                        .withAmount(trans.getActivityAmount())
+                        .withCreditorActivityId(trans.getActivityId())
+                        .withCreditorId(trans.getCreditorId())
+                        .withXactDetails(null)
+                        .withXactId(trans.getXactId()).build();
+                
+                catList.add(cat);
+            }
+        }
+        
+        CreditorType jaxbObj = CreditorTypeBuilder.Builder.create()
+                .withCreditorId(dto.getCreditorId())
+                .withAcctId(dto.getAcctId())
+                .withBusinessType(businessContactDetails)
+                .withAccountNo(dto.getAccountNo())
+                .withCreditLimit(dto.getCreditLimit())
+                .withBalance(balance)
+                .withActive(dto.getActive())
+                .withTransactions(catList)
+                .withRecordTracking(rtt).build();
+        return jaxbObj;
+    }
 }
+
