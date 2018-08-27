@@ -442,6 +442,7 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
                         .withAmount(trans.getActivityAmount())
                         .withCreditorActivityId(trans.getActivityId())
                         .withCreditorId(trans.getCreditorId())
+                        .withXactId(trans.getXactId())
                         .withXactDetails(null)
                         .withXactId(trans.getXactId()).build();
                 

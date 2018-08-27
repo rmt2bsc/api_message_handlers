@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 
 import org.dto.CreditorDto;
+import org.dto.CreditorXactHistoryDto;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -25,6 +26,7 @@ import org.rmt2.api.handlers.subsidiary.CreditorApiHandler;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.AccountingTransactionResponse;
+import org.rmt2.jaxb.CreditorActivityType;
 import org.rmt2.jaxb.CreditorType;
 
 import com.api.config.SystemConfigurator;
@@ -194,108 +196,110 @@ public class CreditorQueryMessageHandlerTest extends BaseAccountingMessageHandle
         Assert.assertEquals("Test API Error", actualRepsonse.getReplyStatus().getExtMessage());
     }
     
-//    @Test
-//    public void testSuccess_FetchTransactionHistory() {
-//        String request = RMT2File.getFileContentsAsString("xml/subsidiary/customer/CustomerTranHistQueryRequest.xml");
-//        List<CustomerXactHistoryDto> mockListData = SubsidiaryMockData.createMockCustomerXactHistory();
-//
-//        try {
-//            when(this.mockApi.getTransactionHistory(isA(Integer.class))).thenReturn(mockListData);
-//        } catch (CustomerApiException e) {
-//            Assert.fail("Unable to setup mock stub for fetching a customer transaction history");
-//        }
-//        
-//        MessageHandlerResults results = null;
-//        CustomerApiHandler handler = new CustomerApiHandler();
-//        try {
-//            results = handler.processMessage(ApiTransactionCodes.SUBSIDIARY_CUSTOMER_TRAN_HIST_GET, request);
-//        } catch (MessageHandlerCommandException e) {
-//            e.printStackTrace();
-//            Assert.fail("An unexpected exception was thrown");
-//        }
-//        Assert.assertNotNull(results);
-//        Assert.assertNotNull(results.getPayload());
-//
-//        AccountingTransactionResponse actualRepsonse = 
-//                (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-//        Assert.assertEquals(1, actualRepsonse.getProfile().getCustomers().getCustomer().size());
-//        Assert.assertEquals(5, actualRepsonse.getProfile().getCustomers().getCustomer().get(0)
-//                .getTransactions().getTransaction().size());
-//        Assert.assertEquals(5, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-//        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
-//        Assert.assertEquals("Customer transaction history record(s) found", actualRepsonse.getReplyStatus().getMessage());
-//        
-//        for (int ndx = 0; ndx < actualRepsonse.getProfile().getCustomers().getCustomer().size(); ndx++) {
-//            CustomerType a = actualRepsonse.getProfile().getCustomers().getCustomer().get(ndx);
-//            Assert.assertNotNull(a.getCustomerId());
-//            Assert.assertEquals(3333, a.getCustomerId().intValue());
-//            int ndx2 = 0;
-//            for (CustomerActivityType tran : a.getTransactions().getTransaction()) {
-//                Assert.assertEquals(1200 + ndx2++, tran.getXactId().intValue());
-//            }
-//        }
-//    }
-//    
-// 
-//    @Test
-//    public void testSuccess_FetchTransactionHistory_NoDataFound() {
-//        String request = RMT2File.getFileContentsAsString("xml/subsidiary/customer/CustomerTranHistQueryRequest.xml");
-//        try {
-//            when(this.mockApi.getTransactionHistory(isA(Integer.class))).thenReturn(null);
-//        } catch (CustomerApiException e) {
-//            Assert.fail("Unable to setup mock stub for fetching a customer transaction history");
-//        }
-//        
-//        MessageHandlerResults results = null;
-//        CustomerApiHandler handler = new CustomerApiHandler();
-//        try {
-//            results = handler.processMessage(ApiTransactionCodes.SUBSIDIARY_CUSTOMER_TRAN_HIST_GET, request);
-//        } catch (MessageHandlerCommandException e) {
-//            e.printStackTrace();
-//            Assert.fail("An unexpected exception was thrown");
-//        }
-//        Assert.assertNotNull(results);
-//        Assert.assertNotNull(results.getPayload());
-//
-//        AccountingTransactionResponse actualRepsonse = 
-//                (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-//        Assert.assertNull(actualRepsonse.getProfile());
-//        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-//        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
-//        Assert.assertEquals("Customer transaction history data not found!", actualRepsonse.getReplyStatus().getMessage());
-//    }
-//    
-//    @Test
-//    public void testError_FetchTransactionHistory_API_Error() {
-//        String request = RMT2File.getFileContentsAsString("xml/subsidiary/customer/CustomerTranHistQueryRequest.xml");
-//        try {
-//            when(this.mockApi.getTransactionHistory(isA(Integer.class)))
-//               .thenThrow(new CustomerApiException("Test validation error: selection criteria is required"));
-//        } catch (CustomerApiException e) {
-//            Assert.fail("Unable to setup mock stub for fetching a customer transaction history");
-//        }
-//        
-//        MessageHandlerResults results = null;
-//        CustomerApiHandler handler = new CustomerApiHandler();
-//        try {
-//            results = handler.processMessage(ApiTransactionCodes.SUBSIDIARY_CUSTOMER_TRAN_HIST_GET, request);
-//        } catch (MessageHandlerCommandException e) {
-//            e.printStackTrace();
-//            Assert.fail("An unexpected exception was thrown");
-//        }
-//        
-//        Assert.assertNotNull(results);
-//        Assert.assertNotNull(results.getPayload());
-//
-//        AccountingTransactionResponse actualRepsonse = 
-//                (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-//        Assert.assertNull(actualRepsonse.getProfile());
-//        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
-//        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-//        Assert.assertEquals("Failure to retrieve customer transaction history", actualRepsonse.getReplyStatus().getMessage());
-//        Assert.assertEquals("Test validation error: selection criteria is required",
-//                actualRepsonse.getReplyStatus().getExtMessage());
-//    }
+    @Test
+    public void testSuccess_FetchTransactionHistory() {
+        String request = RMT2File.getFileContentsAsString("xml/subsidiary/creditor/CreditorTransHistQueryRequest.xml");
+        List<CreditorXactHistoryDto> mockListData = SubsidiaryMockData.createMockCreditorXactHistory();
+
+        try {
+            when(this.mockApi.getTransactionHistory(isA(Integer.class))).thenReturn(mockListData);
+        } catch (CreditorApiException e) {
+            Assert.fail("Unable to setup mock stub for fetching a creditor transaction history");
+        }
+        
+        MessageHandlerResults results = null;
+        CreditorApiHandler handler = new CreditorApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.SUBSIDIARY_CREDITOR_TRAN_HIST_GET, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingTransactionResponse actualRepsonse = 
+                (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertEquals(1, actualRepsonse.getProfile().getCreditors().getCreditor().size());
+        Assert.assertEquals(5, actualRepsonse.getProfile().getCreditors().getCreditor().get(0)
+                .getTransactions().getTransaction().size());
+        Assert.assertEquals(5, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals("Creditor transaction history record(s) found", actualRepsonse.getReplyStatus().getMessage());
+        
+        for (int ndx = 0; ndx < actualRepsonse.getProfile().getCreditors().getCreditor().size(); ndx++) {
+            CreditorType a = actualRepsonse.getProfile().getCreditors().getCreditor().get(ndx);
+            Assert.assertNotNull(a.getCreditorId());
+            Assert.assertEquals(3333, a.getCreditorId().intValue());
+            int ndx2 = 0;
+            for (CreditorActivityType tran : a.getTransactions().getTransaction()) {
+                Assert.assertNotNull(tran.getXactDetails());
+                Assert.assertNotNull(tran.getXactDetails().getXactId());
+                Assert.assertNotNull(tran.getXactId());
+                Assert.assertEquals(tran.getXactDetails().getXactId(), tran.getXactId());
+                Assert.assertEquals(1200 + ndx2++, tran.getXactId().intValue());
+            }
+        }
+    }
+    
+ 
+    @Test
+    public void testSuccess_FetchTransactionHistory_NoDataFound() {
+        String request = RMT2File.getFileContentsAsString("xml/subsidiary/creditor/CreditorTransHistQueryRequest.xml");
+        try {
+            when(this.mockApi.getTransactionHistory(isA(Integer.class))).thenReturn(null);
+        } catch (CreditorApiException e) {
+            Assert.fail("Unable to setup mock stub for fetching a creditor transaction history");
+        }
+        
+        MessageHandlerResults results = null;
+        CreditorApiHandler handler = new CreditorApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.SUBSIDIARY_CREDITOR_TRAN_HIST_GET, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingTransactionResponse actualRepsonse = 
+                (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals("Creditor transaction history data not found!", actualRepsonse.getReplyStatus().getMessage());
+    }
+    
+    @Test
+    public void testError_FetchTransactionHistory_API_Error() {
+        String request = RMT2File.getFileContentsAsString("xml/subsidiary/creditor/CreditorTransHistQueryRequest.xml");
+        try {
+            when(this.mockApi.getTransactionHistory(isA(Integer.class)))
+               .thenThrow(new CreditorApiException("Test API Error"));
+        } catch (CreditorApiException e) {
+            Assert.fail("Unable to setup mock stub for fetching a customer transaction history");
+        }
+        
+        MessageHandlerResults results = null;
+        CreditorApiHandler handler = new CreditorApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.SUBSIDIARY_CREDITOR_TRAN_HIST_GET, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingTransactionResponse actualRepsonse = 
+                (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals("Failure to retrieve creditor transaction history", actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals("Test API Error", actualRepsonse.getReplyStatus().getExtMessage());
+    }
 
     @Test
     public void testError_Incorrect_Trans_Code() {

@@ -78,6 +78,9 @@ public class CreditorApiHandler extends
             case ApiTransactionCodes.SUBSIDIARY_CREDITOR_GET:
                 r = this.fetchCreditor(this.requestObj);
                 break;
+            case ApiTransactionCodes.SUBSIDIARY_CREDITOR_TRAN_HIST_GET:
+                r = this.fetchTransHistory(this.requestObj);
+                break;
             default:
                 r = this.createErrorReply(MessagingConstants.RETURN_CODE_FAILURE,
                         MessagingConstants.RETURN_STATUS_BAD_REQUEST,
@@ -130,7 +133,49 @@ public class CreditorApiHandler extends
         return results;
     }
     
-  
+    /**
+     * Handler for invoking the appropriate API in order to fetch one or more
+     * creditor transaction history ojects.
+     * 
+     * @param req
+     *            an instance of {@link AccountingTransactionRequest}
+     * @return an instance of {@link MessageHandlerResults}
+     */
+    protected MessageHandlerResults fetchTransHistory(AccountingTransactionRequest req) {
+        MessageHandlerResults results = new MessageHandlerResults();
+        MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
+        List<CreditorType> queryDtoResults = null;
+
+        try {
+            // Set reply status
+            rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            CreditorDto criteriaDto = SubsidiaryJaxbDtoFactory
+                    .createCreditorDtoCriteriaInstance(req.getCriteria().getCreditorCriteria());
+            
+            List<CreditorXactHistoryDto> dtoList = this.api.getTransactionHistory(criteriaDto.getCreditorId());
+            if (dtoList == null) {
+                rs.setMessage("Creditor transaction history data not found!");
+                rs.setReturnCode(0);
+            }
+            else {
+                queryDtoResults = this.buildJaxbListData(criteriaDto.getCreditorId(), dtoList);
+                rs.setMessage("Creditor transaction history record(s) found");
+                rs.setReturnCode(dtoList.size());
+            }
+            this.responseObj.setHeader(req.getHeader());
+        } catch (Exception e) {
+            logger.error("Error occurred during API Message Handler operation, " + this.command, e );
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
+            rs.setMessage("Failure to retrieve creditor transaction history");
+            rs.setExtMessage(e.getMessage());
+        } finally {
+            this.api.close();
+        }
+
+        String xml = this.buildResponse(queryDtoResults, rs);
+        results.setPayload(xml);
+        return results;
+    }
    
     private List<CreditorType> buildJaxbListData(List<CreditorDto> results) {
         List<CreditorType> list = new ArrayList<>();
@@ -161,6 +206,7 @@ public class CreditorApiHandler extends
         
         switch (this.command) {
             case ApiTransactionCodes.SUBSIDIARY_CREDITOR_GET:
+            case ApiTransactionCodes.SUBSIDIARY_CREDITOR_TRAN_HIST_GET:
                 try {
                     Verifier.verifyNotNull(req.getCriteria());
                     Verifier.verifyNotNull(req.getCriteria().getCreditorCriteria());

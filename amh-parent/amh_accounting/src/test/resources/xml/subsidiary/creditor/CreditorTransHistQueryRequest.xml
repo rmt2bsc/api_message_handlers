@@ -1,0 +1,16 @@
+<AccountingTransactionRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>accounting</application>
+        <module>subsidiary</module>
+        <transaction>GET_CREDITOR_TRAN_HIST</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>08/27/2018 15:40:46</delivery_date>
+    </header>
+    <criteria>
+        <creditor_criteria>
+            <creditor_id>3333</creditor_id>
+        </creditor_criteria>
+    </criteria>
+</AccountingTransactionRequest>
