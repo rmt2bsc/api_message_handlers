@@ -12,6 +12,7 @@ import org.rmt2.jaxb.BusinessType;
 import org.rmt2.jaxb.CreditorActivityType;
 import org.rmt2.jaxb.CreditorCriteriaType;
 import org.rmt2.jaxb.CreditorType;
+import org.rmt2.jaxb.CreditortypeType;
 import org.rmt2.jaxb.CustomerActivityType;
 import org.rmt2.jaxb.CustomerCriteriaType;
 import org.rmt2.jaxb.CustomerType;
@@ -19,6 +20,7 @@ import org.rmt2.jaxb.RecordTrackingType;
 import org.rmt2.util.RecordTrackingTypeBuilder;
 import org.rmt2.util.accounting.subsidiary.CreditorActivityTypeBuilder;
 import org.rmt2.util.accounting.subsidiary.CreditorTypeBuilder;
+import org.rmt2.util.accounting.subsidiary.CreditortypeTypeBuilder;
 import org.rmt2.util.accounting.subsidiary.CustomerActivityTypeBuilder;
 import org.rmt2.util.accounting.subsidiary.CustomerTypeBuilder;
 import org.rmt2.util.addressbook.BusinessTypeBuilder;
@@ -429,6 +431,9 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
                 .withBusinessId(dto.getContactId())
                 .withLongname(dto.getContactName()).build();
         
+        CreditortypeType creditorType = CreditortypeTypeBuilder.Builder.create()
+                .withCreditorTypeId(dto.getCreditorTypeId()).build();
+        
         List<CreditorActivityType> catList = null;
         if (transactions != null) {
             catList = new ArrayList<>();
@@ -448,7 +453,10 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
                 .withCreditorId(dto.getCreditorId())
                 .withAcctId(dto.getAcctId())
                 .withBusinessType(businessContactDetails)
+                .withCreditorytypeType(creditorType)
                 .withAccountNo(dto.getAccountNo())
+                .withExtAccountNo(dto.getExtAccountNumber())
+                .withApr(dto.getApr())
                 .withCreditLimit(dto.getCreditLimit())
                 .withBalance(balance)
                 .withActive(dto.getActive())
