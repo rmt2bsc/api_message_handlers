@@ -4,8 +4,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.dao.mapping.orm.rmt2.Creditor;
 import org.dao.mapping.orm.rmt2.Customer;
+import org.dao.mapping.orm.rmt2.VwCreditorXactHist;
 import org.dao.mapping.orm.rmt2.VwCustomerXactHist;
+import org.dto.CreditorDto;
+import org.dto.CreditorXactHistoryDto;
 import org.dto.CustomerDto;
 import org.dto.CustomerXactHistoryDto;
 import org.dto.adapter.orm.account.subsidiary.Rmt2SubsidiaryDtoFactory;
@@ -79,6 +83,73 @@ public class SubsidiaryMockData {
         o = AccountingMockDataFactory.createMockOrmCustomerXactHistory(1204, 100, 1351, 0, "C8434", 4000.00,
                 new Date(), 4);
         d = Rmt2SubsidiaryDtoFactory.createCustomerTransactionInstance(o);
+        list.add(d);
+        return list;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public static final List<CreditorDto> createMockCreditors() {
+        List<CreditorDto> list = new ArrayList<>();
+        Creditor o = AccountingMockDataFactory.createMockOrmCreditor(200, 1351,
+                330, "C1234580", "7437437JDJD8480", 22);
+        CreditorDto d = Rmt2SubsidiaryDtoFactory.createCreditorInstance(o, null);
+        list.add(d);
+        
+        o = AccountingMockDataFactory.createMockOrmCreditor(201, 1352,
+                331, "C1234581", "7437437JDJD8481", 22);
+        d = Rmt2SubsidiaryDtoFactory.createCreditorInstance(o, null);
+        list.add(d);
+        
+        o = AccountingMockDataFactory.createMockOrmCreditor(202, 1353,
+                332, "C1234582", "7437437JDJD8482", 22);
+        d = Rmt2SubsidiaryDtoFactory.createCreditorInstance(o, null);
+        list.add(d);
+        
+        o = AccountingMockDataFactory.createMockOrmCreditor(203, 1354,
+                333, "C1234583", "7437437JDJD8483", 22);
+        d = Rmt2SubsidiaryDtoFactory.createCreditorInstance(o, null);
+        list.add(d);
+        
+        o = AccountingMockDataFactory.createMockOrmCreditor(204, 1355,
+                334, "C1234584", "7437437JDJD8484", 22);
+        d = Rmt2SubsidiaryDtoFactory.createCreditorInstance(o, null);
+        list.add(d);
+        return list;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public static final List<CreditorXactHistoryDto> createMockCreditorXactHistory() {
+        List<CreditorXactHistoryDto> list = new ArrayList<>();
+        VwCreditorXactHist o = AccountingMockDataFactory
+                .createMockOrmCreditorXactHistory(1200, 100, "C8434", 1000.00,
+                        new Date(), 1);
+        CreditorXactHistoryDto d = Rmt2SubsidiaryDtoFactory.createCreditorTransactionInstance(o);
+        list.add(d);
+
+        o = AccountingMockDataFactory.createMockOrmCreditorXactHistory(1201,
+                100, "C8434", 32.00, new Date(), 1);
+        d = Rmt2SubsidiaryDtoFactory.createCreditorTransactionInstance(o);
+        list.add(d);
+
+        o = AccountingMockDataFactory.createMockOrmCreditorXactHistory(1202,
+                100, "C8434", 1223.00, new Date(), 2);
+        d = Rmt2SubsidiaryDtoFactory.createCreditorTransactionInstance(o);
+        list.add(d);
+
+        o = AccountingMockDataFactory.createMockOrmCreditorXactHistory(1203,
+                100, "C8434", 25.67, new Date(), 1);
+        d = Rmt2SubsidiaryDtoFactory.createCreditorTransactionInstance(o);
+        list.add(d);
+
+        o = AccountingMockDataFactory.createMockOrmCreditorXactHistory(1204,
+                100, "C8434", 745.59, new Date(), 3);
+        d = Rmt2SubsidiaryDtoFactory.createCreditorTransactionInstance(o);
         list.add(d);
         return list;
     }
