@@ -5,10 +5,12 @@ import java.util.Date;
 import java.util.List;
 
 import org.dao.mapping.orm.rmt2.Creditor;
+import org.dao.mapping.orm.rmt2.CreditorType;
 import org.dao.mapping.orm.rmt2.Customer;
 import org.dao.mapping.orm.rmt2.VwCreditorXactHist;
 import org.dao.mapping.orm.rmt2.VwCustomerXactHist;
 import org.dto.CreditorDto;
+import org.dto.CreditorTypeDto;
 import org.dto.CreditorXactHistoryDto;
 import org.dto.CustomerDto;
 import org.dto.CustomerXactHistoryDto;
@@ -150,6 +152,34 @@ public class SubsidiaryMockData {
         o = AccountingMockDataFactory.createMockOrmCreditorXactHistory(1204,
                 100, "C8434", 745.59, new Date(), 3);
         d = Rmt2SubsidiaryDtoFactory.createCreditorTransactionInstance(o);
+        list.add(d);
+        return list;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public static final List<CreditorTypeDto> createMockCreditorTypes() {
+        List<CreditorTypeDto> list = new ArrayList<>();
+        CreditorType o = AccountingMockDataFactory.createMockOrmCreditorType(100, "Creditor Type 1");
+        CreditorTypeDto d = Rmt2SubsidiaryDtoFactory.createCreditorTypeInstance(o);
+        list.add(d);
+        
+        o = AccountingMockDataFactory.createMockOrmCreditorType(200, "Creditor Type 2");
+        d = Rmt2SubsidiaryDtoFactory.createCreditorTypeInstance(o);
+        list.add(d);
+        
+        o = AccountingMockDataFactory.createMockOrmCreditorType(300, "Creditor Type 3");
+        d = Rmt2SubsidiaryDtoFactory.createCreditorTypeInstance(o);
+        list.add(d);
+        
+        o = AccountingMockDataFactory.createMockOrmCreditorType(400, "Creditor Type 4");
+        d = Rmt2SubsidiaryDtoFactory.createCreditorTypeInstance(o);
+        list.add(d);
+        
+        o = AccountingMockDataFactory.createMockOrmCreditorType(500, "Creditor Type 5");
+        d = Rmt2SubsidiaryDtoFactory.createCreditorTypeInstance(o);
         list.add(d);
         return list;
     }

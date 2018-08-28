@@ -1,0 +1,17 @@
+<AccountingTransactionRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>accounting</application>
+        <module>subsidiary</module>
+        <transaction>GET_CREDITOR_TYPE</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>08/28/2018 13:46:26</delivery_date>
+    </header>
+    <criteria>
+        <creditortype_criteria>
+            <creditor_type_id>3333</creditor_type_id>
+            <decription>Creditor Type Description</decription>
+        </creditortype_criteria>
+    </criteria>
+</AccountingTransactionRequest>

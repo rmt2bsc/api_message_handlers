@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.dto.CreditorDto;
+import org.dto.CreditorTypeDto;
 import org.dto.CreditorXactHistoryDto;
 import org.dto.CustomerDto;
 import org.dto.CustomerXactHistoryDto;
@@ -12,6 +13,7 @@ import org.rmt2.jaxb.BusinessType;
 import org.rmt2.jaxb.CreditorActivityType;
 import org.rmt2.jaxb.CreditorCriteriaType;
 import org.rmt2.jaxb.CreditorType;
+import org.rmt2.jaxb.CreditortypeCriteriaType;
 import org.rmt2.jaxb.CreditortypeType;
 import org.rmt2.jaxb.CustomerActivityType;
 import org.rmt2.jaxb.CustomerCriteriaType;
@@ -464,6 +466,79 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
                 .withTransactions(catList)
                 .withRecordTracking(rtt).build();
         return jaxbObj;
+    }
+    
+    /**
+     * Creates an instance of <i>CreditorTypeDto</i> using a valid
+     * <i>CreditortypeCriteriaType</i> JAXB object.
+     * 
+     * @param criteria
+     *            an instance of {@link CreditortypeCriteriaType}
+     * @return an instance of {@link CreditorTypeDto}
+     */
+    public static final CreditorTypeDto createCreditorTypeDtoCriteriaInstance(CreditortypeCriteriaType jaxbCriteria) {
+        if (jaxbCriteria == null) {
+            return null;
+        }
+        CreditorTypeDto dto = Rmt2SubsidiaryDtoFactory.createCreditorTypeInstance(null);
+        if (RMT2String2.isEmpty(jaxbCriteria.getDecription())) {
+            dto.setEntityName(jaxbCriteria.getDecription());
+        }
+        if (jaxbCriteria.getCreditorTypeId() != null) {
+            dto.setEntityId(jaxbCriteria.getCreditorTypeId().intValue());
+        }
+        return dto;
+    }
+    
+    /**
+     * 
+     * @param jaxbObj
+     * @return
+     */
+    public static final CreditorTypeDto createCreditorDtoInstance(CreditortypeType jaxbObj) {
+        if (jaxbObj == null) {
+            return null;
+        }
+        CreditorTypeDto dto = Rmt2SubsidiaryDtoFactory.createCreditorTypeInstance(null);
+        if (jaxbObj.getCreditorTypeId() != null) {
+            dto.setEntityId(jaxbObj.getCreditorTypeId().intValue());    
+        }
+        if (RMT2String2.isNotEmpty(jaxbObj.getDescription())) {
+            dto.setEntityName(jaxbObj.getDescription());    
+        }
+        if (jaxbObj.getTracking() != null) {
+            if (jaxbObj.getTracking().getDateCreated() != null) {
+                dto.setDateCreated(jaxbObj.getTracking().getDateCreated().toGregorianCalendar().getTime());    
+            }
+            if (jaxbObj.getTracking().getDateUpdated() != null) {
+                dto.setDateCreated(jaxbObj.getTracking().getDateUpdated().toGregorianCalendar().getTime());    
+            }
+            dto.setIpCreated(jaxbObj.getTracking().getIpCreated());
+            dto.setIpUpdated(jaxbObj.getTracking().getIpUpdated());
+            dto.setUpdateUserId(jaxbObj.getTracking().getUserId());
+        }
+        return dto;
+    }
+    
+    /**
+     * 
+     * @param dto
+     * @return
+     */
+    public static final CreditortypeType createCreditorTypeJaxbInstance(CreditorTypeDto dto) {
+        RecordTrackingType rtt = RecordTrackingTypeBuilder.Builder.create()
+                .withDateCreated(dto.getDateCreated())
+                .withDateUpdate(dto.getDateUpdated())
+                .withUserId(dto.getUpdateUserId())
+                .withIpCreated(dto.getIpCreated())
+                .withIpUpdate(dto.getIpUpdated()).build();
+        
+        CreditortypeType creditorType = CreditortypeTypeBuilder.Builder.create()
+                .withCreditorTypeId(dto.getEntityId())
+                .withDescription(dto.getEntityName())
+                .withRecordTracking(rtt).build();
+        
+        return creditorType;
     }
 }
 
