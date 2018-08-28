@@ -81,6 +81,9 @@ public class CreditorApiHandler extends
             case ApiTransactionCodes.SUBSIDIARY_CREDITOR_TRAN_HIST_GET:
                 r = this.fetchTransHistory(this.requestObj);
                 break;
+            case ApiTransactionCodes.SUBSIDIARY_CREDITOR_UPDATE:
+                r = this.updateCreditor(this.requestObj);
+                break;
             default:
                 r = this.createErrorReply(MessagingConstants.RETURN_CODE_FAILURE,
                         MessagingConstants.RETURN_STATUS_BAD_REQUEST,
@@ -123,6 +126,55 @@ public class CreditorApiHandler extends
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to retrieve creditor(s)");
+            rs.setExtMessage(e.getMessage());
+        } finally {
+            this.api.close();
+        }
+
+        String xml = this.buildResponse(queryDtoResults, rs);
+        results.setPayload(xml);
+        return results;
+    }
+    
+    /**
+     * Handler for invoking the appropriate API in order to fetch one or more
+     * Creditor ojects.
+     * 
+     * @param req
+     *            an instance of {@link AccountingTransactionRequest}
+     * @return an instance of {@link MessageHandlerResults}
+     */
+    protected MessageHandlerResults updateCreditor(AccountingTransactionRequest req) {
+        MessageHandlerResults results = new MessageHandlerResults();
+        MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
+        List<CreditorType> queryDtoResults = null;
+        int rc = 0;
+
+        try {
+            // Set reply status
+            rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            CreditorDto profileDto = SubsidiaryJaxbDtoFactory
+                    .createCreditorDtoInstance(req.getProfile().getCreditors().getCreditor().get(0));
+            
+           rc = this.api.update(profileDto);
+            if (rc <= 0) {
+                rs.setMessage("Creditor data not found for update");
+                String extraMsg = "Creditor Id: " + profileDto.getCreditorId() + ", Creditor Name: " + profileDto.getContactName();
+                rs.setExtMessage(extraMsg);
+                rs.setReturnCode(0);
+            }
+            else {
+                List<CreditorDto> dtoList = new ArrayList<>();
+                dtoList.add(profileDto);
+                queryDtoResults = this.buildJaxbListData(dtoList);
+                rs.setMessage("Creditor record(s) updated successfully");
+                rs.setReturnCode(rc);
+            }
+            this.responseObj.setHeader(req.getHeader());
+        } catch (Exception e) {
+            logger.error("Error occurred during API Message Handler operation, " + this.command, e );
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
+            rs.setMessage("Failure to update creditor(s)");
             rs.setExtMessage(e.getMessage());
         } finally {
             this.api.close();
@@ -216,7 +268,7 @@ public class CreditorApiHandler extends
                 }    
                 break;
                 
-            case ApiTransactionCodes.SUBSIDIARY_CUSTOMER_UPDATE:
+            case ApiTransactionCodes.SUBSIDIARY_CREDITOR_UPDATE:
                 try {
                     Verifier.verifyNotNull(req.getProfile());
                     Verifier.verifyNotNull(req.getProfile().getCreditors());
