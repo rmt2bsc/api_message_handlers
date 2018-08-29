@@ -84,6 +84,9 @@ public class CreditorApiHandler extends
             case ApiTransactionCodes.SUBSIDIARY_CREDITOR_UPDATE:
                 r = this.updateCreditor(this.requestObj);
                 break;
+            case ApiTransactionCodes.SUBSIDIARY_CREDITOR_DELETE:
+                r = this.deleteCreditor(this.requestObj);
+                break;
             default:
                 r = this.createErrorReply(MessagingConstants.RETURN_CODE_FAILURE,
                         MessagingConstants.RETURN_STATUS_BAD_REQUEST,
@@ -186,6 +189,44 @@ public class CreditorApiHandler extends
     }
     
     /**
+     * Handler for invoking the appropriate API in order to delete Creditor ojects.
+     * 
+     * @param req
+     *            an instance of {@link AccountingTransactionRequest}
+     * @return an instance of {@link MessageHandlerResults}
+     */
+    protected MessageHandlerResults deleteCreditor(AccountingTransactionRequest req) {
+        MessageHandlerResults results = new MessageHandlerResults();
+        MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
+        int rc = 0;
+        CreditorDto criteriaDto = null;
+        
+        try {
+            // Set reply status
+            rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            criteriaDto = SubsidiaryJaxbDtoFactory
+                    .createCreditorDtoCriteriaInstance(req.getCriteria().getCreditorCriteria());
+            
+            rc = this.api.delete(criteriaDto);
+            rs.setMessage("Creditor delete operation completed!");
+            rs.setExtMessage("Total records deleted: " + rc);
+            rs.setReturnCode(rc);
+            this.responseObj.setHeader(req.getHeader());
+        } catch (Exception e) {
+            logger.error("Error occurred during API Message Handler operation, " + this.command, e );
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
+            rs.setMessage("Failure to delete creditor: "  + criteriaDto.getCreditorId());
+            rs.setExtMessage(e.getMessage());
+        } finally {
+            this.api.close();
+        }
+
+        String xml = this.buildResponse(null, rs);
+        results.setPayload(xml);
+        return results;
+    }
+    
+    /**
      * Handler for invoking the appropriate API in order to fetch one or more
      * creditor transaction history ojects.
      * 
@@ -259,6 +300,7 @@ public class CreditorApiHandler extends
         switch (this.command) {
             case ApiTransactionCodes.SUBSIDIARY_CREDITOR_GET:
             case ApiTransactionCodes.SUBSIDIARY_CREDITOR_TRAN_HIST_GET:
+            case ApiTransactionCodes.SUBSIDIARY_CREDITOR_DELETE:
                 try {
                     Verifier.verifyNotNull(req.getCriteria());
                     Verifier.verifyNotNull(req.getCriteria().getCreditorCriteria());

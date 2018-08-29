@@ -147,7 +147,7 @@ public class CreditorUpdateMessageHandlerTest extends BaseAccountingMessageHandl
     }
     
     @Test
-    public void testError_FetchCreditor_API_Error() {
+    public void testError_FetchCreditor_API_Fault() {
         String request = RMT2File.getFileContentsAsString("xml/subsidiary/creditor/CreditorUpdateRequest.xml");
         try {
             when(this.mockApi.update(isA(CreditorDto.class)))
@@ -222,6 +222,116 @@ public class CreditorUpdateMessageHandlerTest extends BaseAccountingMessageHandl
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus()
                 .getReturnStatus());
         Assert.assertEquals(CreditorApiHandler.MSG_UPDATE_MISSING_PROFILE,
+                actualRepsonse.getReplyStatus().getMessage());
+    }
+   
+    @Test
+    public void testSuccess_DeleteCreditor() {
+        String request = RMT2File.getFileContentsAsString("xml/subsidiary/creditor/CreditorDeleteRequest.xml");
+        try {
+            when(this.mockApi.delete(isA(CreditorDto.class))).thenReturn(1);
+        } catch (CreditorApiException e) {
+            Assert.fail("Unable to setup mock stub for updating a creditor");
+        }
+        
+        MessageHandlerResults results = null;
+        CreditorApiHandler handler = new CreditorApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.SUBSIDIARY_CREDITOR_DELETE, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingTransactionResponse actualRepsonse = 
+                (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertEquals(1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS,
+                actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals("Creditor delete operation completed!",
+                actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals("Total records deleted: " +
+                actualRepsonse.getReplyStatus().getReturnCode().intValue(),
+                actualRepsonse.getReplyStatus().getExtMessage());
+    }
+    
+    @Test
+    public void testError_DeleteCreditor_API_Fault() {
+        String request = RMT2File.getFileContentsAsString("xml/subsidiary/creditor/CreditorDeleteRequest.xml");
+        try {
+            when(this.mockApi.delete(isA(CreditorDto.class)))
+                .thenThrow(new CreditorApiException("Test API Error"));
+        } catch (CreditorApiException e) {
+            Assert.fail("Unable to setup mock stub for delete a creditor");
+        }
+        
+        MessageHandlerResults results = null;
+        CreditorApiHandler handler = new CreditorApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.SUBSIDIARY_CREDITOR_DELETE, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingTransactionResponse actualRepsonse = 
+                (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals("Failure to delete creditor: "  + 3333, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals("Test API Error", actualRepsonse.getReplyStatus().getExtMessage());
+    }
+    
+    @Test
+    public void testValidation_DeleteCreditor_Criteria_Missing() {
+        String request = RMT2File.getFileContentsAsString("xml/subsidiary/creditor/CreditorDeleteMissingCriteriaRequest.xml");
+        MessageHandlerResults results = null;
+        CreditorApiHandler handler = new CreditorApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.SUBSIDIARY_CREDITOR_DELETE, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingTransactionResponse actualRepsonse = 
+                (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus()
+                .getReturnStatus());
+        Assert.assertEquals(CreditorApiHandler.MSG_UPDATE_MISSING_CRITERIA,
+                actualRepsonse.getReplyStatus().getMessage());
+    }
+
+    @Test
+    public void testValidation_DeleteCreditor_CreditorCriteria_Missing() {
+        String request = RMT2File.getFileContentsAsString("xml/subsidiary/creditor/CreditorDeleteMissingCreditorCriteriaRequest.xml");
+        MessageHandlerResults results = null;
+        CreditorApiHandler handler = new CreditorApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.SUBSIDIARY_CREDITOR_DELETE, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingTransactionResponse actualRepsonse = 
+                (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus()
+                .getReturnStatus());
+        Assert.assertEquals(CreditorApiHandler.MSG_UPDATE_MISSING_CRITERIA,
                 actualRepsonse.getReplyStatus().getMessage());
     }
     

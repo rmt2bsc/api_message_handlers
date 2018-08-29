@@ -1,0 +1,11 @@
+<AccountingTransactionRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>accounting</application>
+        <module>subsidiary</module>
+        <transaction>DELETE_CREDITOR</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>08/29/2018 09:51:49</delivery_date>
+    </header>
+</AccountingTransactionRequest>
