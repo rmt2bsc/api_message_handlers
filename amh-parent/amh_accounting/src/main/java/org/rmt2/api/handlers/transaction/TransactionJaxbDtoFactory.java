@@ -43,7 +43,7 @@ public class TransactionJaxbDtoFactory extends RMT2Base {
      * @return an instance of {@link XactDto}
      * @throws {@link com.SystemException} Transaction date could not converted from a String.
      */
-    public static final XactDto createXactBaseDtoCriteriaInstance(XactBasicCriteriaType jaxbCriteria) {
+    public static final XactDto createBaseXactDtoCriteriaInstance(XactBasicCriteriaType jaxbCriteria) {
         if (jaxbCriteria == null) {
             return null;
         }
@@ -76,7 +76,7 @@ public class TransactionJaxbDtoFactory extends RMT2Base {
      * @param jaxbCriteria
      * @return
      */
-    public static final XactCustomCriteriaDto createXactLineItemDtoCriteriaInstance(XactCustomRelationalCriteriaType jaxbCriteria) {
+    public static final XactCustomCriteriaDto createCustomXactDtoCriteriaInstance(XactCustomRelationalCriteriaType jaxbCriteria) {
         if (jaxbCriteria == null) {
             return null;
         }
