@@ -7,7 +7,6 @@ import org.dto.CustomerDto;
 import org.dto.CustomerXactHistoryDto;
 import org.dto.XactCustomCriteriaDto;
 import org.dto.XactDto;
-import org.dto.adapter.orm.account.subsidiary.Rmt2SubsidiaryDtoFactory;
 import org.dto.adapter.orm.transaction.Rmt2XactDtoFactory;
 import org.modules.transaction.XactApiFactory;
 import org.rmt2.jaxb.BusinessType;
@@ -16,6 +15,7 @@ import org.rmt2.jaxb.CustomerType;
 import org.rmt2.jaxb.RecordTrackingType;
 import org.rmt2.jaxb.XactBasicCriteriaType;
 import org.rmt2.jaxb.XactCustomRelationalCriteriaType;
+import org.rmt2.jaxb.XactType;
 import org.rmt2.util.RecordTrackingTypeBuilder;
 import org.rmt2.util.accounting.subsidiary.CustomerActivityTypeBuilder;
 import org.rmt2.util.accounting.subsidiary.CustomerTypeBuilder;
@@ -133,113 +133,59 @@ public class TransactionJaxbDtoFactory extends RMT2Base {
      * @param jaxbObj
      * @return
      */
-    public static final CustomerDto createCustomerDtoInstance(CustomerType jaxbObj) {
+    public static final XactDto createTransactionDtoInstance(XactType jaxbObj) {
         if (jaxbObj == null) {
             return null;
         }
-        CustomerDto dto = Rmt2SubsidiaryDtoFactory.createCustomerInstance(null, null);
-        if (RMT2String2.isNotEmpty(jaxbObj.getAccountNo())) {
-            dto.setAccountNo(jaxbObj.getAccountNo());    
+        XactDto dto = Rmt2XactDtoFactory.createXactBaseInstance(null);
+        if (jaxbObj.getXactId() != null) {
+            dto.setXactId(jaxbObj.getXactId().intValue());    
         }
-        if (RMT2String2.isNotEmpty(jaxbObj.getAcctDescription())) {
-            dto.setDescription(jaxbObj.getAcctDescription());    
+        if (jaxbObj.getXactType() != null && jaxbObj.getXactType().getXactTypeId() != null) {
+            dto.setXactTypeId(jaxbObj.getXactType().getXactTypeId().intValue());    
         }
-        if (jaxbObj.getAcctId() != null) {
-            dto.setAcctId(jaxbObj.getAcctId().intValue());    
+        if (jaxbObj.getXactSubtype() != null && jaxbObj.getXactSubtype().getXactTypeId() != null) {
+            dto.setXactSubtypeId(jaxbObj.getXactSubtype().getXactTypeId().intValue());    
         }
-        if (jaxbObj.getActive() != null) {
-            dto.setActive(jaxbObj.getActive().intValue());    
+        if (jaxbObj.getXactSubtype() != null && jaxbObj.getXactSubtype().getXactTypeId() != null) {
+            dto.setXactSubtypeId(jaxbObj.getXactSubtype().getXactTypeId().intValue());    
         }
-        if (jaxbObj.getCustomerId() != null) {
-            dto.setCustomerId(jaxbObj.getCustomerId().intValue());    
-        }
-        if (jaxbObj.getBusinessContactDetails() != null) {
-            if (jaxbObj.getBusinessContactDetails().getBusinessId() != null) {
-                dto.setContactId(jaxbObj.getBusinessContactDetails().getBusinessId().intValue());    
+        if (jaxbObj.getXactCodeGroup() != null) {
+            if (jaxbObj.getXactCodeGroup().getXactCodeGrpId() != null) {
+                dto.setXactCodeGrpId(jaxbObj.getXactCodeGroup().getXactCodeGrpId().intValue());
             }
-            if (RMT2String2.isNotEmpty(jaxbObj.getBusinessContactDetails().getLongName())) {
-                dto.setContactName(jaxbObj.getBusinessContactDetails().getLongName());    
-            }
-            if (jaxbObj.getBusinessContactDetails().getCategory() != null) {
-                if (jaxbObj.getBusinessContactDetails().getCategory().getGroupId() != null) {
-                    dto.setCategoryId(jaxbObj.getBusinessContactDetails().getCategory().getGroupId().intValue());    
-                }    
-            }
-            if (RMT2String2.isNotEmpty(jaxbObj.getBusinessContactDetails().getContactEmail())) {
-                dto.setContactEmail(jaxbObj.getBusinessContactDetails().getContactEmail());    
-            }
-            if (RMT2String2.isNotEmpty(jaxbObj.getBusinessContactDetails().getContactFirstname())) {
-                dto.setContactFirstname(jaxbObj.getBusinessContactDetails().getContactFirstname());    
-            }
-            if (RMT2String2.isNotEmpty(jaxbObj.getBusinessContactDetails().getContactLastname())) {
-                dto.setContactLastname(jaxbObj.getBusinessContactDetails().getContactLastname());    
-            }
-            if (RMT2String2.isNotEmpty(jaxbObj.getBusinessContactDetails().getContactPhone())) {
-                dto.setContactPhone(jaxbObj.getBusinessContactDetails().getContactPhone());    
-            }
-            if (RMT2String2.isNotEmpty(jaxbObj.getBusinessContactDetails().getContactExt())) {
-                dto.setContactExt(jaxbObj.getBusinessContactDetails().getContactExt());    
-            }
-            if (jaxbObj.getBusinessContactDetails().getEntityType() != null) {
-                if (jaxbObj.getBusinessContactDetails().getEntityType().getCodeId() != null) {
-                    dto.setEntityTypeId(jaxbObj.getBusinessContactDetails().getEntityType().getCodeId().intValue());    
-                }
-            }
-            if (jaxbObj.getBusinessContactDetails().getServiceType() != null) {
-                if (jaxbObj.getBusinessContactDetails().getServiceType().getCodeId() != null) {
-                    dto.setServTypeId(jaxbObj.getBusinessContactDetails().getServiceType().getCodeId().intValue());    
-                }
-            }
-            if (RMT2String2.isNotEmpty(jaxbObj.getBusinessContactDetails().getShortName())) {
-                dto.setShortName(jaxbObj.getBusinessContactDetails().getShortName());    
-            }
-            if (RMT2String2.isNotEmpty(jaxbObj.getBusinessContactDetails().getTaxId())) {
-                dto.setTaxId(jaxbObj.getBusinessContactDetails().getTaxId());    
-            }
-            if (RMT2String2.isNotEmpty(jaxbObj.getBusinessContactDetails().getWebsite())) {
-                dto.setWebsite(jaxbObj.getBusinessContactDetails().getWebsite());    
-            }
-            if (jaxbObj.getBusinessContactDetails().getAddress() != null) {
-                if (jaxbObj.getBusinessContactDetails().getAddress().getAddrId() != null) {
-                    dto.setAddrId(jaxbObj.getBusinessContactDetails().getAddress().getAddrId().intValue());    
-                }
-                if (RMT2String2.isNotEmpty(jaxbObj.getBusinessContactDetails().getAddress().getAddr1())) {
-                    dto.setAddr1(jaxbObj.getBusinessContactDetails().getAddress().getAddr1());    
-                }
-                if (RMT2String2.isNotEmpty(jaxbObj.getBusinessContactDetails().getAddress().getAddr2())) {
-                    dto.setAddr2(jaxbObj.getBusinessContactDetails().getAddress().getAddr2());    
-                }
-                if (RMT2String2.isNotEmpty(jaxbObj.getBusinessContactDetails().getAddress().getAddr3())) {
-                    dto.setAddr3(jaxbObj.getBusinessContactDetails().getAddress().getAddr3());    
-                }
-                if (RMT2String2.isNotEmpty(jaxbObj.getBusinessContactDetails().getAddress().getAddr4())) {
-                    dto.setAddr4(jaxbObj.getBusinessContactDetails().getAddress().getAddr4());    
-                }
-                if (RMT2String2.isNotEmpty(jaxbObj.getBusinessContactDetails().getAddress().getPhoneMain())) {
-                    dto.setPhoneCompany(jaxbObj.getBusinessContactDetails().getAddress().getPhoneMain());    
-                }
-                if (RMT2String2.isNotEmpty(jaxbObj.getBusinessContactDetails().getAddress().getPhonePager())) {
-                    dto.setPhonePager(jaxbObj.getBusinessContactDetails().getAddress().getPhonePager());    
-                }
-                if (RMT2String2.isNotEmpty(jaxbObj.getBusinessContactDetails().getAddress().getPhoneFax())) {
-                    dto.setPhoneFax(jaxbObj.getBusinessContactDetails().getAddress().getPhoneFax());    
-                }
-                if (RMT2String2.isNotEmpty(jaxbObj.getBusinessContactDetails().getAddress().getPhoneFax())) {
-                    dto.setPhoneFax(jaxbObj.getBusinessContactDetails().getAddress().getPhoneFax());    
-                }
-                if (jaxbObj.getBusinessContactDetails().getAddress().getZip() != null) {
-                    if (RMT2String2.isNotEmpty(jaxbObj.getBusinessContactDetails().getAddress().getZip().getCity())) {
-                        dto.setCity(jaxbObj.getBusinessContactDetails().getAddress().getZip().getCity());    
-                    }
-                    if (RMT2String2.isNotEmpty(jaxbObj.getBusinessContactDetails().getAddress().getZip().getState())) {
-                        dto.setState(jaxbObj.getBusinessContactDetails().getAddress().getZip().getState());    
-                    }
-                    if (jaxbObj.getBusinessContactDetails().getAddress().getZip().getZipcode() != null) {
-                        dto.setZip(jaxbObj.getBusinessContactDetails().getAddress().getZip().getZipcode().intValue());    
-                    }
-                }
+            if (!RMT2String2.isEmpty(jaxbObj.getXactCodeGroup().getDescription())) {
+                dto.setXactCodeGrpDescription(jaxbObj.getXactCodeGroup().getDescription());
             }
         }
+        if (jaxbObj.getXactCode() != null) {
+            if (jaxbObj.getXactCode().getXactCodeId() != null) {
+                dto.setXactCodeId(jaxbObj.getXactCode().getXactCodeId().intValue());
+            }
+            if (!RMT2String2.isEmpty(jaxbObj.getXactCode().getDescription())) {
+                dto.setXactCodeDescription(jaxbObj.getXactCode().getDescription());
+            }
+        }
+        if (jaxbObj.getXactAmount() != null) {
+            dto.setXactAmount(jaxbObj.getXactAmount().doubleValue());    
+        }   
+        if (jaxbObj.getXactDate() != null) {
+            dto.setXactDate(jaxbObj.getXactDate().toGregorianCalendar().getTime());    
+        } 
+        if (jaxbObj.getPostedDate() != null) {
+            dto.setXactPostedDate(jaxbObj.getPostedDate().toGregorianCalendar().getTime());    
+        }
+        if (jaxbObj.getTenderId() != null) {
+            dto.setXactTenderId(jaxbObj.getTenderId().intValue());    
+        }   
+        if (jaxbObj.getDocumentId() != null) {
+            dto.setDocumentId(jaxbObj.getDocumentId().intValue());    
+        }   
+        dto.setXactReason(jaxbObj.getXactReason());
+        dto.setXactEntityRefNo(jaxbObj.getEntityRefNo());
+        dto.setXactNegInstrNo(jaxbObj.getNegInstrNo());
+        dto.setXactConfirmNo(jaxbObj.getConfirmNo());
+        dto.setXactBankTransInd(jaxbObj.getBankTransInd());
         return dto;
     }
     
