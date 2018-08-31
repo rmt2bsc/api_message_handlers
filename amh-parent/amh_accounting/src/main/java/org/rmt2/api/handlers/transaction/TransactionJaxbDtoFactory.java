@@ -3,7 +3,6 @@ package org.rmt2.api.handlers.transaction;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.dto.CustomerDto;
 import org.dto.CustomerXactHistoryDto;
 import org.dto.XactCustomCriteriaDto;
 import org.dto.XactDto;
@@ -15,6 +14,7 @@ import org.rmt2.jaxb.CustomerType;
 import org.rmt2.jaxb.RecordTrackingType;
 import org.rmt2.jaxb.XactBasicCriteriaType;
 import org.rmt2.jaxb.XactCustomRelationalCriteriaType;
+import org.rmt2.jaxb.XactLineitemType;
 import org.rmt2.jaxb.XactType;
 import org.rmt2.util.RecordTrackingTypeBuilder;
 import org.rmt2.util.accounting.subsidiary.CustomerActivityTypeBuilder;
@@ -192,10 +192,12 @@ public class TransactionJaxbDtoFactory extends RMT2Base {
     /**
      * 
      * @param dto
+     * @param balance
+     * @param transactions
      * @return
      */
-    public static final CustomerType createCustomerJaxbInstance(CustomerDto dto,
-            double balance, List<CustomerXactHistoryDto> transactions) {
+    public static final XactType createXactJaxbInstance(XactDto dto, double balance, 
+            List<XactLineitemType> transactions) {
         
         RecordTrackingType rtt = RecordTrackingTypeBuilder.Builder.create()
                 .withDateCreated(dto.getDateCreated())
