@@ -3,23 +3,25 @@ package org.rmt2.api.handlers.transaction;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.dto.CustomerXactHistoryDto;
 import org.dto.XactCustomCriteriaDto;
 import org.dto.XactDto;
+import org.dto.XactTypeItemActivityDto;
 import org.dto.adapter.orm.transaction.Rmt2XactDtoFactory;
 import org.modules.transaction.XactApiFactory;
-import org.rmt2.jaxb.BusinessType;
-import org.rmt2.jaxb.CustomerActivityType;
-import org.rmt2.jaxb.CustomerType;
 import org.rmt2.jaxb.RecordTrackingType;
 import org.rmt2.jaxb.XactBasicCriteriaType;
+import org.rmt2.jaxb.XactCodeGroupType;
+import org.rmt2.jaxb.XactCodeType;
 import org.rmt2.jaxb.XactCustomRelationalCriteriaType;
 import org.rmt2.jaxb.XactLineitemType;
 import org.rmt2.jaxb.XactType;
+import org.rmt2.jaxb.XacttypeType;
 import org.rmt2.util.RecordTrackingTypeBuilder;
-import org.rmt2.util.accounting.subsidiary.CustomerActivityTypeBuilder;
-import org.rmt2.util.accounting.subsidiary.CustomerTypeBuilder;
-import org.rmt2.util.addressbook.BusinessTypeBuilder;
+import org.rmt2.util.accounting.transaction.XactCodeGroupTypeBuilder;
+import org.rmt2.util.accounting.transaction.XactCodeTypeBuilder;
+import org.rmt2.util.accounting.transaction.XactItemTypeBuilder;
+import org.rmt2.util.accounting.transaction.XactTypeBuilder;
+import org.rmt2.util.accounting.transaction.XacttypeTypeBuilder;
 
 import com.RMT2Base;
 import com.api.util.RMT2Date;
@@ -197,7 +199,7 @@ public class TransactionJaxbDtoFactory extends RMT2Base {
      * @return
      */
     public static final XactType createXactJaxbInstance(XactDto dto, double balance, 
-            List<XactLineitemType> transactions) {
+            List<XactTypeItemActivityDto> transactions) {
         
         RecordTrackingType rtt = RecordTrackingTypeBuilder.Builder.create()
                 .withDateCreated(dto.getDateCreated())
@@ -206,36 +208,51 @@ public class TransactionJaxbDtoFactory extends RMT2Base {
                 .withIpCreated(dto.getIpCreated())
                 .withIpUpdate(dto.getIpUpdated()).build();
         
-        BusinessType businessContactDetails = BusinessTypeBuilder.Builder.create()
-                .withBusinessId(dto.getContactId())
-                .withLongname(dto.getContactName()).build();
+        XacttypeType xt = XacttypeTypeBuilder.Builder.create().withXactTypeId(dto.getXactTypeId())
+                .withDescription(dto.getXactTypeDescription()).build();
+
+        XacttypeType xst = XacttypeTypeBuilder.Builder.create().withXactTypeId(dto.getXactSubtypeId()).build();
+
+        XactCodeGroupType xcgt = XactCodeGroupTypeBuilder.Builder.create().withGroupId(dto.getXactCodeGrpId())
+                .withDescription(dto.getXactCodeGrpDescription()).build();
+
+        XactCodeType xct = XactCodeTypeBuilder.Builder.create().withXactCodeId(dto.getXactCodeId())
+                .withDescription(dto.getXactCodeDescription()).build();
         
-        List<CustomerActivityType> catList = null;
+        List<XactLineitemType> itemList = null;
         if (transactions != null) {
-            catList = new ArrayList<>();
-            for (CustomerXactHistoryDto trans : transactions) {
-                CustomerActivityType cat = CustomerActivityTypeBuilder.Builder.create()
+            itemList = new ArrayList<>();
+            for (XactTypeItemActivityDto trans : transactions) {
+                XactLineitemType item = XactItemTypeBuilder.Builder.create()
                         .withAmount(trans.getActivityAmount())
-                        .withCustomerActivityId(trans.getActivityId())
-                        .withCustomerId(trans.getCustomerId())
-                        .withXactDetails(null)
+                        .withDescription(trans.getXactTypeItemActvName())
+                        .withItemId(trans.getXactItemId())
+                        .withXactTypeItemActvId(trans.getXactTypeItemActvId())
                         .withXactId(trans.getXactId()).build();
                 
-                catList.add(cat);
+                itemList.add(item);
             }
         }
         
-        CustomerType jaxbObj = CustomerTypeBuilder.Builder.create()
-                .withCustomerId(dto.getCustomerId())
-                .withAcctId(dto.getAcctId())
-                .withBusinessType(businessContactDetails)
-                .withPersonType(null)
-                .withAccountNo(dto.getAccountNo())
-                .withCreditLimit(dto.getCreditLimit())
-                .withAcctDescription(dto.getDescription())
-                .withBalance(balance)
-                .withActive(dto.getActive())
-                .withTransactions(catList)
+        XactType jaxbObj = XactTypeBuilder.Builder.create()
+                .withXactId(dto.getXactId())
+                .withXactAmount(dto.getXactAmount())
+                .withXactDate(dto.getXactDate())
+                .withPostedDate(dto.getXactPostedDate())
+                .withReason(dto.getXactReason())
+                .withConfirmNo(dto.getXactConfirmNo())
+                .withEntityRefNo(dto.getXactEntityRefNo())
+                .withNegInstrNo(dto.getXactNegInstrNo())
+                .withTenderId(dto.getXactTenderId())
+                .withBankTransInd(dto.getXactBankTransInd())
+                .withDocumentId(dto.getDocumentId())
+                .withInvoiceNo(null)
+                .withItemTotal(0)
+                .withXactType(xt)
+                .withXactSubtypeId(xst)
+                .withXactCodeGroup(xcgt)
+                .withXactCode(xct)
+                .withXactItems(itemList)
                 .withRecordTracking(rtt).build();
         return jaxbObj;
     }
