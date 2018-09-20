@@ -135,7 +135,7 @@ public class TransactionJaxbDtoFactory extends RMT2Base {
      * @param jaxbObj
      * @return
      */
-    public static final XactDto createTransactionDtoInstance(XactType jaxbObj) {
+    public static final XactDto createXactDtoInstance(XactType jaxbObj) {
         if (jaxbObj == null) {
             return null;
         }
@@ -201,6 +201,10 @@ public class TransactionJaxbDtoFactory extends RMT2Base {
     public static final XactType createXactJaxbInstance(XactDto dto, double balance, 
             List<XactTypeItemActivityDto> transactions) {
         
+        if (dto == null) {
+            return null;
+        }
+
         RecordTrackingType rtt = RecordTrackingTypeBuilder.Builder.create()
                 .withDateCreated(dto.getDateCreated())
                 .withDateUpdate(dto.getDateUpdated())
@@ -223,13 +227,7 @@ public class TransactionJaxbDtoFactory extends RMT2Base {
         if (transactions != null) {
             itemList = new ArrayList<>();
             for (XactTypeItemActivityDto trans : transactions) {
-                XactLineitemType item = XactItemTypeBuilder.Builder.create()
-                        .withAmount(trans.getActivityAmount())
-                        .withDescription(trans.getXactTypeItemActvName())
-                        .withItemId(trans.getXactItemId())
-                        .withXactTypeItemActvId(trans.getXactTypeItemActvId())
-                        .withXactId(trans.getXactId()).build();
-                
+                XactLineitemType item = TransactionJaxbDtoFactory.createXactItemJaxbInstance(trans);
                 itemList.add(item);
             }
         }
@@ -257,5 +255,47 @@ public class TransactionJaxbDtoFactory extends RMT2Base {
         return jaxbObj;
     }
 
+    /**
+     * 
+     * @param dto
+     * @return
+     */
+    public static final XactLineitemType createXactItemJaxbInstance(XactTypeItemActivityDto dto) {
+        if (dto == null) {
+            return null;
+        }
+
+        XactLineitemType item = XactItemTypeBuilder.Builder.create()
+                .withAmount(dto.getActivityAmount())
+                .withDescription(dto.getXactTypeItemActvName())
+                .withItemId(dto.getXactItemId())
+                .withXactTypeItemActvId(dto.getXactTypeItemActvId())
+                .withXactId(dto.getXactId()).build();
+        return item;
+    }
+
+    public static final XactDto createXactItemDtoInstance(XactLineitemType jaxbObj) {
+        if (jaxbObj == null) {
+            return null;
+        }
+        XactTypeItemActivityDto dto = Rmt2XactDtoFactory.createXactTypeItemActivityExtInstance(null);
+        if (jaxbObj.getXactId() != null) {
+            dto.setXactId(jaxbObj.getXactId().intValue());
+        }
+        if (jaxbObj.getItemId() != null) {
+            dto.setXactItemId(jaxbObj.getItemId().intValue());
+        }
+        if (jaxbObj.getXactTypeItemActvId() != null) {
+            dto.setXactTypeItemActvId(jaxbObj.getItemId().intValue());
+        }
+
+        if (jaxbObj.getName() != null) {
+            dto.setXactTypeItemActvName(jaxbObj.getName());
+        }
+        if (jaxbObj.getAmount() != null) {
+            dto.setActivityAmount(jaxbObj.getAmount().doubleValue());
+        }
+        return dto;
+    }
 }
 
