@@ -274,6 +274,11 @@ public class TransactionJaxbDtoFactory extends RMT2Base {
         return item;
     }
 
+    /**
+     * 
+     * @param jaxbObj
+     * @return
+     */
     public static final XactDto createXactItemDtoInstance(XactLineitemType jaxbObj) {
         if (jaxbObj == null) {
             return null;
