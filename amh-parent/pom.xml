@@ -84,6 +84,6 @@
 			<url>ftp://192.168.0.4/repo/releases</url>
 		</repository>
 	</distributionManagement>
-	<name>api-message-handler-parent</name>
+	<name>amh-parent</name>
 	<artifactId>amh-parent</artifactId>
 </project>
