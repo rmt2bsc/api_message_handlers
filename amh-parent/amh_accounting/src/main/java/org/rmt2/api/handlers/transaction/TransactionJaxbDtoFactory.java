@@ -3,6 +3,8 @@ package org.rmt2.api.handlers.transaction;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.dto.XactCodeDto;
+import org.dto.XactCodeGroupDto;
 import org.dto.XactCustomCriteriaDto;
 import org.dto.XactDto;
 import org.dto.XactTypeItemActivityDto;
@@ -36,6 +38,154 @@ import com.api.util.RMT2String2;
  */
 public class TransactionJaxbDtoFactory extends RMT2Base {
 
+    /**
+     * Creates an instance of <i>XactCodeGroupDto</i> using a valid
+     * <i>XactCodeGroupType</i> JAXB object.
+     * 
+     * @param criteria
+     *            an instance of {@link XactCodeGroupType}
+     * @return an instance of {@link XactCodeGroupDto}
+     * @throws {@link
+     *             com.SystemException} Transaction date could not converted
+     *             from a String.
+     */
+    public static final XactCodeGroupDto createCodeGroupDtoCriteriaInstance(XactCodeGroupType jaxbCriteria) {
+        if (jaxbCriteria == null) {
+            return null;
+        }
+
+        XactCodeGroupDto dto = Rmt2XactDtoFactory.createXactCodeGroupInstance(null);
+        if (!RMT2String2.isEmpty(jaxbCriteria.getDescription())) {
+            dto.setEntityName(jaxbCriteria.getDescription());
+        }
+        if (jaxbCriteria.getXactCodeGrpId() != null) {
+            dto.setEntityId(jaxbCriteria.getXactCodeGrpId().intValue());
+        }
+
+        return dto;
+    }
+
+    /**
+     * 
+     * @param jaxbObj
+     * @return
+     */
+    public static final XactCodeGroupDto createCodeGroupDtoInstance(XactCodeGroupType jaxbObj) {
+        if (jaxbObj == null) {
+            return null;
+        }
+        XactCodeGroupDto dto = Rmt2XactDtoFactory.createXactCodeGroupInstance(null);
+        if (jaxbObj.getXactCodeGrpId() != null) {
+            dto.setEntityId(jaxbObj.getXactCodeGrpId().intValue());
+        }
+        dto.setEntityName(jaxbObj.getDescription());
+        return dto;
+    }
+    
+    
+    /**
+     * 
+     * @param dto
+     * @param balance
+     * @param transactions
+     * @return
+     */
+    public static final XactCodeGroupType createCodeGroupJaxbInstance(XactCodeGroupDto dto) {
+        
+        if (dto == null) {
+            return null;
+        }
+
+        RecordTrackingType rtt = RecordTrackingTypeBuilder.Builder.create()
+                .withDateCreated(dto.getDateCreated())
+                .withDateUpdate(dto.getDateUpdated())
+                .withUserId(dto.getUpdateUserId())
+                .withIpCreated(dto.getIpCreated())
+                .withIpUpdate(dto.getIpUpdated()).build();
+        
+        XactCodeGroupType jaxbObj = XactCodeGroupTypeBuilder.Builder.create().withGroupId(dto.getEntityId())
+                .withDescription(dto.getEntityName()).withRecordTracking(rtt).build();
+        return jaxbObj;
+    }
+    
+    /**
+     * Creates an instance of <i>XactCodeDto</i> using a valid
+     * <i>XactCodeType</i> JAXB object.
+     * 
+     * @param criteria
+     *            an instance of {@link XactCodeType}
+     * @return an instance of {@link XactCodeDto}
+     * @throws {@link
+     *             com.SystemException} Transaction date could not converted
+     *             from a String.
+     */
+    public static final XactCodeDto createCodeDtoCriteriaInstance(XactCodeType jaxbCriteria) {
+        if (jaxbCriteria == null) {
+            return null;
+        }
+
+        XactCodeDto dto = Rmt2XactDtoFactory.createXactCodeInstance(null);
+        if (jaxbCriteria.getXactCodeId() != null) {
+            dto.setEntityId(jaxbCriteria.getXactCodeId().intValue());
+        }
+        if (!RMT2String2.isEmpty(jaxbCriteria.getDescription())) {
+            dto.setEntityName(jaxbCriteria.getDescription());
+        }
+        if (jaxbCriteria.getXactCodeGrp() != null && jaxbCriteria.getXactCodeGrp().getXactCodeGrpId() != null) {
+            dto.setGrpId(jaxbCriteria.getXactCodeGrp().getXactCodeGrpId().intValue());
+        }
+
+        return dto;
+    }
+    
+    /**
+     * 
+     * @param jaxbObj
+     * @return
+     */
+    public static final XactCodeDto createCodeDtoInstance(XactCodeType jaxbObj) {
+        if (jaxbObj == null) {
+            return null;
+        }
+
+        XactCodeDto dto = Rmt2XactDtoFactory.createXactCodeInstance(null);
+        if (jaxbObj.getXactCodeId() != null) {
+            dto.setEntityId(jaxbObj.getXactCodeId().intValue());
+        }
+        dto.setEntityName(jaxbObj.getDescription());
+        if (jaxbObj.getXactCodeGrp() != null && jaxbObj.getXactCodeGrp().getXactCodeGrpId() != null) {
+            dto.setGrpId(jaxbObj.getXactCodeGrp().getXactCodeGrpId().intValue());
+        }
+
+        return dto;
+    }
+    
+    /**
+     * 
+     * @param dto
+     * @return
+     */
+    public static final XactCodeType createCodeJaxbInstance(XactCodeDto dto) {
+        
+        if (dto == null) {
+            return null;
+        }
+
+        RecordTrackingType rtt = RecordTrackingTypeBuilder.Builder.create()
+                .withDateCreated(dto.getDateCreated())
+                .withDateUpdate(dto.getDateUpdated())
+                .withUserId(dto.getUpdateUserId())
+                .withIpCreated(dto.getIpCreated())
+                .withIpUpdate(dto.getIpUpdated()).build();
+        
+        XactCodeGroupType jaxbCodeGrpObj = XactCodeGroupTypeBuilder.Builder.create().withGroupId(dto.getGrpId()).build();
+        
+        XactCodeType jaxbObj = XactCodeTypeBuilder.Builder.create().withXactCodeId(dto.getEntityId())
+                .withDescription(dto.getEntityName()).withGroup(jaxbCodeGrpObj).withRecordTracking(rtt).build();
+        return jaxbObj;
+    }
+ 
+    
     /**
      * Creates an instance of <i>XactDto</i> using a valid
      * <i>XactBasicCriteriaType</i> JAXB object.
