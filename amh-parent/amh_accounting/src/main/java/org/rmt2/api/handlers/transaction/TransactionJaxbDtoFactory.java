@@ -66,6 +66,8 @@ public class TransactionJaxbDtoFactory extends RMT2Base {
     }
 
     /**
+     * Creates an instance of <i>XactCodeGroupDto</i> using a valid
+     * <i>XactCodeGroupType</i> JAXB object.
      * 
      * @param jaxbObj
      * @return
