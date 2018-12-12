@@ -130,7 +130,7 @@ public class XactGroupQueryMessageHandlerTest extends BaseAccountingMessageHandl
     
  
     @Test
-    public void testSuccess_FetchCustomer_NoDataFound() {
+    public void testSuccess_Fetch_NoDataFound() {
         String request = RMT2File.getFileContentsAsString("xml/transaction/codes/TransactionGroupQueryRequest.xml");
 
         try {
@@ -159,7 +159,7 @@ public class XactGroupQueryMessageHandlerTest extends BaseAccountingMessageHandl
     }
     
     @Test
-    public void testError_FetchCustomer_API_Error() {
+    public void testError_Fetch_API_Error() {
         String request = RMT2File.getFileContentsAsString("xml/transaction/codes/TransactionGroupQueryRequest.xml");
 
         try {
