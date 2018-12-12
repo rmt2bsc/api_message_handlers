@@ -46,8 +46,6 @@ import com.api.util.RMT2File;
 public class XactGroupQueryMessageHandlerTest extends BaseAccountingMessageHandlerTest {
 
     private XactApi mockApi;
-//    private DaoClient mockDaoClient;
-
 
     /**
      * 
