@@ -101,7 +101,7 @@ public class XactCodeQueryMessageHandlerTest extends BaseAccountingMessageHandle
         MessageHandlerResults results = null;
         XactCodeApiHandler handler = new XactCodeApiHandler();
         try {
-            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_TRANSACTION_CODE, request);
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_TRANSACTION_CODE_GET, request);
         } catch (MessageHandlerCommandException e) {
             e.printStackTrace();
             Assert.fail("An unexpected exception was thrown");
@@ -146,7 +146,7 @@ public class XactCodeQueryMessageHandlerTest extends BaseAccountingMessageHandle
         MessageHandlerResults results = null;
         XactCodeApiHandler handler = new XactCodeApiHandler();
         try {
-            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_TRANSACTION_CODE, request);
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_TRANSACTION_CODE_GET, request);
         } catch (MessageHandlerCommandException e) {
             e.printStackTrace();
             Assert.fail("An unexpected exception was thrown");
@@ -176,7 +176,7 @@ public class XactCodeQueryMessageHandlerTest extends BaseAccountingMessageHandle
         MessageHandlerResults results = null;
         XactCodeApiHandler handler = new XactCodeApiHandler();
         try {
-            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_TRANSACTION_CODE, request);
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_TRANSACTION_CODE_GET, request);
         } catch (MessageHandlerCommandException e) {
             e.printStackTrace();
             Assert.fail("An unexpected exception was thrown");
@@ -235,7 +235,7 @@ public class XactCodeQueryMessageHandlerTest extends BaseAccountingMessageHandle
         MessageHandlerResults results = null;
         XactCodeApiHandler handler = new XactCodeApiHandler();
         try {
-            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_TRANSACTION_CODE, request);
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_TRANSACTION_CODE_GET, request);
         } catch (MessageHandlerCommandException e) {
             e.printStackTrace();
             Assert.fail("An unexpected exception was thrown");
@@ -261,7 +261,7 @@ public class XactCodeQueryMessageHandlerTest extends BaseAccountingMessageHandle
         MessageHandlerResults results = null;
         XactCodeApiHandler handler = new XactCodeApiHandler();
         try {
-            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_TRANSACTION_CODE, request);
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_TRANSACTION_CODE_GET, request);
         } catch (MessageHandlerCommandException e) {
             e.printStackTrace();
             Assert.fail("An unexpected exception was thrown");

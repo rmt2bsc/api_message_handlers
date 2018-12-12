@@ -76,7 +76,7 @@ public class XactCodeApiHandler extends
             return r;
         }
         switch (command) {
-            case ApiTransactionCodes.ACCOUNTING_TRANSACTION_CODE:
+            case ApiTransactionCodes.ACCOUNTING_TRANSACTION_CODE_GET:
                 r = this.fetch(this.requestObj);
                 break;
             default:
@@ -159,7 +159,7 @@ public class XactCodeApiHandler extends
         
         // Validate request for fetch operations
         switch (this.command) {
-            case ApiTransactionCodes.ACCOUNTING_TRANSACTION_CODE:
+            case ApiTransactionCodes.ACCOUNTING_TRANSACTION_CODE_GET:
                 try {
                     Verifier.verifyNotNull(req.getCriteria().getXactCodeCriteria());
                 }

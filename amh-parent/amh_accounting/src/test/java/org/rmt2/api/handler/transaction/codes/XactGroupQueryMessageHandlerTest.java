@@ -100,7 +100,7 @@ public class XactGroupQueryMessageHandlerTest extends BaseAccountingMessageHandl
         MessageHandlerResults results = null;
         XactGroupApiHandler handler = new XactGroupApiHandler();
         try {
-            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_TRANSACTION_GROUP, request);
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_TRANSACTION_GROUP_GET, request);
         } catch (MessageHandlerCommandException e) {
             e.printStackTrace();
             Assert.fail("An unexpected exception was thrown");
@@ -142,7 +142,7 @@ public class XactGroupQueryMessageHandlerTest extends BaseAccountingMessageHandl
         MessageHandlerResults results = null;
         XactGroupApiHandler handler = new XactGroupApiHandler();
         try {
-            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_TRANSACTION_GROUP, request);
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_TRANSACTION_GROUP_GET, request);
         } catch (MessageHandlerCommandException e) {
             e.printStackTrace();
             Assert.fail("An unexpected exception was thrown");
@@ -172,7 +172,7 @@ public class XactGroupQueryMessageHandlerTest extends BaseAccountingMessageHandl
         MessageHandlerResults results = null;
         XactGroupApiHandler handler = new XactGroupApiHandler();
         try {
-            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_TRANSACTION_GROUP, request);
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_TRANSACTION_GROUP_GET, request);
         } catch (MessageHandlerCommandException e) {
             e.printStackTrace();
             Assert.fail("An unexpected exception was thrown");
@@ -231,7 +231,7 @@ public class XactGroupQueryMessageHandlerTest extends BaseAccountingMessageHandl
         MessageHandlerResults results = null;
         XactGroupApiHandler handler = new XactGroupApiHandler();
         try {
-            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_TRANSACTION_GROUP, request);
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_TRANSACTION_GROUP_GET, request);
         } catch (MessageHandlerCommandException e) {
             e.printStackTrace();
             Assert.fail("An unexpected exception was thrown");
@@ -257,7 +257,7 @@ public class XactGroupQueryMessageHandlerTest extends BaseAccountingMessageHandl
         MessageHandlerResults results = null;
         XactGroupApiHandler handler = new XactGroupApiHandler();
         try {
-            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_TRANSACTION_GROUP, request);
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_TRANSACTION_GROUP_GET, request);
         } catch (MessageHandlerCommandException e) {
             e.printStackTrace();
             Assert.fail("An unexpected exception was thrown");

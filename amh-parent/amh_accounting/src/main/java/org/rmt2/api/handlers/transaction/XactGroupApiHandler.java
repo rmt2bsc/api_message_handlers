@@ -78,7 +78,7 @@ public class XactGroupApiHandler extends
             return r;
         }
         switch (command) {
-            case ApiTransactionCodes.ACCOUNTING_TRANSACTION_GROUP:
+            case ApiTransactionCodes.ACCOUNTING_TRANSACTION_GROUP_GET:
                 r = this.fetch(this.requestObj);
                 break;
             default:
@@ -161,7 +161,7 @@ public class XactGroupApiHandler extends
         
         // Validate request for fetch operations
         switch (this.command) {
-            case ApiTransactionCodes.ACCOUNTING_TRANSACTION_GROUP:
+            case ApiTransactionCodes.ACCOUNTING_TRANSACTION_GROUP_GET:
                 try {
                     Verifier.verifyNotNull(req.getCriteria().getXactCodeGroupCriteria());
                 }
