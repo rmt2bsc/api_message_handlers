@@ -12,6 +12,7 @@ import org.dto.adapter.orm.transaction.Rmt2XactDtoFactory;
 import org.modules.transaction.XactApiFactory;
 import org.rmt2.jaxb.RecordTrackingType;
 import org.rmt2.jaxb.XactBasicCriteriaType;
+import org.rmt2.jaxb.XactCodeGroupCriteriaType;
 import org.rmt2.jaxb.XactCodeGroupType;
 import org.rmt2.jaxb.XactCodeType;
 import org.rmt2.jaxb.XactCustomRelationalCriteriaType;
@@ -40,16 +41,16 @@ public class TransactionJaxbDtoFactory extends RMT2Base {
 
     /**
      * Creates an instance of <i>XactCodeGroupDto</i> using a valid
-     * <i>XactCodeGroupType</i> JAXB object.
+     * <i>XactCodeGroupCriteriaType</i> JAXB object.
      * 
      * @param criteria
-     *            an instance of {@link XactCodeGroupType}
+     *            an instance of {@link XactCodeGroupCriteriaType}
      * @return an instance of {@link XactCodeGroupDto}
      * @throws {@link
      *             com.SystemException} Transaction date could not converted
      *             from a String.
      */
-    public static final XactCodeGroupDto createCodeGroupDtoCriteriaInstance(XactCodeGroupType jaxbCriteria) {
+    public static final XactCodeGroupDto createCodeGroupDtoCriteriaInstance(XactCodeGroupCriteriaType jaxbCriteria) {
         if (jaxbCriteria == null) {
             return null;
         }

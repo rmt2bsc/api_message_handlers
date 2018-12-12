@@ -5,28 +5,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.dto.AccountDto;
-import org.modules.CommonAccountingConst;
-import org.modules.generalledger.GeneralLedgerApiException;
+import org.dto.XactCodeGroupDto;
 import org.modules.transaction.XactApi;
 import org.modules.transaction.XactApiFactory;
 import org.rmt2.api.handler.util.MessageHandlerUtility;
-import org.rmt2.api.handlers.generalledger.GeneralLedgerJaxbDtoFactory;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
-import org.rmt2.jaxb.AccountingGeneralLedgerRequest;
 import org.rmt2.jaxb.AccountingTransactionRequest;
 import org.rmt2.jaxb.AccountingTransactionResponse;
-import org.rmt2.jaxb.GlAccountType;
-import org.rmt2.jaxb.GlDetailGroup;
 import org.rmt2.jaxb.ObjectFactory;
 import org.rmt2.jaxb.ReplyStatusType;
+import org.rmt2.jaxb.TransactionDetailGroup;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 import org.rmt2.jaxb.XactCodeGroupType;
 
 import com.InvalidDataException;
-import com.NotFoundException;
 import com.api.messaging.InvalidRequestException;
 import com.api.messaging.handler.AbstractJaxbMessageHandler;
 import com.api.messaging.handler.MessageHandlerCommandException;
@@ -45,18 +39,26 @@ public class XactGroupApiHandler extends
                   AbstractJaxbMessageHandler<AccountingTransactionRequest, AccountingTransactionResponse, List<XactCodeGroupType>> {
     
     private static final Logger logger = Logger.getLogger(XactGroupApiHandler.class);
+    public static final String MSG_MISSING_GENERAL_CRITERIA = "Transaction Group/Code request must contain a valid general criteria object";
+    public static final String MSG_MISSING_SUBJECT_CRITERIA = "Transaction Group fetch request must contain a valid Transaction Code Group criteria object";
+    
     private ObjectFactory jaxbObjFactory;
     private XactApi api;
 
     /**
-     * @param payload
+     * Create XactGrouptApiHandler object using an instnace of a DaoClient.
+     * <p>
+     * Since this class will used by other API's, it will depend on that api's
+     * DAO connection for data access.
+     * 
+     * @param connection
+     *            an instance of {@link DaoClient}
      */
     public XactGroupApiHandler() {
         super();
-        XactApiFactory f = new XactApiFactory();
-        this.api = f.creat(CommonAccountingConst.APP_NAME);
+        this.api = XactApiFactory.createDefaultXactApi();
         this.jaxbObjFactory = new ObjectFactory();
-        this.responseObj = jaxbObjFactory.createAccountingGeneralLedgerResponse();
+        this.responseObj = jaxbObjFactory.createAccountingTransactionResponse();
         logger.info(XactGroupApiHandler.class.getName() + " was instantiated successfully");
     }
 
@@ -76,15 +78,8 @@ public class XactGroupApiHandler extends
             return r;
         }
         switch (command) {
-            case ApiTransactionCodes.GL_ACCOUNT_GET:
+            case ApiTransactionCodes.ACCOUNTING_TRANSACTION_GROUP:
                 r = this.fetch(this.requestObj);
-                break;
-            case ApiTransactionCodes.GL_ACCOUNT_UPDATE:
-                r = this.update(this.requestObj);
-                break;
-            case ApiTransactionCodes.GL_ACCOUNT_DELETE:
-                r = this.delete(this.requestObj);
-                
                 break;
             default:
                 r = this.createErrorReply(MessagingConstants.RETURN_CODE_FAILURE,
@@ -95,38 +90,39 @@ public class XactGroupApiHandler extends
     }
 
     /**
-     * Handler for invoking the appropriate API in order to fetch one or more GL Account objects.
+     * Handler for invoking the appropriate API in order to fetch one or more
+     * Transaction Group objects.
      * 
      * @param req
-     *            an instance of {@link AccountingGeneralLedgerRequest}
-     * @return an instance of {@link MessageHandlerResults}           
+     *            an instance of {@link AccountingTransactionRequest}
+     * @return an instance of {@link MessageHandlerResults}
      */
-    protected MessageHandlerResults fetch(AccountingGeneralLedgerRequest req) {
+    protected MessageHandlerResults fetch(AccountingTransactionRequest req) {
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
-        List<GlAccountType> queryDtoResults = null;
+        List<XactCodeGroupType> queryDtoResults = null;
 
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
-            AccountDto criteriaDto = GeneralLedgerJaxbDtoFactory
-                    .createGlAccountDtoCriteriaInstance(req.getCriteria().getCriteria());
+            XactCodeGroupDto criteriaDto = TransactionJaxbDtoFactory
+                    .createCodeGroupDtoCriteriaInstance(req.getCriteria().getXactCodeGroupCriteria());
             
-            List<AccountDto> dtoList = this.api.getAccount(criteriaDto);
+            List<XactCodeGroupDto> dtoList = this.api.getGroup(criteriaDto);
             if (dtoList == null) {
-                rs.setMessage("GL Account data not found!");
+                rs.setMessage("Transaction Group data not found!");
                 rs.setReturnCode(0);
             }
             else {
                 queryDtoResults = this.buildJaxbListData(dtoList);
-                rs.setMessage("GL Account record(s) found");
+                rs.setMessage("Transaction Group record(s) found");
                 rs.setReturnCode(dtoList.size());
             }
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setMessage("Failure to retrieve GL Account(s)");
+            rs.setMessage("Failure to retrieve Transaction Group(s)");
             rs.setExtMessage(e.getMessage());
         } finally {
             this.api.close();
@@ -136,111 +132,12 @@ public class XactGroupApiHandler extends
         results.setPayload(xml);
         return results;
     }
+
     
-    /**
-     * Handler for invoking the appropriate API in order to update the specified
-     * GL Account.
-     * 
-     * @param req
-     *            an instance of {@link AccountingGeneralLedgerRequest}
-     * @return an instance of {@link MessageHandlerResults}
-     */
-    protected MessageHandlerResults update(AccountingGeneralLedgerRequest req) {
-        MessageHandlerResults results = new MessageHandlerResults();
-        MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
-        List<GlAccountType> updateData = null;
-        
-        boolean newRec = false;
-        int rc = 0;
-        try {
-            rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
-            AccountDto dataObjDto = GeneralLedgerJaxbDtoFactory
-                    .createGlAccountDtoInstance(req.getProfile().getAccount().get(0));
-            newRec = (dataObjDto.getAcctId() == 0);
-            
-            // call api
-            this.api.beginTrans();
-            rc = this.api.updateAccount(dataObjDto);
-            
-            // prepare response with updated contact data
-            List<AccountDto> updateList = new ArrayList<>();
-            updateList.add(dataObjDto);
-            updateData = this.buildJaxbListData(updateList);
-            
-            // Return code is either the total number of rows updated or the new group id
-            rs.setReturnCode(rc);
-            if (newRec) {
-                rs.setMessage("GL Account was created successfully");
-                rs.setExtMessage("The new acct id is " + rc);
-            }
-            else {
-                rs.setMessage("GL Account was modified successfully");
-                rs.setExtMessage("Total number of rows modified: " + rc);
-            }
-            this.api.commitTrans();
-            
-        } catch (GeneralLedgerApiException | NotFoundException | InvalidDataException e) {
-            logger.error("Error occurred during API Message Handler operation, " + this.command, e );
-            rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setMessage("Failure to update " + (newRec ? "new" : "existing")  + " GL Account");
-            rs.setExtMessage(e.getMessage());
-            updateData = req.getProfile().getAccount();
-            this.api.rollbackTrans();
-        } finally {
-            this.api.close();
-        }
-        String xml = this.buildResponse(updateData, rs);
-        results.setPayload(xml);
-        return results;
-    }
-    
-    /**
-     * Handler for invoking the appropriate API in order to delete the specified
-     * GL Account.
-     * 
-     * @param req
-     *            an instance of {@link AccountingGeneralLedgerRequest}
-     * @return an instance of {@link MessageHandlerResults}
-     */
-    protected MessageHandlerResults delete(AccountingGeneralLedgerRequest req) {
-        MessageHandlerResults results = new MessageHandlerResults();
-        MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
-        
-        int rc = 0;
-        AccountDto criteriaDto = null;
-        try {
-            rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
-            criteriaDto = GeneralLedgerJaxbDtoFactory
-                    .createGlAccountDtoInstance(req.getProfile().getAccount().get(0));
-            
-            // call api
-            this.api.beginTrans();
-            rc = this.api.deleteAccount(criteriaDto.getAcctId());
-            
-            // Return code is either the total number of rows deleted
-            rs.setReturnCode(rc);
-            rs.setMessage("GL Account was deleted successfully");
-            rs.setExtMessage("GL Account Id deleted was " + criteriaDto.getAcctId());
-            this.api.commitTrans();
-        } catch (Exception e) {
-            logger.error("Error occurred during API Message Handler operation, " + this.command, e );
-            rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setMessage("Failure to delelte GL Account");
-            rs.setExtMessage(e.getMessage());
-            this.api.rollbackTrans();
-        } finally {
-            this.api.close();
-        }
-        
-        String xml = this.buildResponse(null, rs);
-        results.setPayload(xml);
-        return results;
-    }
-    
-    private List<GlAccountType> buildJaxbListData(List<AccountDto> results) {
-        List<GlAccountType> list = new ArrayList<>();
-        for (AccountDto item : results) {
-            GlAccountType jaxbObj = GeneralLedgerJaxbDtoFactory.createGlAccountJaxbInstance(item);
+    private List<XactCodeGroupType> buildJaxbListData(List<XactCodeGroupDto> results) {
+        List<XactCodeGroupType> list = new ArrayList<>();
+        for (XactCodeGroupDto item : results) {
+            XactCodeGroupType jaxbObj = TransactionJaxbDtoFactory.createCodeGroupJaxbInstance(item);
             list.add(jaxbObj);
         }
         return list;
@@ -248,40 +145,28 @@ public class XactGroupApiHandler extends
     
     
     @Override
-    protected void validateRequest(AccountingGeneralLedgerRequest req) throws InvalidDataException {
+    protected void validateRequest(AccountingTransactionRequest req) throws InvalidDataException {
         try {
             Verifier.verifyNotNull(req);
         }
         catch (VerifyException e) {
-            throw new InvalidRequestException("GL Account message request element is invalid");
+            throw new InvalidRequestException("Transaction Group request element is invalid");
+        }
+        try {
+            Verifier.verifyNotNull(req.getCriteria());
+        }
+        catch (VerifyException e) {
+            throw new InvalidRequestException(MSG_MISSING_GENERAL_CRITERIA);
         }
         
-        // Validate request for update/delete operation
+        // Validate request for fetch operations
         switch (this.command) {
-            case ApiTransactionCodes.GL_ACCOUNT_UPDATE:
-            case ApiTransactionCodes.GL_ACCOUNT_DELETE:
+            case ApiTransactionCodes.ACCOUNTING_TRANSACTION_GROUP:
                 try {
-                    Verifier.verifyNotNull(req.getProfile());
-                    Verifier.verifyNotEmpty(req.getProfile().getAccount());
+                    Verifier.verifyNotNull(req.getCriteria().getXactCodeGroupCriteria());
                 }
                 catch (VerifyException e) {
-                    throw new InvalidRequestException("GL Account data is required for update/delete operation");
-                }
-                try {
-                    Verifier.verifyTrue(req.getProfile().getAccount().size() == 1);
-                }
-                catch (VerifyException e) {
-                    throw new InvalidRequestException("Only one (1) GL Account record is required for update/delete operation");
-                }
-                
-                if (this.command.equals(ApiTransactionCodes.GL_ACCOUNT_DELETE)) {
-                    try {
-                        Verifier.verifyNotNull(req.getProfile().getAccount().get(0).getAcctId());
-                        Verifier.verifyPositive(req.getProfile().getAccount().get(0).getAcctId());
-                    }
-                    catch (VerifyException e) {
-                        throw new InvalidRequestException("A valid account id is required when deleting a GL Account from the database");
-                    }   
+                    throw new InvalidRequestException(MSG_MISSING_SUBJECT_CRITERIA);
                 }
                 break;
             default:
@@ -290,16 +175,17 @@ public class XactGroupApiHandler extends
     }
 
     @Override
-    protected String buildResponse(List<GlAccountType> payload,  MessageHandlerCommonReplyStatus replyStatus) {
+    protected String buildResponse(List<XactCodeGroupType> payload,  MessageHandlerCommonReplyStatus replyStatus) {
         if (replyStatus != null) {
             ReplyStatusType rs = MessageHandlerUtility.createReplyStatus(replyStatus);
             this.responseObj.setReplyStatus(rs);    
         }
         
         if (payload != null) {
-            GlDetailGroup profile = this.jaxbObjFactory.createGlDetailGroup();
+            TransactionDetailGroup profile = this.jaxbObjFactory.createTransactionDetailGroup();
+            profile.setXactCodeGroups(jaxbObjFactory.createXactCodeGroupListType());
+            profile.getXactCodeGroups().getXactCodeGroup().addAll(payload);
             this.responseObj.setProfile(profile);
-            this.responseObj.getProfile().getAccount().addAll(payload);
         }
         
         String xml = this.jaxb.marshalMessage(this.responseObj);
