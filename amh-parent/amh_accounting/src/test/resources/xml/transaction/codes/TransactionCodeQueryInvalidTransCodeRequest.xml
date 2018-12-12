@@ -1,0 +1,20 @@
+<AccountingTransactionRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>accounting</application>
+        <module>transaction</module>
+        <transaction>INCORRECT_TRANS_CODE</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>12/12/2018 11:34:57</delivery_date>
+    </header>
+    <criteria>
+        <xact_code_criteria>
+            <xact_code_id>201</xact_code_id>
+            <xact_code_grp>
+                <xact_code_grp_id>101</xact_code_grp_id>
+            </xact_code_grp>
+            <description>Test code description</description>
+        </xact_code_criteria>
+    </criteria>
+</AccountingTransactionRequest>
