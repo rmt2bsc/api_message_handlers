@@ -39,8 +39,8 @@ public class XactGroupApiHandler extends
                   AbstractJaxbMessageHandler<AccountingTransactionRequest, AccountingTransactionResponse, List<XactCodeGroupType>> {
     
     private static final Logger logger = Logger.getLogger(XactGroupApiHandler.class);
-    public static final String MSG_MISSING_GENERAL_CRITERIA = "Transaction Group/Code request must contain a valid general criteria object";
-    public static final String MSG_MISSING_SUBJECT_CRITERIA = "Transaction Group fetch request must contain a valid Transaction Code Group criteria object";
+    public static final String MSG_MISSING_GENERAL_CRITERIA = "Transaction Group request must contain a valid general criteria object";
+    public static final String MSG_MISSING_SUBJECT_CRITERIA = "Transaction Group fetch request must contain a valid Transaction Group criteria object";
     
     private ObjectFactory jaxbObjFactory;
     private XactApi api;
