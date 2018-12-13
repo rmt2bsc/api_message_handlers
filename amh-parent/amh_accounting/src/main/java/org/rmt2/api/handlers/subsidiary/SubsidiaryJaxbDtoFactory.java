@@ -2,12 +2,14 @@ package org.rmt2.api.handlers.subsidiary;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.dto.CreditorDto;
 import org.dto.CreditorTypeDto;
 import org.dto.CreditorXactHistoryDto;
 import org.dto.CustomerDto;
 import org.dto.CustomerXactHistoryDto;
+import org.dto.XactDto;
 import org.dto.adapter.orm.account.subsidiary.Rmt2SubsidiaryDtoFactory;
 import org.rmt2.jaxb.BusinessType;
 import org.rmt2.jaxb.CreditorActivityType;
@@ -19,12 +21,14 @@ import org.rmt2.jaxb.CustomerActivityType;
 import org.rmt2.jaxb.CustomerCriteriaType;
 import org.rmt2.jaxb.CustomerType;
 import org.rmt2.jaxb.RecordTrackingType;
+import org.rmt2.jaxb.XactType;
 import org.rmt2.util.RecordTrackingTypeBuilder;
 import org.rmt2.util.accounting.subsidiary.CreditorActivityTypeBuilder;
 import org.rmt2.util.accounting.subsidiary.CreditorTypeBuilder;
 import org.rmt2.util.accounting.subsidiary.CreditortypeTypeBuilder;
 import org.rmt2.util.accounting.subsidiary.CustomerActivityTypeBuilder;
 import org.rmt2.util.accounting.subsidiary.CustomerTypeBuilder;
+import org.rmt2.util.accounting.transaction.XactTypeBuilder;
 import org.rmt2.util.addressbook.BusinessTypeBuilder;
 
 import com.RMT2Base;
@@ -213,7 +217,7 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
      * @return {@link CustomerType}
      */
     public static final CustomerType createCustomerJaxbInstance(CustomerDto dto,
-            double balance, List<CustomerXactHistoryDto> transactions) {
+            Map<Integer, XactDto> xactDetails, List<CustomerXactHistoryDto> transactions) {
         
         RecordTrackingType rtt = RecordTrackingTypeBuilder.Builder.create()
                 .withDateCreated(dto.getDateCreated())
@@ -231,11 +235,16 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
         if (transactions != null) {
             catList = new ArrayList<>();
             for (CustomerXactHistoryDto trans : transactions) {
+                XactType xactType = null;
+                if (xactDetails != null) {
+                    XactDto xactDto = xactDetails.get(trans.getActivityId());
+                    xactType = buildTransactionDetails(xactDto);    
+                }
                 CustomerActivityType cat = CustomerActivityTypeBuilder.Builder.create()
                         .withAmount(trans.getActivityAmount())
                         .withCustomerActivityId(trans.getActivityId())
                         .withCustomerId(trans.getCustomerId())
-                        .withXactDetails(null)
+                        .withXactDetails(xactType)
                         .withXactId(trans.getXactId()).build();
                 
                 catList.add(cat);
@@ -244,7 +253,7 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
         }
         
         // Calculate balance.
-        balance = xactHistTotal;
+        double balance = xactHistTotal;
         CustomerType jaxbObj = CustomerTypeBuilder.Builder.create()
                 .withCustomerId(dto.getCustomerId())
                 .withAcctId(dto.getAcctId())
@@ -436,7 +445,7 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
      * @return {@link CreditorType}
      */
     public static final CreditorType createCreditorJaxbInstance(CreditorDto dto,
-            double balance, List<CreditorXactHistoryDto> transactions) {
+            Map<Integer, XactDto> xactDetails, List<CreditorXactHistoryDto> transactions) {
         
         RecordTrackingType rtt = RecordTrackingTypeBuilder.Builder.create()
                 .withDateCreated(dto.getDateCreated())
@@ -457,12 +466,17 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
         if (transactions != null) {
             catList = new ArrayList<>();
             for (CreditorXactHistoryDto trans : transactions) {
+                XactType xactType = null;
+                if (xactDetails != null) {
+                    XactDto xactDto = xactDetails.get(trans.getActivityId());
+                    xactType = buildTransactionDetails(xactDto);
+                }
                 CreditorActivityType cat = CreditorActivityTypeBuilder.Builder.create()
                         .withAmount(trans.getActivityAmount())
                         .withCreditorActivityId(trans.getActivityId())
                         .withCreditorId(trans.getCreditorId())
                         .withXactId(trans.getXactId())
-                        .withXactDetails(null)
+                        .withXactDetails(xactType)
                         .withXactId(trans.getXactId()).build();
                 
                 catList.add(cat);
@@ -471,7 +485,7 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
         }
         
         // Calculate balance
-        balance = dto.getCreditLimit() - xactHistTotal;
+        double balance = dto.getCreditLimit() - xactHistTotal;
         
         CreditorType jaxbObj = CreditorTypeBuilder.Builder.create()
                 .withCreditorId(dto.getCreditorId())
@@ -560,6 +574,27 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
                 .withRecordTracking(rtt).build();
         
         return creditorType;
+    }
+    
+    private static final XactType buildTransactionDetails(XactDto xactDto) {
+        XactType xactType = null;
+        if (xactDto != null) {
+            xactType = XactTypeBuilder.Builder.create()
+                    .withBankTransInd(xactDto.getXactBankTransInd())
+                    .withConfirmNo(xactDto.getXactConfirmNo())
+                    .withDocumentId(xactDto.getDocumentId())
+                    .withEntityRefNo(xactDto.getXactEntityRefNo())
+                    .withPostedDate(xactDto.getXactPostedDate())
+                    .withReason(xactDto.getXactReason())
+                    .withTenderId(xactDto.getXactTenderId())
+                    .withXactAmount(xactDto.getXactAmount())
+                    .withXactCode(xactDto.getXactCodeId())
+                    .withXactCodeGroup(xactDto.getXactCodeGrpId())
+                    .withXactDate(xactDto.getXactDate())
+                    .withXactSubtypeId(xactDto.getXactSubtypeId())
+                    .withXactType(xactDto.getXactTypeId()).build();
+        }
+        return xactType;
     }
 }
 
