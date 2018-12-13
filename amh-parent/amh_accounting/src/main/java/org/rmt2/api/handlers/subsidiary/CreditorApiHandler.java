@@ -7,7 +7,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.dto.CreditorDto;
 import org.dto.CreditorXactHistoryDto;
-import org.dto.adapter.orm.account.subsidiary.Rmt2SubsidiaryDtoFactory;
 import org.modules.CommonAccountingConst;
 import org.modules.subsidiary.CreditorApi;
 import org.modules.subsidiary.SubsidiaryApiFactory;
@@ -245,16 +244,25 @@ public class CreditorApiHandler extends
             CreditorDto criteriaDto = SubsidiaryJaxbDtoFactory
                     .createCreditorDtoCriteriaInstance(req.getCriteria().getCreditorCriteria());
             
-            List<CreditorXactHistoryDto> dtoList = this.api.getTransactionHistory(criteriaDto.getCreditorId());
-            if (dtoList == null) {
-                rs.setMessage("Creditor transaction history data not found!");
-                rs.setReturnCode(0);
+            List<CreditorDto> dtoCredList = this.api.getExt(criteriaDto);
+            if (dtoCredList != null && dtoCredList.size() == 1) {
+                List<CreditorXactHistoryDto> dtoList = this.api.getTransactionHistory(criteriaDto.getCreditorId());
+                if (dtoList == null) {
+                    rs.setMessage("Creditor transaction history data not found!");
+                    rs.setReturnCode(0);
+                }
+                else {
+                    queryDtoResults = this.buildJaxbListData(dtoCredList.get(0), dtoList);
+                    rs.setMessage("Creditor transaction history record(s) found");
+                    rs.setReturnCode(dtoList.size());
+                }
             }
             else {
-                queryDtoResults = this.buildJaxbListData(criteriaDto.getCreditorId(), dtoList);
-                rs.setMessage("Creditor transaction history record(s) found");
-                rs.setReturnCode(dtoList.size());
+                rs.setMessage("Creditor data not found or too many creditors were fetched");
+                rs.setReturnCode(0);
             }
+            
+            
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
@@ -279,11 +287,9 @@ public class CreditorApiHandler extends
         return list;
     }
     
-    private List<CreditorType> buildJaxbListData(int customerId, List<CreditorXactHistoryDto> transHistory) {
+    private List<CreditorType> buildJaxbListData(CreditorDto creditor, List<CreditorXactHistoryDto> transHistory) {
         List<CreditorType> list = new ArrayList<>();
-        CreditorDto dto = Rmt2SubsidiaryDtoFactory.createCreditorInstance(null, null);
-        dto.setCreditorId(customerId);
-        CreditorType cust = SubsidiaryJaxbDtoFactory.createCreditorJaxbInstance(dto, 0.00, transHistory);
+        CreditorType cust = SubsidiaryJaxbDtoFactory.createCreditorJaxbInstance(creditor, 0.00, transHistory);
         list.add(cust);
         return list;
     }

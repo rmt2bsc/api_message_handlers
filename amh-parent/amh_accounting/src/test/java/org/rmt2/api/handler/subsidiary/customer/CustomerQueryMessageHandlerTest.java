@@ -201,8 +201,15 @@ public class CustomerQueryMessageHandlerTest extends BaseAccountingMessageHandle
     @Test
     public void testSuccess_FetchTransactionHistory() {
         String request = RMT2File.getFileContentsAsString("xml/subsidiary/customer/CustomerTranHistQueryRequest.xml");
+        List<CustomerDto> mockCustData = SubsidiaryMockData.createMockCustomer();
         List<CustomerXactHistoryDto> mockListData = SubsidiaryMockData.createMockCustomerXactHistory();
 
+        try {
+            when(this.mockApi.getExt(isA(CustomerDto.class))).thenReturn(mockCustData);
+        } catch (CustomerApiException e) {
+            Assert.fail("Unable to setup mock stub for fetching a customer");
+        }
+        
         try {
             when(this.mockApi.getTransactionHistory(isA(Integer.class))).thenReturn(mockListData);
         } catch (CustomerApiException e) {
@@ -232,11 +239,12 @@ public class CustomerQueryMessageHandlerTest extends BaseAccountingMessageHandle
         for (int ndx = 0; ndx < actualRepsonse.getProfile().getCustomers().getCustomer().size(); ndx++) {
             CustomerType a = actualRepsonse.getProfile().getCustomers().getCustomer().get(ndx);
             Assert.assertNotNull(a.getCustomerId());
-            Assert.assertEquals(3333, a.getCustomerId().intValue());
+            Assert.assertEquals(100, a.getCustomerId().intValue());
             int ndx2 = 0;
             for (CustomerActivityType tran : a.getTransactions().getTransaction()) {
                 Assert.assertEquals(1200 + ndx2++, tran.getXactId().intValue());
             }
+            Assert.assertEquals(3000.00, a.getBalance().doubleValue(), 0);
         }
     }
     
@@ -244,6 +252,15 @@ public class CustomerQueryMessageHandlerTest extends BaseAccountingMessageHandle
     @Test
     public void testSuccess_FetchTransactionHistory_NoDataFound() {
         String request = RMT2File.getFileContentsAsString("xml/subsidiary/customer/CustomerTranHistQueryRequest.xml");
+        List<CustomerDto> mockCustData = SubsidiaryMockData.createMockCustomer();
+        List<CustomerXactHistoryDto> mockListData = SubsidiaryMockData.createMockCustomerXactHistory();
+
+        try {
+            when(this.mockApi.getExt(isA(CustomerDto.class))).thenReturn(mockCustData);
+        } catch (CustomerApiException e) {
+            Assert.fail("Unable to setup mock stub for fetching a customer");
+        }
+        
         try {
             when(this.mockApi.getTransactionHistory(isA(Integer.class))).thenReturn(null);
         } catch (CustomerApiException e) {
@@ -270,8 +287,45 @@ public class CustomerQueryMessageHandlerTest extends BaseAccountingMessageHandle
     }
     
     @Test
+    public void testSuccess_FetchTransactionHistory_TooManyCustomersFetched() {
+        String request = RMT2File.getFileContentsAsString("xml/subsidiary/customer/CustomerTranHistQueryRequest.xml");
+        List<CustomerDto> mockCustData = SubsidiaryMockData.createMockCustomers();
+
+        try {
+            when(this.mockApi.getExt(isA(CustomerDto.class))).thenReturn(mockCustData);
+        } catch (CustomerApiException e) {
+            Assert.fail("Unable to setup mock stub for fetching a customer");
+        }
+        
+        MessageHandlerResults results = null;
+        CustomerApiHandler handler = new CustomerApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.SUBSIDIARY_CUSTOMER_TRAN_HIST_GET, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingTransactionResponse actualRepsonse = 
+                (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals("Customer data not found or too many customers were fetched", actualRepsonse.getReplyStatus().getMessage());
+    }
+    
+    @Test
     public void testError_FetchTransactionHistory_API_Error() {
         String request = RMT2File.getFileContentsAsString("xml/subsidiary/customer/CustomerTranHistQueryRequest.xml");
+        List<CustomerDto> mockCustData = SubsidiaryMockData.createMockCustomer();
+
+        try {
+            when(this.mockApi.getExt(isA(CustomerDto.class))).thenReturn(mockCustData);
+        } catch (CustomerApiException e) {
+            Assert.fail("Unable to setup mock stub for fetching a customer");
+        }
         try {
             when(this.mockApi.getTransactionHistory(isA(Integer.class)))
                .thenThrow(new CustomerApiException("Test validation error: selection criteria is required"));

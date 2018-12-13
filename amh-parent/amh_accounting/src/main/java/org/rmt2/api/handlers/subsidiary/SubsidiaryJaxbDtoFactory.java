@@ -204,7 +204,13 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
     /**
      * 
      * @param dto
-     * @return
+     *            an instance of {@link CustomerDto}
+     * @param balance
+     *            it is always zero, but calcuated during the construction of
+     *            the CustomerType object
+     * @param transactions
+     *            a list of {@link CustomerXactHistoryDto} objects
+     * @return {@link CustomerType}
      */
     public static final CustomerType createCustomerJaxbInstance(CustomerDto dto,
             double balance, List<CustomerXactHistoryDto> transactions) {
@@ -221,6 +227,7 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
                 .withLongname(dto.getContactName()).build();
         
         List<CustomerActivityType> catList = null;
+        double xactHistTotal = 0;
         if (transactions != null) {
             catList = new ArrayList<>();
             for (CustomerXactHistoryDto trans : transactions) {
@@ -232,9 +239,12 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
                         .withXactId(trans.getXactId()).build();
                 
                 catList.add(cat);
+                xactHistTotal += trans.getActivityAmount();
             }
         }
         
+        // Calculate balance.
+        balance = xactHistTotal;
         CustomerType jaxbObj = CustomerTypeBuilder.Builder.create()
                 .withCustomerId(dto.getCustomerId())
                 .withAcctId(dto.getAcctId())
@@ -417,7 +427,13 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
     /**
      * 
      * @param dto
-     * @return
+     *            an instance of {@link CreditorDto}
+     * @param balance
+     *            it is always zero, but calcuated during the construction of
+     *            the CreditorType object
+     * @param transactions
+     *            a list of {@link CreditorXactHistoryDto} objects
+     * @return {@link CreditorType}
      */
     public static final CreditorType createCreditorJaxbInstance(CreditorDto dto,
             double balance, List<CreditorXactHistoryDto> transactions) {
@@ -437,6 +453,7 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
                 .withCreditorTypeId(dto.getCreditorTypeId()).build();
         
         List<CreditorActivityType> catList = null;
+        double xactHistTotal = 0;
         if (transactions != null) {
             catList = new ArrayList<>();
             for (CreditorXactHistoryDto trans : transactions) {
@@ -449,8 +466,12 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
                         .withXactId(trans.getXactId()).build();
                 
                 catList.add(cat);
+                xactHistTotal += trans.getActivityAmount();
             }
         }
+        
+        // Calculate balance
+        balance = dto.getCreditLimit() - xactHistTotal;
         
         CreditorType jaxbObj = CreditorTypeBuilder.Builder.create()
                 .withCreditorId(dto.getCreditorId())

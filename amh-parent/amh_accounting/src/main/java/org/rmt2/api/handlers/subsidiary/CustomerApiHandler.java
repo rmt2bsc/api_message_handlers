@@ -7,7 +7,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.dto.CustomerDto;
 import org.dto.CustomerXactHistoryDto;
-import org.dto.adapter.orm.account.subsidiary.Rmt2SubsidiaryDtoFactory;
 import org.modules.CommonAccountingConst;
 import org.modules.subsidiary.CustomerApi;
 import org.modules.subsidiary.SubsidiaryApiFactory;
@@ -222,8 +221,11 @@ public class CustomerApiHandler extends
     }
     
     /**
-     * Handler for invoking the appropriate API in order to fetch one or more
-     * Customer transaction history ojects.
+     * Handler for invoking the appropriate API in order to fetch the Customer's
+     * transaction history ojects.
+     * <p>
+     * This method includes the customer base and all transaction history data
+     * which serves as a FULL query.
      * 
      * @param req
      *            an instance of {@link AccountingTransactionRequest}
@@ -240,15 +242,24 @@ public class CustomerApiHandler extends
             CustomerDto criteriaDto = SubsidiaryJaxbDtoFactory
                     .createCustomerDtoCriteriaInstance(req.getCriteria().getCustomerCriteria());
             
-            List<CustomerXactHistoryDto> dtoList = this.api.getTransactionHistory(criteriaDto.getCustomerId());
-            if (dtoList == null) {
-                rs.setMessage("Customer transaction history data not found!");
-                rs.setReturnCode(0);
+            // Expecting only the creditor id to be included in the criteria
+            // object to bring back only on instance
+            List<CustomerDto> dtoCustList = this.api.getExt(criteriaDto);
+            if (dtoCustList != null && dtoCustList.size() == 1) {
+                List<CustomerXactHistoryDto> dtoXactHistList = this.api.getTransactionHistory(criteriaDto.getCustomerId());
+                if (dtoXactHistList == null) {
+                    rs.setMessage("Customer transaction history data not found!");
+                    rs.setReturnCode(0);
+                }
+                else {
+                    queryDtoResults = this.buildJaxbListData(dtoCustList.get(0), dtoXactHistList);
+                    rs.setMessage("Customer transaction history record(s) found");
+                    rs.setReturnCode(dtoXactHistList.size());
+                }
             }
             else {
-                queryDtoResults = this.buildJaxbListData(criteriaDto.getCustomerId(), dtoList);
-                rs.setMessage("Customer transaction history record(s) found");
-                rs.setReturnCode(dtoList.size());
+                rs.setMessage("Customer data not found or too many customers were fetched");
+                rs.setReturnCode(0);
             }
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
@@ -274,11 +285,9 @@ public class CustomerApiHandler extends
         return list;
     }
     
-    private List<CustomerType> buildJaxbListData(int customerId, List<CustomerXactHistoryDto> transHistory) {
+    private List<CustomerType> buildJaxbListData(CustomerDto customer, List<CustomerXactHistoryDto> transHistory) {
         List<CustomerType> list = new ArrayList<>();
-        CustomerDto dto = Rmt2SubsidiaryDtoFactory.createCustomerInstance(null, null);
-        dto.setCustomerId(customerId);
-        CustomerType cust = SubsidiaryJaxbDtoFactory.createCustomerJaxbInstance(dto, 0.00, transHistory);
+        CustomerType cust = SubsidiaryJaxbDtoFactory.createCustomerJaxbInstance(customer, 0.00, transHistory);
         list.add(cust);
         return list;
     }

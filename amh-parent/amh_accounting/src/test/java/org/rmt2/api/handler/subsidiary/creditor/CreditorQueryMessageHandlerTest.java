@@ -199,8 +199,15 @@ public class CreditorQueryMessageHandlerTest extends BaseAccountingMessageHandle
     @Test
     public void testSuccess_FetchTransactionHistory() {
         String request = RMT2File.getFileContentsAsString("xml/subsidiary/creditor/CreditorTransHistQueryRequest.xml");
+        List<CreditorDto> mockCredData = SubsidiaryMockData.createMockCreditor();
         List<CreditorXactHistoryDto> mockListData = SubsidiaryMockData.createMockCreditorXactHistory();
 
+        try {
+            when(this.mockApi.getExt(isA(CreditorDto.class))).thenReturn(mockCredData);
+        } catch (CreditorApiException e) {
+            Assert.fail("Unable to setup mock stub for fetching a creditor");
+        }
+        
         try {
             when(this.mockApi.getTransactionHistory(isA(Integer.class))).thenReturn(mockListData);
         } catch (CreditorApiException e) {
@@ -230,7 +237,7 @@ public class CreditorQueryMessageHandlerTest extends BaseAccountingMessageHandle
         for (int ndx = 0; ndx < actualRepsonse.getProfile().getCreditors().getCreditor().size(); ndx++) {
             CreditorType a = actualRepsonse.getProfile().getCreditors().getCreditor().get(ndx);
             Assert.assertNotNull(a.getCreditorId());
-            Assert.assertEquals(3333, a.getCreditorId().intValue());
+            Assert.assertEquals(100, a.getCreditorId().intValue());
             int ndx2 = 0;
             for (CreditorActivityType tran : a.getTransactions().getTransaction()) {
                 Assert.assertNotNull(tran.getXactDetails());
@@ -239,6 +246,7 @@ public class CreditorQueryMessageHandlerTest extends BaseAccountingMessageHandle
                 Assert.assertEquals(tran.getXactDetails().getXactId(), tran.getXactId());
                 Assert.assertEquals(1200 + ndx2++, tran.getXactId().intValue());
             }
+            Assert.assertEquals(8580.26, a.getBalance().doubleValue(), 0);
         }
     }
     
@@ -246,6 +254,15 @@ public class CreditorQueryMessageHandlerTest extends BaseAccountingMessageHandle
     @Test
     public void testSuccess_FetchTransactionHistory_NoDataFound() {
         String request = RMT2File.getFileContentsAsString("xml/subsidiary/creditor/CreditorTransHistQueryRequest.xml");
+        List<CreditorDto> mockCredData = SubsidiaryMockData.createMockCreditor();
+        List<CreditorXactHistoryDto> mockListData = SubsidiaryMockData.createMockCreditorXactHistory();
+
+        try {
+            when(this.mockApi.getExt(isA(CreditorDto.class))).thenReturn(mockCredData);
+        } catch (CreditorApiException e) {
+            Assert.fail("Unable to setup mock stub for fetching a creditor");
+        }
+        
         try {
             when(this.mockApi.getTransactionHistory(isA(Integer.class))).thenReturn(null);
         } catch (CreditorApiException e) {
@@ -272,8 +289,45 @@ public class CreditorQueryMessageHandlerTest extends BaseAccountingMessageHandle
     }
     
     @Test
+    public void testSuccess_FetchTransactionHistory_TooManyCreditorsFetched() {
+        String request = RMT2File.getFileContentsAsString("xml/subsidiary/creditor/CreditorTransHistQueryRequest.xml");
+        List<CreditorDto> mockCredData = SubsidiaryMockData.createMockCreditors();
+
+        try {
+            when(this.mockApi.getExt(isA(CreditorDto.class))).thenReturn(mockCredData);
+        } catch (CreditorApiException e) {
+            Assert.fail("Unable to setup mock stub for fetching a creditor");
+        }
+        
+        MessageHandlerResults results = null;
+        CreditorApiHandler handler = new CreditorApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.SUBSIDIARY_CREDITOR_TRAN_HIST_GET, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingTransactionResponse actualRepsonse = 
+                (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals("Creditor data not found or too many creditors were fetched", actualRepsonse.getReplyStatus().getMessage());
+    }
+    
+    @Test
     public void testError_FetchTransactionHistory_API_Error() {
         String request = RMT2File.getFileContentsAsString("xml/subsidiary/creditor/CreditorTransHistQueryRequest.xml");
+        List<CreditorDto> mockCredData = SubsidiaryMockData.createMockCreditor();
+        
+        try {
+            when(this.mockApi.getExt(isA(CreditorDto.class))).thenReturn(mockCredData);
+        } catch (CreditorApiException e) {
+            Assert.fail("Unable to setup mock stub for fetching a creditor");
+        }
         try {
             when(this.mockApi.getTransactionHistory(isA(Integer.class)))
                .thenThrow(new CreditorApiException("Test API Error"));
