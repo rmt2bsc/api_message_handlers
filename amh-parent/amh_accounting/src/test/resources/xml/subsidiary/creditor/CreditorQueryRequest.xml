@@ -6,10 +6,11 @@
         <transaction>GET_CREDITOR</transaction>
         <delivery_mode>XXXXXXX</delivery_mode>
         <message_mode>REQUEST</message_mode>
-        <delivery_date>08/27/2018 12:38:40</delivery_date>
+        <delivery_date>12/13/2018 10:51:59</delivery_date>
     </header>
     <criteria>
         <creditor_criteria>
+            <target_level>FULL</target_level>
             <creditor_id>3333</creditor_id>
             <acct_id>1234567</acct_id>
             <account_no>ACCT-NO-8888</account_no>

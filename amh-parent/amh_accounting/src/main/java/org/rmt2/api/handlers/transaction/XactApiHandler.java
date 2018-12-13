@@ -114,7 +114,7 @@ public class XactApiHandler extends
             XactDto criteriaDto = TransactionJaxbDtoFactory
                     .createBaseXactDtoCriteriaInstance(req.getCriteria().getXactCriteria().getBasicCriteria());
             
-            this.targetLevel = req.getCriteria().getXactCriteria().getCustomCriteria().getTargetLevel().name().toUpperCase();
+            this.targetLevel = req.getCriteria().getXactCriteria().getTargetLevel().name().toUpperCase();
             switch (this.targetLevel) {
                 case TARGET_LEVEL_BASE:
                 case TARGET_LEVEL_FULL:
@@ -202,8 +202,8 @@ public class XactApiHandler extends
             case ApiTransactionCodes.ACCOUNTING_TRANSACTION_GET:
                 // Must contain flag that indicates what level of the transaction object to populate with data
                 try {
-                    Verifier.verifyNotNull(req.getCriteria().getXactCriteria().getCustomCriteria());
-                    Verifier.verifyNotNull(req.getCriteria().getXactCriteria().getCustomCriteria().getTargetLevel());
+                    Verifier.verifyNotNull(req.getCriteria().getXactCriteria());
+                    Verifier.verifyNotNull(req.getCriteria().getXactCriteria().getTargetLevel());
                 }
                 catch (VerifyException e) {
                     throw new InvalidRequestException(MSG_MISSING_TARGET_LEVEL, e);

@@ -237,9 +237,6 @@ public class TransactionJaxbDtoFactory extends RMT2Base {
             return null;
         }
         XactCustomCriteriaDto dto = XactApiFactory.createCustomCriteriaInstance();
-        if (jaxbCriteria.getTargetLevel() != null && !RMT2String2.isEmpty(jaxbCriteria.getTargetLevel().name())) {
-            dto.setTargetLevel(jaxbCriteria.getTargetLevel().name());    
-        }
         if (jaxbCriteria.getXactReasonOptions() != null && !RMT2String2.isEmpty(jaxbCriteria.getXactReasonOptions().name())) {
             dto.setXactReasonFilterOption(jaxbCriteria.getXactReasonOptions().name());    
         }
