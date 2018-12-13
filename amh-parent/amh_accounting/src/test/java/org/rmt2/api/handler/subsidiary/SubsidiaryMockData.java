@@ -9,13 +9,19 @@ import org.dao.mapping.orm.rmt2.CreditorType;
 import org.dao.mapping.orm.rmt2.Customer;
 import org.dao.mapping.orm.rmt2.VwCreditorXactHist;
 import org.dao.mapping.orm.rmt2.VwCustomerXactHist;
+import org.dao.mapping.orm.rmt2.VwXactList;
 import org.dto.CreditorDto;
 import org.dto.CreditorTypeDto;
 import org.dto.CreditorXactHistoryDto;
 import org.dto.CustomerDto;
 import org.dto.CustomerXactHistoryDto;
+import org.dto.XactDto;
 import org.dto.adapter.orm.account.subsidiary.Rmt2SubsidiaryDtoFactory;
+import org.dto.adapter.orm.transaction.Rmt2XactDtoFactory;
+import org.modules.transaction.XactConst;
 import org.rmt2.api.AccountingMockDataFactory;
+
+import com.api.util.RMT2Date;
 
 public class SubsidiaryMockData {
 
@@ -103,6 +109,41 @@ public class SubsidiaryMockData {
      * 
      * @return
      */
+    public static final List<XactDto> createMockCustomerXactHistoryDetails() {
+        List<XactDto> list = new ArrayList<XactDto>();
+        VwXactList o = AccountingMockDataFactory.createMockOrmXact(1200, XactConst.XACT_TYPE_CASH_DISBURSE,
+                XactConst.XACT_SUBTYPE_NOT_ASSIGNED, RMT2Date.stringToDate("2017-01-13"), 1000.00, 200, "1111-1111-1111-1111");
+        XactDto d = Rmt2XactDtoFactory.createXactInstance(o);
+        list.add(d);
+
+        o = AccountingMockDataFactory.createMockOrmXact(1201, XactConst.XACT_TYPE_CASH_DISBURSE, XactConst.XACT_SUBTYPE_NOT_ASSIGNED,
+                RMT2Date.stringToDate("2017-01-14"), -1000.00, 200,
+                "2222-2222-2222-2222");
+        d = Rmt2XactDtoFactory.createXactInstance(o);
+        list.add(d);
+
+        o = AccountingMockDataFactory.createMockOrmXact(1202, XactConst.XACT_TYPE_CASH_DISBURSE, XactConst.XACT_SUBTYPE_NOT_ASSIGNED,
+                RMT2Date.stringToDate("2017-01-15"), 2000.00, 200, "3333-3333-3333-3333");
+        d = Rmt2XactDtoFactory.createXactInstance(o);
+        list.add(d);
+
+        o = AccountingMockDataFactory.createMockOrmXact(1203, XactConst.XACT_TYPE_CASH_DISBURSE, XactConst.XACT_SUBTYPE_NOT_ASSIGNED,
+                RMT2Date.stringToDate("2017-01-16"), -2000.00, 200, "4444-4444-4444-4444");
+        d = Rmt2XactDtoFactory.createXactInstance(o);
+        list.add(d);
+
+        o = AccountingMockDataFactory.createMockOrmXact(1204, XactConst.XACT_TYPE_CASH_DISBURSE, XactConst.XACT_SUBTYPE_NOT_ASSIGNED,
+                RMT2Date.stringToDate("2017-01-17"), 3000.00, 200,
+                "5555-5555-5555-5555");
+        d = Rmt2XactDtoFactory.createXactInstance(o);
+        list.add(d);
+        return list;
+    }
+    
+    /**
+     * 
+     * @return
+     */
     public static final List<CreditorDto> createMockCreditor() {
         List<CreditorDto> list = new ArrayList<>();
         Creditor o = AccountingMockDataFactory.createMockOrmCreditor(100, 1351,
@@ -176,6 +217,41 @@ public class SubsidiaryMockData {
         o = AccountingMockDataFactory.createMockOrmCreditorXactHistory(1204,
                 100, "C8434", -745.59, new Date(), 3);
         d = Rmt2SubsidiaryDtoFactory.createCreditorTransactionInstance(o);
+        list.add(d);
+        return list;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public static final List<XactDto> createMockCreditorXactHistoryDetails() {
+        List<XactDto> list = new ArrayList<XactDto>();
+        VwXactList o = AccountingMockDataFactory.createMockOrmXact(1200, XactConst.XACT_TYPE_CASH_DISBURSE,
+                XactConst.XACT_SUBTYPE_NOT_ASSIGNED, RMT2Date.stringToDate("2017-01-13"), 1000.00, 200, "1111-1111-1111-1111");
+        XactDto d = Rmt2XactDtoFactory.createXactInstance(o);
+        list.add(d);
+
+        o = AccountingMockDataFactory.createMockOrmXact(1201, XactConst.XACT_TYPE_CASH_DISBURSE, XactConst.XACT_SUBTYPE_NOT_ASSIGNED,
+                RMT2Date.stringToDate("2017-01-14"), -32.00, 200,
+                "2222-2222-2222-2222");
+        d = Rmt2XactDtoFactory.createXactInstance(o);
+        list.add(d);
+
+        o = AccountingMockDataFactory.createMockOrmXact(1202, XactConst.XACT_TYPE_CASH_DISBURSE, XactConst.XACT_SUBTYPE_NOT_ASSIGNED,
+                RMT2Date.stringToDate("2017-01-15"), 1223.00, 200, "3333-3333-3333-3333");
+        d = Rmt2XactDtoFactory.createXactInstance(o);
+        list.add(d);
+
+        o = AccountingMockDataFactory.createMockOrmXact(1203, XactConst.XACT_TYPE_CASH_DISBURSE, XactConst.XACT_SUBTYPE_NOT_ASSIGNED,
+                RMT2Date.stringToDate("2017-01-16"), -25.67, 200, "4444-4444-4444-4444");
+        d = Rmt2XactDtoFactory.createXactInstance(o);
+        list.add(d);
+
+        o = AccountingMockDataFactory.createMockOrmXact(1204, XactConst.XACT_TYPE_CASH_DISBURSE, XactConst.XACT_SUBTYPE_NOT_ASSIGNED,
+                RMT2Date.stringToDate("2017-01-17"), -745.59, 200,
+                "5555-5555-5555-5555");
+        d = Rmt2XactDtoFactory.createXactInstance(o);
         list.add(d);
         return list;
     }
