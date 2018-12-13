@@ -2,14 +2,20 @@ package org.rmt2.api.handlers.subsidiary;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.dto.CustomerDto;
 import org.dto.CustomerXactHistoryDto;
+import org.dto.XactDto;
 import org.modules.CommonAccountingConst;
 import org.modules.subsidiary.CustomerApi;
 import org.modules.subsidiary.SubsidiaryApiFactory;
+import org.modules.transaction.XactApi;
+import org.modules.transaction.XactApiException;
+import org.modules.transaction.XactApiFactory;
 import org.rmt2.api.handler.util.MessageHandlerUtility;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
@@ -279,7 +285,7 @@ public class CustomerApiHandler extends
     private List<CustomerType> buildJaxbListData(List<CustomerDto> results) {
         List<CustomerType> list = new ArrayList<>();
         for (CustomerDto item : results) {
-            CustomerType jaxbObj = SubsidiaryJaxbDtoFactory.createCustomerJaxbInstance(item, 0.00, null);
+            CustomerType jaxbObj = SubsidiaryJaxbDtoFactory.createCustomerJaxbInstance(item, null, null);
             list.add(jaxbObj);
         }
         return list;
@@ -287,9 +293,27 @@ public class CustomerApiHandler extends
     
     private List<CustomerType> buildJaxbListData(CustomerDto customer, List<CustomerXactHistoryDto> transHistory) {
         List<CustomerType> list = new ArrayList<>();
-        CustomerType cust = SubsidiaryJaxbDtoFactory.createCustomerJaxbInstance(customer, 0.00, transHistory);
+        Map<Integer, XactDto> xactDetails = this.buildXactDetailsMap(transHistory);
+        CustomerType cust = SubsidiaryJaxbDtoFactory.createCustomerJaxbInstance(customer, xactDetails, transHistory);
         list.add(cust);
         return list;
+    }
+    
+    private Map<Integer, XactDto> buildXactDetailsMap(List<CustomerXactHistoryDto> transHistory) {
+        Map<Integer, XactDto> map = new HashMap<>();
+        
+        XactApi xactApi = XactApiFactory.createDefaultXactApi();
+        for (CustomerXactHistoryDto item : transHistory) {
+            try {
+                XactDto dto = xactApi.getXactById(item.getXactId());
+                if (dto != null) {
+                    map.put(item.getActivityId(), dto);
+                }
+            } catch (XactApiException e) {
+                logger.error("Unable to fetch transaction details for customer transaction history item, " + item.getActivityId(), e);
+            }
+        }
+        return map;
     }
     
     @Override

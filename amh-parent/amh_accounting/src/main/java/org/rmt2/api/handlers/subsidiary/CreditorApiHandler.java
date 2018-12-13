@@ -2,14 +2,20 @@ package org.rmt2.api.handlers.subsidiary;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.dto.CreditorDto;
 import org.dto.CreditorXactHistoryDto;
+import org.dto.XactDto;
 import org.modules.CommonAccountingConst;
 import org.modules.subsidiary.CreditorApi;
 import org.modules.subsidiary.SubsidiaryApiFactory;
+import org.modules.transaction.XactApi;
+import org.modules.transaction.XactApiException;
+import org.modules.transaction.XactApiFactory;
 import org.rmt2.api.handler.util.MessageHandlerUtility;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
@@ -281,7 +287,7 @@ public class CreditorApiHandler extends
     private List<CreditorType> buildJaxbListData(List<CreditorDto> results) {
         List<CreditorType> list = new ArrayList<>();
         for (CreditorDto item : results) {
-            CreditorType jaxbObj = SubsidiaryJaxbDtoFactory.createCreditorJaxbInstance(item, 0.00, null);
+            CreditorType jaxbObj = SubsidiaryJaxbDtoFactory.createCreditorJaxbInstance(item, null, null);
             list.add(jaxbObj);
         }
         return list;
@@ -289,10 +295,29 @@ public class CreditorApiHandler extends
     
     private List<CreditorType> buildJaxbListData(CreditorDto creditor, List<CreditorXactHistoryDto> transHistory) {
         List<CreditorType> list = new ArrayList<>();
-        CreditorType cust = SubsidiaryJaxbDtoFactory.createCreditorJaxbInstance(creditor, 0.00, transHistory);
+        Map<Integer, XactDto> xactDetails = this.buildXactDetailsMap(transHistory);
+        CreditorType cust = SubsidiaryJaxbDtoFactory.createCreditorJaxbInstance(creditor, xactDetails, transHistory);
         list.add(cust);
         return list;
     }
+    
+    private Map<Integer, XactDto> buildXactDetailsMap(List<CreditorXactHistoryDto> transHistory) {
+        Map<Integer, XactDto> map = new HashMap<>();
+        
+        XactApi xactApi = XactApiFactory.createDefaultXactApi();
+        for (CreditorXactHistoryDto item : transHistory) {
+            try {
+                XactDto dto = xactApi.getXactById(item.getXactId());
+                if (dto != null) {
+                    map.put(item.getActivityId(), dto);
+                }
+            } catch (XactApiException e) {
+                logger.error("Unable to fetch transaction details for creditor transaction history item, " + item.getActivityId(), e);
+            }
+        }
+        return map;
+    }
+    
     
     @Override
     protected void validateRequest(AccountingTransactionRequest req) throws InvalidDataException {
