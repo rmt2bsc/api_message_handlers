@@ -6,8 +6,11 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
+import org.dao.transaction.XactDao;
+import org.dao.transaction.XactDaoFactory;
 import org.dto.CustomerDto;
 import org.dto.CustomerXactHistoryDto;
+import org.dto.XactDto;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -17,6 +20,9 @@ import org.mockito.Mockito;
 import org.modules.subsidiary.CustomerApi;
 import org.modules.subsidiary.CustomerApiException;
 import org.modules.subsidiary.SubsidiaryApiFactory;
+import org.modules.transaction.XactApi;
+import org.modules.transaction.XactApiException;
+import org.modules.transaction.XactApiFactory;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -43,11 +49,12 @@ import com.api.util.RMT2File;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ AbstractDaoClientImpl.class, Rmt2OrmClientFactory.class,
-    CustomerApiHandler.class, SubsidiaryApiFactory.class, SystemConfigurator.class })
+    CustomerApiHandler.class, SubsidiaryApiFactory.class, XactApiFactory.class, SystemConfigurator.class })
 public class CustomerQueryMessageHandlerTest extends BaseAccountingMessageHandlerTest {
 
     private SubsidiaryApiFactory mockApiFactory;
     private CustomerApi mockApi;
+    private XactApi mockXactApi;
 
 
     /**
@@ -76,6 +83,14 @@ public class CustomerQueryMessageHandlerTest extends BaseAccountingMessageHandle
         mockApi = Mockito.mock(CustomerApi.class);
         when(mockApiFactory.createCustomerApi(isA(String.class))).thenReturn(mockApi);
         doNothing().when(this.mockApi).close();
+        
+        
+        XactDaoFactory mockXactDaoFactory = Mockito.mock(XactDaoFactory.class);
+        XactDao mockDao = Mockito.mock(XactDao.class);
+        mockXactApi = Mockito.mock(XactApi.class);
+        PowerMockito.mockStatic(XactApiFactory.class);
+        when(mockXactDaoFactory.createRmt2OrmXactDao(isA(String.class))).thenReturn(mockDao);
+        PowerMockito.when(XactApiFactory.createDefaultXactApi()).thenReturn(this.mockXactApi);
         return;
     }
 
@@ -203,6 +218,7 @@ public class CustomerQueryMessageHandlerTest extends BaseAccountingMessageHandle
         String request = RMT2File.getFileContentsAsString("xml/subsidiary/customer/CustomerTranHistQueryRequest.xml");
         List<CustomerDto> mockCustData = SubsidiaryMockData.createMockCustomer();
         List<CustomerXactHistoryDto> mockListData = SubsidiaryMockData.createMockCustomerXactHistory();
+        List<XactDto> mockXactDetailsData = SubsidiaryMockData.createMockCustomerXactHistoryDetails();
 
         try {
             when(this.mockApi.getExt(isA(CustomerDto.class))).thenReturn(mockCustData);
@@ -215,6 +231,16 @@ public class CustomerQueryMessageHandlerTest extends BaseAccountingMessageHandle
         } catch (CustomerApiException e) {
             Assert.fail("Unable to setup mock stub for fetching a customer transaction history");
         }
+        
+        try {
+            when(this.mockXactApi.getXactById(isA(Integer.class))).thenReturn(
+                    mockXactDetailsData.get(0), mockXactDetailsData.get(1),
+                    mockXactDetailsData.get(2), mockXactDetailsData.get(3),
+                    mockXactDetailsData.get(4));
+        } catch (XactApiException e) {
+            Assert.fail("Unable to setup mock stub for fetching a customer transaction history details");
+        }
+        
         
         MessageHandlerResults results = null;
         CustomerApiHandler handler = new CustomerApiHandler();

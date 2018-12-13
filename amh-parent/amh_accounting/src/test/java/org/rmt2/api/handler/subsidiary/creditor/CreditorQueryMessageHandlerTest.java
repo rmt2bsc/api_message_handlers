@@ -6,8 +6,11 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
+import org.dao.transaction.XactDao;
+import org.dao.transaction.XactDaoFactory;
 import org.dto.CreditorDto;
 import org.dto.CreditorXactHistoryDto;
+import org.dto.XactDto;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -17,6 +20,9 @@ import org.mockito.Mockito;
 import org.modules.subsidiary.CreditorApi;
 import org.modules.subsidiary.CreditorApiException;
 import org.modules.subsidiary.SubsidiaryApiFactory;
+import org.modules.transaction.XactApi;
+import org.modules.transaction.XactApiException;
+import org.modules.transaction.XactApiFactory;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -43,12 +49,12 @@ import com.api.util.RMT2File;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ AbstractDaoClientImpl.class, Rmt2OrmClientFactory.class,
-    CreditorApiHandler.class, SubsidiaryApiFactory.class, SystemConfigurator.class })
+    CreditorApiHandler.class, SubsidiaryApiFactory.class, XactApiFactory.class, SystemConfigurator.class })
 public class CreditorQueryMessageHandlerTest extends BaseAccountingMessageHandlerTest {
 
     private SubsidiaryApiFactory mockApiFactory;
     private CreditorApi mockApi;
-
+    private XactApi mockXactApi;
 
     /**
      * 
@@ -76,6 +82,13 @@ public class CreditorQueryMessageHandlerTest extends BaseAccountingMessageHandle
         mockApi = Mockito.mock(CreditorApi.class);
         when(mockApiFactory.createCreditorApi(isA(String.class))).thenReturn(mockApi);
         doNothing().when(this.mockApi).close();
+        
+        XactDaoFactory mockXactDaoFactory = Mockito.mock(XactDaoFactory.class);
+        XactDao mockDao = Mockito.mock(XactDao.class);
+        mockXactApi = Mockito.mock(XactApi.class);
+        PowerMockito.mockStatic(XactApiFactory.class);
+        when(mockXactDaoFactory.createRmt2OrmXactDao(isA(String.class))).thenReturn(mockDao);
+        PowerMockito.when(XactApiFactory.createDefaultXactApi()).thenReturn(this.mockXactApi);
         return;
     }
 
@@ -201,7 +214,8 @@ public class CreditorQueryMessageHandlerTest extends BaseAccountingMessageHandle
         String request = RMT2File.getFileContentsAsString("xml/subsidiary/creditor/CreditorTransHistQueryRequest.xml");
         List<CreditorDto> mockCredData = SubsidiaryMockData.createMockCreditor();
         List<CreditorXactHistoryDto> mockListData = SubsidiaryMockData.createMockCreditorXactHistory();
-
+        List<XactDto> mockXactDetailsData = SubsidiaryMockData.createMockCreditorXactHistoryDetails();
+        
         try {
             when(this.mockApi.getExt(isA(CreditorDto.class))).thenReturn(mockCredData);
         } catch (CreditorApiException e) {
@@ -212,6 +226,15 @@ public class CreditorQueryMessageHandlerTest extends BaseAccountingMessageHandle
             when(this.mockApi.getTransactionHistory(isA(Integer.class))).thenReturn(mockListData);
         } catch (CreditorApiException e) {
             Assert.fail("Unable to setup mock stub for fetching a creditor transaction history");
+        }
+        
+        try {
+            when(this.mockXactApi.getXactById(isA(Integer.class))).thenReturn(
+                    mockXactDetailsData.get(0), mockXactDetailsData.get(1),
+                    mockXactDetailsData.get(2), mockXactDetailsData.get(3),
+                    mockXactDetailsData.get(4));
+        } catch (XactApiException e) {
+            Assert.fail("Unable to setup mock stub for fetching a creditor transaction history details");
         }
         
         MessageHandlerResults results = null;
@@ -241,9 +264,8 @@ public class CreditorQueryMessageHandlerTest extends BaseAccountingMessageHandle
             int ndx2 = 0;
             for (CreditorActivityType tran : a.getTransactions().getTransaction()) {
                 Assert.assertNotNull(tran.getXactDetails());
-                Assert.assertNotNull(tran.getXactDetails().getXactId());
                 Assert.assertNotNull(tran.getXactId());
-                Assert.assertEquals(tran.getXactDetails().getXactId(), tran.getXactId());
+                Assert.assertEquals(tran.getXactId(), tran.getXactId());
                 Assert.assertEquals(1200 + ndx2++, tran.getXactId().intValue());
             }
             Assert.assertEquals(8580.26, a.getBalance().doubleValue(), 0);
