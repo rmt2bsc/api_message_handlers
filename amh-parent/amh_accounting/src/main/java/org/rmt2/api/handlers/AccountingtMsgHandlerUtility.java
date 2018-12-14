@@ -111,7 +111,7 @@ public class AccountingtMsgHandlerUtility {
             XACTTYPE_CACHE.put(item.getXactTypeId(), item);
         }
         String formattedMsg = RMT2String.replace(
-                AccountingtMsgHandlerUtility.CACHE_MSG_ALREADY_LOADED,
+                AccountingtMsgHandlerUtility.CACHE_MSG_INITIAL_LOAD,
                 String.valueOf(XACTTYPE_CACHE.size()), "%s");
         LOGGER.info(formattedMsg);
         return XACTTYPE_CACHE.size();
@@ -171,6 +171,8 @@ public class AccountingtMsgHandlerUtility {
                     .withXactDate(dto.getXactDate())
                     .withXactSubtypeId(dto.getXactSubtypeId())
                     .withXactTypeId(dto.getXactTypeId())
+                    .withXactTypeCode(dto.getXactTypeCode())
+                    .withXactTypeDescription(dto.getXactTypeDescription())
                     .withRecordTracking(rtt).build();
         }
         return xactType;
@@ -198,10 +200,13 @@ public class AccountingtMsgHandlerUtility {
             
             XacttypeType xt = XacttypeTypeBuilder.Builder.create()
                     .withXactTypeId(xact.getXactTypeId())
-                    .withDescription(xact.getXactTypeDescription()).build();
+                    .withDescription(xact.getXactTypeDescription())
+                    .withCode(xact.getXactTypeCode())
+                    .build();
 
             XacttypeType xst = XacttypeTypeBuilder.Builder.create()
-                    .withXactTypeId(xact.getXactSubtypeId()).build();
+                    .withXactTypeId(xact.getXactSubtypeId())
+                    .build();
 
             XactCodeGroupType xcgt = XactCodeGroupTypeBuilder.Builder.create()
                     .withGroupId(xact.getXactCodeGrpId())
