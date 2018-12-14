@@ -11,6 +11,7 @@ import org.dto.CustomerDto;
 import org.dto.CustomerXactHistoryDto;
 import org.dto.XactDto;
 import org.dto.adapter.orm.account.subsidiary.Rmt2SubsidiaryDtoFactory;
+import org.rmt2.api.handlers.AccountingtMsgHandlerUtility;
 import org.rmt2.jaxb.BusinessType;
 import org.rmt2.jaxb.CreditorActivityType;
 import org.rmt2.jaxb.CreditorCriteriaType;
@@ -28,7 +29,6 @@ import org.rmt2.util.accounting.subsidiary.CreditorTypeBuilder;
 import org.rmt2.util.accounting.subsidiary.CreditortypeTypeBuilder;
 import org.rmt2.util.accounting.subsidiary.CustomerActivityTypeBuilder;
 import org.rmt2.util.accounting.subsidiary.CustomerTypeBuilder;
-import org.rmt2.util.accounting.transaction.XactTypeBuilder;
 import org.rmt2.util.addressbook.BusinessTypeBuilder;
 
 import com.RMT2Base;
@@ -238,7 +238,7 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
                 XactType xactType = null;
                 if (xactDetails != null) {
                     XactDto xactDto = xactDetails.get(trans.getActivityId());
-                    xactType = buildTransactionDetails(xactDto);    
+                    xactType = AccountingtMsgHandlerUtility.buildTransactionDetails(xactDto);    
                 }
                 CustomerActivityType cat = CustomerActivityTypeBuilder.Builder.create()
                         .withAmount(trans.getActivityAmount())
@@ -469,7 +469,7 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
                 XactType xactType = null;
                 if (xactDetails != null) {
                     XactDto xactDto = xactDetails.get(trans.getActivityId());
-                    xactType = buildTransactionDetails(xactDto);
+                    xactType = AccountingtMsgHandlerUtility.buildTransactionDetails(xactDto);
                 }
                 CreditorActivityType cat = CreditorActivityTypeBuilder.Builder.create()
                         .withAmount(trans.getActivityAmount())
@@ -574,27 +574,6 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
                 .withRecordTracking(rtt).build();
         
         return creditorType;
-    }
-    
-    private static final XactType buildTransactionDetails(XactDto xactDto) {
-        XactType xactType = null;
-        if (xactDto != null) {
-            xactType = XactTypeBuilder.Builder.create()
-                    .withBankTransInd(xactDto.getXactBankTransInd())
-                    .withConfirmNo(xactDto.getXactConfirmNo())
-                    .withDocumentId(xactDto.getDocumentId())
-                    .withEntityRefNo(xactDto.getXactEntityRefNo())
-                    .withPostedDate(xactDto.getXactPostedDate())
-                    .withReason(xactDto.getXactReason())
-                    .withTenderId(xactDto.getXactTenderId())
-                    .withXactAmount(xactDto.getXactAmount())
-                    .withXactCodeId(xactDto.getXactCodeId())
-                    .withXactCodeGroupId(xactDto.getXactCodeGrpId())
-                    .withXactDate(xactDto.getXactDate())
-                    .withXactSubtypeId(xactDto.getXactSubtypeId())
-                    .withXactTypeId(xactDto.getXactTypeId()).build();
-        }
-        return xactType;
     }
 }
 
