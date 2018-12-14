@@ -96,10 +96,49 @@ public class CommonXactQueryMessageHandlerTest extends BaseAccountingMessageHand
         return;
     }
 
+    @Test
+    public void testSuccess_Fetch_Base() {
+        String request = RMT2File.getFileContentsAsString("xml/transaction/common/TransactionCommonQueryRequestBase.xml");
+        List<XactDto> mockListData = CommonXactMockData.createMockSingleCommonTransactions();
+
+        try {
+            when(this.mockApi.getXact(isA(XactDto.class))).thenReturn(mockListData);
+        } catch (XactApiException e) {
+            Assert.fail("Unable to setup mock stub for fetching a BASE transaction");
+        }
+        
+        MessageHandlerResults results = null;
+        XactApiHandler handler = new XactApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_TRANSACTION_GET, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingTransactionResponse actualRepsonse = 
+                (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertEquals(1, actualRepsonse.getProfile().getTransactions().getTransaction().size());
+        Assert.assertEquals(1, actualRepsonse.getReplyStatus().getRecordCount().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals("Transaction record(s) found", actualRepsonse.getReplyStatus().getMessage());
+        
+        Assert.assertNotNull(actualRepsonse.getProfile());
+        Assert.assertNotNull(actualRepsonse.getProfile().getTransactions());
+        Assert.assertTrue(actualRepsonse.getProfile().getTransactions().getTransaction().size() > 0);
+        for (int ndx = 0; ndx < actualRepsonse.getProfile().getTransactions().getTransaction().size(); ndx++) {
+            XactType a = actualRepsonse.getProfile().getTransactions().getTransaction().get(ndx);
+            Assert.assertNotNull(a.getXactId());
+            Assert.assertEquals(111111, a.getXactId().intValue());
+        }
+    }
     
     @Test
-    public void testSuccess_Fetch() {
-        String request = RMT2File.getFileContentsAsString("xml/transaction/common/TransactionCommonQueryRequest.xml");
+    public void testSuccess_Fetch_Full() {
+        String request = RMT2File.getFileContentsAsString("xml/transaction/common/TransactionCommonQueryRequestFull.xml");
         List<XactDto> mockListData = CommonXactMockData.createMockSingleCommonTransactions();
         List<XactTypeItemActivityDto> mockItemListData = CommonXactMockData.createMockXactItems();
 
@@ -151,7 +190,7 @@ public class CommonXactQueryMessageHandlerTest extends BaseAccountingMessageHand
  
     @Test
     public void testSuccess_Fetch_NoDataFound() {
-        String request = RMT2File.getFileContentsAsString("xml/transaction/common/TransactionCommonQueryRequest.xml");
+        String request = RMT2File.getFileContentsAsString("xml/transaction/common/TransactionCommonQueryRequestFull.xml");
 
         try {
             when(this.mockApi.getXact(isA(XactDto.class))).thenReturn(null);
@@ -187,7 +226,7 @@ public class CommonXactQueryMessageHandlerTest extends BaseAccountingMessageHand
     
     @Test
     public void testError_FetchCustomer_API_Error() {
-        String request = RMT2File.getFileContentsAsString("xml/transaction/common/TransactionCommonQueryRequest.xml");
+        String request = RMT2File.getFileContentsAsString("xml/transaction/common/TransactionCommonQueryRequestFull.xml");
 
         try {
             when(this.mockApi.getXact(isA(XactDto.class)))
