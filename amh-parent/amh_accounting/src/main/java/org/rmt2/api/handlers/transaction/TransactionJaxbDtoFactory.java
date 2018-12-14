@@ -1,6 +1,5 @@
 package org.rmt2.api.handlers.transaction;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.dto.XactCodeDto;
@@ -10,6 +9,7 @@ import org.dto.XactDto;
 import org.dto.XactTypeItemActivityDto;
 import org.dto.adapter.orm.transaction.Rmt2XactDtoFactory;
 import org.modules.transaction.XactApiFactory;
+import org.rmt2.api.handlers.AccountingtMsgHandlerUtility;
 import org.rmt2.jaxb.RecordTrackingType;
 import org.rmt2.jaxb.XactBasicCriteriaType;
 import org.rmt2.jaxb.XactCodeCriteriaType;
@@ -19,13 +19,10 @@ import org.rmt2.jaxb.XactCodeType;
 import org.rmt2.jaxb.XactCustomRelationalCriteriaType;
 import org.rmt2.jaxb.XactLineitemType;
 import org.rmt2.jaxb.XactType;
-import org.rmt2.jaxb.XacttypeType;
 import org.rmt2.util.RecordTrackingTypeBuilder;
 import org.rmt2.util.accounting.transaction.XactCodeGroupTypeBuilder;
 import org.rmt2.util.accounting.transaction.XactCodeTypeBuilder;
 import org.rmt2.util.accounting.transaction.XactItemTypeBuilder;
-import org.rmt2.util.accounting.transaction.XactTypeBuilder;
-import org.rmt2.util.accounting.transaction.XacttypeTypeBuilder;
 
 import com.RMT2Base;
 import com.api.util.RMT2Date;
@@ -351,59 +348,7 @@ public class TransactionJaxbDtoFactory extends RMT2Base {
      */
     public static final XactType createXactJaxbInstance(XactDto dto, double balance, 
             List<XactTypeItemActivityDto> transactions) {
-        
-        if (dto == null) {
-            return null;
-        }
-
-        RecordTrackingType rtt = RecordTrackingTypeBuilder.Builder.create()
-                .withDateCreated(dto.getDateCreated())
-                .withDateUpdate(dto.getDateUpdated())
-                .withUserId(dto.getUpdateUserId())
-                .withIpCreated(dto.getIpCreated())
-                .withIpUpdate(dto.getIpUpdated()).build();
-        
-        XacttypeType xt = XacttypeTypeBuilder.Builder.create().withXactTypeId(dto.getXactTypeId())
-                .withDescription(dto.getXactTypeDescription()).build();
-
-        XacttypeType xst = XacttypeTypeBuilder.Builder.create().withXactTypeId(dto.getXactSubtypeId()).build();
-
-        XactCodeGroupType xcgt = XactCodeGroupTypeBuilder.Builder.create().withGroupId(dto.getXactCodeGrpId())
-                .withDescription(dto.getXactCodeGrpDescription()).build();
-
-        XactCodeType xct = XactCodeTypeBuilder.Builder.create().withXactCodeId(dto.getXactCodeId())
-                .withDescription(dto.getXactCodeDescription()).build();
-        
-        List<XactLineitemType> itemList = null;
-        if (transactions != null) {
-            itemList = new ArrayList<>();
-            for (XactTypeItemActivityDto trans : transactions) {
-                XactLineitemType item = TransactionJaxbDtoFactory.createXactItemJaxbInstance(trans);
-                itemList.add(item);
-            }
-        }
-        
-        XactType jaxbObj = XactTypeBuilder.Builder.create()
-                .withXactId(dto.getXactId())
-                .withXactAmount(dto.getXactAmount())
-                .withXactDate(dto.getXactDate())
-                .withPostedDate(dto.getXactPostedDate())
-                .withReason(dto.getXactReason())
-                .withConfirmNo(dto.getXactConfirmNo())
-                .withEntityRefNo(dto.getXactEntityRefNo())
-                .withNegInstrNo(dto.getXactNegInstrNo())
-                .withTenderId(dto.getXactTenderId())
-                .withBankTransInd(dto.getXactBankTransInd())
-                .withDocumentId(dto.getDocumentId())
-                .withInvoiceNo(null)
-                .withItemTotal(0)
-                .withXactType(xt)
-                .withXactSubtype(xst)
-                .withXactCodeGroup(xcgt)
-                .withXactCode(xct)
-                .withXactItems(itemList)
-                .withRecordTracking(rtt).build();
-        return jaxbObj;
+        return AccountingtMsgHandlerUtility.buildTransactionDetails(dto, transactions);
     }
 
     /**
