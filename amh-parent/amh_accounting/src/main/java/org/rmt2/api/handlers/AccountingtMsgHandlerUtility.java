@@ -1,10 +1,17 @@
 package org.rmt2.api.handlers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.dto.XactDto;
+import org.dto.XactTypeDto;
 import org.dto.XactTypeItemActivityDto;
+import org.modules.transaction.XactApi;
+import org.modules.transaction.XactApiException;
+import org.modules.transaction.XactApiFactory;
 import org.rmt2.api.handlers.transaction.TransactionJaxbDtoFactory;
 import org.rmt2.jaxb.RecordTrackingType;
 import org.rmt2.jaxb.SimpleItemType;
@@ -19,6 +26,8 @@ import org.rmt2.util.accounting.transaction.XactCodeTypeBuilder;
 import org.rmt2.util.accounting.transaction.XactTypeBuilder;
 import org.rmt2.util.accounting.transaction.XacttypeTypeBuilder;
 
+import com.api.util.RMT2String;
+
 /**
  * Utility class for accounting API Message Handling 
  * 
@@ -26,12 +35,89 @@ import org.rmt2.util.accounting.transaction.XacttypeTypeBuilder;
  *
  */
 public class AccountingtMsgHandlerUtility {
+    private static final Logger LOGGER = Logger.getLogger(AccountingtMsgHandlerUtility.class);
+    private static final String CACHE_MSG_ALREADY_LOADED = "No need to load Tranaction type cache due to it is already initialized";
+    private static final String CACHE_MSG_INITIAL_LOAD = "Transaction Type Cache was loaded with %s records";
+    private static final String CACHE_MSG_LOAD_ERROR = "Unable to load Transaction Type Cache";
+    private static Map<Integer, XactTypeDto> XACTTYPE_CACHE;
+    
 
     /**
      * Default constructor
      */
     public AccountingtMsgHandlerUtility() {
     }
+    
+    /**
+     * Retrieves transaction type code from cache
+     * 
+     * @param xactTypeId
+     * @return String
+     */
+    public static final String getXactTypeCodeFromCache(int xactTypeId) {
+        if (XACTTYPE_CACHE != null) {
+            XactTypeDto dto = XACTTYPE_CACHE.get(xactTypeId);
+            if (dto != null) {
+                return dto.getXactTypeCode();
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Retrieves transaction type description from cache
+     * 
+     * @param xactTypeId
+     * @return String
+     */
+    public static final String getXactTypeDescriptionFromCache(int xactTypeId) {
+        if (XACTTYPE_CACHE != null) {
+            XactTypeDto dto = XACTTYPE_CACHE.get(xactTypeId);
+            if (dto != null) {
+                return dto.getXactTypeDescription();
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Creates the transaction type cache by loading XactTypeDto objects from
+     * the Accounting API.
+     * 
+     * @param forceLoad
+     *            set to <i>true</i> when the desire is to load unconditionally.
+     *            Set to false to load only once.
+     * @return int > 0 representing the total number of records loaded; 0 when
+     *         cache is discovered to already be loaded or there are no records
+     *         available from the datasource; -1 when error loading data
+     *         occurred.
+     */
+    public static final int loadXactTypeCache(boolean forceLoad) {
+        if (!forceLoad && XACTTYPE_CACHE != null) {
+            LOGGER.info(AccountingtMsgHandlerUtility.CACHE_MSG_ALREADY_LOADED);
+            return 0;
+        }
+        XactApi api = XactApiFactory.createDefaultXactApi();
+        List<XactTypeDto> list = null;
+        try {
+             list = api.getXactTypes(null);
+        } catch (XactApiException e) {
+            LOGGER.error(AccountingtMsgHandlerUtility.CACHE_MSG_LOAD_ERROR, e);
+            return -1;
+        }
+        
+        XACTTYPE_CACHE = new HashMap<>();
+        for (XactTypeDto item : list) {
+            XACTTYPE_CACHE.put(item.getXactTypeId(), item);
+        }
+        String formattedMsg = RMT2String.replace(
+                AccountingtMsgHandlerUtility.CACHE_MSG_ALREADY_LOADED,
+                String.valueOf(XACTTYPE_CACHE.size()), "%s");
+        LOGGER.info(formattedMsg);
+        return XACTTYPE_CACHE.size();
+    }
+    
+    
     
     /**
      * Translates all inventory item id's contained in a list of SimpleItemType

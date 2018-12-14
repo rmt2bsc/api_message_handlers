@@ -11,6 +11,7 @@ import org.modules.transaction.XactApi;
 import org.modules.transaction.XactApiException;
 import org.modules.transaction.XactApiFactory;
 import org.rmt2.api.handler.util.MessageHandlerUtility;
+import org.rmt2.api.handlers.AccountingtMsgHandlerUtility;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.AccountingTransactionRequest;
@@ -65,6 +66,9 @@ public class XactApiHandler extends
         this.api = XactApiFactory.createDefaultXactApi();
         this.jaxbObjFactory = new ObjectFactory();
         this.responseObj = jaxbObjFactory.createAccountingTransactionResponse();
+        
+        // Load cache data
+        AccountingtMsgHandlerUtility.loadXactTypeCache(false);
         logger.info(XactApiHandler.class.getName() + " was instantiated successfully");
     }
 
