@@ -294,13 +294,13 @@ public class CustomerApiHandler extends
     
     private List<CustomerType> buildJaxbListData(CustomerDto customer, List<CustomerXactHistoryDto> transHistory) {
         List<CustomerType> list = new ArrayList<>();
-        Map<Integer, XactDto> xactDetails = this.buildXactDetailsMap(transHistory);
+        Map<Integer, XactDto> xactDetails = this.buildActivityToXactMap(transHistory);
         CustomerType cust = SubsidiaryJaxbDtoFactory.createCustomerJaxbInstance(customer, xactDetails, transHistory);
         list.add(cust);
         return list;
     }
     
-    private Map<Integer, XactDto> buildXactDetailsMap(List<CustomerXactHistoryDto> transHistory) {
+    private Map<Integer, XactDto> buildActivityToXactMap(List<CustomerXactHistoryDto> transHistory) {
         Map<Integer, XactDto> map = new HashMap<>();
         
         XactApi xactApi = XactApiFactory.createDefaultXactApi();

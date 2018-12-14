@@ -295,13 +295,13 @@ public class CreditorApiHandler extends
     
     private List<CreditorType> buildJaxbListData(CreditorDto creditor, List<CreditorXactHistoryDto> transHistory) {
         List<CreditorType> list = new ArrayList<>();
-        Map<Integer, XactDto> xactDetails = this.buildXactDetailsMap(transHistory);
+        Map<Integer, XactDto> xactDetails = this.buildActivityToXactMap(transHistory);
         CreditorType cust = SubsidiaryJaxbDtoFactory.createCreditorJaxbInstance(creditor, xactDetails, transHistory);
         list.add(cust);
         return list;
     }
     
-    private Map<Integer, XactDto> buildXactDetailsMap(List<CreditorXactHistoryDto> transHistory) {
+    private Map<Integer, XactDto> buildActivityToXactMap(List<CreditorXactHistoryDto> transHistory) {
         Map<Integer, XactDto> map = new HashMap<>();
         
         XactApi xactApi = XactApiFactory.createDefaultXactApi();
