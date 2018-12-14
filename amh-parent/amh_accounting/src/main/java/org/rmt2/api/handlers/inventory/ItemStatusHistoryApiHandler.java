@@ -108,13 +108,13 @@ public class ItemStatusHistoryApiHandler extends
             List<ItemMasterStatusHistDto> dtoList = this.api.getItemStatusHist(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage("Inventory item status history data not found!");
-                rs.setReturnCode(0);
             }
             else {
                 queryDtoResults = this.buildJaxbListData(dtoList);
                 rs.setMessage("Inventory item  status history record(s) found");
-                rs.setReturnCode(dtoList.size());
+                rs.setRecordCount(dtoList.size());
             }
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
@@ -152,15 +152,15 @@ public class ItemStatusHistoryApiHandler extends
             ItemMasterStatusHistDto dtoObj = this.api.getCurrentItemStatusHist(criteriaDto.getItemId());
             if (dtoObj == null) {
                 rs.setMessage("Current inventory item status history data not found!");
-                rs.setReturnCode(0);
             }
             else {
                 List<ItemMasterStatusHistDto> dtoList = new ArrayList<>();
                 dtoList.add(dtoObj);
                 queryDtoResults = this.buildJaxbListData(dtoList);
                 rs.setMessage("Current inventory item status history record found");
-                rs.setReturnCode(dtoList.size());
+                rs.setRecordCount(dtoList.size());
             }
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );

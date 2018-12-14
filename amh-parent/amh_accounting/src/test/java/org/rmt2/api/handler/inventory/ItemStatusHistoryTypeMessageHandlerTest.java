@@ -117,7 +117,8 @@ public class ItemStatusHistoryTypeMessageHandlerTest extends BaseAccountingMessa
         InventoryResponse actualRepsonse = 
                 (InventoryResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertEquals(5, actualRepsonse.getProfile().getInvItemStatusHist().size());
-        Assert.assertEquals(5, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(5, actualRepsonse.getReplyStatus().getRecordCount().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Inventory item  status history record(s) found", actualRepsonse.getReplyStatus().getMessage());
         
@@ -166,7 +167,8 @@ public class ItemStatusHistoryTypeMessageHandlerTest extends BaseAccountingMessa
         InventoryResponse actualRepsonse = 
                 (InventoryResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertEquals(1, actualRepsonse.getProfile().getInvItemStatusHist().size());
-        Assert.assertEquals(1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(1, actualRepsonse.getReplyStatus().getRecordCount().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Current inventory item status history record found", actualRepsonse.getReplyStatus().getMessage());
         
@@ -214,7 +216,8 @@ public class ItemStatusHistoryTypeMessageHandlerTest extends BaseAccountingMessa
         InventoryResponse actualRepsonse = 
                 (InventoryResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertNull(actualRepsonse.getProfile());
-        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getRecordCount().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Inventory item status history data not found!", actualRepsonse.getReplyStatus().getMessage());
     }

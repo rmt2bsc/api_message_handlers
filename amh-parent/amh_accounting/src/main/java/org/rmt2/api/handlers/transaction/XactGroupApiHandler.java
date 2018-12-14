@@ -111,13 +111,14 @@ public class XactGroupApiHandler extends
             List<XactCodeGroupDto> dtoList = this.api.getGroup(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage("Transaction Group data not found!");
-                rs.setReturnCode(0);
+                rs.setRecordCount(0);
             }
             else {
                 queryDtoResults = this.buildJaxbListData(dtoList);
                 rs.setMessage("Transaction Group record(s) found");
-                rs.setReturnCode(dtoList.size());
+                rs.setRecordCount(dtoList.size());
             }
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );

@@ -114,7 +114,8 @@ public class ItemMasterQueryMessageHandlerTest extends BaseAccountingMessageHand
         InventoryResponse actualRepsonse = 
                 (InventoryResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertEquals(5, actualRepsonse.getProfile().getInvItem().size());
-        Assert.assertEquals(5, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(5, actualRepsonse.getReplyStatus().getRecordCount().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS,
                 actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Inventory item record(s) found",
@@ -173,7 +174,8 @@ public class ItemMasterQueryMessageHandlerTest extends BaseAccountingMessageHand
         InventoryResponse actualRepsonse = 
                 (InventoryResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertEquals(5, actualRepsonse.getProfile().getInvItem().size());
-        Assert.assertEquals(5, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(5, actualRepsonse.getReplyStatus().getRecordCount().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS,
                 actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Vendor unassigned item record(s) found for vendor id, " + CREDITOR_ID,
@@ -226,7 +228,8 @@ public class ItemMasterQueryMessageHandlerTest extends BaseAccountingMessageHand
         InventoryResponse actualRepsonse = 
                 (InventoryResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertNull(actualRepsonse.getProfile());
-        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getRecordCount().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS,
                 actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Inventory item data not found!",

@@ -121,13 +121,13 @@ public class VendorItemApiHandler extends
                     (itemId <= 0 ? null : itemId));
             if (dtoList == null) {
                 rs.setMessage("Vendor item data not found!");
-                rs.setReturnCode(0);
             }
             else {
                 queryDtoResults = this.buildJaxbListData(dtoList);
                 rs.setMessage("Vendor item record(s) found");
-                rs.setReturnCode(dtoList.size());
+                rs.setRecordCount(dtoList.size());
             }
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
@@ -165,13 +165,13 @@ public class VendorItemApiHandler extends
             List<VendorItemDto> dtoList = this.api.getVendorAssignItems(criteriaDto.getVendorId());
             if (dtoList == null) {
                 rs.setMessage("Vendor assigned item data not found for vendor id, " + vendorId);
-                rs.setReturnCode(0);
             }
             else {
                 queryDtoResults = this.buildJaxbListData(dtoList);
                 rs.setMessage("Vendor assigned item record(s) found for vendor id, " + vendorId);
-                rs.setReturnCode(dtoList.size());
+                rs.setRecordCount(dtoList.size());
             }
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );

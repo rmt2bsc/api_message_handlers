@@ -112,7 +112,8 @@ public class XactCodeQueryMessageHandlerTest extends BaseAccountingMessageHandle
         AccountingTransactionResponse actualRepsonse = 
                 (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertEquals(5, actualRepsonse.getProfile().getXactCodes().getXactCode().size());
-        Assert.assertEquals(5, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(5, actualRepsonse.getReplyStatus().getRecordCount().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Transaction Code record(s) found", actualRepsonse.getReplyStatus().getMessage());
         
@@ -157,7 +158,8 @@ public class XactCodeQueryMessageHandlerTest extends BaseAccountingMessageHandle
         AccountingTransactionResponse actualRepsonse = 
                 (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertNull(actualRepsonse.getProfile());
-        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getRecordCount().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Transaction Code data not found!", actualRepsonse.getReplyStatus().getMessage());
     }

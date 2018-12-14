@@ -121,12 +121,12 @@ public class XactApiHandler extends
                     List<XactDto> dtoList = this.api.getXact(criteriaDto);
                     if (dtoList == null) {
                         rs.setMessage("Transaction data not found!");
-                        rs.setReturnCode(0);
+                        rs.setRecordCount(0);
                     }
                     else {
                         queryDtoResults = this.buildJaxbListData(dtoList);
                         rs.setMessage("Transaction record(s) found");
-                        rs.setReturnCode(dtoList.size());
+                        rs.setRecordCount(dtoList.size());
                     }
                     break;
                     
@@ -140,7 +140,7 @@ public class XactApiHandler extends
                     throw new RMT2Exception(msg);
             }
             
-            
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );

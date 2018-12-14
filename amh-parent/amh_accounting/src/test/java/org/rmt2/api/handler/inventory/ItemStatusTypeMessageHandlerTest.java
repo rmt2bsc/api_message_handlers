@@ -115,7 +115,8 @@ public class ItemStatusTypeMessageHandlerTest extends BaseAccountingMessageHandl
         InventoryResponse actualRepsonse = 
                 (InventoryResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertEquals(5, actualRepsonse.getProfile().getInvItemStatus().size());
-        Assert.assertEquals(5, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(5, actualRepsonse.getReplyStatus().getRecordCount().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Inventory item  status record(s) found", actualRepsonse.getReplyStatus().getMessage());
         
@@ -153,7 +154,8 @@ public class ItemStatusTypeMessageHandlerTest extends BaseAccountingMessageHandl
         InventoryResponse actualRepsonse = 
                 (InventoryResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertNull(actualRepsonse.getProfile());
-        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getRecordCount().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Inventory item status data not found!", actualRepsonse.getReplyStatus().getMessage());
     }

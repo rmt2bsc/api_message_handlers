@@ -114,12 +114,13 @@ public class GlAccountCategoryApiHandler extends
             List<AccountCategoryDto> dtoList = this.api.getAccountCategory(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage("GL Account Category data not found!");
-                rs.setReturnCode(0);
+                rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             }
             else {
                 queryDtoResults = this.buildJaxbListData(dtoList);
                 rs.setMessage("GL Account Category record(s) found");
-                rs.setReturnCode(dtoList.size());
+                rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+                rs.setRecordCount(dtoList.size());
             }
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {

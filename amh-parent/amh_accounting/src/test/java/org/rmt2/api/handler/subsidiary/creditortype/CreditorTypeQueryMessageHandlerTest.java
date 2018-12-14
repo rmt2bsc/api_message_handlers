@@ -116,7 +116,8 @@ public class CreditorTypeQueryMessageHandlerTest extends BaseAccountingMessageHa
         AccountingTransactionResponse actualRepsonse = 
                 (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertEquals(5, actualRepsonse.getProfile().getCreditorTypes().size());
-        Assert.assertEquals(5, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(5, actualRepsonse.getReplyStatus().getRecordCount().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Creditor Type record(s) found", actualRepsonse.getReplyStatus().getMessage());
         
@@ -153,7 +154,8 @@ public class CreditorTypeQueryMessageHandlerTest extends BaseAccountingMessageHa
         AccountingTransactionResponse actualRepsonse = 
                 (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertNull(actualRepsonse.getProfile());
-        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getRecordCount().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Creditor Type data not found!", actualRepsonse.getReplyStatus().getMessage());
     }

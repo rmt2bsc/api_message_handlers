@@ -122,13 +122,13 @@ public class CustomerApiHandler extends
             List<CustomerDto> dtoList = this.api.getExt(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage("Customer data not found!");
-                rs.setReturnCode(0);
             }
             else {
                 queryDtoResults = this.buildJaxbListData(dtoList);
                 rs.setMessage("Customer record(s) found");
-                rs.setReturnCode(dtoList.size());
+                rs.setRecordCount(dtoList.size());
             }
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
@@ -255,18 +255,19 @@ public class CustomerApiHandler extends
                 List<CustomerXactHistoryDto> dtoXactHistList = this.api.getTransactionHistory(criteriaDto.getCustomerId());
                 if (dtoXactHistList == null) {
                     rs.setMessage("Customer transaction history data not found!");
-                    rs.setReturnCode(0);
+                    rs.setRecordCount(0);
                 }
                 else {
                     queryDtoResults = this.buildJaxbListData(dtoCustList.get(0), dtoXactHistList);
                     rs.setMessage("Customer transaction history record(s) found");
-                    rs.setReturnCode(dtoXactHistList.size());
+                    rs.setRecordCount(dtoCustList.size());
                 }
             }
             else {
                 rs.setMessage("Customer data not found or too many customers were fetched");
-                rs.setReturnCode(0);
+                rs.setRecordCount(0);
             }
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );

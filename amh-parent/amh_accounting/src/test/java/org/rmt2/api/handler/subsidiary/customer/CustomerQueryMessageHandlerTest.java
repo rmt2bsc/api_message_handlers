@@ -132,7 +132,8 @@ public class CustomerQueryMessageHandlerTest extends BaseAccountingMessageHandle
         AccountingTransactionResponse actualRepsonse = 
                 (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertEquals(5, actualRepsonse.getProfile().getCustomers().getCustomer().size());
-        Assert.assertEquals(5, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(5, actualRepsonse.getReplyStatus().getRecordCount().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Customer record(s) found", actualRepsonse.getReplyStatus().getMessage());
         
@@ -176,7 +177,8 @@ public class CustomerQueryMessageHandlerTest extends BaseAccountingMessageHandle
         AccountingTransactionResponse actualRepsonse = 
                 (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertNull(actualRepsonse.getProfile());
-        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getRecordCount().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Customer data not found!", actualRepsonse.getReplyStatus().getMessage());
     }
@@ -258,7 +260,8 @@ public class CustomerQueryMessageHandlerTest extends BaseAccountingMessageHandle
         Assert.assertEquals(1, actualRepsonse.getProfile().getCustomers().getCustomer().size());
         Assert.assertEquals(5, actualRepsonse.getProfile().getCustomers().getCustomer().get(0)
                 .getTransactions().getTransaction().size());
-        Assert.assertEquals(5, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(1, actualRepsonse.getReplyStatus().getRecordCount().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Customer transaction history record(s) found", actualRepsonse.getReplyStatus().getMessage());
         
@@ -307,7 +310,8 @@ public class CustomerQueryMessageHandlerTest extends BaseAccountingMessageHandle
         AccountingTransactionResponse actualRepsonse = 
                 (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertNull(actualRepsonse.getProfile());
-        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getRecordCount().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Customer transaction history data not found!", actualRepsonse.getReplyStatus().getMessage());
     }
@@ -337,7 +341,8 @@ public class CustomerQueryMessageHandlerTest extends BaseAccountingMessageHandle
         AccountingTransactionResponse actualRepsonse = 
                 (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertNull(actualRepsonse.getProfile());
-        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getRecordCount().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Customer data not found or too many customers were fetched", actualRepsonse.getReplyStatus().getMessage());
     }

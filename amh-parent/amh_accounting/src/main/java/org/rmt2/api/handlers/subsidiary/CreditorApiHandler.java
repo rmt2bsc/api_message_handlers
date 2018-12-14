@@ -122,13 +122,13 @@ public class CreditorApiHandler extends
             List<CreditorDto> dtoList = this.api.getExt(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage("Creditor data not found!");
-                rs.setReturnCode(0);
             }
             else {
                 queryDtoResults = this.buildJaxbListData(dtoList);
                 rs.setMessage("Creditor record(s) found");
-                rs.setReturnCode(dtoList.size());
+                rs.setRecordCount(dtoList.size());
             }
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
@@ -255,20 +255,20 @@ public class CreditorApiHandler extends
                 List<CreditorXactHistoryDto> dtoList = this.api.getTransactionHistory(criteriaDto.getCreditorId());
                 if (dtoList == null) {
                     rs.setMessage("Creditor transaction history data not found!");
-                    rs.setReturnCode(0);
+                    rs.setRecordCount(0);
                 }
                 else {
                     queryDtoResults = this.buildJaxbListData(dtoCredList.get(0), dtoList);
                     rs.setMessage("Creditor transaction history record(s) found");
-                    rs.setReturnCode(dtoList.size());
+                    rs.setRecordCount(dtoCredList.size());
                 }
             }
             else {
                 rs.setMessage("Creditor data not found or too many creditors were fetched");
-                rs.setReturnCode(0);
+                rs.setRecordCount(0);
             }
             
-            
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );

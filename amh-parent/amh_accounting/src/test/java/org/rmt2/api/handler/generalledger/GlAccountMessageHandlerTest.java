@@ -114,7 +114,8 @@ public class GlAccountMessageHandlerTest extends BaseAccountingMessageHandlerTes
         AccountingGeneralLedgerResponse actualRepsonse = 
                 (AccountingGeneralLedgerResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertEquals(4, actualRepsonse.getProfile().getAccount().size());
-        Assert.assertEquals(4, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(4, actualRepsonse.getReplyStatus().getRecordCount().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("GL Account record(s) found", actualRepsonse.getReplyStatus().getMessage());
         
@@ -163,7 +164,7 @@ public class GlAccountMessageHandlerTest extends BaseAccountingMessageHandlerTes
         AccountingGeneralLedgerResponse actualRepsonse = 
                 (AccountingGeneralLedgerResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertNull(actualRepsonse.getProfile());
-        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("GL Account data not found!", actualRepsonse.getReplyStatus().getMessage());
     }

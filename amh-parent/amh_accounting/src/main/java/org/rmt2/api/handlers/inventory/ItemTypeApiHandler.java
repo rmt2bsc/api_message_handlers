@@ -105,13 +105,13 @@ public class ItemTypeApiHandler extends
             List<ItemMasterTypeDto> dtoList = this.api.getItemType(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage("Inventory item type data not found!");
-                rs.setReturnCode(0);
             }
             else {
                 queryDtoResults = this.buildJaxbListData(dtoList);
                 rs.setMessage("Inventory item  type record(s) found");
-                rs.setReturnCode(dtoList.size());
+                rs.setRecordCount(dtoList.size());
             }
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );

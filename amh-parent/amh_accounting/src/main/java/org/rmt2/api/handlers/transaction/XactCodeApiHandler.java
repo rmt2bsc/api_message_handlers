@@ -109,13 +109,14 @@ public class XactCodeApiHandler extends
             List<XactCodeDto> dtoList = this.api.getCodes(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage("Transaction Code data not found!");
-                rs.setReturnCode(0);
+                rs.setRecordCount(0);
             }
             else {
                 queryDtoResults = this.buildJaxbListData(dtoList);
                 rs.setMessage("Transaction Code record(s) found");
-                rs.setReturnCode(dtoList.size());
+                rs.setRecordCount(dtoList.size());
             }
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );

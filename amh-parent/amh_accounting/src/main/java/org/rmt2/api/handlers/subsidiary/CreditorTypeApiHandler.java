@@ -106,13 +106,13 @@ public class CreditorTypeApiHandler extends
             List<CreditorTypeDto> dtoList = this.api.getCreditorType(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage("Creditor Type data not found!");
-                rs.setReturnCode(0);
             }
             else {
                 queryDtoResults = this.buildJaxbListData(dtoList);
                 rs.setMessage("Creditor Type record(s) found");
-                rs.setReturnCode(dtoList.size());
+                rs.setRecordCount(dtoList.size());
             }
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );

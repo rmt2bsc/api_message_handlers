@@ -113,17 +113,19 @@ public class GlAccountApiHandler extends
             List<AccountDto> dtoList = this.api.getAccount(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage("GL Account data not found!");
-                rs.setReturnCode(0);
+                rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             }
             else {
                 queryDtoResults = this.buildJaxbListData(dtoList);
                 rs.setMessage("GL Account record(s) found");
-                rs.setReturnCode(dtoList.size());
+                rs.setRecordCount(dtoList.size());
+                rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             }
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
+            rs.setRecordCount(0);
             rs.setMessage("Failure to retrieve GL Account(s)");
             rs.setExtMessage(e.getMessage());
         } finally {

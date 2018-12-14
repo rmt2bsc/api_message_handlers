@@ -33,7 +33,9 @@ public class MessageHandlerUtility {
         }
         
         ReplyStatusType rs = ReplyStatusTypeBuilder.Builder.create()
-                .withReturnCode(source.getReturnCode()).withStatus(source.getReturnStatus())
+                .withReturnCode(source.getReturnCode())
+                .withRecordCount(source.getRecordCount())
+                .withStatus(source.getReturnStatus())
                 .withMessage(source.getMessage())
                 .withDetailMessage(source.getExtMessage()).build();
         

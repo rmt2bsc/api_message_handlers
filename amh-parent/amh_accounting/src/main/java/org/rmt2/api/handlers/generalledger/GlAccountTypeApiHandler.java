@@ -105,12 +105,13 @@ public class GlAccountTypeApiHandler extends
             List<AccountTypeDto> dtoList = this.api.getAccountType(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage("GL Account Type data not found!");
-                rs.setReturnCode(0);
+                rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             }
             else {
                 queryDtoResults = this.buildJaxbListData(dtoList);
                 rs.setMessage("GL Account Type record(s) found");
-                rs.setReturnCode(dtoList.size());
+                rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+                rs.setRecordCount(dtoList.size());
             }
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
