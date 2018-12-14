@@ -398,7 +398,7 @@ public class TransactionJaxbDtoFactory extends RMT2Base {
                 .withInvoiceNo(null)
                 .withItemTotal(0)
                 .withXactType(xt)
-                .withXactSubtypeId(xst)
+                .withXactSubtype(xst)
                 .withXactCodeGroup(xcgt)
                 .withXactCode(xct)
                 .withXactItems(itemList)

@@ -588,11 +588,11 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
                     .withReason(xactDto.getXactReason())
                     .withTenderId(xactDto.getXactTenderId())
                     .withXactAmount(xactDto.getXactAmount())
-                    .withXactCode(xactDto.getXactCodeId())
-                    .withXactCodeGroup(xactDto.getXactCodeGrpId())
+                    .withXactCodeId(xactDto.getXactCodeId())
+                    .withXactCodeGroupId(xactDto.getXactCodeGrpId())
                     .withXactDate(xactDto.getXactDate())
                     .withXactSubtypeId(xactDto.getXactSubtypeId())
-                    .withXactType(xactDto.getXactTypeId()).build();
+                    .withXactTypeId(xactDto.getXactTypeId()).build();
         }
         return xactType;
     }
