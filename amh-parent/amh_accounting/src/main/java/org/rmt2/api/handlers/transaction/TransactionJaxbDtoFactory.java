@@ -1,5 +1,6 @@
 package org.rmt2.api.handlers.transaction;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.dto.XactCodeDto;
@@ -372,10 +373,28 @@ public class TransactionJaxbDtoFactory extends RMT2Base {
 
     /**
      * 
+     * @param jaxbObjs
+     * @return
+     */
+    public static final List<XactTypeItemActivityDto> createXactItemDtoInstance(List<XactLineitemType> jaxbObjs) {
+        if (jaxbObjs == null) {
+            return null;
+        }
+        
+        List<XactTypeItemActivityDto> list = new ArrayList<>();
+        for (XactLineitemType item : jaxbObjs) {
+            XactTypeItemActivityDto dto = createXactItemDtoInstance(item);
+            list.add(dto);
+        }
+        return list;
+    }
+    
+    /**
+     * 
      * @param jaxbObj
      * @return
      */
-    public static final XactDto createXactItemDtoInstance(XactLineitemType jaxbObj) {
+    public static final XactTypeItemActivityDto createXactItemDtoInstance(XactLineitemType jaxbObj) {
         if (jaxbObj == null) {
             return null;
         }
