@@ -26,6 +26,7 @@ import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.PostalResponse;
 
 import com.api.config.SystemConfigurator;
+import com.api.messaging.handler.AbstractJaxbMessageHandler;
 import com.api.messaging.handler.MessageHandlerCommandException;
 import com.api.messaging.handler.MessageHandlerResults;
 import com.api.messaging.webservice.WebServiceConstants;
@@ -204,7 +205,7 @@ public class IpInfoMessageHandlerTest extends BaseAddressBookMessageHandlerTest 
                 actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST,
                 actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals("An invalid request message was encountered.  Please payload.",
+        Assert.assertEquals(AbstractJaxbMessageHandler.ERROR_MSG_INVALID_TRANS,
                 actualRepsonse.getReplyStatus().getMessage());
         Assert.assertTrue(actualRepsonse.getReplyStatus().getExtMessage()
                 .contains("Error unmarshalling XML document"));
@@ -278,7 +279,7 @@ public class IpInfoMessageHandlerTest extends BaseAddressBookMessageHandlerTest 
                 actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST,
                 actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals("An invalid request message was encountered.  Please payload.",
+        Assert.assertEquals(AbstractJaxbMessageHandler.ERROR_MSG_INVALID_TRANS,
                 actualRepsonse.getReplyStatus().getMessage());
         Assert.assertTrue(actualRepsonse.getReplyStatus().getExtMessage()
                 .contains("Error unmarshalling XML document"));

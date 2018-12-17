@@ -28,6 +28,7 @@ import org.rmt2.jaxb.InventoryResponse;
 import org.rmt2.jaxb.VendorItemType;
 
 import com.api.config.SystemConfigurator;
+import com.api.messaging.handler.AbstractJaxbMessageHandler;
 import com.api.messaging.handler.MessageHandlerCommandException;
 import com.api.messaging.handler.MessageHandlerResults;
 import com.api.persistence.AbstractDaoClientImpl;
@@ -369,7 +370,7 @@ public class VendorItemQueryMessageHandlerTest extends BaseAccountingMessageHand
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus()
                 .getReturnStatus());
-        Assert.assertEquals("An invalid request message was encountered.  Please payload.", actualRepsonse
+        Assert.assertEquals(AbstractJaxbMessageHandler.ERROR_MSG_INVALID_TRANS, actualRepsonse
                 .getReplyStatus().getMessage());
     }
 }
