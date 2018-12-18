@@ -51,8 +51,8 @@ public class XactApiHandler extends
     public static final String MSG_MISSING_PROFILE_DATA = "Transaction profile is required for create transaction operation";
     public static final String MSG_REQUIRED_NO_TRANSACTIONS_INCORRECT = "Transaction profile is required to contain one and only one transaction for the create transaction operation";
     
-    public static final String TARGET_LEVEL_BASE = "BASE";
-    public static final String TARGET_LEVEL_LINEITEM = "LINEITEM";
+    public static final String TARGET_LEVEL_HEADER = "HEADER";
+    public static final String TARGET_LEVEL_DETAILS = "DETAILS";
     public static final String TARGET_LEVEL_FULL = "FULL";
     
     private ObjectFactory jaxbObjFactory;
@@ -129,7 +129,7 @@ public class XactApiHandler extends
             
             this.targetLevel = req.getCriteria().getXactCriteria().getTargetLevel().name().toUpperCase();
             switch (this.targetLevel) {
-                case TARGET_LEVEL_BASE:
+                case TARGET_LEVEL_HEADER:
                 case TARGET_LEVEL_FULL:
                     List<XactDto> dtoList = this.api.getXact(criteriaDto);
                     if (dtoList == null) {
@@ -143,7 +143,7 @@ public class XactApiHandler extends
                     }
                     break;
                     
-                case TARGET_LEVEL_LINEITEM:
+                case TARGET_LEVEL_DETAILS:
                     // TODO: Implement later.
                     break;
                     

@@ -10,7 +10,7 @@
     </header>
     <criteria>
         <xact_criteria>
-            <target_level>BASE</target_level>
+            <target_level>HEADER</target_level>
         </xact_criteria>
     </criteria>
 </AccountingTransactionRequest>
