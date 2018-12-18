@@ -1,7 +1,6 @@
 package org.rmt2.api.handlers.transaction;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +28,6 @@ import com.api.messaging.handler.AbstractJaxbMessageHandler;
 import com.api.messaging.handler.MessageHandlerCommandException;
 import com.api.messaging.handler.MessageHandlerCommonReplyStatus;
 import com.api.messaging.handler.MessageHandlerResults;
-import com.api.util.RMT2Date;
 import com.api.util.RMT2String;
 import com.api.util.assistants.Verifier;
 import com.api.util.assistants.VerifyException;
@@ -50,6 +48,8 @@ public class XactApiHandler extends
     public static final String MSG_INCORRECT_TARGET_LEVEL = "Transaction fetch request contains an invalid target level: %s";
     public static final String MSG_MISSING_PROFILE_DATA = "Transaction profile is required for create transaction operation";
     public static final String MSG_REQUIRED_NO_TRANSACTIONS_INCORRECT = "Transaction profile is required to contain one and only one transaction for the create transaction operation";
+    public static final String MSG_REVERSE_SUCCESS = "Existing Accounting Transaction, %s1, was reversed: %s2";
+    
     
     public static final String TARGET_LEVEL_HEADER = "HEADER";
     public static final String TARGET_LEVEL_DETAILS = "DETAILS";
@@ -98,6 +98,10 @@ public class XactApiHandler extends
                 
             case ApiTransactionCodes.ACCOUNTING_TRANSACTION_CREATE:
                 r = this.create(this.requestObj);
+                break;
+                
+            case ApiTransactionCodes.ACCOUNTING_TRANSACTION_REVERSE:
+                r = this.reverse(this.requestObj);
                 break;
                 
             default:
@@ -181,6 +185,8 @@ public class XactApiHandler extends
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         XactType reqXact = req.getProfile().getTransactions().getTransaction().get(0);
+        List<XactType> tranRresults = new ArrayList<>();
+        
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
@@ -188,10 +194,11 @@ public class XactApiHandler extends
             List<XactTypeItemActivityDto> itemsDtoList = TransactionJaxbDtoFactory
                     .createXactItemDtoInstance(reqXact.getLineitems().getLineitem());
             
-            int newXactid = this.api.update(xactDto, itemsDtoList);
-            reqXact.setXactId(BigInteger.valueOf(newXactid));
-            reqXact.setPostedDate(RMT2Date.toXmlDate(xactDto.getXactPostedDate()));
-            rs.setMessage("New Accounting Transaction was created: " + newXactid);
+            int newXactId = this.api.update(xactDto, itemsDtoList);
+            xactDto.setXactId(newXactId);
+            XactType XactResults = TransactionJaxbDtoFactory.createXactJaxbInstance(xactDto, 0, itemsDtoList);
+            tranRresults.add(XactResults);
+            rs.setMessage("New Accounting Transaction was created: " + XactResults.getXactId());
             rs.setRecordCount(1);
             
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
@@ -205,12 +212,62 @@ public class XactApiHandler extends
             this.api.close();
         }
 
-        String xml = this.buildResponse(req.getProfile().getTransactions().getTransaction(), rs);
+        
+        
+        String xml = this.buildResponse(tranRresults, rs);
         results.setPayload(xml);
         return results;
     }
     
     
+    /**
+     * Handler for invoking the appropriate API in order to reverse a general accounting 
+     * Transaction object.
+     * 
+     * @param req
+     *            an instance of {@link AccountingTransactionRequest}
+     * @return an instance of {@link MessageHandlerResults}
+     */
+    protected MessageHandlerResults reverse(AccountingTransactionRequest req) {
+        MessageHandlerResults results = new MessageHandlerResults();
+        MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
+        XactType reqXact = req.getProfile().getTransactions().getTransaction().get(0);
+        List<XactType> tranRresults = new ArrayList<>();
+        int newXactId = 0;
+        int oldXactId = 0;
+        
+        try {
+            // Set reply status
+            rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            XactDto xactDto = TransactionJaxbDtoFactory.createXactDtoInstance(reqXact);
+            List<XactTypeItemActivityDto> itemsDtoList = TransactionJaxbDtoFactory
+                    .createXactItemDtoInstance(reqXact.getLineitems().getLineitem());
+            
+            oldXactId = xactDto.getXactId();
+            newXactId = this.api.reverse(xactDto, itemsDtoList);
+            xactDto.setXactId(newXactId);
+            XactType XactResults = TransactionJaxbDtoFactory.createXactJaxbInstance(xactDto, 0, itemsDtoList);
+            tranRresults.add(XactResults);
+            String msg = RMT2String.replace(MSG_REVERSE_SUCCESS, String.valueOf(oldXactId), "%s1");
+            msg = RMT2String.replace(msg, String.valueOf(newXactId), "%s2");
+            rs.setMessage(msg);
+            rs.setRecordCount(1);
+            
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+            this.responseObj.setHeader(req.getHeader());
+        } catch (Exception e) {
+            logger.error("Error occurred during API Message Handler operation, " + this.command, e );
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
+            rs.setMessage("Failure to reverse Transaction: " + oldXactId);
+            rs.setExtMessage(e.getMessage());
+        } finally {
+            this.api.close();
+        }
+
+        String xml = this.buildResponse(tranRresults, rs);
+        results.setPayload(xml);
+        return results;
+    }
     
     private List<XactType> buildJaxbListData(List<XactDto> results) {
         List<XactType> list = new ArrayList<>();
@@ -272,6 +329,7 @@ public class XactApiHandler extends
                 break;
                 
             case ApiTransactionCodes.ACCOUNTING_TRANSACTION_CREATE:
+            case ApiTransactionCodes.ACCOUNTING_TRANSACTION_REVERSE:
                 // Transaction profile must exist
                 try {
                     Verifier.verifyNotNull(req.getProfile());

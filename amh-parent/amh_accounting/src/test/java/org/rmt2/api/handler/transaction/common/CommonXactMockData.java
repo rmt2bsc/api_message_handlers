@@ -21,6 +21,7 @@ import com.api.util.RMT2Date;
 public class CommonXactMockData extends SubsidiaryMockData {
     
     public static final int NEW_XACT_ID = 1234567;
+    public static final int EXISTING_XACT_ID = 7777;
 
     /**
      * 

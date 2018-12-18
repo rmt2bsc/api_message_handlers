@@ -96,9 +96,8 @@ public class CommonXactCreateMessageHandlerTest extends BaseAccountingMessageHan
     }
 
     @Test
-    public void testSuccess_Create_Transs() {
+    public void testSuccess_Create_Trans() {
         String request = RMT2File.getFileContentsAsString("xml/transaction/common/TransactionCommonCreateRequest.xml");
-//        List<XactDto> mockListData = CommonXactMockData.createMockSingleCommonTransactions();
 
         try {
             when(this.mockApi.update(isA(XactDto.class), isA(List.class)))
