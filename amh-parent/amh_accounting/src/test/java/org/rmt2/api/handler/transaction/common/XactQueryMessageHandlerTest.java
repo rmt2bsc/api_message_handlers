@@ -98,7 +98,7 @@ public class XactQueryMessageHandlerTest extends BaseAccountingMessageHandlerTes
 
     @Test
     public void testSuccess_Fetch_Header() {
-        String request = RMT2File.getFileContentsAsString("xml/transaction/common/TransactionQueryRequestBase.xml");
+        String request = RMT2File.getFileContentsAsString("xml/transaction/common/TransactionQueryRequestHeader.xml");
         List<XactDto> mockListData = CommonXactMockData.createMockSingleCommonTransactions();
 
         try {
