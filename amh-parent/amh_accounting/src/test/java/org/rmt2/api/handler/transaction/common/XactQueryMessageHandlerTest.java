@@ -225,7 +225,55 @@ public class XactQueryMessageHandlerTest extends BaseAccountingMessageHandlerTes
     }
     
     @Test
-    public void testError_FetchCustomer_API_Error() {
+    public void testError_Fetch_Details_TargetLevel_Error() {
+        String request = RMT2File.getFileContentsAsString("xml/transaction/common/TransactionQueryRequestDetails.xml");
+        
+        MessageHandlerResults results = null;
+        XactApiHandler handler = new XactApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_TRANSACTION_GET, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingTransactionResponse actualRepsonse = 
+                (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(XactApiHandler.MSG_DETAILS_NOT_SUPPORTED, actualRepsonse.getReplyStatus().getMessage());
+    }
+    
+    @Test
+    public void testError_Fetch_Invalid_TargetLevel_Error() {
+        String request = RMT2File.getFileContentsAsString("xml/transaction/common/TransactionQueryRequestInvalidTargetLevel.xml");
+        
+        MessageHandlerResults results = null;
+        XactApiHandler handler = new XactApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_TRANSACTION_GET, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingTransactionResponse actualRepsonse = 
+                (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(XactApiHandler.MSG_MISSING_TARGET_LEVEL, actualRepsonse.getReplyStatus().getMessage());
+    }
+    
+    @Test
+    public void testError_Fetch_API_Error() {
         String request = RMT2File.getFileContentsAsString("xml/transaction/common/TransactionQueryRequestFull.xml");
 
         try {

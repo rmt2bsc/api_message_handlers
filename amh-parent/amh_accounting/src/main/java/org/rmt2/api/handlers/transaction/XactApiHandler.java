@@ -49,6 +49,7 @@ public class XactApiHandler extends
     public static final String MSG_MISSING_PROFILE_DATA = "Transaction profile is required for create transaction operation";
     public static final String MSG_REQUIRED_NO_TRANSACTIONS_INCORRECT = "Transaction profile is required to contain one and only one transaction for the create transaction operation";
     public static final String MSG_REVERSE_SUCCESS = "Existing Accounting Transaction, %s1, was reversed: %s2";
+    public static final String MSG_DETAILS_NOT_SUPPORTED = "Transaction level \"DETAILS\" is not supported at this time";
     
     
     public static final String TARGET_LEVEL_HEADER = "HEADER";
@@ -114,7 +115,9 @@ public class XactApiHandler extends
 
     /**
      * Handler for invoking the appropriate API in order to fetch one or more
-     * Transaction objects.
+     * Transaction objects. 
+     * <p>
+     * Currently, the target level, <i>DETAILS</i>, is not supported.
      * 
      * @param req
      *            an instance of {@link AccountingTransactionRequest}
@@ -141,16 +144,11 @@ public class XactApiHandler extends
                         rs.setRecordCount(0);
                     }
                     else {
-                        queryDtoResults = this.buildJaxbListData(dtoList);
+                        queryDtoResults = this.buildJaxbTransaction(dtoList);
                         rs.setMessage("Transaction record(s) found");
                         rs.setRecordCount(dtoList.size());
                     }
                     break;
-                    
-                case TARGET_LEVEL_DETAILS:
-                    // TODO: Implement later.
-                    break;
-                    
                     
                 default:
                     String msg = RMT2String.replace(MSG_INCORRECT_TARGET_LEVEL, targetLevel, "%s");
@@ -269,7 +267,7 @@ public class XactApiHandler extends
         return results;
     }
     
-    private List<XactType> buildJaxbListData(List<XactDto> results) {
+    private List<XactType> buildJaxbTransaction(List<XactDto> results) {
         List<XactType> list = new ArrayList<>();
         
         for (XactDto item : results) {
@@ -317,6 +315,15 @@ public class XactApiHandler extends
                 }
                 catch (VerifyException e) {
                     throw new InvalidRequestException(MSG_MISSING_TARGET_LEVEL, e);
+                }
+                
+                // Target level "DETAILS" is not supported.
+                try {
+                    Verifier.verifyFalse(req.getCriteria().getXactCriteria()
+                            .getTargetLevel().name()
+                            .equalsIgnoreCase(TARGET_LEVEL_DETAILS));
+                } catch (VerifyException e) {
+                    throw new InvalidRequestException(MSG_DETAILS_NOT_SUPPORTED, e);
                 }
                 
                 // Selection criteria is required
