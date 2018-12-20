@@ -56,9 +56,9 @@ public class XactApiHandler extends
     public static final String TARGET_LEVEL_DETAILS = "DETAILS";
     public static final String TARGET_LEVEL_FULL = "FULL";
     
-    private ObjectFactory jaxbObjFactory;
     private XactApi api;
-    private String targetLevel;
+    protected ObjectFactory jaxbObjFactory;
+    protected String targetLevel;
 
     /**
      * Create XactApiHandler object
@@ -77,12 +77,18 @@ public class XactApiHandler extends
         logger.info(XactApiHandler.class.getName() + " was instantiated successfully");
     }
 
-    /*
-     * (non-Javadoc)
+    
+    /**
+     * Processes requests pertaining to fetching and creating of common
+     * transactions.
      * 
-     * @see
-     * com.api.messaging.jms.handler.AbstractMessageHandler#processRequest(java
-     * .lang.String, java.io.Serializable)
+     * @param command
+     *            The name of the operation.
+     * @param payload
+     *            The XML message that is to be processed.
+     * @return MessageHandlerResults
+     * @throws MessageHandlerCommandException
+     *             <i>payload</i> is deemed invalid.
      */
     @Override
     public MessageHandlerResults processMessage(String command, Serializable payload) throws MessageHandlerCommandException {
@@ -267,6 +273,12 @@ public class XactApiHandler extends
         return results;
     }
     
+    /**
+     * Builds a List of XactType objects from a List of XactDto objects.
+     * 
+     * @param results List<{@link XactDto}>
+     * @return List<{@link XactType}>
+     */
     private List<XactType> buildJaxbTransaction(List<XactDto> results) {
         List<XactType> list = new ArrayList<>();
         
@@ -295,7 +307,7 @@ public class XactApiHandler extends
             Verifier.verifyNotNull(req);
         }
         catch (VerifyException e) {
-            throw new InvalidRequestException("Transaction Code request element is invalid");
+            throw new InvalidRequestException("Transaction request element is invalid");
         }
         
         // Validate request for fetch operations
