@@ -1,7 +1,9 @@
 package org.rmt2.api.handlers.transaction;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.dto.XactCodeDto;
 import org.dto.XactCodeGroupDto;
@@ -12,6 +14,7 @@ import org.dto.adapter.orm.transaction.Rmt2XactDtoFactory;
 import org.modules.transaction.XactApiFactory;
 import org.rmt2.api.handlers.AccountingtMsgHandlerUtility;
 import org.rmt2.jaxb.RecordTrackingType;
+import org.rmt2.jaxb.RelationalOperatorType;
 import org.rmt2.jaxb.XactBasicCriteriaType;
 import org.rmt2.jaxb.XactCodeCriteriaType;
 import org.rmt2.jaxb.XactCodeGroupCriteriaType;
@@ -37,6 +40,24 @@ import com.api.util.RMT2String2;
  * 
  */
 public class TransactionJaxbDtoFactory extends RMT2Base {
+    public static final RelationalOperatorType REL_OP_EQ = RelationalOperatorType.EQUALS;
+    public static final RelationalOperatorType REL_OP_NEQ = RelationalOperatorType.NOT_EQUAL;
+    public static final RelationalOperatorType REL_OP_GT = RelationalOperatorType.GREATER_THAN;
+    public static final RelationalOperatorType REL_OP_LT = RelationalOperatorType.LESS_THAN;
+    public static final RelationalOperatorType REL_OP_LTEQ = RelationalOperatorType.LESS_THAN_OR_EQUAL;
+    public static final RelationalOperatorType REL_OP_GTEQ = RelationalOperatorType.GREATER_THAN_OR_EQUAL;
+    public static Map<RelationalOperatorType, String> REL_OPS;
+    
+    static {
+        REL_OPS = new HashMap<>();
+        REL_OPS.put(REL_OP_GT, ">");
+        REL_OPS.put(REL_OP_EQ, "=");
+        REL_OPS.put(REL_OP_GTEQ, ">=");
+        REL_OPS.put(REL_OP_LT, "<");
+        REL_OPS.put(REL_OP_LTEQ, "<=");
+        REL_OPS.put(REL_OP_NEQ, "<>");
+        
+    }
 
     /**
      * Creates an instance of <i>XactCodeGroupDto</i> using a valid
@@ -238,42 +259,30 @@ public class TransactionJaxbDtoFactory extends RMT2Base {
         if (jaxbCriteria.getXactReasonOptions() != null && !RMT2String2.isEmpty(jaxbCriteria.getXactReasonOptions().name())) {
             dto.setXactReasonFilterOption(jaxbCriteria.getXactReasonOptions().name());    
         }
-        if (jaxbCriteria.getFromXactAmount() != null) {
-            dto.setFromXactAmount(jaxbCriteria.getFromXactAmount().doubleValue());    
-        }
-        if (jaxbCriteria.getToXactAmount() != null) {
-            dto.setToXactAmount(jaxbCriteria.getToXactAmount().doubleValue());    
-        }
-        if (jaxbCriteria.getFromItemAmount() != null) {
-            dto.setFromItemAmount(jaxbCriteria.getFromItemAmount().doubleValue());    
-        }
-        if (jaxbCriteria.getToItemAmount() != null) {
-            dto.setToItemAmount(jaxbCriteria.getToItemAmount().doubleValue());    
-        }
-        if (jaxbCriteria.getFromXactDate() != null) {
-            dto.setFromXactDate(RMT2Date.stringToDate(jaxbCriteria.getFromXactDate()));    
-        }
-        if (jaxbCriteria.getToXactDate() != null) {
-            dto.setToXactDate(RMT2Date.stringToDate(jaxbCriteria.getToXactDate()));    
-        }
         
-        if (!RMT2String2.isEmpty(jaxbCriteria.getFromRelOpXactAmount())) {
-            dto.setFromXactAmountRelOp(jaxbCriteria.getFromRelOpXactAmount());    
+        if (jaxbCriteria.getFromRelOpXactAmount() != null && jaxbCriteria.getFromXactAmount() != null) {
+            dto.setFromXactAmount(jaxbCriteria.getFromXactAmount().doubleValue());    
+            dto.setFromXactAmountRelOp(REL_OPS.get(jaxbCriteria.getFromRelOpXactAmount()));    
         }
-        if (!RMT2String2.isEmpty(jaxbCriteria.getToRelOpXactAmount())) {
-            dto.setToXactAmountRelOp(jaxbCriteria.getToRelOpXactAmount());    
+        if (jaxbCriteria.getToRelOpXactAmount() != null && jaxbCriteria.getToXactAmount() != null) {
+            dto.setToXactAmountRelOp(REL_OPS.get(jaxbCriteria.getToRelOpXactAmount()));   
+            dto.setToXactAmount(jaxbCriteria.getToXactAmount().doubleValue());  
         }
-        if (!RMT2String2.isEmpty(jaxbCriteria.getFromRelOpItemAmount())) {
-            dto.setFromItemAmountRelOp(jaxbCriteria.getFromRelOpItemAmount());    
+        if (jaxbCriteria.getFromRelOpItemAmount() != null && jaxbCriteria.getFromItemAmount() != null) {
+            dto.setFromItemAmountRelOp(REL_OPS.get(jaxbCriteria.getFromRelOpItemAmount()));    
+            dto.setFromItemAmount(jaxbCriteria.getFromItemAmount().doubleValue());   
         }
-        if (!RMT2String2.isEmpty(jaxbCriteria.getToRelOpItemAmount())) {
-            dto.setToItemAmountRelOp(jaxbCriteria.getToRelOpItemAmount());    
+        if (jaxbCriteria.getToRelOpItemAmount() != null && jaxbCriteria.getToItemAmount() != null) {
+            dto.setToItemAmountRelOp(REL_OPS.get(jaxbCriteria.getToRelOpItemAmount()));   
+            dto.setToItemAmount(jaxbCriteria.getToItemAmount().doubleValue()); 
         }
-        if (!RMT2String2.isEmpty(jaxbCriteria.getFromRelOpXactDate())) {
-            dto.setFromXactDateRelOp(jaxbCriteria.getFromRelOpXactDate());    
+        if (jaxbCriteria.getFromRelOpXactDate() != null && jaxbCriteria.getFromXactDate() != null) {
+            dto.setFromXactDateRelOp(REL_OPS.get(jaxbCriteria.getFromRelOpXactDate()));    
+            dto.setFromXactDate(RMT2Date.stringToDate(jaxbCriteria.getFromXactDate()));
         }
-        if (!RMT2String2.isEmpty(jaxbCriteria.getToRelOpXactDate())) {
-            dto.setToXactDateRelOp(jaxbCriteria.getToRelOpXactDate());    
+        if (jaxbCriteria.getToRelOpXactDate() != null && jaxbCriteria.getToXactDate() != null) {
+            dto.setToXactDateRelOp(REL_OPS.get(jaxbCriteria.getToRelOpXactDate()));  
+            dto.setToXactDate(RMT2Date.stringToDate(jaxbCriteria.getToXactDate()));   
         }
         return dto;
     }
@@ -284,7 +293,7 @@ public class TransactionJaxbDtoFactory extends RMT2Base {
      * @param jaxbObj
      * @return
      */
-    public static final XactDto createXactDtoInstance(XactType jaxbObj) {
+    public static XactDto createXactDtoInstance(XactType jaxbObj) {
         if (jaxbObj == null) {
             return null;
         }
