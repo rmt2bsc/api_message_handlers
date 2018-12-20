@@ -97,7 +97,7 @@ public class CashDisbursementQueryMessageHandlerTest extends BaseAccountingMessa
     }
 
     @Test
-    public void testSuccess_Fetch_Basic_Header() {
+    public void testSuccess_Fetch_BasicCriteria_Header() {
         String request = RMT2File.getFileContentsAsString("xml/transaction/disbursements/CashDisbursementBasicQueryRequestHeader.xml");
         List<XactDto> mockListData = CashDisbursementMockData.createMockSingleTransactions();
 
@@ -137,7 +137,7 @@ public class CashDisbursementQueryMessageHandlerTest extends BaseAccountingMessa
     }
     
     @Test
-    public void testSuccess_Fetch_Basic_Full() {
+    public void testSuccess_Fetch_BasicCriteria_Full() {
         String request = RMT2File.getFileContentsAsString("xml/transaction/disbursements/CashDisbursementBasicQueryRequestFull.xml");
         List<XactDto> mockListData = CashDisbursementMockData.createMockSingleTransactions();
         List<XactTypeItemActivityDto> mockItemListData = CashDisbursementMockData.createMockXactItems();
@@ -186,57 +186,96 @@ public class CashDisbursementQueryMessageHandlerTest extends BaseAccountingMessa
         }
     }
     
-//    @Test
-//    public void testSuccess_Fetch_Full() {
-//        String request = RMT2File.getFileContentsAsString("xml/transaction/common/TransactionQueryRequestFull.xml");
-//        List<XactDto> mockListData = CommonXactMockData.createMockSingleCommonTransactions();
-//        List<XactTypeItemActivityDto> mockItemListData = CommonXactMockData.createMockXactItems();
-//
-//        try {
-//            when(this.mockApi.getXact(isA(XactDto.class))).thenReturn(mockListData);
-//        } catch (XactApiException e) {
-//            Assert.fail("Unable to setup mock stub for fetching a BASE transaction");
-//        }
-//        
-//        try {
-//            when(this.mockApi.getXactTypeItemActivityExt(isA(Integer.class))).thenReturn(mockItemListData);
-//        } catch (XactApiException e) {
-//            Assert.fail("Unable to setup mock stub for fetching a transaction line items");
-//        }
-//        
-//        MessageHandlerResults results = null;
-//        XactApiHandler handler = new XactApiHandler();
-//        try {
-//            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_TRANSACTION_GET, request);
-//        } catch (MessageHandlerCommandException e) {
-//            e.printStackTrace();
-//            Assert.fail("An unexpected exception was thrown");
-//        }
-//        Assert.assertNotNull(results);
-//        Assert.assertNotNull(results.getPayload());
-//
-//        AccountingTransactionResponse actualRepsonse = 
-//                (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-//        Assert.assertEquals(1, actualRepsonse.getProfile().getTransactions().getTransaction().size());
-//        Assert.assertEquals(1, actualRepsonse.getReplyStatus().getRecordCount().intValue());
-//        Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-//        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
-//        Assert.assertEquals("Transaction record(s) found", actualRepsonse.getReplyStatus().getMessage());
-//        
-//        Assert.assertNotNull(actualRepsonse.getProfile());
-//        Assert.assertNotNull(actualRepsonse.getProfile().getTransactions());
-//        Assert.assertTrue(actualRepsonse.getProfile().getTransactions().getTransaction().size() > 0);
-//        for (int ndx = 0; ndx < actualRepsonse.getProfile().getTransactions().getTransaction().size(); ndx++) {
-//            XactType a = actualRepsonse.getProfile().getTransactions().getTransaction().get(ndx);
-//            Assert.assertNotNull(a.getXactId());
-//            Assert.assertEquals(111111, a.getXactId().intValue());
-//            Assert.assertNotNull(a.getLineitems());
-//            Assert.assertNotNull(a.getLineitems().getLineitem());
-//            Assert.assertTrue(a.getLineitems().getLineitem().size() > 0);
-//            
-//        }
-//    }
-//    
+    @Test
+    public void testSuccess_Fetch_CustomCriteria_Header() {
+        String request = RMT2File.getFileContentsAsString("xml/transaction/disbursements/CashDisbursementCustomQueryRequestHeader.xml");
+        List<XactDto> mockListData = CashDisbursementMockData.createMockSingleTransactions();
+
+        try {
+            when(this.mockApi.get(isA(XactDto.class), isA(XactCustomCriteriaDto.class))).thenReturn(mockListData);
+        } catch (XactApiException e) {
+            Assert.fail("Unable to setup mock stub for fetching a cash disbursement transaction");
+        }
+        
+        MessageHandlerResults results = null;
+        CashDisbursementApiHandler handler = new CashDisbursementApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_GET, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingTransactionResponse actualRepsonse = 
+                (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertEquals(1, actualRepsonse.getProfile().getTransactions().getTransaction().size());
+        Assert.assertEquals(1, actualRepsonse.getReplyStatus().getRecordCount().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals("Cash disbursement record(s) found", actualRepsonse.getReplyStatus().getMessage());
+        
+        Assert.assertNotNull(actualRepsonse.getProfile());
+        Assert.assertNotNull(actualRepsonse.getProfile().getTransactions());
+        Assert.assertTrue(actualRepsonse.getProfile().getTransactions().getTransaction().size() > 0);
+        for (int ndx = 0; ndx < actualRepsonse.getProfile().getTransactions().getTransaction().size(); ndx++) {
+            XactType a = actualRepsonse.getProfile().getTransactions().getTransaction().get(ndx);
+            Assert.assertNotNull(a.getXactId());
+            Assert.assertEquals(111111, a.getXactId().intValue());
+        }
+    }
+    
+    @Test
+    public void testSuccess_Fetch_CustomCriteria_Full() {
+        String request = RMT2File.getFileContentsAsString("xml/transaction/disbursements/CashDisbursementCustomQueryRequestHeader.xml");
+        List<XactDto> mockListData = CashDisbursementMockData.createMockSingleTransactions();
+        List<XactTypeItemActivityDto> mockItemListData = CashDisbursementMockData.createMockXactItems();
+
+        try {
+            when(this.mockApi.get(isA(XactDto.class), isA(XactCustomCriteriaDto.class))).thenReturn(mockListData);
+        } catch (XactApiException e) {
+            Assert.fail("Unable to setup mock stub for fetching a cash disbursement transaction");
+        }
+        
+        try {
+            when(this.mockApi.getItems(isA(XactTypeItemActivityDto.class), isA(XactCustomCriteriaDto.class))).thenReturn(mockItemListData);
+        } catch (XactApiException e) {
+            Assert.fail("Unable to setup mock stub for fetching cash disbursement transaction line items");
+        }
+        
+        MessageHandlerResults results = null;
+        CashDisbursementApiHandler handler = new CashDisbursementApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_GET, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingTransactionResponse actualRepsonse = 
+                (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertEquals(1, actualRepsonse.getProfile().getTransactions().getTransaction().size());
+        Assert.assertEquals(1, actualRepsonse.getReplyStatus().getRecordCount().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals("Cash disbursement record(s) found", actualRepsonse.getReplyStatus().getMessage());
+        
+        Assert.assertNotNull(actualRepsonse.getProfile());
+        Assert.assertNotNull(actualRepsonse.getProfile().getTransactions());
+        Assert.assertTrue(actualRepsonse.getProfile().getTransactions().getTransaction().size() > 0);
+        for (int ndx = 0; ndx < actualRepsonse.getProfile().getTransactions().getTransaction().size(); ndx++) {
+            XactType a = actualRepsonse.getProfile().getTransactions().getTransaction().get(ndx);
+            Assert.assertNotNull(a.getXactId());
+            Assert.assertEquals(111111, a.getXactId().intValue());
+            Assert.assertNotNull(a.getLineitems());
+            Assert.assertNotNull(a.getLineitems().getLineitem());
+            Assert.assertTrue(a.getLineitems().getLineitem().size() > 0);
+        }
+    }
+    
 // 
 //    @Test
 //    public void testSuccess_Fetch_NoDataFound() {
