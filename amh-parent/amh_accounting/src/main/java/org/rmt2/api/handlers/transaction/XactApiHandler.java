@@ -42,6 +42,8 @@ public class XactApiHandler extends
                   AbstractJaxbMessageHandler<AccountingTransactionRequest, AccountingTransactionResponse, List<XactType>> {
     
     private static final Logger logger = Logger.getLogger(XactApiHandler.class);
+    public static final String MSG_DATA_FOUND = "Transaction record(s) found";
+    public static final String MSG_DATA_NOT_FOUND = "Transaction data not found!";
     public static final String MSG_MISSING_GENERAL_CRITERIA = "Transaction request must contain a valid general criteria object";
     public static final String MSG_MISSING_SUBJECT_CRITERIA = "Selection criteria is required for Accounting Transaction fetch operation";
     public static final String MSG_MISSING_TARGET_LEVEL = "Transaction fetch request must contain a target level value";
@@ -146,12 +148,12 @@ public class XactApiHandler extends
                 case TARGET_LEVEL_FULL:
                     List<XactDto> dtoList = this.api.getXact(criteriaDto);
                     if (dtoList == null) {
-                        rs.setMessage("Transaction data not found!");
+                        rs.setMessage(XactApiHandler.MSG_DATA_NOT_FOUND);
                         rs.setRecordCount(0);
                     }
                     else {
                         queryDtoResults = this.buildJaxbTransaction(dtoList);
-                        rs.setMessage("Transaction record(s) found");
+                        rs.setMessage(XactApiHandler.MSG_DATA_FOUND);
                         rs.setRecordCount(dtoList.size());
                     }
                     break;

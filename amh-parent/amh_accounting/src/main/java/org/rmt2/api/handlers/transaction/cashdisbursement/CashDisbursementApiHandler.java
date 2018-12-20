@@ -22,10 +22,13 @@ import org.rmt2.jaxb.XactType;
 
 import com.InvalidDataException;
 import com.RMT2Exception;
+import com.api.messaging.InvalidRequestException;
 import com.api.messaging.handler.MessageHandlerCommandException;
 import com.api.messaging.handler.MessageHandlerCommonReplyStatus;
 import com.api.messaging.handler.MessageHandlerResults;
 import com.api.util.RMT2String;
+import com.api.util.assistants.Verifier;
+import com.api.util.assistants.VerifyException;
 
 /**
  * Handles and routes Cash Disbursement Transaction messages to the Accounting API.
@@ -35,6 +38,9 @@ import com.api.util.RMT2String;
  */
 public class CashDisbursementApiHandler extends XactApiHandler {
     private static final Logger logger = Logger.getLogger(CashDisbursementApiHandler.class);
+    public static final String MSG_DATA_FOUND = "Cash disbursement record(s) found";
+    public static final String MSG_DATA_NOT_FOUND = "Cash disbursement data not found!";
+    public static final String MSG_FAILURE = "Failure to retrieve Cash disbursement transaction(s)";
     
     private DisbursementsApi api;
     
@@ -121,12 +127,12 @@ public class CashDisbursementApiHandler extends XactApiHandler {
                 case TARGET_LEVEL_FULL:
                     List<XactDto> dtoList = this.api.get(criteriaDto, customCriteriaDto);
                     if (dtoList == null) {
-                        rs.setMessage("Cash disbursement data not found!");
+                        rs.setMessage(CashDisbursementApiHandler.MSG_DATA_NOT_FOUND);
                         rs.setRecordCount(0);
                     }
                     else {
                         queryDtoResults = this.buildJaxbTransaction(dtoList, customCriteriaDto);
-                        rs.setMessage("Cash disbursement record(s) found");
+                        rs.setMessage(CashDisbursementApiHandler.MSG_DATA_FOUND);
                         rs.setRecordCount(dtoList.size());
                     }
                     break;
@@ -141,7 +147,7 @@ public class CashDisbursementApiHandler extends XactApiHandler {
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setMessage("Failure to retrieve Cash disbursement transaction(s)");
+            rs.setMessage(CashDisbursementApiHandler.MSG_FAILURE);
             rs.setExtMessage(e.getMessage());
         } finally {
             this.api.close();
@@ -166,6 +172,53 @@ public class CashDisbursementApiHandler extends XactApiHandler {
     @Override
     protected void validateRequest(AccountingTransactionRequest req) throws InvalidDataException {
         super.validateRequest(req);
+        
+        // Validate request for fetch operations
+        switch (this.command) {
+            case ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_GET:
+                // Must contain flag that indicates what level of the transaction object to populate with data
+                try {
+                    Verifier.verifyNotNull(req.getCriteria());
+                    Verifier.verifyNotNull(req.getCriteria().getXactCriteria());
+                    Verifier.verifyNotNull(req.getCriteria().getXactCriteria().getTargetLevel());
+                }
+                catch (VerifyException e) {
+                    throw new InvalidRequestException(MSG_MISSING_TARGET_LEVEL, e);
+                }
+                
+                // Target level "DETAILS" is not supported.
+                try {
+                    Verifier.verifyFalse(req.getCriteria().getXactCriteria()
+                            .getTargetLevel().name()
+                            .equalsIgnoreCase(TARGET_LEVEL_DETAILS));
+                } catch (VerifyException e) {
+                    throw new InvalidRequestException(MSG_DETAILS_NOT_SUPPORTED, e);
+                }
+                
+//            case ApiTransactionCodes.ACCOUNTING_TRANSACTION_CREATE:
+//            case ApiTransactionCodes.ACCOUNTING_TRANSACTION_REVERSE:
+//                // Transaction profile must exist
+//                try {
+//                    Verifier.verifyNotNull(req.getProfile());
+//                    Verifier.verifyNotNull(req.getProfile().getTransactions());
+//                    Verifier.verifyNotNull(req.getProfile().getTransactions().getTransaction());
+//                }
+//                catch (VerifyException e) {
+//                    throw new InvalidRequestException(MSG_MISSING_PROFILE_DATA, e);    
+//                }
+//                // Transaction profile must contain one and only one transaction
+//                try {
+//                    Verifier.verifyNotEmpty(req.getProfile().getTransactions().getTransaction());
+//                    Verifier.verifyTrue(req.getProfile().getTransactions().getTransaction().size() == 1);
+//                }
+//                catch (VerifyException e) {
+//                    throw new InvalidRequestException(MSG_REQUIRED_NO_TRANSACTIONS_INCORRECT, e);    
+//                }
+//                break;
+                
+            default:
+                break;
+        }
     }
 
     /**
