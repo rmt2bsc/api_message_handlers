@@ -67,10 +67,6 @@ public class CashDisbursementQueryMessageHandlerTest extends BaseAccountingMessa
     @Override
     public void setUp() throws Exception {
         super.setUp();
-//        XactDaoFactory mockXactDaoFactory = Mockito.mock(XactDaoFactory.class);
-//        XactDao mockDao = Mockito.mock(XactDao.class);
-//        when(mockXactDaoFactory.createRmt2OrmXactDao(isA(String.class))).thenReturn(mockDao);
-        
         mockApi = Mockito.mock(DisbursementsApi.class);
         PowerMockito.mockStatic(DisbursementsApiFactory.class);
         PowerMockito.when(DisbursementsApiFactory.createApi()).thenReturn(this.mockApi);
