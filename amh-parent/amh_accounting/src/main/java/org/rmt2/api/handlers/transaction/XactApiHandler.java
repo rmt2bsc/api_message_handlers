@@ -302,7 +302,73 @@ public class XactApiHandler extends
         return list;
     }
     
+    /**
+     * Validates the existence of a request's search criteria.
+     * 
+     * @param req
+     * @throws InvalidDataException
+     */
+    protected void validateSearchRequest(AccountingTransactionRequest req) throws InvalidDataException {
+        try {
+            Verifier.verifyNotNull(req.getCriteria());
+            Verifier.verifyNotNull(req.getCriteria().getXactCriteria());
+        }
+        catch (VerifyException e) {
+            throw new InvalidRequestException(MSG_MISSING_GENERAL_CRITERIA);
+        }
+        
+        // Must contain flag that indicates what level of the transaction object to populate with data
+        try {
+            Verifier.verifyNotNull(req.getCriteria().getXactCriteria().getTargetLevel());
+        }
+        catch (VerifyException e) {
+            throw new InvalidRequestException(MSG_MISSING_TARGET_LEVEL, e);
+        }
+        
+        // Target level "DETAILS" is not supported.
+        try {
+            Verifier.verifyFalse(req.getCriteria().getXactCriteria()
+                    .getTargetLevel().name()
+                    .equalsIgnoreCase(TARGET_LEVEL_DETAILS));
+        } catch (VerifyException e) {
+            throw new InvalidRequestException(MSG_DETAILS_NOT_SUPPORTED, e);
+        }
+    }
     
+    /**
+     * Validates the existence of a request's update data.
+     * 
+     * @param req
+     * @throws InvalidDataException
+     */
+    protected void validateUpdateRequest(AccountingTransactionRequest req) throws InvalidDataException {
+        // Transaction profile must exist
+        try {
+            Verifier.verifyNotNull(req.getProfile());
+            Verifier.verifyNotNull(req.getProfile().getTransactions());
+            Verifier.verifyNotNull(req.getProfile().getTransactions().getTransaction());
+        }
+        catch (VerifyException e) {
+            throw new InvalidRequestException(MSG_MISSING_PROFILE_DATA, e);    
+        }
+        // Transaction profile must contain one and only one transaction
+        try {
+            Verifier.verifyNotEmpty(req.getProfile().getTransactions().getTransaction());
+            Verifier.verifyTrue(req.getProfile().getTransactions().getTransaction().size() == 1);
+        }
+        catch (VerifyException e) {
+            throw new InvalidRequestException(MSG_REQUIRED_NO_TRANSACTIONS_INCORRECT, e);    
+        }
+    }
+    
+
+    /**
+     * Validates the existence of the request's search criteria or profile data
+     * depending on the type of request submitted.
+     * 
+     * @param req
+     *            instance of {@link AccountingTransactionRequest}
+     */
     @Override
     protected void validateRequest(AccountingTransactionRequest req) throws InvalidDataException {
         try {
@@ -315,64 +381,21 @@ public class XactApiHandler extends
         // Validate request for fetch operations
         switch (this.command) {
             case ApiTransactionCodes.ACCOUNTING_TRANSACTION_GET:
-                try {
-                    Verifier.verifyNotNull(req.getCriteria());
-                    Verifier.verifyNotNull(req.getCriteria().getXactCriteria());
-                }
-                catch (VerifyException e) {
-                    throw new InvalidRequestException(MSG_MISSING_GENERAL_CRITERIA);
-                }
-                
-                // Must contain flag that indicates what level of the transaction object to populate with data
-                try {
-                    Verifier.verifyNotNull(req.getCriteria().getXactCriteria().getTargetLevel());
-                }
-                catch (VerifyException e) {
-                    throw new InvalidRequestException(MSG_MISSING_TARGET_LEVEL, e);
-                }
-                
-                // Target level "DETAILS" is not supported.
-                try {
-                    Verifier.verifyFalse(req.getCriteria().getXactCriteria()
-                            .getTargetLevel().name()
-                            .equalsIgnoreCase(TARGET_LEVEL_DETAILS));
-                } catch (VerifyException e) {
-                    throw new InvalidRequestException(MSG_DETAILS_NOT_SUPPORTED, e);
-                }
-                
-                // Selection criteria is required
-                try {
-                    Verifier.verifyNotNull(req.getCriteria().getXactCriteria().getBasicCriteria());
-                }
-                catch (VerifyException e) {
-                    throw new InvalidRequestException(MSG_MISSING_SUBJECT_CRITERIA, e);    
-                }
+                this.validateSearchRequest(req);
                 break;
                 
             case ApiTransactionCodes.ACCOUNTING_TRANSACTION_CREATE:
             case ApiTransactionCodes.ACCOUNTING_TRANSACTION_REVERSE:
+                this.validateUpdateRequest(req);
+                
                 // Transaction profile must exist
-                try {
-                    Verifier.verifyNotNull(req.getProfile());
-                    Verifier.verifyNotNull(req.getProfile().getTransactions());
-                    Verifier.verifyNotNull(req.getProfile().getTransactions().getTransaction());
-                }
-                catch (VerifyException e) {
-                    throw new InvalidRequestException(MSG_MISSING_PROFILE_DATA, e);    
-                }
-                // Transaction profile must contain one and only one transaction
-                try {
-                    Verifier.verifyNotEmpty(req.getProfile().getTransactions().getTransaction());
-                    Verifier.verifyTrue(req.getProfile().getTransactions().getTransaction().size() == 1);
-                }
-                catch (VerifyException e) {
-                    throw new InvalidRequestException(MSG_REQUIRED_NO_TRANSACTIONS_INCORRECT, e);    
-                }
                 break;
             default:
                 break;
         }
     }
+    
+    
 
     @Override
     protected String buildResponse(List<XactType> payload,  MessageHandlerCommonReplyStatus replyStatus) {
