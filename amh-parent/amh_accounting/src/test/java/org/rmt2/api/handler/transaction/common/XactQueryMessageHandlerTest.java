@@ -364,31 +364,7 @@ public class XactQueryMessageHandlerTest extends BaseAccountingMessageHandlerTes
                 actualRepsonse.getReplyStatus().getMessage());
     }
     
-    @Test
-    public void testValidation_Fetch_Subject_Criteria_Missing() {
-        String request = RMT2File.getFileContentsAsString("xml/transaction/common/TransactionQueryMissingCriteriaRequest2.xml");
-        
-        MessageHandlerResults results = null;
-        XactApiHandler handler = new XactApiHandler();
-        try {
-            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_TRANSACTION_GET, request);
-        } catch (MessageHandlerCommandException e) {
-            e.printStackTrace();
-            Assert.fail("An unexpected exception was thrown");
-        }
-        
-        Assert.assertNotNull(results);
-        Assert.assertNotNull(results.getPayload());
-
-        AccountingTransactionResponse actualRepsonse = 
-                (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-        Assert.assertNull(actualRepsonse.getProfile());
-        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus()
-                .getReturnStatus());
-        Assert.assertEquals(XactApiHandler.MSG_MISSING_SUBJECT_CRITERIA,
-                actualRepsonse.getReplyStatus().getMessage());
-    }
+   
     
     @Test
     public void testValidation_Fetch_TargetLevel_Criteria_Missing() {
