@@ -255,36 +255,44 @@ public class TransactionJaxbDtoFactory extends RMT2Base {
         if (jaxbCriteria == null) {
             return null;
         }
+        boolean valuesSet = false;
         XactCustomCriteriaDto dto = XactApiFactory.createCustomCriteriaInstance();
         if (jaxbCriteria.getXactReasonOptions() != null && !RMT2String2.isEmpty(jaxbCriteria.getXactReasonOptions().name())) {
-            dto.setXactReasonFilterOption(jaxbCriteria.getXactReasonOptions().name());    
+            dto.setXactReasonFilterOption(jaxbCriteria.getXactReasonOptions().name());
+            valuesSet = true;
         }
         
         if (jaxbCriteria.getFromRelOpXactAmount() != null && jaxbCriteria.getFromXactAmount() != null) {
             dto.setFromXactAmount(jaxbCriteria.getFromXactAmount().doubleValue());    
-            dto.setFromXactAmountRelOp(REL_OPS.get(jaxbCriteria.getFromRelOpXactAmount()));    
+            dto.setFromXactAmountRelOp(REL_OPS.get(jaxbCriteria.getFromRelOpXactAmount()));
+            valuesSet = true;
         }
         if (jaxbCriteria.getToRelOpXactAmount() != null && jaxbCriteria.getToXactAmount() != null) {
             dto.setToXactAmountRelOp(REL_OPS.get(jaxbCriteria.getToRelOpXactAmount()));   
-            dto.setToXactAmount(jaxbCriteria.getToXactAmount().doubleValue());  
+            dto.setToXactAmount(jaxbCriteria.getToXactAmount().doubleValue());
+            valuesSet = true;
         }
         if (jaxbCriteria.getFromRelOpItemAmount() != null && jaxbCriteria.getFromItemAmount() != null) {
             dto.setFromItemAmountRelOp(REL_OPS.get(jaxbCriteria.getFromRelOpItemAmount()));    
-            dto.setFromItemAmount(jaxbCriteria.getFromItemAmount().doubleValue());   
+            dto.setFromItemAmount(jaxbCriteria.getFromItemAmount().doubleValue());
+            valuesSet = true;
         }
         if (jaxbCriteria.getToRelOpItemAmount() != null && jaxbCriteria.getToItemAmount() != null) {
             dto.setToItemAmountRelOp(REL_OPS.get(jaxbCriteria.getToRelOpItemAmount()));   
-            dto.setToItemAmount(jaxbCriteria.getToItemAmount().doubleValue()); 
+            dto.setToItemAmount(jaxbCriteria.getToItemAmount().doubleValue());
+            valuesSet = true;
         }
         if (jaxbCriteria.getFromRelOpXactDate() != null && jaxbCriteria.getFromXactDate() != null) {
             dto.setFromXactDateRelOp(REL_OPS.get(jaxbCriteria.getFromRelOpXactDate()));    
             dto.setFromXactDate(RMT2Date.stringToDate(jaxbCriteria.getFromXactDate()));
+            valuesSet = true;
         }
         if (jaxbCriteria.getToRelOpXactDate() != null && jaxbCriteria.getToXactDate() != null) {
             dto.setToXactDateRelOp(REL_OPS.get(jaxbCriteria.getToRelOpXactDate()));  
-            dto.setToXactDate(RMT2Date.stringToDate(jaxbCriteria.getToXactDate()));   
+            dto.setToXactDate(RMT2Date.stringToDate(jaxbCriteria.getToXactDate()));
+            valuesSet = true;
         }
-        return dto;
+        return (valuesSet ? dto : null);
     }
     
     
