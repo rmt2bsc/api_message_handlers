@@ -1,5 +1,6 @@
 package org.rmt2.api.handler.transaction.disbursements;
 
+import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -100,7 +101,7 @@ public class CashDisbursementQueryMessageHandlerTest extends BaseAccountingMessa
         List<XactDto> mockListData = CashDisbursementMockData.createMockSingleTransactions();
 
         try {
-            when(this.mockApi.get(isA(XactDto.class), isA(XactCustomCriteriaDto.class))).thenReturn(mockListData);
+            when(this.mockApi.get(isA(XactDto.class), eq((XactCustomCriteriaDto) null))).thenReturn(mockListData);
         } catch (XactApiException e) {
             Assert.fail("Unable to setup mock stub for fetching a cash disbursement transaction");
         }
@@ -141,13 +142,13 @@ public class CashDisbursementQueryMessageHandlerTest extends BaseAccountingMessa
         List<XactTypeItemActivityDto> mockItemListData = CashDisbursementMockData.createMockXactItems();
 
         try {
-            when(this.mockApi.get(isA(XactDto.class), isA(XactCustomCriteriaDto.class))).thenReturn(mockListData);
+            when(this.mockApi.get(isA(XactDto.class), eq((XactCustomCriteriaDto) null))).thenReturn(mockListData);
         } catch (XactApiException e) {
             Assert.fail("Unable to setup mock stub for fetching a cash disbursement transaction");
         }
         
         try {
-            when(this.mockApi.getItems(isA(XactTypeItemActivityDto.class), isA(XactCustomCriteriaDto.class))).thenReturn(mockItemListData);
+            when(this.mockApi.getItems(isA(XactTypeItemActivityDto.class), eq((XactCustomCriteriaDto) null))).thenReturn(mockItemListData);
         } catch (XactApiException e) {
             Assert.fail("Unable to setup mock stub for fetching cash disbursement transaction line items");
         }
@@ -281,7 +282,7 @@ public class CashDisbursementQueryMessageHandlerTest extends BaseAccountingMessa
         List<XactDto> mockListData = CashDisbursementMockData.createMockSingleTransactions();
 
         try {
-            when(this.mockApi.get(isA(XactDto.class), isA(XactCustomCriteriaDto.class))).thenReturn(null);
+            when(this.mockApi.get(isA(XactDto.class), eq((XactCustomCriteriaDto) null))).thenReturn(null);
         } catch (XactApiException e) {
             Assert.fail("Unable to setup mock stub for fetching a cash disbursement transaction");
         }
@@ -337,7 +338,7 @@ public class CashDisbursementQueryMessageHandlerTest extends BaseAccountingMessa
         List<XactDto> mockListData = CashDisbursementMockData.createMockSingleTransactions();
 
         try {
-            when(this.mockApi.get(isA(XactDto.class), isA(XactCustomCriteriaDto.class)))
+            when(this.mockApi.get(isA(XactDto.class), eq((XactCustomCriteriaDto) null)))
                  .thenThrow(new DisbursementsApiException("An Xact API test error occurred"));
         } catch (XactApiException e) {
             Assert.fail("Unable to setup mock stub for fetching cash disbursement transaction");
