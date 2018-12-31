@@ -360,7 +360,6 @@ public class XactApiHandler extends
 
         // Transaction profile must contain one and only one transaction
         try {
-            Verifier.verifyNotEmpty(req.getProfile().getTransactions().getTransaction());
             Verifier.verifyTrue(req.getProfile().getTransactions().getTransaction().size() == 1);
         }
         catch (VerifyException e) {

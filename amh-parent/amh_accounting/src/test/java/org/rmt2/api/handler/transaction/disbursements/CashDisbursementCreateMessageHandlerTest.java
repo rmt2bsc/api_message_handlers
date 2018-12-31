@@ -245,28 +245,28 @@ public class CashDisbursementCreateMessageHandlerTest extends BaseAccountingMess
         Assert.assertEquals(XactApiHandler.MSG_REQUIRED_NO_TRANSACTIONS_INCORRECT, actualRepsonse.getReplyStatus().getMessage());
     }
 
-//    @Test
-//    public void testValidation_Zero_Transactions() {
-//        String request = RMT2File.getFileContentsAsString("xml/transaction/disbursements/CashDisbursementCreateRequestZeroTransactions2.xml");
-//
-//        MessageHandlerResults results = null;
-//        CashDisbursementApiHandler handler = new CashDisbursementApiHandler();
-//        try {
-//            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_CREATE, request);
-//        } catch (MessageHandlerCommandException e) {
-//            e.printStackTrace();
-//            Assert.fail("An unexpected exception was thrown");
-//        }
-//
-//        Assert.assertNotNull(results);
-//        Assert.assertNotNull(results.getPayload());
-//
-//        AccountingTransactionResponse actualRepsonse =
-//                (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-//        Assert.assertNull(actualRepsonse.getProfile());
-//        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-//        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus()
-//                .getReturnStatus());
-//        Assert.assertEquals(XactApiHandler.MSG_REQUIRED_NO_TRANSACTIONS_INCORRECT, actualRepsonse.getReplyStatus().getMessage());
-//    }
+    @Test
+    public void testValidation_Too_Many_Transactions() {
+        String request = RMT2File.getFileContentsAsString("xml/transaction/disbursements/CashDisbursementCreateRequestTooManyTransactions.xml");
+
+        MessageHandlerResults results = null;
+        CashDisbursementApiHandler handler = new CashDisbursementApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_CREATE, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingTransactionResponse actualRepsonse =
+                (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus()
+                .getReturnStatus());
+        Assert.assertEquals(XactApiHandler.MSG_REQUIRED_NO_TRANSACTIONS_INCORRECT, actualRepsonse.getReplyStatus().getMessage());
+    }
 }

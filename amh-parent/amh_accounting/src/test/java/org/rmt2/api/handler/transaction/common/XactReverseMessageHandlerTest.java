@@ -224,7 +224,7 @@ public class XactReverseMessageHandlerTest extends BaseAccountingMessageHandlerT
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus()
                 .getReturnStatus());
-        Assert.assertEquals(XactApiHandler.MSG_MISSING_PROFILE_DATA,
+        Assert.assertEquals(XactApiHandler.MSG_MISSING_TRANSACTION_SECTION,
                 actualRepsonse.getReplyStatus().getMessage());
     }
     
