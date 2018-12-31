@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.modules.transaction.XactApiException;
 import org.modules.transaction.disbursements.DisbursementsApi;
+import org.modules.transaction.disbursements.DisbursementsApiException;
 import org.modules.transaction.disbursements.DisbursementsApiFactory;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -23,6 +24,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.rmt2.api.handler.BaseAccountingMessageHandlerTest;
 import org.rmt2.api.handler.HandlerCacheMockData;
 import org.rmt2.api.handler.transaction.common.CommonXactMockData;
+import org.rmt2.api.handlers.transaction.XactApiHandler;
 import org.rmt2.api.handlers.transaction.cashdisbursement.CashDisbursementApiHandler;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
@@ -137,140 +139,134 @@ public class CashDisbursementCreateMessageHandlerTest extends BaseAccountingMess
     
   
     
+    @Test
+    public void testError_Create_API_Error() {
+        String request = RMT2File.getFileContentsAsString("xml/transaction/disbursements/CashDisbursementCreateRequest.xml");
+
+        try {
+            when(this.mockApi.updateTrans(isA(XactDto.class), isA(List.class)))
+                    .thenThrow(new DisbursementsApiException("An Xact API test error occurred"));
+        } catch (XactApiException e) {
+            Assert.fail("Unable to setup mock stub for creating a transaction");
+        }
+
+        MessageHandlerResults results = null;
+        CashDisbursementApiHandler handler = new CashDisbursementApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_CREATE, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingTransactionResponse actualRepsonse =
+                (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertNotNull(actualRepsonse.getProfile());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(CashDisbursementApiHandler.MSG_FAILURE, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals("An Xact API test error occurred", actualRepsonse.getReplyStatus().getExtMessage());
+    }
+
+    @Test
+    public void testValidation_Missing_Profile() {
+        String request = RMT2File.getFileContentsAsString("xml/transaction/disbursements/CashDisbursementCreateRequestMissingProfile.xml");
+
+        MessageHandlerResults results = null;
+        CashDisbursementApiHandler handler = new CashDisbursementApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_CREATE, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingTransactionResponse actualRepsonse =
+                (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus()
+                .getReturnStatus());
+        Assert.assertEquals(XactApiHandler.MSG_MISSING_PROFILE_DATA, actualRepsonse.getReplyStatus().getMessage());
+    }
+
+    @Test
+    public void testValidation_Missing_Transaction_Section() {
+        String request = RMT2File.getFileContentsAsString("xml/transaction/disbursements/CashDisbursementCreateRequestMissingTransactionSection.xml");
+
+        MessageHandlerResults results = null;
+        CashDisbursementApiHandler handler = new CashDisbursementApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_CREATE, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingTransactionResponse actualRepsonse =
+                (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus()
+                .getReturnStatus());
+        Assert.assertEquals(XactApiHandler.MSG_MISSING_TRANSACTION_SECTION, actualRepsonse.getReplyStatus().getMessage());
+    }
+
+    @Test
+    public void testValidation_Missing_Transaction_Parent_Element() {
+        String request = RMT2File.getFileContentsAsString("xml/transaction/disbursements/CashDisbursementCreateRequestZeroTransactions.xml");
+
+        MessageHandlerResults results = null;
+        CashDisbursementApiHandler handler = new CashDisbursementApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_CREATE, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingTransactionResponse actualRepsonse =
+                (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus()
+                .getReturnStatus());
+        Assert.assertEquals(XactApiHandler.MSG_REQUIRED_NO_TRANSACTIONS_INCORRECT, actualRepsonse.getReplyStatus().getMessage());
+    }
+
 //    @Test
-//    public void testError_Fetch_API_Error() {
-//        String request = RMT2File.getFileContentsAsString("xml/transaction/common/TransactionCreateRequest.xml");
+//    public void testValidation_Zero_Transactions() {
+//        String request = RMT2File.getFileContentsAsString("xml/transaction/disbursements/CashDisbursementCreateRequestZeroTransactions2.xml");
 //
-//        try {
-//            when(this.mockApi.update(isA(XactDto.class), isA(List.class)))
-//                 .thenThrow(new XactApiException("An Xact API test error occurred"));
-//        } catch (XactApiException e) {
-//            Assert.fail("Unable to setup mock stub for creating a transaction");
-//        }
-//        
 //        MessageHandlerResults results = null;
-//        XactApiHandler handler = new XactApiHandler();
+//        CashDisbursementApiHandler handler = new CashDisbursementApiHandler();
 //        try {
-//            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_TRANSACTION_CREATE, request);
+//            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_CREATE, request);
 //        } catch (MessageHandlerCommandException e) {
 //            e.printStackTrace();
 //            Assert.fail("An unexpected exception was thrown");
 //        }
-//        
+//
 //        Assert.assertNotNull(results);
 //        Assert.assertNotNull(results.getPayload());
 //
-//        AccountingTransactionResponse actualRepsonse = 
-//                (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-//        Assert.assertNotNull(actualRepsonse.getProfile());
-//        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
-//        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-//        Assert.assertEquals("Failure to create Transaction", actualRepsonse.getReplyStatus().getMessage());
-//        Assert.assertEquals("An Xact API test error occurred",
-//                actualRepsonse.getReplyStatus().getExtMessage());
-//    }
-//    
-//    @Test
-//    public void testValidation_Missing_Profile() {
-//        String request = RMT2File.getFileContentsAsString("xml/transaction/common/TransactionCreateMissingProfileRequest.xml");
-//        
-//        MessageHandlerResults results = null;
-//        XactApiHandler handler = new XactApiHandler();
-//        try {
-//            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_TRANSACTION_CREATE, request);
-//        } catch (MessageHandlerCommandException e) {
-//            e.printStackTrace();
-//            Assert.fail("An unexpected exception was thrown");
-//        }
-//        
-//        Assert.assertNotNull(results);
-//        Assert.assertNotNull(results.getPayload());
-//
-//        AccountingTransactionResponse actualRepsonse = 
-//                (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-//        Assert.assertNull(actualRepsonse.getProfile());
-//        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-//        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus()
-//                .getReturnStatus());
-//        Assert.assertEquals(XactApiHandler.MSG_MISSING_PROFILE_DATA,
-//                actualRepsonse.getReplyStatus().getMessage());
-//    }
-//    
-//    @Test
-//    public void testValidation_Missing_Transaction_Section() {
-//        String request = RMT2File.getFileContentsAsString("xml/transaction/common/TransactionCreateMissingTransactionSectionRequest.xml");
-//        
-//        MessageHandlerResults results = null;
-//        XactApiHandler handler = new XactApiHandler();
-//        try {
-//            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_TRANSACTION_CREATE, request);
-//        } catch (MessageHandlerCommandException e) {
-//            e.printStackTrace();
-//            Assert.fail("An unexpected exception was thrown");
-//        }
-//        
-//        Assert.assertNotNull(results);
-//        Assert.assertNotNull(results.getPayload());
-//
-//        AccountingTransactionResponse actualRepsonse = 
-//                (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-//        Assert.assertNull(actualRepsonse.getProfile());
-//        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-//        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus()
-//                .getReturnStatus());
-//        Assert.assertEquals(XactApiHandler.MSG_MISSING_PROFILE_DATA,
-//                actualRepsonse.getReplyStatus().getMessage());
-//    }
-//    
-//    @Test
-//    public void testValidation_Zero_Transactions_Exist() {
-//        String request = RMT2File.getFileContentsAsString("xml/transaction/common/TransactionCreateZeroTransactionsRequest.xml");
-//        
-//        MessageHandlerResults results = null;
-//        XactApiHandler handler = new XactApiHandler();
-//        try {
-//            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_TRANSACTION_CREATE, request);
-//        } catch (MessageHandlerCommandException e) {
-//            e.printStackTrace();
-//            Assert.fail("An unexpected exception was thrown");
-//        }
-//        
-//        Assert.assertNotNull(results);
-//        Assert.assertNotNull(results.getPayload());
-//
-//        AccountingTransactionResponse actualRepsonse = 
-//                (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-//        Assert.assertNull(actualRepsonse.getProfile());
-//        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-//        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus()
-//                .getReturnStatus());
-//        Assert.assertEquals(XactApiHandler.MSG_REQUIRED_NO_TRANSACTIONS_INCORRECT,
-//                actualRepsonse.getReplyStatus().getMessage());
-//    }
-//    
-//    @Test
-//    public void testValidation_Too_Many_Transactions_Exist() {
-//        String request = RMT2File.getFileContentsAsString("xml/transaction/common/TransactionCreateTooManyTransactionsRequest.xml");
-//        
-//        MessageHandlerResults results = null;
-//        XactApiHandler handler = new XactApiHandler();
-//        try {
-//            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_TRANSACTION_CREATE, request);
-//        } catch (MessageHandlerCommandException e) {
-//            e.printStackTrace();
-//            Assert.fail("An unexpected exception was thrown");
-//        }
-//        
-//        Assert.assertNotNull(results);
-//        Assert.assertNotNull(results.getPayload());
-//
-//        AccountingTransactionResponse actualRepsonse = 
+//        AccountingTransactionResponse actualRepsonse =
 //                (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
 //        Assert.assertNull(actualRepsonse.getProfile());
 //        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
 //        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus()
 //                .getReturnStatus());
-//        Assert.assertEquals(XactApiHandler.MSG_REQUIRED_NO_TRANSACTIONS_INCORRECT,
-//                actualRepsonse.getReplyStatus().getMessage());
+//        Assert.assertEquals(XactApiHandler.MSG_REQUIRED_NO_TRANSACTIONS_INCORRECT, actualRepsonse.getReplyStatus().getMessage());
 //    }
 }

@@ -49,6 +49,7 @@ public class XactApiHandler extends
     public static final String MSG_MISSING_TARGET_LEVEL = "Transaction fetch request must contain a target level value";
     public static final String MSG_INCORRECT_TARGET_LEVEL = "Transaction fetch request contains an invalid target level: %s";
     public static final String MSG_MISSING_PROFILE_DATA = "Transaction profile is required for create transaction operation";
+    public static final String MSG_MISSING_TRANSACTION_SECTION = "Transaction section is missing from the transaction profile";
     public static final String MSG_REQUIRED_NO_TRANSACTIONS_INCORRECT = "Transaction profile is required to contain one and only one transaction for the create transaction operation";
     public static final String MSG_REVERSE_SUCCESS = "Existing Accounting Transaction, %s1, was reversed: %s2";
     public static final String MSG_DETAILS_NOT_SUPPORTED = "Transaction level \"DETAILS\" is not supported at this time";
@@ -345,12 +346,18 @@ public class XactApiHandler extends
         // Transaction profile must exist
         try {
             Verifier.verifyNotNull(req.getProfile());
-            Verifier.verifyNotNull(req.getProfile().getTransactions());
-            Verifier.verifyNotNull(req.getProfile().getTransactions().getTransaction());
         }
         catch (VerifyException e) {
             throw new InvalidRequestException(MSG_MISSING_PROFILE_DATA, e);    
         }
+
+        // Must include transaction section.
+        try {
+            Verifier.verifyNotNull(req.getProfile().getTransactions());
+        } catch (VerifyException e) {
+            throw new InvalidRequestException(MSG_MISSING_TRANSACTION_SECTION, e);
+        }
+
         // Transaction profile must contain one and only one transaction
         try {
             Verifier.verifyNotEmpty(req.getProfile().getTransactions().getTransaction());
