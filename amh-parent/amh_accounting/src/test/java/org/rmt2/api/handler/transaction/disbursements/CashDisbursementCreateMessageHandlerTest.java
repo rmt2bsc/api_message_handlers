@@ -269,4 +269,81 @@ public class CashDisbursementCreateMessageHandlerTest extends BaseAccountingMess
                 .getReturnStatus());
         Assert.assertEquals(XactApiHandler.MSG_REQUIRED_NO_TRANSACTIONS_INCORRECT, actualRepsonse.getReplyStatus().getMessage());
     }
+    
+    
+    @Test
+    public void testSuccess_Create_Trans_For_Creditor() {
+        String request = RMT2File.getFileContentsAsString("xml/transaction/disbursements/CashDisbursementCreditorCreateRequest.xml");
+
+        try {
+            when(this.mockApi.updateTrans(isA(XactDto.class), isA(List.class), isA(Integer.class)))
+                    .thenReturn(CommonXactMockData.NEW_XACT_ID);
+        } catch (XactApiException e) {
+            Assert.fail("Unable to setup mock stub for creating a creditor cash disbursement transaction");
+        }
+        
+        MessageHandlerResults results = null;
+        CashDisbursementApiHandler handler = new CashDisbursementApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_CREDITOR_CREATE, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingTransactionResponse actualRepsonse = 
+                (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertEquals(1, actualRepsonse.getProfile().getTransactions().getTransaction().size());
+        Assert.assertEquals(1, actualRepsonse.getReplyStatus().getRecordCount().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
+        
+        String msg = RMT2String.replace(CashDisbursementApiHandler.MSG_CREATE_SUCCESS,
+                String.valueOf(CommonXactMockData.NEW_XACT_ID), "%s");
+        Assert.assertEquals(msg, actualRepsonse.getReplyStatus().getMessage());
+        
+        Assert.assertNotNull(actualRepsonse.getProfile());
+        Assert.assertNotNull(actualRepsonse.getProfile().getTransactions());
+        Assert.assertTrue(actualRepsonse.getProfile().getTransactions().getTransaction().size() == 1);
+        for (int ndx = 0; ndx < actualRepsonse.getProfile().getTransactions().getTransaction().size(); ndx++) {
+            XactType a = actualRepsonse.getProfile().getTransactions().getTransaction().get(ndx);
+            Assert.assertNotNull(a.getXactId());
+            Assert.assertEquals(CommonXactMockData.NEW_XACT_ID, a.getXactId().intValue());
+        }
+    }
+    
+    
+    @Test
+    public void testValidation_Create_Trans_For_Creditor_Missing_Creditor_Profile() {
+        String request = RMT2File.getFileContentsAsString("xml/transaction/disbursements/CashDisbursementCreditorCreateRequest_MissingCreditorProfile.xml");
+
+        try {
+            when(this.mockApi.updateTrans(isA(XactDto.class), isA(List.class), isA(Integer.class)))
+                    .thenReturn(CommonXactMockData.NEW_XACT_ID);
+        } catch (XactApiException e) {
+            Assert.fail("Unable to setup mock stub for creating a creditor cash disbursement transaction");
+        }
+        
+        MessageHandlerResults results = null;
+        CashDisbursementApiHandler handler = new CashDisbursementApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_CREDITOR_CREATE, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingTransactionResponse actualRepsonse = 
+                (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus()
+                .getReturnStatus());
+        Assert.assertEquals(CashDisbursementApiHandler.MSG_MISSING_CREDITOR_PROFILE_DATA,
+                actualRepsonse.getReplyStatus().getMessage());
+    }
 }

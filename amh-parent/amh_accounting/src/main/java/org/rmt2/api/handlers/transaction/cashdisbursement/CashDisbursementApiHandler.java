@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.dao.mapping.orm.rmt2.XactTypeItemActivity;
+import org.dto.CreditorDto;
 import org.dto.XactCustomCriteriaDto;
 import org.dto.XactDto;
 import org.dto.XactTypeItemActivityDto;
@@ -22,10 +23,13 @@ import org.rmt2.jaxb.XactType;
 
 import com.InvalidDataException;
 import com.RMT2Exception;
+import com.api.messaging.InvalidRequestException;
 import com.api.messaging.handler.MessageHandlerCommandException;
 import com.api.messaging.handler.MessageHandlerCommonReplyStatus;
 import com.api.messaging.handler.MessageHandlerResults;
 import com.api.util.RMT2String;
+import com.api.util.assistants.Verifier;
+import com.api.util.assistants.VerifyException;
 
 /**
  * Handles and routes Cash Disbursement Transaction messages to the Accounting API.
@@ -39,6 +43,7 @@ public class CashDisbursementApiHandler extends XactApiHandler {
     public static final String MSG_DATA_NOT_FOUND = "Cash disbursement data not found!";
     public static final String MSG_FAILURE = "Failure to retrieve Cash disbursement transaction(s)";
     public static final String MSG_CREATE_SUCCESS = "New cash disbursement transaction was created: %s";
+    public static final String MSG_MISSING_CREDITOR_PROFILE_DATA = "Creditor profile is required when creating a cash disbursement for a creditor";
     
     private DisbursementsApi api;
     
@@ -84,6 +89,10 @@ public class CashDisbursementApiHandler extends XactApiHandler {
                 
             case ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_CREATE:
                 r = this.create(this.requestObj);
+                break;
+                
+            case ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_CREDITOR_CREATE:
+                r = this.createForCreditor(this.requestObj);
                 break;
                 
             default:
@@ -157,8 +166,8 @@ public class CashDisbursementApiHandler extends XactApiHandler {
     }
 
     /**
-     * Handler for invoking the appropriate API in order to create a cash disbursement accounting 
-     * transaction object.
+     * Handler for invoking the appropriate API in order to create a cash
+     * disbursement accounting transaction object.
      * 
      * @param req
      *            an instance of {@link AccountingTransactionRequest}
@@ -201,6 +210,52 @@ public class CashDisbursementApiHandler extends XactApiHandler {
         results.setPayload(xml);
         return results;
     }
+    
+    /**
+     * Handler for invoking the appropriate API in order to create a cash
+     * disbursement accounting transaction object for a given creditor.
+     * 
+     * @param req
+     *            an instance of {@link AccountingTransactionRequest}
+     * @return an instance of {@link MessageHandlerResults}
+     */
+    protected MessageHandlerResults createForCreditor(AccountingTransactionRequest req) {
+        MessageHandlerResults results = new MessageHandlerResults();
+        MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
+        XactType reqXact = req.getProfile().getTransactions().getTransaction().get(0);
+        List<XactType> tranRresults = new ArrayList<>();
+        
+        try {
+            // Set reply status
+            rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            XactDto xactDto = TransactionJaxbDtoFactory.createXactDtoInstance(reqXact);
+            List<XactTypeItemActivityDto> itemsDtoList = TransactionJaxbDtoFactory
+                    .createXactItemDtoInstance(reqXact.getLineitems().getLineitem());
+            CreditorDto credDto = TransactionJaxbDtoFactory.createCreditorDtoInstance(reqXact); 
+            
+            int newXactId = this.api.updateTrans(xactDto, itemsDtoList, credDto.getCreditorId());
+            xactDto.setXactId(newXactId);
+            XactType XactResults = TransactionJaxbDtoFactory.createXactJaxbInstance(xactDto, 0, itemsDtoList);
+            tranRresults.add(XactResults);
+            String msg = RMT2String.replace(MSG_CREATE_SUCCESS, String.valueOf(XactResults.getXactId()), "%s");
+            rs.setMessage(msg);
+            rs.setRecordCount(1);
+            
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+            this.responseObj.setHeader(req.getHeader());
+        } catch (Exception e) {
+            logger.error("Error occurred during API Message Handler operation, " + this.command, e );
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
+            rs.setMessage(CashDisbursementApiHandler.MSG_FAILURE);
+            rs.setExtMessage(e.getMessage());
+        } finally {
+            this.api.close();
+        }
+        
+        String xml = this.buildResponse(tranRresults, rs);
+        results.setPayload(xml);
+        return results;
+    }
 
     /* (non-Javadoc)
      * @see org.rmt2.api.handlers.transaction.XactApiHandler#validateRequest(org.rmt2.jaxb.AccountingTransactionRequest)
@@ -217,13 +272,35 @@ public class CashDisbursementApiHandler extends XactApiHandler {
                 break;
                 
             case ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_CREATE:
-//            case ApiTransactionCodes.ACCOUNTING_TRANSACTION_REVERSE:
+            case ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_CREDITOR_CREATE:
                 // Transaction profile must exist
                 this.validateUpdateRequest(req);
                 break;
                 
             default:
                 break;
+        }
+    }
+
+    /**
+     * Verifies that the creditor profile exists for the create creditor cash
+     * disbursment transaction.
+     * 
+     * @param req
+     * @throws InvalidDataException
+     */
+    @Override
+    protected void validateUpdateRequest(AccountingTransactionRequest req) throws InvalidDataException {
+        super.validateUpdateRequest(req);
+        
+        // Verify that creditor profile exist
+        if (ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_CREDITOR_CREATE.equalsIgnoreCase(this.command)) {
+            try {
+                Verifier.verifyNotNull(req.getProfile().getTransactions().getTransaction().get(0).getCreditor());
+            }
+            catch (VerifyException e) {
+                throw new InvalidRequestException(CashDisbursementApiHandler.MSG_MISSING_CREDITOR_PROFILE_DATA, e);    
+            }    
         }
     }
 

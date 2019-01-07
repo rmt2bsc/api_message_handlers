@@ -5,11 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.dto.CreditorDto;
 import org.dto.XactCodeDto;
 import org.dto.XactCodeGroupDto;
 import org.dto.XactCustomCriteriaDto;
 import org.dto.XactDto;
 import org.dto.XactTypeItemActivityDto;
+import org.dto.adapter.orm.account.subsidiary.Rmt2SubsidiaryDtoFactory;
 import org.dto.adapter.orm.transaction.Rmt2XactDtoFactory;
 import org.modules.transaction.XactApiFactory;
 import org.rmt2.api.handlers.AccountingtMsgHandlerUtility;
@@ -354,6 +356,47 @@ public class TransactionJaxbDtoFactory extends RMT2Base {
         dto.setXactNegInstrNo(jaxbObj.getNegInstrNo());
         dto.setXactConfirmNo(jaxbObj.getConfirmNo());
         dto.setXactBankTransInd(jaxbObj.getBankTransInd());
+        return dto;
+    }
+    
+    /**
+     * Create Creditor DTO object.
+     * <p>
+     * Extracts data from the creditor profile section of the XactType instance
+     * and builds the Creditor DTO object.
+     * 
+     * @param jaxbObj
+     *            {@link XactType}
+     * @return {@link CreditorDto}
+     */
+    public static CreditorDto createCreditorDtoInstance(XactType jaxbObj) {
+        if (jaxbObj == null) {
+            return null;
+        }
+        if (jaxbObj.getCreditor() == null) {
+            return null;
+        }
+        
+        CreditorDto dto = Rmt2SubsidiaryDtoFactory.createCreditorInstance(null, null);
+        if (jaxbObj.getCreditor().getAcctId() != null) {
+            dto.setAcctId(jaxbObj.getCreditor().getAcctId().intValue());    
+        }
+        if (jaxbObj.getCreditor().getCreditorId() != null) {
+            dto.setCreditorId(jaxbObj.getCreditor().getCreditorId().intValue());    
+        }
+        
+        dto.setAccountNo(jaxbObj.getCreditor().getAccountNo());
+        if (jaxbObj.getCreditor().getContactDetails() != null) {
+            if (jaxbObj.getCreditor().getContactDetails().getBusinessId() != null) {
+                dto.setContactId(jaxbObj.getCreditor().getContactDetails().getBusinessId().intValue());    
+            }
+            dto.setContactEmail(jaxbObj.getCreditor().getContactDetails().getContactEmail());
+            dto.setContactExt(jaxbObj.getCreditor().getContactDetails().getContactExt());
+            dto.setContactFirstname(jaxbObj.getCreditor().getContactDetails().getContactFirstname());
+            dto.setContactLastname(jaxbObj.getCreditor().getContactDetails().getContactLastname());
+            dto.setContactName(jaxbObj.getCreditor().getContactDetails().getLongName());
+            dto.setContactPhone(jaxbObj.getCreditor().getContactDetails().getContactPhone());
+        }
         return dto;
     }
     
