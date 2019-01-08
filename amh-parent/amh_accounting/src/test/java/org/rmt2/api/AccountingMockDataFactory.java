@@ -503,6 +503,7 @@ public class AccountingMockDataFactory {
             Date xactDate, int xactTypeId) {
         VwCreditorXactHist o = new VwCreditorXactHist();
         o.setXactId(xactId);
+        o.setCreditorId(creditorId);
         o.setCreditorTypeId(creditorId);
         o.setAccountNumber(acctNo);
         o.setXactAmount(xactAmt);
