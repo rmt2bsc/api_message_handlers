@@ -1,6 +1,7 @@
 package org.rmt2.api.handlers.transaction.purchases;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,7 +88,7 @@ public class CreditorPurchasesApiHandler extends XactApiHandler {
                 r = this.fetch(this.requestObj);
                 break;
                 
-            case ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_CREATE:
+            case ApiTransactionCodes.ACCOUNTING_CREDITPURCHASE_CREATE:
                 r = this.create(this.requestObj);
                 break;
                 
@@ -161,51 +162,50 @@ public class CreditorPurchasesApiHandler extends XactApiHandler {
         return results;
     }
 
-//    /**
-//     * Handler for invoking the appropriate API in order to create a cash
-//     * disbursement accounting transaction object.
-//     * 
-//     * @param req
-//     *            an instance of {@link AccountingTransactionRequest}
-//     * @return an instance of {@link MessageHandlerResults}
-//     */
-//    @Override
-//    protected MessageHandlerResults create(AccountingTransactionRequest req) {
-//        MessageHandlerResults results = new MessageHandlerResults();
-//        MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
-//        XactType reqXact = req.getProfile().getTransactions().getTransaction().get(0);
-//        List<XactType> tranRresults = new ArrayList<>();
-//        
-//        try {
-//            // Set reply status
-//            rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
-//            XactDto xactDto = TransactionJaxbDtoFactory.createXactDtoInstance(reqXact);
-//            List<XactTypeItemActivityDto> itemsDtoList = TransactionJaxbDtoFactory
-//                    .createXactItemDtoInstance(reqXact.getLineitems().getLineitem());
-//            
-//            int newXactId = this.api.updateTrans(xactDto, itemsDtoList);
-//            xactDto.setXactId(newXactId);
-//            XactType XactResults = TransactionJaxbDtoFactory.createXactJaxbInstance(xactDto, 0, itemsDtoList);
-//            tranRresults.add(XactResults);
-//            String msg = RMT2String.replace(MSG_CREATE_SUCCESS, String.valueOf(XactResults.getXactId()), "%s");
-//            rs.setMessage(msg);
-//            rs.setRecordCount(1);
-//            
-//            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
-//            this.responseObj.setHeader(req.getHeader());
-//        } catch (Exception e) {
-//            logger.error("Error occurred during API Message Handler operation, " + this.command, e );
-//            rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-//            rs.setMessage(CreditorPurchasesApiHandler.MSG_FAILURE);
-//            rs.setExtMessage(e.getMessage());
-//        } finally {
-//            this.api.close();
-//        }
-//        
-//        String xml = this.buildResponse(tranRresults, rs);
-//        results.setPayload(xml);
-//        return results;
-//    }
+    /**
+     * Handler for invoking the appropriate API in order to create a cash
+     * disbursement accounting transaction object.
+     * 
+     * @param req
+     *            an instance of {@link AccountingTransactionRequest}
+     * @return an instance of {@link MessageHandlerResults}
+     */
+    @Override
+    protected MessageHandlerResults create(AccountingTransactionRequest req) {
+        MessageHandlerResults results = new MessageHandlerResults();
+        MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
+        XactType reqXact = req.getProfile().getTransactions().getTransaction().get(0);
+        List<XactType> tranRresults = new ArrayList<>();
+        
+        try {
+            // Set reply status
+            rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            XactCreditChargeDto xactDto = CreditorPurchasesJaxbDtoFactory.createCreditorPurchasesDtoInstance(reqXact);
+            List<XactTypeItemActivityDto> itemsDtoList = TransactionJaxbDtoFactory
+                    .createXactItemDtoInstance(reqXact.getLineitems().getLineitem());
+            
+            int newXactId = this.api.update(xactDto, itemsDtoList);
+            reqXact.setXactId(BigInteger.valueOf(newXactId));
+            tranRresults.add(reqXact);
+            String msg = RMT2String.replace(MSG_CREATE_SUCCESS, String.valueOf(reqXact.getXactId()), "%s");
+            rs.setMessage(msg);
+            rs.setRecordCount(1);
+            
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+            this.responseObj.setHeader(req.getHeader());
+        } catch (Exception e) {
+            logger.error("Error occurred during API Message Handler operation, " + this.command, e );
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
+            rs.setMessage(CreditorPurchasesApiHandler.MSG_FAILURE);
+            rs.setExtMessage(e.getMessage());
+        } finally {
+            this.api.close();
+        }
+        
+        String xml = this.buildResponse(tranRresults, rs);
+        results.setPayload(xml);
+        return results;
+    }
     
  
 
@@ -223,7 +223,7 @@ public class CreditorPurchasesApiHandler extends XactApiHandler {
                 this.validateSearchRequest(req);
                 break;
                 
-            case ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_CREATE:
+            case ApiTransactionCodes.ACCOUNTING_CREDITPURCHASE_CREATE:
                 // Transaction profile must exist
                 this.validateUpdateRequest(req);
                 break;
@@ -245,7 +245,7 @@ public class CreditorPurchasesApiHandler extends XactApiHandler {
         super.validateUpdateRequest(req);
         
         // Verify that creditor profile exist
-        if (ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_CREDITOR_CREATE.equalsIgnoreCase(this.command)) {
+        if (ApiTransactionCodes.ACCOUNTING_CREDITPURCHASE_CREATE.equalsIgnoreCase(this.command)) {
             try {
                 Verifier.verifyNotNull(req.getProfile().getTransactions().getTransaction().get(0).getCreditor());
             }

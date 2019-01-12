@@ -7,6 +7,7 @@ import org.dto.XactCreditChargeDto;
 import org.dto.adapter.orm.transaction.purchases.creditor.Rmt2CreditChargeDtoFactory;
 import org.rmt2.api.handlers.transaction.TransactionJaxbDtoFactory;
 import org.rmt2.jaxb.XactBasicCriteriaType;
+import org.rmt2.jaxb.XactType;
 
 import com.api.util.RMT2Date;
 import com.api.util.RMT2String2;
@@ -60,6 +61,81 @@ public class CreditorPurchasesJaxbDtoFactory extends TransactionJaxbDtoFactory {
             dto.setXactTenderId(jaxbCriteria.getTenderId().intValue());    
         }
         
+        return dto;
+    }
+    
+    /**
+     * Creates an instance of <i>XactCreditChargeDto</i> using a valid
+     * <i>XactType</i> JAXB object.
+     * 
+     * @param jaxbObj
+     *            an instance of {@link XactType}
+     * @return an instance of {@link XactCreditChargeDto}
+     * @throws {@link com.SystemException} Transaction date could not converted from a String.
+     */
+    public static XactCreditChargeDto createCreditorPurchasesDtoInstance(XactType jaxbObj) {
+        if (jaxbObj == null) {
+            return null;
+        }
+        XactCreditChargeDto dto = Rmt2CreditChargeDtoFactory.createCreditChargeInstance();
+        
+        // Get creditor purchase transaction data
+        if (jaxbObj.getXactId() != null) {
+            dto.setXactId(jaxbObj.getXactId().intValue());    
+        }
+        if (jaxbObj.getXactType() != null && jaxbObj.getXactType().getXactTypeId() != null) {
+            dto.setXactTypeId(jaxbObj.getXactType().getXactTypeId().intValue());    
+        }
+        if (jaxbObj.getXactSubtype() != null && jaxbObj.getXactSubtype().getXactTypeId() != null) {
+            dto.setXactSubtypeId(jaxbObj.getXactSubtype().getXactTypeId().intValue());    
+        }
+        if (jaxbObj.getXactSubtype() != null && jaxbObj.getXactSubtype().getXactTypeId() != null) {
+            dto.setXactSubtypeId(jaxbObj.getXactSubtype().getXactTypeId().intValue());    
+        }
+        if (jaxbObj.getXactCodeGroup() != null) {
+            if (jaxbObj.getXactCodeGroup().getXactCodeGrpId() != null) {
+                dto.setXactCodeGrpId(jaxbObj.getXactCodeGroup().getXactCodeGrpId().intValue());
+            }
+            if (!RMT2String2.isEmpty(jaxbObj.getXactCodeGroup().getDescription())) {
+                dto.setXactCodeGrpDescription(jaxbObj.getXactCodeGroup().getDescription());
+            }
+        }
+        if (jaxbObj.getXactCode() != null) {
+            if (jaxbObj.getXactCode().getXactCodeId() != null) {
+                dto.setXactCodeId(jaxbObj.getXactCode().getXactCodeId().intValue());
+            }
+            if (!RMT2String2.isEmpty(jaxbObj.getXactCode().getDescription())) {
+                dto.setXactCodeDescription(jaxbObj.getXactCode().getDescription());
+            }
+        }
+        if (jaxbObj.getXactAmount() != null) {
+            dto.setXactAmount(jaxbObj.getXactAmount().doubleValue());    
+        }   
+        if (jaxbObj.getXactDate() != null) {
+            dto.setXactDate(jaxbObj.getXactDate().toGregorianCalendar().getTime());    
+        } 
+        if (jaxbObj.getPostedDate() != null) {
+            dto.setXactPostedDate(jaxbObj.getPostedDate().toGregorianCalendar().getTime());    
+        }
+        if (jaxbObj.getTenderId() != null) {
+            dto.setXactTenderId(jaxbObj.getTenderId().intValue());    
+        }   
+        if (jaxbObj.getDocumentId() != null) {
+            dto.setDocumentId(jaxbObj.getDocumentId().intValue());    
+        }   
+        dto.setXactReason(jaxbObj.getXactReason());
+        dto.setXactEntityRefNo(jaxbObj.getEntityRefNo());
+        dto.setXactNegInstrNo(jaxbObj.getNegInstrNo());
+        dto.setXactConfirmNo(jaxbObj.getConfirmNo());
+        dto.setXactBankTransInd(jaxbObj.getBankTransInd());
+        
+        // Get creditor data
+        if (jaxbObj.getCreditor() != null) {
+            if (jaxbObj.getCreditor().getCreditorId() != null) {
+                dto.setCreditorId(jaxbObj.getCreditor().getCreditorId().intValue());
+            }
+            dto.setAccountNumber(jaxbObj.getCreditor().getAccountNo());
+        }
         return dto;
     }
 }
