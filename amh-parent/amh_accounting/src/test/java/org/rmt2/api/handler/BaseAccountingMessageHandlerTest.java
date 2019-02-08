@@ -25,6 +25,8 @@ import com.api.xml.jaxb.JaxbUtil;
  */
 public class BaseAccountingMessageHandlerTest {
     private static String LOGGER_CONFIG_PATH;
+    public static String API_ERROR_MESSAGE;
+    public static String VALIDATION_ERROR_MESSAGE;
     protected JaxbUtil jaxb;
     protected PersistenceClient mockPersistenceClient;
     

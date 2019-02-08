@@ -32,7 +32,7 @@ import com.api.util.assistants.Verifier;
 import com.api.util.assistants.VerifyException;
 
 /**
- * Handles and routes Creditor Disbursement Transaction messages to the
+ * Handles and routes Creditor Purchases Transaction messages to the
  * Accounting API.
  * 
  * @author rterrell
@@ -43,8 +43,9 @@ public class CreditorPurchasesApiHandler extends XactApiHandler {
     public static final String MSG_DATA_FOUND = "Creditor purchases record(s) found";
     public static final String MSG_DATA_NOT_FOUND = "Creditor purchases data not found!";
     public static final String MSG_FAILURE = "Failure to retrieve Creditor purchases transaction(s)";
+    public static final String MSG_CREATE_FAILURE = "Failure to create Creditor purchases transaction(s)";
     public static final String MSG_CREATE_SUCCESS = "New creditor purchases transaction was created: %s";
-    public static final String MSG_MISSING_CREDITOR_PROFILE_DATA = "Creditor profile is required when creating a cash purchases for a creditor";
+    public static final String MSG_MISSING_CREDITOR_PROFILE_DATA = "Creditor profile is required when creating a Creditor purchases for a creditor";
     
     private CreditorPurchasesApi api;
     
@@ -103,7 +104,7 @@ public class CreditorPurchasesApiHandler extends XactApiHandler {
     
     /**
      * Handler for invoking the appropriate API in order to fetch one or more
-     * cash disbursement transaction objects. 
+     * creditor purchases transaction objects. 
      * <p>
      * Currently, the target level, <i>DETAILS</i>, is not supported.
      * 
@@ -163,8 +164,8 @@ public class CreditorPurchasesApiHandler extends XactApiHandler {
     }
 
     /**
-     * Handler for invoking the appropriate API in order to create a cash
-     * disbursement accounting transaction object.
+     * Handler for invoking the appropriate API in order to create a creditor
+     * purchases accounting transaction object.
      * 
      * @param req
      *            an instance of {@link AccountingTransactionRequest}
@@ -186,7 +187,7 @@ public class CreditorPurchasesApiHandler extends XactApiHandler {
             
             int newXactId = this.api.update(xactDto, itemsDtoList);
             reqXact.setXactId(BigInteger.valueOf(newXactId));
-            tranRresults.add(reqXact);
+//            tranRresults.add(reqXact);
             String msg = RMT2String.replace(MSG_CREATE_SUCCESS, String.valueOf(reqXact.getXactId()), "%s");
             rs.setMessage(msg);
             rs.setRecordCount(1);
@@ -196,9 +197,10 @@ public class CreditorPurchasesApiHandler extends XactApiHandler {
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setMessage(CreditorPurchasesApiHandler.MSG_FAILURE);
+            rs.setMessage(CreditorPurchasesApiHandler.MSG_CREATE_FAILURE);
             rs.setExtMessage(e.getMessage());
         } finally {
+            tranRresults.add(reqXact);
             this.api.close();
         }
         
