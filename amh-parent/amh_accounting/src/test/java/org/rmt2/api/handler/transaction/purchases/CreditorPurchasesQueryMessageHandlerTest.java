@@ -97,7 +97,8 @@ public class CreditorPurchasesQueryMessageHandlerTest extends BaseAccountingMess
 
     @Test
     public void testSuccess_Fetch_BasicCriteria_Full() {
-        String request = RMT2File.getFileContentsAsString("xml/transaction/purchases/CreditorPurchasesBasicQueryRequestFull.xml");
+        String request = RMT2File.getFileContentsAsString(
+                "xml/transaction/purchases/creditor/CreditorPurchasesBasicQueryRequestFull.xml");
         List<XactCreditChargeDto> mockListData = CreditorPurchasesMockData.createMockCreditPurchaseHeader();
         List<XactTypeItemActivityDto> mockItemListData = CreditorPurchasesMockData.createMockCreditPurchaseDetails();
 
@@ -147,7 +148,8 @@ public class CreditorPurchasesQueryMessageHandlerTest extends BaseAccountingMess
     
     @Test
     public void testSuccess_Fetch_CustomCriteria_Full() {
-        String request = RMT2File.getFileContentsAsString("xml/transaction/purchases/CreditorPurchasesCustomCriteriaQueryRequestFull.xml");
+        String request = RMT2File.getFileContentsAsString(
+                "xml/transaction/purchases/creditor/CreditorPurchasesCustomCriteriaQueryRequestFull.xml");
         List<XactCreditChargeDto> mockListData = CreditorPurchasesMockData.createMockCreditPurchaseHeader();
         List<XactTypeItemActivityDto> mockItemListData = CreditorPurchasesMockData.createMockCreditPurchaseDetails();
 
@@ -200,7 +202,8 @@ public class CreditorPurchasesQueryMessageHandlerTest extends BaseAccountingMess
  
     @Test
     public void testSuccess_Fetch_NoDataFound() {
-        String request = RMT2File.getFileContentsAsString("xml/transaction/purchases/CreditorPurchasesCustomCriteriaQueryRequestFull.xml");
+        String request = RMT2File.getFileContentsAsString(
+                "xml/transaction/purchases/creditor/CreditorPurchasesCustomCriteriaQueryRequestFull.xml");
 
         try {
             when(this.mockApi.get(isA(XactCreditChargeDto.class), isA(XactCustomCriteriaDto.class)))
@@ -232,7 +235,8 @@ public class CreditorPurchasesQueryMessageHandlerTest extends BaseAccountingMess
         
     @Test
     public void testSuccess_Fetch_BasicCriteria_Header() {
-        String request = RMT2File.getFileContentsAsString("xml/transaction/purchases/CreditorPurchasesBasicQueryRequestHeader.xml");
+        String request = RMT2File.getFileContentsAsString(
+                "xml/transaction/purchases/creditor/CreditorPurchasesBasicQueryRequestHeader.xml");
         List<XactCreditChargeDto> mockListData = CreditorPurchasesMockData.createMockCreditPurchaseHeader();
 
         try {
@@ -274,7 +278,8 @@ public class CreditorPurchasesQueryMessageHandlerTest extends BaseAccountingMess
     
     @Test
     public void testSuccess_Fetch_CustomCriteria_Header() {
-        String request = RMT2File.getFileContentsAsString("xml/transaction/purchases/CreditorPurchasesCustomQueryRequestHeader.xml");
+        String request = RMT2File.getFileContentsAsString(
+                "xml/transaction/purchases/creditor/CreditorPurchasesCustomQueryRequestHeader.xml");
         List<XactCreditChargeDto> mockListData = CreditorPurchasesMockData.createMockCreditPurchaseHeader();
 
         try {
@@ -318,7 +323,8 @@ public class CreditorPurchasesQueryMessageHandlerTest extends BaseAccountingMess
 
     @Test
     public void testError_Fetch_Details_TargetLevel_Error() {
-        String request = RMT2File.getFileContentsAsString("xml/transaction/purchases/CreditorPurchasesBasicQueryRequestDetails.xml");
+        String request = RMT2File.getFileContentsAsString(
+                "xml/transaction/purchases/creditor/CreditorPurchasesBasicQueryRequestDetails.xml");
                 
         MessageHandlerResults results = null;
         CreditorPurchasesApiHandler handler = new CreditorPurchasesApiHandler();
@@ -342,7 +348,8 @@ public class CreditorPurchasesQueryMessageHandlerTest extends BaseAccountingMess
 
     @Test
     public void testError_Fetch_API_Error() {
-        String request = RMT2File.getFileContentsAsString("xml/transaction/purchases/CreditorPurchasesCustomQueryRequestHeader.xml");
+        String request = RMT2File.getFileContentsAsString(
+                "xml/transaction/purchases/creditor/CreditorPurchasesCustomQueryRequestHeader.xml");
 
         try {
             when(this.mockApi.get(isA(XactCreditChargeDto.class), isA(XactCustomCriteriaDto.class)))
@@ -375,7 +382,8 @@ public class CreditorPurchasesQueryMessageHandlerTest extends BaseAccountingMess
 
     @Test
     public void testError_Incorrect_Trans_Code() {
-        String request = RMT2File.getFileContentsAsString("xml/transaction/common/TransactionQueryInvalidTranCodeRequest.xml");
+        String request = RMT2File.getFileContentsAsString(
+                "xml/transaction/common/TransactionQueryInvalidTranCodeRequest.xml");
         
         MessageHandlerResults results = null;
         CreditorPurchasesApiHandler handler = new CreditorPurchasesApiHandler();

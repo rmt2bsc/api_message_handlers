@@ -97,7 +97,7 @@ public class CreditorPurchasesUpdateMessageHandlerTest extends BaseAccountingMes
     @Test
     public void testSuccess_Create() {
         String request = RMT2File.getFileContentsAsString(
-                "xml/transaction/purchases/CreditorPurchasesUpdateRequest.xml");
+                "xml/transaction/purchases/creditor/CreditorPurchasesUpdateRequest.xml");
 
         try {
             when(this.mockApi.update(isA(XactCreditChargeDto.class), isA(List.class)))
@@ -144,7 +144,7 @@ public class CreditorPurchasesUpdateMessageHandlerTest extends BaseAccountingMes
     @Test
     public void testError_Create_API_Error() {
         String request = RMT2File.getFileContentsAsString(
-                "xml/transaction/purchases/CreditorPurchasesUpdateRequest.xml");
+                "xml/transaction/purchases/creditor/CreditorPurchasesUpdateRequest.xml");
 
         try {
             when(this.mockApi.update(isA(XactCreditChargeDto.class), isA(List.class)))
@@ -178,7 +178,7 @@ public class CreditorPurchasesUpdateMessageHandlerTest extends BaseAccountingMes
     @Test
     public void testValidation_Create_Missing_Profile() {
         String request = RMT2File.getFileContentsAsString(
-                "xml/transaction/purchases/CreditorPurchasesUpdateRequest_MissingProfile.xml");
+                "xml/transaction/purchases/creditor/CreditorPurchasesUpdateRequest_MissingProfile.xml");
 
         try {
             when(this.mockApi.update(isA(XactCreditChargeDto.class), isA(List.class)))
@@ -212,7 +212,7 @@ public class CreditorPurchasesUpdateMessageHandlerTest extends BaseAccountingMes
     @Test
     public void testValidation_Create_Missing_Transaction_Section() {
         String request = RMT2File.getFileContentsAsString(
-                "xml/transaction/purchases/CreditorPurchasesUpdateRequest_MissingTransactionSection.xml");
+                "xml/transaction/purchases/creditor/CreditorPurchasesUpdateRequest_MissingTransactionSection.xml");
 
         try {
             when(this.mockApi.update(isA(XactCreditChargeDto.class), isA(List.class)))
@@ -246,7 +246,7 @@ public class CreditorPurchasesUpdateMessageHandlerTest extends BaseAccountingMes
     @Test
     public void testValidation_Create_Zero_Transactions() {
         String request = RMT2File.getFileContentsAsString(
-                "xml/transaction/purchases/CreditorPurchasesUpdateRequest_ZeroTransactions.xml");
+                "xml/transaction/purchases/creditor/CreditorPurchasesUpdateRequest_ZeroTransactions.xml");
 
         try {
             when(this.mockApi.update(isA(XactCreditChargeDto.class), isA(List.class)))
@@ -280,7 +280,7 @@ public class CreditorPurchasesUpdateMessageHandlerTest extends BaseAccountingMes
     @Test
     public void testValidation_Create_TooMany_Transactions() {
         String request = RMT2File.getFileContentsAsString(
-                "xml/transaction/purchases/CreditorPurchasesUpdateRequest_TooManyTransactions.xml");
+                "xml/transaction/purchases/creditor/CreditorPurchasesUpdateRequest_TooManyTransactions.xml");
 
         try {
             when(this.mockApi.update(isA(XactCreditChargeDto.class), isA(List.class)))
@@ -314,7 +314,7 @@ public class CreditorPurchasesUpdateMessageHandlerTest extends BaseAccountingMes
     @Test
     public void testValidation_Create_Missing_Creditor_Profile() {
         String request = RMT2File.getFileContentsAsString(
-                "xml/transaction/purchases/CreditorPurchasesUpdateRequest_MissingCreditorProfile.xml");
+                "xml/transaction/purchases/creditor/CreditorPurchasesUpdateRequest_MissingCreditorProfile.xml");
 
         try {
             when(this.mockApi.update(isA(XactCreditChargeDto.class), isA(List.class)))

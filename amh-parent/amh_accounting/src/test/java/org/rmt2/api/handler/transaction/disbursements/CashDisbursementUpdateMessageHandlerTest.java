@@ -97,7 +97,7 @@ public class CashDisbursementUpdateMessageHandlerTest extends BaseAccountingMess
     @Test
     public void testSuccess_Create_Trans() {
         String request = RMT2File.getFileContentsAsString(
-                "xml/transaction/disbursements/CashDisbursementCreateRequest.xml");
+                "xml/transaction/disbursements/cash/CashDisbursementCreateRequest.xml");
 
         try {
             when(this.mockApi.updateTrans(isA(XactDto.class), isA(List.class)))
@@ -143,7 +143,7 @@ public class CashDisbursementUpdateMessageHandlerTest extends BaseAccountingMess
     @Test
     public void testError_Create_API_Error() {
         String request = RMT2File.getFileContentsAsString(
-                "xml/transaction/disbursements/CashDisbursementCreateRequest.xml");
+                "xml/transaction/disbursements/cash/CashDisbursementCreateRequest.xml");
 
         try {
             when(this.mockApi.updateTrans(isA(XactDto.class), isA(List.class)))
@@ -175,7 +175,7 @@ public class CashDisbursementUpdateMessageHandlerTest extends BaseAccountingMess
     @Test
     public void testValidation_Missing_Profile() {
         String request = RMT2File.getFileContentsAsString(
-                "xml/transaction/disbursements/CashDisbursementCreateRequestMissingProfile.xml");
+                "xml/transaction/disbursements/cash/CashDisbursementCreateRequestMissingProfile.xml");
 
 
         MessageHandlerResults results = null;
@@ -201,7 +201,8 @@ public class CashDisbursementUpdateMessageHandlerTest extends BaseAccountingMess
 
     @Test
     public void testValidation_Missing_Transaction_Section() {
-        String request = RMT2File.getFileContentsAsString("xml/transaction/disbursements/CashDisbursementCreateRequestMissingTransactionSection.xml");
+        String request = RMT2File.getFileContentsAsString(
+                "xml/transaction/disbursements/cash/CashDisbursementCreateRequestMissingTransactionSection.xml");
 
         MessageHandlerResults results = null;
         CashDisbursementApiHandler handler = new CashDisbursementApiHandler();
@@ -226,7 +227,8 @@ public class CashDisbursementUpdateMessageHandlerTest extends BaseAccountingMess
 
     @Test
     public void testValidation_Missing_Transaction_Parent_Element() {
-        String request = RMT2File.getFileContentsAsString("xml/transaction/disbursements/CashDisbursementCreateRequestZeroTransactions.xml");
+        String request = RMT2File.getFileContentsAsString(
+                "xml/transaction/disbursements/cash/CashDisbursementCreateRequestZeroTransactions.xml");
 
         MessageHandlerResults results = null;
         CashDisbursementApiHandler handler = new CashDisbursementApiHandler();
@@ -251,7 +253,8 @@ public class CashDisbursementUpdateMessageHandlerTest extends BaseAccountingMess
 
     @Test
     public void testValidation_Too_Many_Transactions() {
-        String request = RMT2File.getFileContentsAsString("xml/transaction/disbursements/CashDisbursementCreateRequestTooManyTransactions.xml");
+        String request = RMT2File.getFileContentsAsString(
+                "xml/transaction/disbursements/cash/CashDisbursementCreateRequestTooManyTransactions.xml");
 
         MessageHandlerResults results = null;
         CashDisbursementApiHandler handler = new CashDisbursementApiHandler();
@@ -277,7 +280,8 @@ public class CashDisbursementUpdateMessageHandlerTest extends BaseAccountingMess
     
     @Test
     public void testSuccess_Create_Trans_For_Creditor() {
-        String request = RMT2File.getFileContentsAsString("xml/transaction/disbursements/CashDisbursementCreditorCreateRequest.xml");
+        String request = RMT2File.getFileContentsAsString(
+                "xml/transaction/disbursements/cash/CashDisbursementCreditorCreateRequest.xml");
 
         try {
             when(this.mockApi.updateTrans(isA(XactDto.class), isA(List.class), isA(Integer.class)))
@@ -321,7 +325,8 @@ public class CashDisbursementUpdateMessageHandlerTest extends BaseAccountingMess
     
     @Test
     public void testValidation_Create_Trans_For_Creditor_Missing_Creditor_Profile() {
-        String request = RMT2File.getFileContentsAsString("xml/transaction/disbursements/CashDisbursementCreditorCreateRequest_MissingCreditorProfile.xml");
+        String request = RMT2File.getFileContentsAsString(
+                "xml/transaction/disbursements/cash/CashDisbursementCreditorCreateRequest_MissingCreditorProfile.xml");
 
         try {
             when(this.mockApi.updateTrans(isA(XactDto.class), isA(List.class), isA(Integer.class)))

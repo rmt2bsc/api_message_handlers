@@ -97,7 +97,8 @@ public class CashDisbursementQueryMessageHandlerTest extends BaseAccountingMessa
 
     @Test
     public void testSuccess_Fetch_BasicCriteria_Header() {
-        String request = RMT2File.getFileContentsAsString("xml/transaction/disbursements/CashDisbursementBasicQueryRequestHeader.xml");
+        String request = RMT2File.getFileContentsAsString(
+                "xml/transaction/disbursements/cash/CashDisbursementBasicQueryRequestHeader.xml");
         List<XactDto> mockListData = CashDisbursementMockData.createMockSingleTransactions();
 
         try {
@@ -137,7 +138,8 @@ public class CashDisbursementQueryMessageHandlerTest extends BaseAccountingMessa
     
     @Test
     public void testSuccess_Fetch_BasicCriteria_Full() {
-        String request = RMT2File.getFileContentsAsString("xml/transaction/disbursements/CashDisbursementBasicQueryRequestFull.xml");
+        String request = RMT2File.getFileContentsAsString(
+                "xml/transaction/disbursements/cash/CashDisbursementBasicQueryRequestFull.xml");
         List<XactDto> mockListData = CashDisbursementMockData.createMockSingleTransactions();
         List<XactTypeItemActivityDto> mockItemListData = CashDisbursementMockData.createMockXactItems();
 
@@ -187,7 +189,8 @@ public class CashDisbursementQueryMessageHandlerTest extends BaseAccountingMessa
     
     @Test
     public void testSuccess_Fetch_CustomCriteria_Header() {
-        String request = RMT2File.getFileContentsAsString("xml/transaction/disbursements/CashDisbursementCustomQueryRequestHeader.xml");
+        String request = RMT2File.getFileContentsAsString(
+                "xml/transaction/disbursements/cash/CashDisbursementCustomQueryRequestHeader.xml");
         List<XactDto> mockListData = CashDisbursementMockData.createMockSingleTransactions();
 
         try {
@@ -227,7 +230,8 @@ public class CashDisbursementQueryMessageHandlerTest extends BaseAccountingMessa
     
     @Test
     public void testSuccess_Fetch_CustomCriteria_Full() {
-        String request = RMT2File.getFileContentsAsString("xml/transaction/disbursements/CashDisbursementCustomQueryRequestHeader.xml");
+        String request = RMT2File.getFileContentsAsString(
+                "xml/transaction/disbursements/cash/CashDisbursementCustomQueryRequestHeader.xml");
         List<XactDto> mockListData = CashDisbursementMockData.createMockSingleTransactions();
         List<XactTypeItemActivityDto> mockItemListData = CashDisbursementMockData.createMockXactItems();
 
@@ -278,7 +282,8 @@ public class CashDisbursementQueryMessageHandlerTest extends BaseAccountingMessa
  
     @Test
     public void testSuccess_Fetch_NoDataFound() {
-        String request = RMT2File.getFileContentsAsString("xml/transaction/disbursements/CashDisbursementBasicQueryRequestHeader.xml");
+        String request = RMT2File.getFileContentsAsString(
+                "xml/transaction/disbursements/cash/CashDisbursementBasicQueryRequestHeader.xml");
         List<XactDto> mockListData = CashDisbursementMockData.createMockSingleTransactions();
 
         try {
@@ -309,7 +314,8 @@ public class CashDisbursementQueryMessageHandlerTest extends BaseAccountingMessa
     
     @Test
     public void testError_Fetch_Details_TargetLevel_Error() {
-        String request = RMT2File.getFileContentsAsString("xml/transaction/disbursements/CashDisbursementBasicQueryRequestDetails.xml");
+        String request = RMT2File.getFileContentsAsString(
+                "xml/transaction/disbursements/cash/CashDisbursementBasicQueryRequestDetails.xml");
         
         MessageHandlerResults results = null;
         CashDisbursementApiHandler handler = new CashDisbursementApiHandler();
@@ -334,7 +340,8 @@ public class CashDisbursementQueryMessageHandlerTest extends BaseAccountingMessa
 
     @Test
     public void testError_Fetch_API_Error() {
-        String request = RMT2File.getFileContentsAsString("xml/transaction/disbursements/CashDisbursementBasicQueryRequestHeader.xml");
+        String request = RMT2File.getFileContentsAsString(
+                "xml/transaction/disbursements/cash/CashDisbursementBasicQueryRequestHeader.xml");
         List<XactDto> mockListData = CashDisbursementMockData.createMockSingleTransactions();
 
         try {
@@ -369,7 +376,8 @@ public class CashDisbursementQueryMessageHandlerTest extends BaseAccountingMessa
 
     @Test
     public void testError_Incorrect_Trans_Code() {
-        String request = RMT2File.getFileContentsAsString("xml/transaction/common/TransactionQueryInvalidTranCodeRequest.xml");
+        String request = RMT2File.getFileContentsAsString(
+                "xml/transaction/common/TransactionQueryInvalidTranCodeRequest.xml");
         
         MessageHandlerResults results = null;
         CashDisbursementApiHandler handler = new CashDisbursementApiHandler();
