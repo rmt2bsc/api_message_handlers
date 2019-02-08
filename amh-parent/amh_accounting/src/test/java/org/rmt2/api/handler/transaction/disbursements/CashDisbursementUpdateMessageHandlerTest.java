@@ -175,7 +175,7 @@ public class CashDisbursementUpdateMessageHandlerTest extends BaseAccountingMess
     @Test
     public void testValidation_Missing_Profile() {
         String request = RMT2File.getFileContentsAsString(
-                "xml/transaction/disbursements/CashDisbursementCreateRequest.xml");
+                "xml/transaction/disbursements/CashDisbursementCreateRequestMissingProfile.xml");
 
 
         MessageHandlerResults results = null;
