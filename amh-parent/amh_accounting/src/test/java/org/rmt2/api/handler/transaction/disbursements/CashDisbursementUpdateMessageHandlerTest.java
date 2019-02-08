@@ -47,14 +47,14 @@ import com.api.util.RMT2String;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ AbstractDaoClientImpl.class, Rmt2OrmClientFactory.class,
     CashDisbursementApiHandler.class, DisbursementsApiFactory.class, SystemConfigurator.class })
-public class CashDisbursementCreateMessageHandlerTest extends BaseAccountingMessageHandlerTest {
+public class CashDisbursementUpdateMessageHandlerTest extends BaseAccountingMessageHandlerTest {
 
     private DisbursementsApi mockApi;
 
     /**
      * 
      */
-    public CashDisbursementCreateMessageHandlerTest() {
+    public CashDisbursementUpdateMessageHandlerTest() {
         return;
     }
 
