@@ -96,7 +96,8 @@ public class CashDisbursementUpdateMessageHandlerTest extends BaseAccountingMess
 
     @Test
     public void testSuccess_Create_Trans() {
-        String request = RMT2File.getFileContentsAsString("xml/transaction/disbursements/CashDisbursementCreateRequest.xml");
+        String request = RMT2File.getFileContentsAsString(
+                "xml/transaction/disbursements/CashDisbursementCreateRequest.xml");
 
         try {
             when(this.mockApi.updateTrans(isA(XactDto.class), isA(List.class)))
@@ -141,7 +142,8 @@ public class CashDisbursementUpdateMessageHandlerTest extends BaseAccountingMess
     
     @Test
     public void testError_Create_API_Error() {
-        String request = RMT2File.getFileContentsAsString("xml/transaction/disbursements/CashDisbursementCreateRequest.xml");
+        String request = RMT2File.getFileContentsAsString(
+                "xml/transaction/disbursements/CashDisbursementCreateRequest.xml");
 
         try {
             when(this.mockApi.updateTrans(isA(XactDto.class), isA(List.class)))
@@ -172,7 +174,9 @@ public class CashDisbursementUpdateMessageHandlerTest extends BaseAccountingMess
 
     @Test
     public void testValidation_Missing_Profile() {
-        String request = RMT2File.getFileContentsAsString("xml/transaction/disbursements/CashDisbursementCreateRequestMissingProfile.xml");
+        String request = RMT2File.getFileContentsAsString(
+                "xml/transaction/disbursements/CashDisbursementCreateRequest.xml");
+
 
         MessageHandlerResults results = null;
         CashDisbursementApiHandler handler = new CashDisbursementApiHandler();
