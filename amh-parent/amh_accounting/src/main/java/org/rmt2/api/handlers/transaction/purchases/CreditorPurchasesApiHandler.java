@@ -187,7 +187,6 @@ public class CreditorPurchasesApiHandler extends XactApiHandler {
             
             int newXactId = this.api.update(xactDto, itemsDtoList);
             reqXact.setXactId(BigInteger.valueOf(newXactId));
-//            tranRresults.add(reqXact);
             String msg = RMT2String.replace(MSG_CREATE_SUCCESS, String.valueOf(reqXact.getXactId()), "%s");
             rs.setMessage(msg);
             rs.setRecordCount(1);
