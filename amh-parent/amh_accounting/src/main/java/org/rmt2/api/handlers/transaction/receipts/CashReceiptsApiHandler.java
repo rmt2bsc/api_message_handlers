@@ -1,15 +1,18 @@
 package org.rmt2.api.handlers.transaction.receipts;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.dto.CustomerDto;
 import org.dto.XactDto;
 import org.dto.XactTypeItemActivityDto;
 import org.modules.transaction.XactApiException;
 import org.modules.transaction.receipts.CashReceiptApi;
 import org.modules.transaction.receipts.CashReceiptApiFactory;
+import org.rmt2.api.handlers.subsidiary.SubsidiaryJaxbDtoFactory;
 import org.rmt2.api.handlers.transaction.TransactionJaxbDtoFactory;
 import org.rmt2.api.handlers.transaction.XactApiHandler;
 import org.rmt2.constants.ApiTransactionCodes;
@@ -83,6 +86,7 @@ public class CashReceiptsApiHandler extends XactApiHandler {
                 break;
                 
             case ApiTransactionCodes.ACCOUNTING_CASHRECEIPT_CREATE:
+                // Handles cash receipt creation and reversal
                 r = this.create(this.requestObj);
                 break;
                 
@@ -144,7 +148,7 @@ public class CashReceiptsApiHandler extends XactApiHandler {
     }
 
     /**
-     * Handler for invoking the appropriate API in order to create a cash
+     * Handler for invoking the appropriate API in order to create or reverse a cash
      * receipt accounting transaction object.
      * 
      * @param req
@@ -162,25 +166,25 @@ public class CashReceiptsApiHandler extends XactApiHandler {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             XactDto xactDto = TransactionJaxbDtoFactory.createXactDtoInstance(reqXact);
-            List<XactTypeItemActivityDto> itemsDtoList = TransactionJaxbDtoFactory
-                    .createXactItemDtoInstance(reqXact.getLineitems().getLineitem());
+            // Get customer object
+            CustomerDto criteriaDto = SubsidiaryJaxbDtoFactory.createCustomerDtoInstance(reqXact.getCustomer());
             
-            int newXactId = this.api.update(xactDto, itemsDtoList);
+            int newXactId = this.api.receivePayment(xactDto, criteriaDto.getCustomerId());
             xactDto.setXactId(newXactId);
-            XactType XactResults = TransactionJaxbDtoFactory.createXactJaxbInstance(xactDto, 0, itemsDtoList);
-            tranRresults.add(XactResults);
-            String msg = RMT2String.replace(MSG_CREATE_SUCCESS, String.valueOf(XactResults.getXactId()), "%s");
+            reqXact.getCustomer().setCustomerId(BigInteger.valueOf(newXactId));
+            String msg = RMT2String.replace(MSG_CREATE_SUCCESS, String.valueOf(reqXact.getXactId()), "%s");
             rs.setMessage(msg);
             rs.setRecordCount(1);
             
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
-            logger.error("Error occurred during API Message Handler operation, " + this.command, e );
+            logger.error("Error occurred during Cash Receipts API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage(CashReceiptsApiHandler.MSG_FAILURE);
             rs.setExtMessage(e.getMessage());
         } finally {
+            tranRresults.add(reqXact);
             this.api.close();
         }
         
@@ -188,6 +192,7 @@ public class CashReceiptsApiHandler extends XactApiHandler {
         results.setPayload(xml);
         return results;
     }
+    
     
 
     /* (non-Javadoc)
