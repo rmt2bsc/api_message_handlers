@@ -17,3 +17,4 @@ derby.log
 *.releaseBackup
 release.properties
 *.DS_Store
+*.class
