@@ -140,8 +140,7 @@ public class CashReceiptsMessageHandlerTest extends BaseAccountingMessageHandler
   
     @Test
     public void testError_Update_API_Error() {
-        String request = RMT2File.getFileContentsAsString(
-                "xml/transaction/disbursements/cash/CashDisbursementBasicQueryRequestHeader.xml");
+        String request = RMT2File.getFileContentsAsString("xml/transaction/receipts/CashReceiptCreateRequest.xml");
         List<XactDto> mockListData = CashReceiptsMockData.createMockSingleTransaction();
 
         try {
