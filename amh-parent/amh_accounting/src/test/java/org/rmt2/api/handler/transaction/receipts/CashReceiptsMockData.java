@@ -73,7 +73,7 @@ public class CashReceiptsMockData extends SubsidiaryMockData {
      * 
      * @return
      */
-    public static final List<XactDto> createMockSingleTransactions() {
+    public static final List<XactDto> createMockSingleTransaction() {
         List<XactDto> list = new ArrayList<XactDto>();
         VwXactList o = AccountingMockDataFactory.createMockOrmXact(111111,
                 XactConst.XACT_TYPE_CASHRECEIPT,
