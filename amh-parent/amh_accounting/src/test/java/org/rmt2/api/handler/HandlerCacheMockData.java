@@ -22,8 +22,8 @@ public class HandlerCacheMockData {
         XactTypeDto d = Rmt2XactDtoFactory.createXactTypeInstance(o);
         list.add(d);
 
-        o = createMockOrmXactType(XactConst.XACT_TYPE_CASHPAY,
-                XactConst.CATG_CASHPAY, "XACT_TYPE_CASHPAY", "CASHPAY", 1, -1,
+        o = createMockOrmXactType(XactConst.XACT_TYPE_CASHRECEIPT,
+                XactConst.CATG_CASHPAY, "XACT_TYPE_CASHRECEIPT", "CASHPAY", 1, -1,
                 400, 401, 200, 222, 1);
         d = Rmt2XactDtoFactory.createXactTypeInstance(o);
         list.add(d);
