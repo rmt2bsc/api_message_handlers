@@ -42,9 +42,9 @@ public class CashReceiptsApiHandler extends XactApiHandler {
     public static final String MSG_FAILURE = "Failure to retrieve Cash receipt transaction(s)";
     public static final String MSG_CREATE_SUCCESS = "New cash receipt transaction was created: %s";
     public static final String MSG_MISSING_CUSTOMER_PROFILE_DATA = "Customer profile is required when creating a cash receipt for a Customer";
-    
+
     private CashReceiptApi api;
-    
+
     /**
      * Default constructor
      */
@@ -55,8 +55,8 @@ public class CashReceiptsApiHandler extends XactApiHandler {
     }
 
     /**
-     * Processes requests pertaining to fetching and creating of cash
-     * receipt transactions.
+     * Processes requests pertaining to fetching and creating of cash receipt
+     * transactions.
      * 
      * @param command
      *            The name of the operation.
@@ -73,35 +73,33 @@ public class CashReceiptsApiHandler extends XactApiHandler {
         if (r != null) {
             String errMsg = ERROR_MSG_TRANS_NOT_FOUND + command;
             if (r.getErrorMsg() != null && r.getErrorMsg().equalsIgnoreCase(errMsg)) {
-                // Ancestor was not able to find command.  Continue processing.
+                // Ancestor was not able to find command. Continue processing.
             }
             else {
                 // This means an error occurred.
-                return r;    
+                return r;
             }
         }
         switch (command) {
             case ApiTransactionCodes.ACCOUNTING_CASHRECEIPT_GET:
                 r = this.fetch(this.requestObj);
                 break;
-                
+
             case ApiTransactionCodes.ACCOUNTING_CASHRECEIPT_CREATE:
                 // Handles cash receipt creation and reversal
                 r = this.create(this.requestObj);
                 break;
-                
+
             default:
-                r = this.createErrorReply(MessagingConstants.RETURN_CODE_FAILURE,
-                        MessagingConstants.RETURN_STATUS_BAD_REQUEST,
+                r = this.createErrorReply(MessagingConstants.RETURN_CODE_FAILURE, MessagingConstants.RETURN_STATUS_BAD_REQUEST,
                         ERROR_MSG_TRANS_NOT_FOUND + command);
         }
         return r;
     }
 
-    
     /**
      * Handler for invoking the appropriate API in order to fetch one or more
-     * cash receipt transaction objects. 
+     * cash receipt transaction objects.
      * <p>
      * Currently, the target level, <i>DETAILS</i>, is not supported.
      * 
@@ -118,8 +116,7 @@ public class CashReceiptsApiHandler extends XactApiHandler {
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
-            XactDto criteriaDto = TransactionJaxbDtoFactory
-                    .createBaseXactDtoCriteriaInstance(req.getCriteria().getXactCriteria().getBasicCriteria());
+            XactDto criteriaDto = TransactionJaxbDtoFactory.createBaseXactDtoCriteriaInstance(req.getCriteria().getXactCriteria().getBasicCriteria());
             List<XactDto> dtoList = this.api.getXact(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage(CashReceiptsApiHandler.MSG_DATA_NOT_FOUND);
@@ -130,11 +127,11 @@ public class CashReceiptsApiHandler extends XactApiHandler {
                 rs.setMessage(CashReceiptsApiHandler.MSG_DATA_FOUND);
                 rs.setRecordCount(dtoList.size());
             }
-            
+
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
-            logger.error("Error occurred during API Message Handler operation, " + this.command, e );
+            logger.error("Error occurred during API Message Handler operation, " + this.command, e);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage(CashReceiptsApiHandler.MSG_FAILURE);
             rs.setExtMessage(e.getMessage());
@@ -148,8 +145,8 @@ public class CashReceiptsApiHandler extends XactApiHandler {
     }
 
     /**
-     * Handler for invoking the appropriate API in order to create or reverse a cash
-     * receipt accounting transaction object.
+     * Handler for invoking the appropriate API in order to create or reverse a
+     * cash receipt accounting transaction object.
      * 
      * @param req
      *            an instance of {@link AccountingTransactionRequest}
@@ -161,25 +158,26 @@ public class CashReceiptsApiHandler extends XactApiHandler {
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         XactType reqXact = req.getProfile().getTransactions().getTransaction().get(0);
         List<XactType> tranRresults = new ArrayList<>();
-        
+
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             XactDto xactDto = TransactionJaxbDtoFactory.createXactDtoInstance(reqXact);
             // Get customer object
             CustomerDto criteriaDto = SubsidiaryJaxbDtoFactory.createCustomerDtoInstance(reqXact.getCustomer());
-            
+
             int newXactId = this.api.receivePayment(xactDto, criteriaDto.getCustomerId());
             xactDto.setXactId(newXactId);
-            reqXact.getCustomer().setCustomerId(BigInteger.valueOf(newXactId));
+            reqXact.getCustomer().setCustomerId(BigInteger.valueOf(criteriaDto.getCustomerId()));
+            reqXact.setXactId(BigInteger.valueOf(newXactId));
             String msg = RMT2String.replace(MSG_CREATE_SUCCESS, String.valueOf(reqXact.getXactId()), "%s");
             rs.setMessage(msg);
             rs.setRecordCount(1);
-            
+
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
-            logger.error("Error occurred during Cash Receipts API Message Handler operation, " + this.command, e );
+            logger.error("Error occurred during Cash Receipts API Message Handler operation, " + this.command, e);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage(CashReceiptsApiHandler.MSG_FAILURE);
             rs.setExtMessage(e.getMessage());
@@ -187,33 +185,36 @@ public class CashReceiptsApiHandler extends XactApiHandler {
             tranRresults.add(reqXact);
             this.api.close();
         }
-        
+
         String xml = this.buildResponse(tranRresults, rs);
         results.setPayload(xml);
         return results;
     }
-    
-    
 
-    /* (non-Javadoc)
-     * @see org.rmt2.api.handlers.transaction.XactApiHandler#validateRequest(org.rmt2.jaxb.AccountingTransactionRequest)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.rmt2.api.handlers.transaction.XactApiHandler#validateRequest(org.
+     * rmt2.jaxb.AccountingTransactionRequest)
      */
     @Override
     protected void validateRequest(AccountingTransactionRequest req) throws InvalidDataException {
         super.validateRequest(req);
-        
+
         // Validate request for fetch operations
         switch (this.command) {
             case ApiTransactionCodes.ACCOUNTING_CASHRECEIPT_GET:
-                // Must contain flag that indicates what level of the transaction object to populate with data
+                // Must contain flag that indicates what level of the
+                // transaction object to populate with data
                 this.validateSearchRequest(req);
                 break;
-                
+
             case ApiTransactionCodes.ACCOUNTING_CASHRECEIPT_CREATE:
                 // Transaction profile must exist
                 this.validateUpdateRequest(req);
                 break;
-                
+
             default:
                 break;
         }
@@ -229,7 +230,7 @@ public class CashReceiptsApiHandler extends XactApiHandler {
     @Override
     protected void validateUpdateRequest(AccountingTransactionRequest req) throws InvalidDataException {
         super.validateUpdateRequest(req);
-        
+
         // Verify that Customer profile exist
         try {
             Verifier.verifyNotNull(req.getProfile().getTransactions().getTransaction().get(0).getCustomer());
@@ -241,8 +242,10 @@ public class CashReceiptsApiHandler extends XactApiHandler {
     /**
      * Builds a List of XactType objects from a List of XactDto objects.
      * 
-     * @param results List<{@link XactDto}>
-     * @param customCriteriaDto custom relational criteria (optional)
+     * @param results
+     *            List<{@link XactDto}>
+     * @param customCriteriaDto
+     *            custom relational criteria (optional)
      * @return List<{@link XactType}>
      */
     private List<XactType> buildJaxbTransaction(List<XactDto> results) {
@@ -255,18 +258,20 @@ public class CashReceiptsApiHandler extends XactApiHandler {
             try {
                 xactItems = this.api.getXactTypeItemActivity(item.getXactId());
             } catch (XactApiException e) {
-                logger.error("Unable to fetch cash receipt line items for transaction id, "
-                                + item.getXactId());
+                logger.error("Unable to fetch cash receipt line items for transaction id, " + item.getXactId());
             }
             XactType jaxbObj = TransactionJaxbDtoFactory.createXactJaxbInstance(item, 0, xactItems);
             list.add(jaxbObj);
         }
         return list;
     }
-    
-    
-    /* (non-Javadoc)
-     * @see org.rmt2.api.handlers.transaction.XactApiHandler#buildResponse(java.util.List, com.api.messaging.handler.MessageHandlerCommonReplyStatus)
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.rmt2.api.handlers.transaction.XactApiHandler#buildResponse(java.util
+     * .List, com.api.messaging.handler.MessageHandlerCommonReplyStatus)
      */
     @Override
     protected String buildResponse(List<XactType> payload, MessageHandlerCommonReplyStatus replyStatus) {
