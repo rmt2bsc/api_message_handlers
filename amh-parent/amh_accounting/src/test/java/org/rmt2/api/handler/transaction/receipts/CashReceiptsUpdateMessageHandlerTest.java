@@ -93,7 +93,7 @@ public class CashReceiptsUpdateMessageHandlerTest extends BaseAccountingMessageH
     }
 
     @Test
-    public void testSuccess_Create() {
+    public void testSuccess_ReceivePayment() {
         String request = RMT2File.getFileContentsAsString("xml/transaction/receipts/CashReceiptCreateRequest.xml");
 
         try {
@@ -136,7 +136,7 @@ public class CashReceiptsUpdateMessageHandlerTest extends BaseAccountingMessageH
     }
 
     @Test
-    public void testError_Update_API_Error() {
+    public void testError_ReceivePayment_API_Error() {
         String request = RMT2File.getFileContentsAsString("xml/transaction/receipts/CashReceiptCreateRequest.xml");
         List<XactDto> mockListData = CashReceiptsMockData.createMockSingleTransaction();
 
