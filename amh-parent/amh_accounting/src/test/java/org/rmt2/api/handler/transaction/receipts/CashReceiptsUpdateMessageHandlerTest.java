@@ -92,6 +92,9 @@ public class CashReceiptsUpdateMessageHandlerTest extends BaseAccountingMessageH
         return;
     }
 
+    /**
+     * 
+     */
     @Test
     public void testSuccess_ReceivePayment() {
         String request = RMT2File.getFileContentsAsString("xml/transaction/receipts/CashReceiptCreateRequest.xml");
