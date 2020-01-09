@@ -93,7 +93,7 @@ public class CashReceiptsUpdateMessageHandlerTest extends BaseAccountingMessageH
     }
 
     /**
-     * 
+     * Test the ReceivePayment method
      */
     @Test
     public void testSuccess_ReceivePayment() {
