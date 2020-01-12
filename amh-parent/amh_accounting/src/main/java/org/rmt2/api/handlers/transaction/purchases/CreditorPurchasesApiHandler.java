@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.ApiMessageHandlerConst;
 import org.apache.log4j.Logger;
 import org.dto.XactCreditChargeDto;
 import org.dto.XactCustomCriteriaDto;
@@ -128,8 +129,8 @@ public class CreditorPurchasesApiHandler extends XactApiHandler {
             
             this.targetLevel = req.getCriteria().getXactCriteria().getTargetLevel().name().toUpperCase();
             switch (this.targetLevel) {
-                case TARGET_LEVEL_HEADER:
-                case TARGET_LEVEL_FULL:
+                case ApiMessageHandlerConst.TARGET_LEVEL_HEADER:
+                case ApiMessageHandlerConst.TARGET_LEVEL_FULL:
                     List<XactCreditChargeDto> dtoList = this.api.get(criteriaDto, customCriteriaDto);
                     if (dtoList == null) {
                         rs.setMessage(CreditorPurchasesApiHandler.MSG_DATA_NOT_FOUND);
@@ -270,7 +271,7 @@ public class CreditorPurchasesApiHandler extends XactApiHandler {
             List<XactTypeItemActivityDto> xactItems = null;
             
             // retrieve line items if requested
-            if (this.targetLevel.equals(TARGET_LEVEL_FULL)) {
+            if (this.targetLevel.equals(ApiMessageHandlerConst.TARGET_LEVEL_FULL)) {
                 try {
                     xactItems = this.api.getItems(item.getXactId());
                 } catch (CreditorPurchasesApiException e) {

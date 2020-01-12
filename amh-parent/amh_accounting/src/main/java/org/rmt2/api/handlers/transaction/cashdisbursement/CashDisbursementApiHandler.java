@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.ApiMessageHandlerConst;
 import org.apache.log4j.Logger;
 import org.dao.mapping.orm.rmt2.XactTypeItemActivity;
 import org.dto.CreditorDto;
@@ -130,8 +131,8 @@ public class CashDisbursementApiHandler extends XactApiHandler {
             
             this.targetLevel = req.getCriteria().getXactCriteria().getTargetLevel().name().toUpperCase();
             switch (this.targetLevel) {
-                case TARGET_LEVEL_HEADER:
-                case TARGET_LEVEL_FULL:
+                case ApiMessageHandlerConst.TARGET_LEVEL_HEADER:
+                case ApiMessageHandlerConst.TARGET_LEVEL_FULL:
                     List<XactDto> dtoList = this.api.get(criteriaDto, customCriteriaDto);
                     if (dtoList == null) {
                         rs.setMessage(CashDisbursementApiHandler.MSG_DATA_NOT_FOUND);
@@ -318,7 +319,7 @@ public class CashDisbursementApiHandler extends XactApiHandler {
             List<XactTypeItemActivityDto> xactItems = null;
             
             // retrieve line items if requested
-            if (this.targetLevel.equals(TARGET_LEVEL_FULL)) {
+            if (this.targetLevel.equals(ApiMessageHandlerConst.TARGET_LEVEL_FULL)) {
                 XactTypeItemActivityDto itemCriteria = Rmt2XactDtoFactory.createXactTypeItemActivityInstance((XactTypeItemActivity) null);
                 itemCriteria.setXactId(item.getXactId());
                 try {

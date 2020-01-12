@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.ApiMessageHandlerConst;
 import org.apache.log4j.Logger;
 import org.dto.XactDto;
 import org.dto.XactTypeItemActivityDto;
@@ -54,10 +55,6 @@ public class XactApiHandler extends
     public static final String MSG_REVERSE_SUCCESS = "Existing Accounting Transaction, %s1, was reversed: %s2";
     public static final String MSG_DETAILS_NOT_SUPPORTED = "Transaction level \"DETAILS\" is not supported at this time";
     
-    
-    public static final String TARGET_LEVEL_HEADER = "HEADER";
-    public static final String TARGET_LEVEL_DETAILS = "DETAILS";
-    public static final String TARGET_LEVEL_FULL = "FULL";
     
     private XactApi api;
     protected ObjectFactory jaxbObjFactory;
@@ -145,8 +142,8 @@ public class XactApiHandler extends
             
             this.targetLevel = req.getCriteria().getXactCriteria().getTargetLevel().name().toUpperCase();
             switch (this.targetLevel) {
-                case TARGET_LEVEL_HEADER:
-                case TARGET_LEVEL_FULL:
+                case ApiMessageHandlerConst.TARGET_LEVEL_HEADER:
+                case ApiMessageHandlerConst.TARGET_LEVEL_FULL:
                     List<XactDto> dtoList = this.api.getXact(criteriaDto);
                     if (dtoList == null) {
                         rs.setMessage(XactApiHandler.MSG_DATA_NOT_FOUND);
@@ -289,7 +286,7 @@ public class XactApiHandler extends
             List<XactTypeItemActivityDto> xactItems = null;
             
             // retrieve line items if requested
-            if (this.targetLevel.equals(TARGET_LEVEL_FULL)) {
+            if (this.targetLevel.equals(ApiMessageHandlerConst.TARGET_LEVEL_FULL)) {
                 try {
                     xactItems = this.api.getXactTypeItemActivityExt(item.getXactId());
                 } catch (XactApiException e) {
@@ -330,7 +327,7 @@ public class XactApiHandler extends
         try {
             Verifier.verifyFalse(req.getCriteria().getXactCriteria()
                     .getTargetLevel().name()
-                    .equalsIgnoreCase(TARGET_LEVEL_DETAILS));
+                    .equalsIgnoreCase(ApiMessageHandlerConst.TARGET_LEVEL_DETAILS));
         } catch (VerifyException e) {
             throw new InvalidRequestException(MSG_DETAILS_NOT_SUPPORTED, e);
         }
