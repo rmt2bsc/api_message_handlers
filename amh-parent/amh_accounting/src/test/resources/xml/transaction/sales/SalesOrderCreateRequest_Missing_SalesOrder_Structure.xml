@@ -1,0 +1,19 @@
+<AccountingTransactionRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>accounting</application>
+        <module>transaction</module>
+        <transaction>CREATE_SALES_ORDER</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>01/13/2020 16:16:15</delivery_date>
+    </header>
+    <criteria>
+        <sales_criteria>
+            <invoice_on_sales_order_creation>false</invoice_on_sales_order_creation>
+            <apply_payment_on_sales_order_creation>false</apply_payment_on_sales_order_creation>
+        </sales_criteria>
+    </criteria>
+    <profile/>
+</AccountingTransactionRequest>
+

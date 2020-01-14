@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.ApiMessageHandlerConst;
 import org.apache.log4j.Logger;
 import org.dto.SalesOrderDto;
 import org.dto.SalesOrderItemDto;
@@ -14,25 +15,24 @@ import org.rmt2.jaxb.AccountingTransactionRequest;
 import org.rmt2.jaxb.SalesOrderItemType;
 import org.rmt2.jaxb.SalesOrderType;
 
+import com.InvalidDataException;
+import com.api.messaging.InvalidRequestException;
 import com.api.messaging.handler.MessageHandlerCommandException;
 import com.api.messaging.handler.MessageHandlerCommonReplyStatus;
 import com.api.messaging.handler.MessageHandlerResults;
 import com.api.util.RMT2String;
+import com.api.util.assistants.Verifier;
+import com.api.util.assistants.VerifyException;
 
 /**
- * Handles and routes sales order creation messages pertaining to the Sales Order Accounting API.
+ * Handles and routes sales order creation messages pertaining to the Sales
+ * Order Accounting API.
  * 
  * @author rterrell
  *
  */
 public class SalesOrderApiCreationHandler extends SalesOrderApiHandler {
     private static final Logger logger = Logger.getLogger(SalesOrderApiCreationHandler.class);
-    public static final String MSG_DATA_FOUND = "Sales order record(s) found";
-    public static final String MSG_DATA_NOT_FOUND = "Sales order data not found!";
-    public static final String MSG_FAILURE = "Failure to retrieve Sales order transaction(s)";
-    public static final String MSG_CREATE_FAILURE = "Failure to create Sales order transaction(s)";
-    public static final String MSG_CREATE_SUCCESS = "New Sales order transaction was created: %s";
-    public static final String MSG_MISSING_CREDITOR_PROFILE_DATA = "Customer profile is required when creating a Sales order for a customer";
 
     /**
      * 
@@ -80,7 +80,7 @@ public class SalesOrderApiCreationHandler extends SalesOrderApiHandler {
             case ApiTransactionCodes.ACCOUNTING_SALESORDER_INVOICE_PAYMENT_CREATE:
                 r = this.create(this.requestObj);
                 break;
-                
+
             default:
                 r = this.createErrorReply(MessagingConstants.RETURN_CODE_FAILURE, MessagingConstants.RETURN_STATUS_BAD_REQUEST,
                         ERROR_MSG_TRANS_NOT_FOUND + command);
@@ -116,7 +116,7 @@ public class SalesOrderApiCreationHandler extends SalesOrderApiHandler {
             for (SalesOrderItemType item : reqSalesOrder.getSalesOrderItems().getSalesOrderItem()) {
                 item.setSalesOrderId(BigInteger.valueOf(newXactId));
             }
-            String msg = RMT2String.replace(MSG_CREATE_SUCCESS, String.valueOf(reqSalesOrder.getSalesOrderId()), "%s");
+            String msg = RMT2String.replace(SalesOrderHandlerConst.MSG_CREATE_SUCCESS, String.valueOf(reqSalesOrder.getSalesOrderId()), "%s");
             rs.setMessage(msg);
             rs.setRecordCount(1);
 
@@ -125,7 +125,7 @@ public class SalesOrderApiCreationHandler extends SalesOrderApiHandler {
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setMessage(SalesOrderApiCreationHandler.MSG_CREATE_FAILURE);
+            rs.setMessage(SalesOrderHandlerConst.MSG_CREATE_FAILURE);
             rs.setExtMessage(e.getMessage());
         } finally {
             tranRresults.add(reqSalesOrder);
@@ -135,5 +135,56 @@ public class SalesOrderApiCreationHandler extends SalesOrderApiHandler {
         String xml = this.buildResponse(tranRresults, rs);
         results.setPayload(xml);
         return results;
+    }
+
+    /**
+     * @see org.rmt2.api.handlers.transaction.XactApiHandler#validateRequest(org.
+     *      rmt2.jaxb.AccountingTransactionRequest)
+     */
+    @Override
+    protected void validateRequest(AccountingTransactionRequest req) throws InvalidDataException {
+        super.validateRequest(req);
+
+        // Perform common validations here...
+        try {
+            Verifier.verifyNotNull(req.getProfile());
+        } catch (VerifyException e) {
+            throw new InvalidRequestException(ApiMessageHandlerConst.MSG_MISSING_PROFILE_DATA);
+        }
+
+        try {
+            Verifier.verifyNotNull(req.getProfile().getSalesOrders());
+        } catch (VerifyException e) {
+            throw new InvalidRequestException(SalesOrderHandlerConst.MSG_MISSING_SALESORDER_STRUCTURE);
+        }
+
+        try {
+            Verifier.verifyNotEmpty(req.getProfile().getSalesOrders().getSalesOrder());
+        } catch (VerifyException e) {
+            throw new InvalidRequestException(SalesOrderHandlerConst.MSG_SALESORDER_LIST_EMPTY);
+        }
+
+        try {
+            Verifier.verifyTrue(req.getProfile().getSalesOrders().getSalesOrder().size() == 1);
+        } catch (VerifyException e) {
+            throw new InvalidRequestException(SalesOrderHandlerConst.MSG_SALESORDER_LIST_CONTAINS_TOO_MANY);
+        }
+
+        // Validate request for specfic operations
+        switch (this.command) {
+            case ApiTransactionCodes.ACCOUNTING_SALESORDER_INVOICE_CREATE:
+                // Must contain flag that indicates what level of the
+                // transaction object to populate with data
+                // this.validateSearchRequest(req);
+                break;
+
+            case ApiTransactionCodes.ACCOUNTING_SALESORDER_INVOICE_PAYMENT_CREATE:
+                // Transaction profile must exist
+                // this.validateUpdateRequest(req);
+                break;
+
+            default:
+                break;
+        }
     }
 }
