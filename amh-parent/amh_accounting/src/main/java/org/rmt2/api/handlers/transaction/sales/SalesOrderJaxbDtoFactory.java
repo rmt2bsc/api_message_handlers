@@ -51,6 +51,15 @@ public class SalesOrderJaxbDtoFactory extends TransactionJaxbDtoFactory {
         if (criteria.getCustomerAccountNo() != null) {
             dto.setAccountNo(criteria.getCustomerAccountNo());
         }
+        if (criteria.getStatus() != null) {
+            if (criteria.getStatus().getStatusId() != null) {
+                dto.setSoStatusId(criteria.getStatus().getStatusId().intValue());
+            }
+            if (criteria.getStatus().getDescription() != null) {
+                dto.setSoStatusDescription(criteria.getStatus().getDescription());
+            }
+        }
+
         // if (criteria.getCustomerName() != null) {
         // dto.setCustomerName(criteria.getCustomerName());
         // }

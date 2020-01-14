@@ -7,7 +7,12 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 
 import org.ApiMessageHandlerConst;
+import org.dao.mapping.orm.rmt2.SalesOrderStatus;
+import org.dao.mapping.orm.rmt2.SalesOrderStatusHist;
 import org.dto.SalesOrderDto;
+import org.dto.SalesOrderStatusDto;
+import org.dto.SalesOrderStatusHistDto;
+import org.dto.adapter.orm.transaction.sales.Rmt2SalesOrderDtoFactory;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -15,6 +20,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.modules.transaction.sales.SalesApi;
+import org.modules.transaction.sales.SalesApiConst;
 import org.modules.transaction.sales.SalesApiException;
 import org.modules.transaction.sales.SalesApiFactory;
 import org.powermock.api.mockito.PowerMockito;
@@ -95,10 +101,30 @@ public class SalesOrderCreateMessageHandlerTest extends BaseAccountingMessageHan
     public void testSuccess_create() {
         String request = RMT2File.getFileContentsAsString("xml/transaction/sales/SalesOrderCreateRequest.xml");
 
+        SalesOrderStatusHist ormStatusHist = new SalesOrderStatusHist();
+        ormStatusHist.setSoStatusId(SalesApiConst.STATUS_CODE_QUOTE);
+        SalesOrderStatus ormStatus = new SalesOrderStatus();
+        ormStatus.setSoStatusId(SalesApiConst.STATUS_CODE_QUOTE);
+        ormStatus.setDescription("Quote");
+        SalesOrderStatusHistDto mockStatusHistDto = Rmt2SalesOrderDtoFactory.createSalesOrderStatusHistoryInstance(ormStatusHist);
+        SalesOrderStatusDto mockStatusDto = Rmt2SalesOrderDtoFactory.createSalesOrderStatusInstance(ormStatus);
+
         try {
             when(this.mockApi.updateSalesOrder(isA(SalesOrderDto.class), isA(List.class))).thenReturn(SalesOrderMockData.NEW_XACT_ID);
         } catch (SalesApiException e) {
             Assert.fail("Unable to setup mock stub for creating a sales order");
+        }
+
+        try {
+            when(this.mockApi.getCurrentStatus(isA(Integer.class))).thenReturn(mockStatusHistDto);
+        } catch (SalesApiException e) {
+            Assert.fail("Unable to setup mock stub for creating a sales order status history DTO object");
+        }
+
+        try {
+            when(this.mockApi.getStatus(isA(Integer.class))).thenReturn(mockStatusDto);
+        } catch (SalesApiException e) {
+            Assert.fail("Unable to setup mock stub for creating a sales order status DTO object");
         }
 
         MessageHandlerResults results = null;
@@ -131,6 +157,8 @@ public class SalesOrderCreateMessageHandlerTest extends BaseAccountingMessageHan
             Assert.assertNotNull(a.getCustomerId());
             Assert.assertEquals(SalesOrderMockData.CUSTOMER_ID, a.getCustomerId().intValue());
             Assert.assertEquals(TEST_ORDER_TOTAL, a.getOrderTotal().doubleValue(), 0);
+            Assert.assertEquals(SalesApiConst.STATUS_CODE_QUOTE, a.getStatus().getStatusId().intValue());
+            Assert.assertEquals("Quote", a.getStatus().getDescription());
 
             // Test that order total equals sum of sales order items
             double itemTotal = 0;
