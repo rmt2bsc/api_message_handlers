@@ -21,8 +21,8 @@ import com.api.messaging.handler.MessageHandlerResults;
 import com.api.util.RMT2String;
 
 /**
- * Handles and routes sales order creation messages pertaining to the Sales
- * Order Accounting API.
+ * Handles and routes messages pertaining to the creation of Sales Orders in the
+ * Accounting API.
  * 
  * @author rterrell
  *
