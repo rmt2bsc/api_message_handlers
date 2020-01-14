@@ -27,7 +27,7 @@ import com.api.util.assistants.VerifyException;
  * @author roy.terrell
  *
  */
-public class CreateSalesOrderUtil {
+public class SalesOrderRequestUtil {
 
     /**
      * Validates the accounting transaction request in regards to createing
@@ -85,23 +85,39 @@ public class CreateSalesOrderUtil {
                 .getSalesOrderItem());
 
         int newXactId = api.updateSalesOrder(xactDto, itemsDtoList);
-        SalesOrderStatusHistDto statusHist = api.getCurrentStatus(newXactId);
-        SalesOrderStatusDto status = api.getStatus(statusHist.getSoStatusId());
 
         // Update XML with new sales order id
         reqSalesOrder.setSalesOrderId(BigInteger.valueOf(newXactId));
-
-        // Update XML with current sales order status
-        ObjectFactory fact = new ObjectFactory();
-        SalesOrderStatusType salesOrdStatusType = fact.createSalesOrderStatusType();
-        salesOrdStatusType.setStatusId(BigInteger.valueOf(status.getSoStatusId()));
-        salesOrdStatusType.setDescription(status.getSoStatusDescription());
-        reqSalesOrder.setStatus(salesOrdStatusType);
 
         // Ensure that each sales order item is associated with the sales
         // order.
         for (SalesOrderItemType item : reqSalesOrder.getSalesOrderItems().getSalesOrderItem()) {
             item.setSalesOrderId(BigInteger.valueOf(newXactId));
         }
+        return;
+    }
+
+    /**
+     * Assigns the current status to the sales order request.
+     * 
+     * @param api
+     *            an instance of {@link SalesApi}
+     * @param reqSalesOrder
+     *            an instance of {@link SalesOrderType}
+     * @throws SalesApiException
+     *             for sales order API error
+     * @throws SystemException
+     *             for data conversion errors.
+     */
+    protected static final void assignCurrentStatus(SalesApi api, SalesOrderType reqSalesOrder) throws SalesApiException {
+        // Update XML with current sales order status
+        SalesOrderStatusHistDto statusHist = api.getCurrentStatus(reqSalesOrder.getSalesOrderId().intValue());
+        SalesOrderStatusDto status = api.getStatus(statusHist.getSoStatusId());
+        ObjectFactory fact = new ObjectFactory();
+        SalesOrderStatusType salesOrdStatusType = fact.createSalesOrderStatusType();
+        salesOrdStatusType.setStatusId(BigInteger.valueOf(status.getSoStatusId()));
+        salesOrdStatusType.setDescription(status.getSoStatusDescription());
+        reqSalesOrder.setStatus(salesOrdStatusType);
+        return;
     }
 }
