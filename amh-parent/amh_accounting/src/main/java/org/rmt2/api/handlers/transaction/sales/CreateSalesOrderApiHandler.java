@@ -5,7 +5,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ApiMessageHandlerConst;
 import org.apache.log4j.Logger;
 import org.dto.SalesOrderDto;
 import org.dto.SalesOrderItemDto;
@@ -16,13 +15,10 @@ import org.rmt2.jaxb.SalesOrderItemType;
 import org.rmt2.jaxb.SalesOrderType;
 
 import com.InvalidDataException;
-import com.api.messaging.InvalidRequestException;
 import com.api.messaging.handler.MessageHandlerCommandException;
 import com.api.messaging.handler.MessageHandlerCommonReplyStatus;
 import com.api.messaging.handler.MessageHandlerResults;
 import com.api.util.RMT2String;
-import com.api.util.assistants.Verifier;
-import com.api.util.assistants.VerifyException;
 
 /**
  * Handles and routes sales order creation messages pertaining to the Sales
@@ -31,15 +27,15 @@ import com.api.util.assistants.VerifyException;
  * @author rterrell
  *
  */
-public class SalesOrderApiCreationHandler extends SalesOrderApiHandler {
-    private static final Logger logger = Logger.getLogger(SalesOrderApiCreationHandler.class);
+public class CreateSalesOrderApiHandler extends SalesOrderApiHandler {
+    private static final Logger logger = Logger.getLogger(CreateSalesOrderApiHandler.class);
 
     /**
      * 
      */
-    public SalesOrderApiCreationHandler() {
+    public CreateSalesOrderApiHandler() {
         super();
-        logger.info(SalesOrderApiCreationHandler.class.getName() + " was instantiated successfully");
+        logger.info(CreateSalesOrderApiHandler.class.getName() + " was instantiated successfully");
     }
 
     /**
@@ -136,47 +132,6 @@ public class SalesOrderApiCreationHandler extends SalesOrderApiHandler {
     @Override
     protected void validateRequest(AccountingTransactionRequest req) throws InvalidDataException {
         super.validateRequest(req);
-
-        // Perform common validations here...
-        try {
-            Verifier.verifyNotNull(req.getProfile());
-        } catch (VerifyException e) {
-            throw new InvalidRequestException(ApiMessageHandlerConst.MSG_MISSING_PROFILE_DATA);
-        }
-
-        try {
-            Verifier.verifyNotNull(req.getProfile().getSalesOrders());
-        } catch (VerifyException e) {
-            throw new InvalidRequestException(SalesOrderHandlerConst.MSG_MISSING_SALESORDER_STRUCTURE);
-        }
-
-        try {
-            Verifier.verifyNotEmpty(req.getProfile().getSalesOrders().getSalesOrder());
-        } catch (VerifyException e) {
-            throw new InvalidRequestException(SalesOrderHandlerConst.MSG_SALESORDER_LIST_EMPTY);
-        }
-
-        try {
-            Verifier.verifyTrue(req.getProfile().getSalesOrders().getSalesOrder().size() == 1);
-        } catch (VerifyException e) {
-            throw new InvalidRequestException(SalesOrderHandlerConst.MSG_SALESORDER_LIST_CONTAINS_TOO_MANY);
-        }
-
-        // Validate request for specfic operations
-        switch (this.command) {
-            case ApiTransactionCodes.ACCOUNTING_SALESORDER_INVOICE_CREATE:
-                // Must contain flag that indicates what level of the
-                // transaction object to populate with data
-                // this.validateSearchRequest(req);
-                break;
-
-            case ApiTransactionCodes.ACCOUNTING_SALESORDER_INVOICE_PAYMENT_CREATE:
-                // Transaction profile must exist
-                // this.validateUpdateRequest(req);
-                break;
-
-            default:
-                break;
-        }
+        CreateSalesOrderUtil.doBaseValidation(req);
     }
 }
