@@ -1,21 +1,13 @@
 package org.rmt2.api.handlers.transaction.sales;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.dto.SalesOrderDto;
-import org.dto.SalesOrderItemDto;
-import org.dto.SalesOrderStatusDto;
-import org.dto.SalesOrderStatusHistDto;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.AccountingTransactionRequest;
-import org.rmt2.jaxb.ObjectFactory;
-import org.rmt2.jaxb.SalesOrderItemType;
-import org.rmt2.jaxb.SalesOrderStatusType;
 import org.rmt2.jaxb.SalesOrderType;
 
 import com.InvalidDataException;
@@ -97,29 +89,12 @@ public class CreateSalesOrderApiHandler extends SalesOrderApiHandler {
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
-            SalesOrderDto xactDto = SalesOrderJaxbDtoFactory.createSalesOrderHeaderDtoInstance(reqSalesOrder);
-            List<SalesOrderItemDto> itemsDtoList = SalesOrderJaxbDtoFactory.createSalesOrderItemsDtoInstance(reqSalesOrder.getSalesOrderItems()
-                    .getSalesOrderItem());
 
-            int newXactId = api.updateSalesOrder(xactDto, itemsDtoList);
-            SalesOrderStatusHistDto statusHist = api.getCurrentStatus(newXactId);
-            SalesOrderStatusDto status = api.getStatus(statusHist.getSoStatusId());
+            // Create sales order
+            CreateSalesOrderUtil.createSalesOrder(this.api, reqSalesOrder);
 
-            // Update XML with new sales order id
-            reqSalesOrder.setSalesOrderId(BigInteger.valueOf(newXactId));
-
-            // Update XML with current sales order status
-            ObjectFactory fact = new ObjectFactory();
-            SalesOrderStatusType salesOrdStatusType = fact.createSalesOrderStatusType();
-            salesOrdStatusType.setStatusId(BigInteger.valueOf(status.getSoStatusId()));
-            salesOrdStatusType.setDescription(status.getSoStatusDescription());
-            reqSalesOrder.setStatus(salesOrdStatusType);
-
-            // Ensure that each sales order item is associated with the sales
-            // order.
-            for (SalesOrderItemType item : reqSalesOrder.getSalesOrderItems().getSalesOrderItem()) {
-                item.setSalesOrderId(BigInteger.valueOf(newXactId));
-            }
+            // Assign messages to the reply status that apply to the outcome of
+            // this operation
             String msg = RMT2String.replace(SalesOrderHandlerConst.MSG_CREATE_SUCCESS, String.valueOf(reqSalesOrder.getSalesOrderId()), "%s");
             rs.setMessage(msg);
             rs.setRecordCount(1);
