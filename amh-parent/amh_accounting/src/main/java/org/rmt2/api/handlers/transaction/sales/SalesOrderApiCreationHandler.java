@@ -73,14 +73,6 @@ public class SalesOrderApiCreationHandler extends SalesOrderApiHandler {
                 r = this.create(this.requestObj);
                 break;
 
-            case ApiTransactionCodes.ACCOUNTING_SALESORDER_INVOICE_CREATE:
-                r = this.create(this.requestObj);
-                break;
-
-            case ApiTransactionCodes.ACCOUNTING_SALESORDER_INVOICE_PAYMENT_CREATE:
-                r = this.create(this.requestObj);
-                break;
-
             default:
                 r = this.createErrorReply(MessagingConstants.RETURN_CODE_FAILURE, MessagingConstants.RETURN_STATUS_BAD_REQUEST,
                         ERROR_MSG_TRANS_NOT_FOUND + command);
