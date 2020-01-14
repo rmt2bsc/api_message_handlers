@@ -91,7 +91,10 @@ public class CreateSalesOrderApiHandler extends SalesOrderApiHandler {
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
 
             // Create sales order
-            CreateSalesOrderUtil.createSalesOrder(this.api, reqSalesOrder);
+            SalesOrderRequestUtil.createSalesOrder(this.api, reqSalesOrder);
+
+            // Update the request with current sales order status information
+            SalesOrderRequestUtil.assignCurrentStatus(this.api, reqSalesOrder);
 
             // Assign messages to the reply status that apply to the outcome of
             // this operation
@@ -123,6 +126,6 @@ public class CreateSalesOrderApiHandler extends SalesOrderApiHandler {
     @Override
     protected void validateRequest(AccountingTransactionRequest req) throws InvalidDataException {
         super.validateRequest(req);
-        CreateSalesOrderUtil.doBaseValidation(req);
+        SalesOrderRequestUtil.doBaseValidation(req);
     }
 }
