@@ -23,7 +23,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.rmt2.api.handler.BaseAccountingMessageHandlerTest;
 import org.rmt2.api.handler.transaction.receipts.CashReceiptsMockData;
 import org.rmt2.api.handlers.transaction.receipts.CashReceiptsApiHandler;
-import org.rmt2.api.handlers.transaction.sales.SalesOrderApiCreationHandler;
+import org.rmt2.api.handlers.transaction.sales.CreateSalesOrderApiHandler;
 import org.rmt2.api.handlers.transaction.sales.SalesOrderHandlerConst;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
@@ -46,7 +46,7 @@ import com.api.util.RMT2String;
  *
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ AbstractDaoClientImpl.class, Rmt2OrmClientFactory.class, SalesOrderApiCreationHandler.class, SalesApiFactory.class,
+@PrepareForTest({ AbstractDaoClientImpl.class, Rmt2OrmClientFactory.class, CreateSalesOrderApiHandler.class, SalesApiFactory.class,
         SystemConfigurator.class })
 public class SalesOrderCreateMessageHandlerTest extends BaseAccountingMessageHandlerTest {
 
@@ -102,7 +102,7 @@ public class SalesOrderCreateMessageHandlerTest extends BaseAccountingMessageHan
         }
 
         MessageHandlerResults results = null;
-        SalesOrderApiCreationHandler handler = new SalesOrderApiCreationHandler();
+        CreateSalesOrderApiHandler handler = new CreateSalesOrderApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_CREATE, request);
         } catch (MessageHandlerCommandException e) {
@@ -153,7 +153,7 @@ public class SalesOrderCreateMessageHandlerTest extends BaseAccountingMessageHan
         }
 
         MessageHandlerResults results = null;
-        SalesOrderApiCreationHandler handler = new SalesOrderApiCreationHandler();
+        CreateSalesOrderApiHandler handler = new CreateSalesOrderApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_CREATE, request);
         } catch (MessageHandlerCommandException e) {
@@ -207,7 +207,7 @@ public class SalesOrderCreateMessageHandlerTest extends BaseAccountingMessageHan
         }
 
         MessageHandlerResults results = null;
-        SalesOrderApiCreationHandler handler = new SalesOrderApiCreationHandler();
+        CreateSalesOrderApiHandler handler = new CreateSalesOrderApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_CREATE, request);
         } catch (MessageHandlerCommandException e) {
@@ -238,7 +238,7 @@ public class SalesOrderCreateMessageHandlerTest extends BaseAccountingMessageHan
         }
 
         MessageHandlerResults results = null;
-        SalesOrderApiCreationHandler handler = new SalesOrderApiCreationHandler();
+        CreateSalesOrderApiHandler handler = new CreateSalesOrderApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_CREATE, request);
         } catch (MessageHandlerCommandException e) {
@@ -269,7 +269,7 @@ public class SalesOrderCreateMessageHandlerTest extends BaseAccountingMessageHan
         }
 
         MessageHandlerResults results = null;
-        SalesOrderApiCreationHandler handler = new SalesOrderApiCreationHandler();
+        CreateSalesOrderApiHandler handler = new CreateSalesOrderApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_CREATE, request);
         } catch (MessageHandlerCommandException e) {
@@ -300,7 +300,7 @@ public class SalesOrderCreateMessageHandlerTest extends BaseAccountingMessageHan
         }
 
         MessageHandlerResults results = null;
-        SalesOrderApiCreationHandler handler = new SalesOrderApiCreationHandler();
+        CreateSalesOrderApiHandler handler = new CreateSalesOrderApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_CREATE, request);
         } catch (MessageHandlerCommandException e) {
