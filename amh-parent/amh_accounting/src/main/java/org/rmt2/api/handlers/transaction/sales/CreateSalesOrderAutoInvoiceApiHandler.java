@@ -19,25 +19,25 @@ import com.api.messaging.handler.MessageHandlerResults;
 import com.api.util.RMT2String;
 
 /**
- * Handles and routes messages pertaining to the creation of a Sales Order in
- * the Accounting API.
+ * Handles and routes messages pertaining to the creation of and the immediate
+ * invoicing of a Sales Order in the Accounting API.
  * 
  * @author rterrell
  *
  */
-public class CreateSalesOrderApiHandler extends SalesOrderApiHandler {
-    private static final Logger logger = Logger.getLogger(CreateSalesOrderApiHandler.class);
+public class CreateSalesOrderAutoInvoiceApiHandler extends SalesOrderApiHandler {
+    private static final Logger logger = Logger.getLogger(CreateSalesOrderAutoInvoiceApiHandler.class);
 
     /**
      * 
      */
-    public CreateSalesOrderApiHandler() {
+    public CreateSalesOrderAutoInvoiceApiHandler() {
         super();
-        logger.info(CreateSalesOrderApiHandler.class.getName() + " was instantiated successfully");
+        logger.info(CreateSalesOrderAutoInvoiceApiHandler.class.getName() + " was instantiated successfully");
     }
 
     /**
-     * Processes requests pertaining to the creation of a sales order
+     * Processes requests pertaining to creation and invoicing of a sales order
      * transaction.
      * 
      * @param command
@@ -63,7 +63,7 @@ public class CreateSalesOrderApiHandler extends SalesOrderApiHandler {
             }
         }
         switch (command) {
-            case ApiTransactionCodes.ACCOUNTING_SALESORDER_CREATE:
+            case ApiTransactionCodes.ACCOUNTING_SALESORDER_INVOICE_CREATE:
                 r = this.create(this.requestObj);
                 break;
 
@@ -76,7 +76,7 @@ public class CreateSalesOrderApiHandler extends SalesOrderApiHandler {
 
     /**
      * Handler for invoking the appropriate API in order to create a sales order
-     * accounting transaction object.
+     * and to immediately invoice the sales order.
      * 
      * @param req
      *            an instance of {@link AccountingTransactionRequest}
@@ -98,6 +98,8 @@ public class CreateSalesOrderApiHandler extends SalesOrderApiHandler {
 
             // Create sales order
             SalesOrderRequestUtil.createSalesOrder(this.api, salesOrderDto, itemsDtoList, reqSalesOrder);
+
+            SalesOrderRequestUtil.invoiceSalesOrder(api, salesOrderDto, itemsDtoList, false, reqSalesOrder);
 
             // Update the request with current sales order status information
             SalesOrderRequestUtil.assignCurrentStatus(this.api, reqSalesOrder);

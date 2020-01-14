@@ -19,6 +19,7 @@ import com.api.util.RMT2Date;
 public class SalesOrderMockData extends SubsidiaryMockData {
 
     public static final int NEW_XACT_ID = 1234567;
+    public static final int NEW_INVOICE_ID = 3786;
     public static final int EXISTING_XACT_ID = 7777;
     public static final int CUSTOMER_ID = 3333;
 

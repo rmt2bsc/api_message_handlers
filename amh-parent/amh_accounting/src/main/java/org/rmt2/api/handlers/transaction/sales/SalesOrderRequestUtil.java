@@ -12,6 +12,7 @@ import org.modules.transaction.sales.SalesApi;
 import org.modules.transaction.sales.SalesApiException;
 import org.rmt2.jaxb.AccountingTransactionRequest;
 import org.rmt2.jaxb.ObjectFactory;
+import org.rmt2.jaxb.SalesInvoiceType;
 import org.rmt2.jaxb.SalesOrderItemType;
 import org.rmt2.jaxb.SalesOrderStatusType;
 import org.rmt2.jaxb.SalesOrderType;
@@ -72,6 +73,10 @@ public class SalesOrderRequestUtil {
      * 
      * @param api
      *            an instance of {@link SalesApi}
+     * @param salesOrderDto
+     *            An instance of {@link SalesOrderDto}
+     * @param itemsDtoList
+     *            A list of {@link SalesOrderItemDto}
      * @param reqSalesOrder
      *            an instance of {@link SalesOrderType}
      * @throws SalesApiException
@@ -79,12 +84,9 @@ public class SalesOrderRequestUtil {
      * @throws SystemException
      *             for data conversion errors.
      */
-    protected static final void createSalesOrder(SalesApi api, SalesOrderType reqSalesOrder) throws SalesApiException {
-        SalesOrderDto xactDto = SalesOrderJaxbDtoFactory.createSalesOrderHeaderDtoInstance(reqSalesOrder);
-        List<SalesOrderItemDto> itemsDtoList = SalesOrderJaxbDtoFactory.createSalesOrderItemsDtoInstance(reqSalesOrder.getSalesOrderItems()
-                .getSalesOrderItem());
-
-        int newXactId = api.updateSalesOrder(xactDto, itemsDtoList);
+    protected static final void createSalesOrder(SalesApi api, SalesOrderDto salesOrderDto, List<SalesOrderItemDto> itemsDtoList,
+            SalesOrderType reqSalesOrder) throws SalesApiException {
+        int newXactId = api.updateSalesOrder(salesOrderDto, itemsDtoList);
 
         // Update XML with new sales order id
         reqSalesOrder.setSalesOrderId(BigInteger.valueOf(newXactId));
@@ -94,6 +96,35 @@ public class SalesOrderRequestUtil {
         for (SalesOrderItemType item : reqSalesOrder.getSalesOrderItems().getSalesOrderItem()) {
             item.setSalesOrderId(BigInteger.valueOf(newXactId));
         }
+        return;
+    }
+
+    /**
+     * Initiates the Sales Order API invoicing process.
+     * 
+     * @param api
+     *            an instance of {@link SalesApi}
+     * @param salesOrderDto
+     *            An instance of {@link SalesOrderDto}
+     * @param itemsDtoList
+     *            A list of {@link SalesOrderItemDto}
+     * @param applyPayment
+     *            apply cash receipt transaction once invoiced.
+     * @param reqSalesOrder
+     *            an instance of {@link SalesOrderType}
+     * @throws SalesApiException
+     *             for sales order API error
+     */
+    protected static final void invoiceSalesOrder(SalesApi api, SalesOrderDto salesOrderDto, List<SalesOrderItemDto> itemsDtoList,
+            boolean applyPayment, SalesOrderType reqSalesOrder) throws SalesApiException {
+
+        int newInvoiceId = api.invoiceSalesOrder(salesOrderDto, itemsDtoList, applyPayment);
+        ObjectFactory fact = new ObjectFactory();
+        SalesInvoiceType sit = fact.createSalesInvoiceType();
+        sit.setInvoiceId(BigInteger.valueOf(newInvoiceId));
+        reqSalesOrder.setInvoiceDetails(sit);
+        reqSalesOrder.setInvoiced(newInvoiceId > 0);
+
         return;
     }
 
