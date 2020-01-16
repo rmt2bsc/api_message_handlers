@@ -29,7 +29,6 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.rmt2.api.handler.BaseAccountingMessageHandlerTest;
 import org.rmt2.api.handler.transaction.receipts.CashReceiptsMockData;
-import org.rmt2.api.handlers.transaction.receipts.CashReceiptsApiHandler;
 import org.rmt2.api.handlers.transaction.sales.CreateSalesOrderAutoInvoiceApiHandler;
 import org.rmt2.api.handlers.transaction.sales.SalesOrderHandlerConst;
 import org.rmt2.constants.ApiTransactionCodes;
@@ -179,7 +178,7 @@ public class SalesOrderCreateAndInvoiceMessageHandlerTest extends BaseAccounting
 
     @Test
     public void test_API_Error() {
-        String request = RMT2File.getFileContentsAsString("xml/transaction/sales/SalesOrderCreateRequest.xml");
+        String request = RMT2File.getFileContentsAsString("xml/transaction/sales/SalesOrderCreateAndInvoiceRequest.xml");
 
         try {
             when(this.mockApi.updateSalesOrder(isA(SalesOrderDto.class), isA(List.class))).thenThrow(
@@ -191,7 +190,7 @@ public class SalesOrderCreateAndInvoiceMessageHandlerTest extends BaseAccounting
         MessageHandlerResults results = null;
         CreateSalesOrderAutoInvoiceApiHandler handler = new CreateSalesOrderAutoInvoiceApiHandler();
         try {
-            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_CREATE, request);
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_INVOICE_CREATE, request);
         } catch (MessageHandlerCommandException e) {
             e.printStackTrace();
             Assert.fail("An unexpected exception was thrown");
@@ -210,7 +209,7 @@ public class SalesOrderCreateAndInvoiceMessageHandlerTest extends BaseAccounting
 
     @Test
     public void testError_Incorrect_Trans_Code() {
-        String request = RMT2File.getFileContentsAsString("xml/transaction/common/TransactionQueryInvalidTranCodeRequest.xml");
+        String request = RMT2File.getFileContentsAsString("xml/transaction/sales/SalesOrderCreateAndInvoiceRequest.xml");
 
         MessageHandlerResults results = null;
         CreateSalesOrderAutoInvoiceApiHandler handler = new CreateSalesOrderAutoInvoiceApiHandler();
@@ -228,7 +227,7 @@ public class SalesOrderCreateAndInvoiceMessageHandlerTest extends BaseAccounting
         Assert.assertNull(actualRepsonse.getProfile());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(CashReceiptsApiHandler.ERROR_MSG_TRANS_NOT_FOUND + "INCORRECT_TRAN_CODE", actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(CreateSalesOrderAutoInvoiceApiHandler.ERROR_MSG_TRANS_NOT_FOUND + "INCORRECT_TRAN_CODE", actualRepsonse.getReplyStatus().getMessage());
     }
 
     @Test
