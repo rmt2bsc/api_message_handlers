@@ -69,40 +69,4 @@ public class SalesOrderMockData extends SubsidiaryMockData {
         return list;
     }
 
-    // /**
-    // *
-    // * @return
-    // */
-    // public static final List<XactTypeItemActivityDto> createMockXactItems() {
-    // List<XactTypeItemActivityDto> list = new
-    // ArrayList<XactTypeItemActivityDto>();
-    // XactTypeItemActivity o = AccountingMockDataFactory
-    // .createMockOrmXactTypeItemActivity(7001, 111111, 601, 31.11,
-    // "Item1");
-    // XactTypeItemActivityDto d =
-    // Rmt2XactDtoFactory.createXactTypeItemActivityInstance(o);
-    // list.add(d);
-    //
-    // o = AccountingMockDataFactory.createMockOrmXactTypeItemActivity(7002,
-    // 111111, 602, 20.00, "Item2");
-    // d = Rmt2XactDtoFactory.createXactTypeItemActivityInstance(o);
-    // list.add(d);
-    //
-    // o = AccountingMockDataFactory.createMockOrmXactTypeItemActivity(7003,
-    // 111111, 603, 20.00, "Item3");
-    // d = Rmt2XactDtoFactory.createXactTypeItemActivityInstance(o);
-    // list.add(d);
-    //
-    // o = AccountingMockDataFactory.createMockOrmXactTypeItemActivity(7004,
-    // 111111, 604, 20.00, "Item4");
-    // d = Rmt2XactDtoFactory.createXactTypeItemActivityInstance(o);
-    // list.add(d);
-    //
-    // o = AccountingMockDataFactory.createMockOrmXactTypeItemActivity(7005,
-    // 111111, 605, 20.00, "Item5");
-    // d = Rmt2XactDtoFactory.createXactTypeItemActivityInstance(o);
-    // list.add(d);
-    // return list;
-    // }
-
 }
