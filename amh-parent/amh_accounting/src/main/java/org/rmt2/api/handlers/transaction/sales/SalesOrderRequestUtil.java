@@ -41,7 +41,7 @@ public class SalesOrderRequestUtil {
      *             missing, sales order list is empty, or more that one sale
      *             order element exists in the sales order structure.
      */
-    protected static final void doBaseValidation(AccountingTransactionRequest req) throws InvalidDataException {
+    public static final void doBaseValidation(AccountingTransactionRequest req) throws InvalidDataException {
         try {
             Verifier.verifyNotNull(req.getProfile());
         } catch (VerifyException e) {
@@ -79,12 +79,13 @@ public class SalesOrderRequestUtil {
      *            A list of {@link SalesOrderItemDto}
      * @param reqSalesOrder
      *            an instance of {@link SalesOrderType}
+     * @return new transaction id
      * @throws SalesApiException
      *             for sales order API error
      * @throws SystemException
      *             for data conversion errors.
      */
-    protected static final void createSalesOrder(SalesApi api, SalesOrderDto salesOrderDto, List<SalesOrderItemDto> itemsDtoList,
+    public static final int createSalesOrder(SalesApi api, SalesOrderDto salesOrderDto, List<SalesOrderItemDto> itemsDtoList,
             SalesOrderType reqSalesOrder) throws SalesApiException {
         int newXactId = api.updateSalesOrder(salesOrderDto, itemsDtoList);
 
@@ -96,7 +97,7 @@ public class SalesOrderRequestUtil {
         for (SalesOrderItemType item : reqSalesOrder.getSalesOrderItems().getSalesOrderItem()) {
             item.setSalesOrderId(BigInteger.valueOf(newXactId));
         }
-        return;
+        return newXactId;
     }
 
     /**
@@ -112,10 +113,11 @@ public class SalesOrderRequestUtil {
      *            apply cash receipt transaction once invoiced.
      * @param reqSalesOrder
      *            an instance of {@link SalesOrderType}
+     * @return new invoice id
      * @throws SalesApiException
      *             for sales order API error
      */
-    protected static final void invoiceSalesOrder(SalesApi api, SalesOrderDto salesOrderDto, List<SalesOrderItemDto> itemsDtoList,
+    public static final int invoiceSalesOrder(SalesApi api, SalesOrderDto salesOrderDto, List<SalesOrderItemDto> itemsDtoList,
             boolean applyPayment, SalesOrderType reqSalesOrder) throws SalesApiException {
 
         int newInvoiceId = api.invoiceSalesOrder(salesOrderDto, itemsDtoList, applyPayment);
@@ -125,7 +127,7 @@ public class SalesOrderRequestUtil {
         reqSalesOrder.setInvoiceDetails(sit);
         reqSalesOrder.setInvoiced(newInvoiceId > 0);
 
-        return;
+        return newInvoiceId;
     }
 
     /**
@@ -140,7 +142,7 @@ public class SalesOrderRequestUtil {
      * @throws SystemException
      *             for data conversion errors.
      */
-    protected static final void assignCurrentStatus(SalesApi api, SalesOrderType reqSalesOrder) throws SalesApiException {
+    public static final void assignCurrentStatus(SalesApi api, SalesOrderType reqSalesOrder) throws SalesApiException {
         // Update XML with current sales order status
         SalesOrderStatusHistDto statusHist = api.getCurrentStatus(reqSalesOrder.getSalesOrderId().intValue());
         SalesOrderStatusDto status = api.getStatus(statusHist.getSoStatusId());
