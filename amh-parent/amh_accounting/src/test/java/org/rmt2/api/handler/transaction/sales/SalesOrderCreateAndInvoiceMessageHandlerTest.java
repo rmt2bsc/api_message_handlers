@@ -244,7 +244,7 @@ public class SalesOrderCreateAndInvoiceMessageHandlerTest extends BaseAccounting
         MessageHandlerResults results = null;
         CreateSalesOrderAutoInvoiceApiHandler handler = new CreateSalesOrderAutoInvoiceApiHandler();
         try {
-            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_CREATE, request);
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_INVOICE_CREATE, request);
         } catch (MessageHandlerCommandException e) {
             e.printStackTrace();
             Assert.fail("An unexpected exception was thrown");
@@ -275,7 +275,7 @@ public class SalesOrderCreateAndInvoiceMessageHandlerTest extends BaseAccounting
         MessageHandlerResults results = null;
         CreateSalesOrderAutoInvoiceApiHandler handler = new CreateSalesOrderAutoInvoiceApiHandler();
         try {
-            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_CREATE, request);
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_INVOICE_CREATE, request);
         } catch (MessageHandlerCommandException e) {
             e.printStackTrace();
             Assert.fail("An unexpected exception was thrown");
@@ -306,7 +306,7 @@ public class SalesOrderCreateAndInvoiceMessageHandlerTest extends BaseAccounting
         MessageHandlerResults results = null;
         CreateSalesOrderAutoInvoiceApiHandler handler = new CreateSalesOrderAutoInvoiceApiHandler();
         try {
-            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_CREATE, request);
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_INVOICE_CREATE, request);
         } catch (MessageHandlerCommandException e) {
             e.printStackTrace();
             Assert.fail("An unexpected exception was thrown");
@@ -337,7 +337,7 @@ public class SalesOrderCreateAndInvoiceMessageHandlerTest extends BaseAccounting
         MessageHandlerResults results = null;
         CreateSalesOrderAutoInvoiceApiHandler handler = new CreateSalesOrderAutoInvoiceApiHandler();
         try {
-            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_CREATE, request);
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_INVOICE_CREATE, request);
         } catch (MessageHandlerCommandException e) {
             e.printStackTrace();
             Assert.fail("An unexpected exception was thrown");

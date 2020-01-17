@@ -110,7 +110,8 @@ public class SalesOrderRequestUtil {
      * @param itemsDtoList
      *            A list of {@link SalesOrderItemDto}
      * @param applyPayment
-     *            apply cash receipt transaction once invoiced.
+     *            set to true when the desire is to apply cash receipt
+     *            transaction once invoiced.
      * @param reqSalesOrder
      *            an instance of {@link SalesOrderType}
      * @return new invoice id
