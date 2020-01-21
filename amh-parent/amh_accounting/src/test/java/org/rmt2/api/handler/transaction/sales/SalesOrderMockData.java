@@ -20,8 +20,10 @@ public class SalesOrderMockData extends SubsidiaryMockData {
 
     public static final int NEW_XACT_ID = 1234567;
     public static final int NEW_INVOICE_ID = 3786;
+    public static final int NEW_SALES_ORDER_ID = 1000;
     public static final int EXISTING_XACT_ID = 7777;
     public static final int CUSTOMER_ID = 3333;
+    public static final int TOTAL_SALES_ORDERS_CLOSED = 1;
 
     /**
      * 

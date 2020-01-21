@@ -60,11 +60,6 @@ public class SalesOrderRequestUtil {
             throw new InvalidRequestException(SalesOrderHandlerConst.MSG_SALESORDER_LIST_EMPTY);
         }
 
-        try {
-            Verifier.verifyTrue(req.getProfile().getSalesOrders().getSalesOrder().size() == 1);
-        } catch (VerifyException e) {
-            throw new InvalidRequestException(SalesOrderHandlerConst.MSG_SALESORDER_LIST_CONTAINS_TOO_MANY);
-        }
     }
 
     /**

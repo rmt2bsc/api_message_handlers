@@ -1,0 +1,12 @@
+<AccountingTransactionRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>accounting</application>
+        <module>transaction</module>
+        <transaction>CLOSE_SALES_ORDER_WITH_PAYMENT</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>01/20/2020 18:52:21</delivery_date>
+    </header>
+    
+</AccountingTransactionRequest>

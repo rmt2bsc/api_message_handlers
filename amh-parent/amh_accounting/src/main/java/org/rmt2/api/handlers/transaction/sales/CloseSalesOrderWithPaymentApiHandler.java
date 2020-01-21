@@ -6,11 +6,14 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.dto.SalesOrderDto;
-import org.dto.SalesOrderItemDto;
+import org.dto.XactDto;
+import org.rmt2.api.handlers.transaction.TransactionJaxbDtoFactory;
+import org.rmt2.api.handlers.transaction.XactApiHandler;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.AccountingTransactionRequest;
 import org.rmt2.jaxb.SalesOrderType;
+import org.rmt2.jaxb.XactType;
 
 import com.InvalidDataException;
 import com.api.messaging.InvalidRequestException;
@@ -22,26 +25,26 @@ import com.api.util.assistants.Verifier;
 import com.api.util.assistants.VerifyException;
 
 /**
- * Handles and routes messages pertaining to the creation of and the immediate
- * invoicing of a Sales Order in the Accounting API.
+ * Handles and routes messages pertaining to the closing a Sales Order with
+ * Payment in the Accounting API.
  * 
  * @author rterrell
  *
  */
-public class CreateSalesOrderAutoInvoiceApiHandler extends SalesOrderApiHandler {
-    private static final Logger logger = Logger.getLogger(CreateSalesOrderAutoInvoiceApiHandler.class);
+public class CloseSalesOrderWithPaymentApiHandler extends SalesOrderApiHandler {
+    private static final Logger logger = Logger.getLogger(CloseSalesOrderWithPaymentApiHandler.class);
 
     /**
      * 
      */
-    public CreateSalesOrderAutoInvoiceApiHandler() {
+    public CloseSalesOrderWithPaymentApiHandler() {
         super();
-        logger.info(CreateSalesOrderAutoInvoiceApiHandler.class.getName() + " was instantiated successfully");
+        logger.info(CloseSalesOrderWithPaymentApiHandler.class.getName() + " was instantiated successfully");
     }
 
     /**
-     * Processes requests pertaining to creation and invoicing of a sales order
-     * transaction.
+     * Processes requests pertaining to the closing of a sales order with
+     * payment transaction.
      * 
      * @param command
      *            The name of the operation.
@@ -66,8 +69,8 @@ public class CreateSalesOrderAutoInvoiceApiHandler extends SalesOrderApiHandler 
             }
         }
         switch (command) {
-            case ApiTransactionCodes.ACCOUNTING_SALESORDER_INVOICE_CREATE:
-                r = this.create(this.requestObj);
+            case ApiTransactionCodes.ACCOUNTING_SALESORDER_CLOSE_WITH_PAYMENT:
+                r = this.doOperation(this.requestObj);
                 break;
 
             default:
@@ -79,37 +82,34 @@ public class CreateSalesOrderAutoInvoiceApiHandler extends SalesOrderApiHandler 
 
     /**
      * Handler for invoking the appropriate API in order to create a sales order
-     * and to immediately invoice the sales order.
+     * accounting transaction object.
      * 
      * @param req
      *            an instance of {@link AccountingTransactionRequest}
      * @return an instance of {@link MessageHandlerResults}
      */
-    protected MessageHandlerResults create(AccountingTransactionRequest req) {
+    protected MessageHandlerResults doOperation(AccountingTransactionRequest req) {
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
-        SalesOrderType reqSalesOrder = req.getProfile().getSalesOrders().getSalesOrder().get(0);
-        List<SalesOrderType> tranRresults = new ArrayList<>();
+        List<SalesOrderType> reqSalesOrders = req.getProfile().getSalesOrders().getSalesOrder();
+        XactType reqXact = req.getProfile().getTransactions().getTransaction().get(0);
+        List<SalesOrderType> tranRresults = null;
 
+        List<SalesOrderDto> soDtoList = new ArrayList<>();
         try {
-            SalesOrderDto salesOrderDto = SalesOrderJaxbDtoFactory.createSalesOrderHeaderDtoInstance(reqSalesOrder);
-            List<SalesOrderItemDto> itemsDtoList = SalesOrderJaxbDtoFactory.createSalesOrderItemsDtoInstance(reqSalesOrder.getSalesOrderItems()
-                    .getSalesOrderItem());
+            for (SalesOrderType item : reqSalesOrders) {
+                SalesOrderDto salesOrderDto = SalesOrderJaxbDtoFactory.createSalesOrderHeaderDtoInstance(item);
+                soDtoList.add(salesOrderDto);
+            }
+            XactDto xactDto = TransactionJaxbDtoFactory.createXactDtoInstance(reqXact);
 
-            // Set reply status
+            // Call API method to close sales order
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
-
-            // Create sales order
-            SalesOrderRequestUtil.createSalesOrder(this.api, salesOrderDto, itemsDtoList, reqSalesOrder);
-
-            SalesOrderRequestUtil.invoiceSalesOrder(api, salesOrderDto, itemsDtoList, false, reqSalesOrder);
-
-            // Update the request with current sales order status information
-            SalesOrderRequestUtil.assignCurrentStatus(this.api, reqSalesOrder);
+            int rc = this.api.closeSalesOrderForPayment(soDtoList, xactDto);
 
             // Assign messages to the reply status that apply to the outcome of
             // this operation
-            String msg = RMT2String.replace(SalesOrderHandlerConst.MSG_CREATE_SUCCESS, String.valueOf(reqSalesOrder.getSalesOrderId()), "%s");
+            String msg = RMT2String.replace(SalesOrderHandlerConst.MSG_CLOSE_SUCCESS, String.valueOf(rc), "%s");
             rs.setMessage(msg);
             rs.setRecordCount(1);
 
@@ -121,7 +121,7 @@ public class CreateSalesOrderAutoInvoiceApiHandler extends SalesOrderApiHandler 
             rs.setMessage(SalesOrderHandlerConst.MSG_CREATE_FAILURE);
             rs.setExtMessage(e.getMessage());
         } finally {
-            tranRresults.add(reqSalesOrder);
+            tranRresults = reqSalesOrders;
             this.api.close();
         }
 
@@ -139,10 +139,18 @@ public class CreateSalesOrderAutoInvoiceApiHandler extends SalesOrderApiHandler 
         super.validateRequest(req);
         SalesOrderRequestUtil.doBaseValidation(req);
 
+        // Must include transaction section.
         try {
-            Verifier.verifyTrue(req.getProfile().getSalesOrders().getSalesOrder().size() == 1);
+            Verifier.verifyNotNull(req.getProfile().getTransactions());
         } catch (VerifyException e) {
-            throw new InvalidRequestException(SalesOrderHandlerConst.MSG_SALESORDER_LIST_CONTAINS_TOO_MANY);
+            throw new InvalidRequestException(XactApiHandler.MSG_MISSING_TRANSACTION_SECTION, e);
+        }
+
+        // Transaction profile must contain one and only one transaction
+        try {
+            Verifier.verifyTrue(req.getProfile().getTransactions().getTransaction().size() == 1);
+        } catch (VerifyException e) {
+            throw new InvalidRequestException(SalesOrderHandlerConst.MSG_SALESORDER_CLOSE_TOO_MANY_TRANSACTIONS, e);
         }
     }
 }

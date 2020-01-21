@@ -1,0 +1,24 @@
+<AccountingTransactionRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>accounting</application>
+        <module>transaction</module>
+        <transaction>CLOSE_SALES_ORDER_WITH_PAYMENT</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>01/20/2020 18:52:21</delivery_date>
+    </header>
+    <profile>
+        <sales_orders>
+            <sales_order>
+                <sales_order_id>1000</sales_order_id>
+                <customer_id>3333</customer_id>
+                <customer_name>ABC Company</customer_name>
+                <customer_account_no>ACCT-NO-8888</customer_account_no>
+                <invoiced>false</invoiced>
+                <order_total>755.94</order_total>
+                <effective_date>2020-01-01-06:00</effective_date>
+            </sales_order>
+        </sales_orders>
+    </profile>
+</AccountingTransactionRequest>

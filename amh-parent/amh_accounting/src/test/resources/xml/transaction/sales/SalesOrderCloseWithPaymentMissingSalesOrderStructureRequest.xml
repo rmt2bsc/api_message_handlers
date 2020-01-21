@@ -1,0 +1,36 @@
+<AccountingTransactionRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>accounting</application>
+        <module>transaction</module>
+        <transaction>CLOSE_SALES_ORDER_WITH_PAYMENT</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>01/20/2020 18:52:21</delivery_date>
+    </header>
+    <profile>
+        <transactions>
+            <transaction>
+                <xact_id>0</xact_id>
+                <xact_type>
+                    <xact_type_id>60</xact_type_id>
+                </xact_type>
+                <xact_amount>755.94</xact_amount>
+                <xact_date>2018-12-01-06:00</xact_date>
+                <xact_reason>Test creating a transaction via message handler</xact_reason>
+                <neg_instr_no>1111-1111-1111-1111</neg_instr_no>
+                <tender_id>100</tender_id>
+                <lineitems>
+                    <lineitem>
+                        <xact_type_item_actv_id>0</xact_type_item_actv_id>
+                        <item_id>601</item_id>
+                        <xact_id>0</xact_id>
+                        <itemtype_id>7001</itemtype_id>
+                        <name>item1</name>
+                        <amount>755.94</amount>
+                    </lineitem>
+                </lineitems>
+            </transaction>
+        </transactions>
+    </profile>
+</AccountingTransactionRequest>

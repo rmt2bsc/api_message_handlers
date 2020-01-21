@@ -13,10 +13,13 @@ import org.rmt2.jaxb.AccountingTransactionRequest;
 import org.rmt2.jaxb.SalesOrderType;
 
 import com.InvalidDataException;
+import com.api.messaging.InvalidRequestException;
 import com.api.messaging.handler.MessageHandlerCommandException;
 import com.api.messaging.handler.MessageHandlerCommonReplyStatus;
 import com.api.messaging.handler.MessageHandlerResults;
 import com.api.util.RMT2String;
+import com.api.util.assistants.Verifier;
+import com.api.util.assistants.VerifyException;
 
 /**
  * Handles and routes messages pertaining to the creation, invoicing, and the
@@ -135,5 +138,11 @@ public class CreateSalesOrderAutoInvoiceCashReceiptApiHandler extends SalesOrder
     protected void validateRequest(AccountingTransactionRequest req) throws InvalidDataException {
         super.validateRequest(req);
         SalesOrderRequestUtil.doBaseValidation(req);
+
+        try {
+            Verifier.verifyTrue(req.getProfile().getSalesOrders().getSalesOrder().size() == 1);
+        } catch (VerifyException e) {
+            throw new InvalidRequestException(SalesOrderHandlerConst.MSG_SALESORDER_LIST_CONTAINS_TOO_MANY);
+        }
     }
 }
