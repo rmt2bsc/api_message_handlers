@@ -41,7 +41,7 @@ public class SalesOrderRequestUtil {
      *             missing, sales order list is empty, or more that one sale
      *             order element exists in the sales order structure.
      */
-    public static final void doBaseValidation(AccountingTransactionRequest req) throws InvalidDataException {
+    public static final void doBaseValidationForUpdates(AccountingTransactionRequest req) throws InvalidDataException {
         try {
             Verifier.verifyNotNull(req.getProfile());
         } catch (VerifyException e) {

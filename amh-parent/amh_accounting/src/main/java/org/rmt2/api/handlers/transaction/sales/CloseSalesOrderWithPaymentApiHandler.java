@@ -137,7 +137,7 @@ public class CloseSalesOrderWithPaymentApiHandler extends SalesOrderApiHandler {
     @Override
     protected void validateRequest(AccountingTransactionRequest req) throws InvalidDataException {
         super.validateRequest(req);
-        SalesOrderRequestUtil.doBaseValidation(req);
+        SalesOrderRequestUtil.doBaseValidationForUpdates(req);
 
         // Must include transaction section.
         try {

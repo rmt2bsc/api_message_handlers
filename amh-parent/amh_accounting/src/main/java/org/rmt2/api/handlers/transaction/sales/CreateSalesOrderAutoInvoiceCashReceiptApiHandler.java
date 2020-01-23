@@ -137,7 +137,7 @@ public class CreateSalesOrderAutoInvoiceCashReceiptApiHandler extends SalesOrder
     @Override
     protected void validateRequest(AccountingTransactionRequest req) throws InvalidDataException {
         super.validateRequest(req);
-        SalesOrderRequestUtil.doBaseValidation(req);
+        SalesOrderRequestUtil.doBaseValidationForUpdates(req);
 
         try {
             Verifier.verifyTrue(req.getProfile().getSalesOrders().getSalesOrder().size() == 1);
