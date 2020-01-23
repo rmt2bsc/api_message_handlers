@@ -2,15 +2,22 @@ package org.rmt2.api.handlers.transaction.sales;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import org.ApiMessageHandlerConst;
 import org.apache.log4j.Logger;
 import org.dto.SalesOrderDto;
 import org.dto.SalesOrderItemDto;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.AccountingTransactionRequest;
+import org.rmt2.jaxb.SalesOrderCriteria;
+import org.rmt2.jaxb.SalesOrderItemType;
 import org.rmt2.jaxb.SalesOrderType;
+import org.rmt2.jaxb.XactCustomCriteriaTargetType;
 
 import com.InvalidDataException;
 import com.api.messaging.InvalidRequestException;
@@ -79,7 +86,8 @@ public class QuerySalesOrderApiHandler extends SalesOrderApiHandler {
 
     /**
      * Handler for invoking the appropriate API in order to query one or more
-     * sales order accounting transaction objects.
+     * sales order accounting transaction objects. The only supported target
+     * levels are HEADER and FULL.
      * 
      * @param req
      *            an instance of {@link AccountingTransactionRequest}
@@ -88,28 +96,37 @@ public class QuerySalesOrderApiHandler extends SalesOrderApiHandler {
     protected MessageHandlerResults doHandler(AccountingTransactionRequest req) {
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
-        SalesOrderType reqSalesOrder = req.getProfile().getSalesOrders().getSalesOrder().get(0);
-        List<SalesOrderType> tranRresults = new ArrayList<>();
+        SalesOrderCriteria criteriaJaxb = req.getCriteria().getSalesCriteria();
+        List<SalesOrderType> jaxbResults = new ArrayList<>();
+        List<SalesOrderDto> headerResults = new ArrayList<>();
+        Map<SalesOrderDto, List<SalesOrderItemDto>> resultsMap = new HashMap<>();
+        int recCount = 0;
 
         try {
-            SalesOrderDto salesOrderDto = SalesOrderJaxbDtoFactory.createSalesOrderHeaderDtoInstance(reqSalesOrder);
-            List<SalesOrderItemDto> itemsDtoList = SalesOrderJaxbDtoFactory.createSalesOrderItemsDtoInstance(reqSalesOrder.getSalesOrderItems()
-                    .getSalesOrderItem());
-
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
 
-            // Create sales order
-            SalesOrderRequestUtil.createSalesOrder(this.api, salesOrderDto, itemsDtoList, reqSalesOrder);
+            SalesOrderDto salesOrderCriteriaDto = SalesOrderJaxbDtoFactory.createSalesOrderCriteriaDtoInstance(criteriaJaxb);
+            headerResults = api.getSalesOrder(salesOrderCriteriaDto);
+            if (headerResults != null) {
+                recCount = headerResults.size();
+                for (SalesOrderDto header : headerResults) {
+                    List<SalesOrderItemDto> items = null;
+                    if (criteriaJaxb.getTargetLevel() == XactCustomCriteriaTargetType.FULL) {
+                        items = api.getLineItems(header.getSalesOrderId());
+                    }
+                    resultsMap.put(header, items);
+                }
+            }
 
-            // Update the request with current sales order status information
-            SalesOrderRequestUtil.assignCurrentStatus(this.api, reqSalesOrder);
+            // Setup results as JAXB objects
+            jaxbResults = this.createJaxbResultSet(resultsMap);
 
             // Assign messages to the reply status that apply to the outcome of
             // this operation
-            String msg = RMT2String.replace(SalesOrderHandlerConst.MSG_CREATE_SUCCESS, String.valueOf(reqSalesOrder.getSalesOrderId()), "%s");
+            String msg = RMT2String.replace(SalesOrderHandlerConst.MSG_GET_SUCCESS, String.valueOf(recCount), "%s");
             rs.setMessage(msg);
-            rs.setRecordCount(1);
+            rs.setRecordCount(recCount);
 
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.responseObj.setHeader(req.getHeader());
@@ -119,13 +136,34 @@ public class QuerySalesOrderApiHandler extends SalesOrderApiHandler {
             rs.setMessage(SalesOrderHandlerConst.MSG_CREATE_FAILURE);
             rs.setExtMessage(e.getMessage());
         } finally {
-            tranRresults.add(reqSalesOrder);
+//             jaxbResults.add(reqSalesOrder);
             this.api.close();
         }
 
-        String xml = this.buildResponse(tranRresults, rs);
+        String xml = this.buildResponse(jaxbResults, rs);
         results.setPayload(xml);
         return results;
+    }
+
+    private List<SalesOrderType> createJaxbResultSet(Map<SalesOrderDto, List<SalesOrderItemDto>> resultsMap) {
+        List<SalesOrderType> jaxbResults = new ArrayList<>();
+        if (resultsMap == null) {
+            return jaxbResults;
+        }
+
+        Set<SalesOrderDto> soDtoSet = resultsMap.keySet();
+        for (SalesOrderDto header : soDtoSet) {
+            List<SalesOrderItemDto> itemDtoList = resultsMap.get(header);
+            SalesOrderType sot = SalesOrderJaxbDtoFactory.createSalesOrderHeaderJaxbInstance(header);
+
+            // Check if we need to add sales order items.
+            if (itemDtoList != null) {
+                List<SalesOrderItemType> soitList = SalesOrderJaxbDtoFactory.createSalesOrderItemJaxbInstance(itemDtoList);
+                sot.getSalesOrderItems().getSalesOrderItem().addAll(soitList);
+            }
+            jaxbResults.add(sot);
+        }
+        return jaxbResults;
     }
 
     /**
@@ -135,12 +173,29 @@ public class QuerySalesOrderApiHandler extends SalesOrderApiHandler {
     @Override
     protected void validateRequest(AccountingTransactionRequest req) throws InvalidDataException {
         super.validateRequest(req);
-        SalesOrderRequestUtil.doBaseValidation(req);
-
         try {
-            Verifier.verifyTrue(req.getProfile().getSalesOrders().getSalesOrder().size() == 1);
+            Verifier.verifyNotNull(req.getCriteria());
+            Verifier.verifyNotNull(req.getCriteria().getSalesCriteria());
         } catch (VerifyException e) {
-            throw new InvalidRequestException(SalesOrderHandlerConst.MSG_SALESORDER_LIST_CONTAINS_TOO_MANY);
+            throw new InvalidRequestException(SalesOrderApiHandler.MSG_MISSING_GENERAL_CRITERIA);
+        }
+
+        // Must contain flag that indicates what level of the transaction object
+        // to populate with data
+        try {
+            Verifier.verifyNotNull(req.getCriteria().getSalesCriteria().getTargetLevel());
+        } catch (VerifyException e) {
+            throw new InvalidRequestException(SalesOrderApiHandler.MSG_MISSING_TARGET_LEVEL, e);
+        }
+
+        // Target level "DETAILS" is not supported.
+        try {
+            Verifier.verifyFalse(req.getCriteria().getSalesCriteria()
+                    .getTargetLevel().name()
+                    .equalsIgnoreCase(ApiMessageHandlerConst.TARGET_LEVEL_DETAILS));
+        } catch (VerifyException e) {
+            throw new InvalidRequestException(SalesOrderApiHandler.MSG_TARGET_LEVEL_DETAILS_NOT_SUPPORTED, e);
         }
     }
+
 }

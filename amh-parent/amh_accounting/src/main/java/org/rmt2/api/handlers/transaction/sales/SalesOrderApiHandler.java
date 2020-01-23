@@ -28,9 +28,12 @@ public class SalesOrderApiHandler extends
         AbstractJaxbMessageHandler<AccountingTransactionRequest, AccountingTransactionResponse, List<SalesOrderType>> {
 
     private static final Logger logger = Logger.getLogger(SalesOrderApiHandler.class);
-    public static final String MSG_MISSING_GENERAL_CRITERIA = "Transaction request must contain a valid general criteria object";
-    public static final String MSG_MISSING_SUBJECT_CRITERIA = "Selection criteria is required for Accounting Transaction fetch operation";
-    public static final String MSG_REQUIRED_NO_TRANSACTIONS_INCORRECT = "Transaction profile is required to contain one and only one transaction for the create transaction operation";
+    public static final String MSG_MISSING_GENERAL_CRITERIA = "Sales order query request must contain a valid general criteria object";
+    public static final String MSG_MISSING_SUBJECT_CRITERIA = "Selection criteria is required for Accounting Sales Order fetch operation";
+    // public static final String MSG_REQUIRED_NO_TRANSACTIONS_INCORRECT =
+    // "Transaction profile is required to contain one and only one transaction for the create transaction operation";
+    public static final String MSG_MISSING_TARGET_LEVEL = "Sales order fetch request must contain a target level value";
+    public static final String MSG_TARGET_LEVEL_DETAILS_NOT_SUPPORTED = "Sales order details only target level is not supported";
 
     protected SalesApi api;
     protected ObjectFactory jaxbObjFactory;
