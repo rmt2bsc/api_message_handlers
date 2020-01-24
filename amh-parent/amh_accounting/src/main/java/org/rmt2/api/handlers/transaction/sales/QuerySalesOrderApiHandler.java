@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.ApiMessageHandlerConst;
 import org.apache.log4j.Logger;
@@ -14,6 +13,7 @@ import org.dto.SalesOrderItemDto;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.AccountingTransactionRequest;
+import org.rmt2.jaxb.ObjectFactory;
 import org.rmt2.jaxb.SalesOrderCriteria;
 import org.rmt2.jaxb.SalesOrderItemType;
 import org.rmt2.jaxb.SalesOrderType;
@@ -99,7 +99,7 @@ public class QuerySalesOrderApiHandler extends SalesOrderApiHandler {
         SalesOrderCriteria criteriaJaxb = req.getCriteria().getSalesCriteria();
         List<SalesOrderType> jaxbResults = new ArrayList<>();
         List<SalesOrderDto> headerResults = new ArrayList<>();
-        Map<SalesOrderDto, List<SalesOrderItemDto>> resultsMap = new HashMap<>();
+        Map<Integer, List<SalesOrderItemDto>> resultsMap = new HashMap<>();
         int recCount = 0;
 
         try {
@@ -115,12 +115,12 @@ public class QuerySalesOrderApiHandler extends SalesOrderApiHandler {
                     if (criteriaJaxb.getTargetLevel() == XactCustomCriteriaTargetType.FULL) {
                         items = api.getLineItems(header.getSalesOrderId());
                     }
-                    resultsMap.put(header, items);
+                    resultsMap.put(header.getSalesOrderId(), items);
                 }
             }
 
             // Setup results as JAXB objects
-            jaxbResults = this.createJaxbResultSet(resultsMap);
+            jaxbResults = this.createJaxbResultSet(headerResults, resultsMap);
 
             // Assign messages to the reply status that apply to the outcome of
             // this operation
@@ -145,16 +145,17 @@ public class QuerySalesOrderApiHandler extends SalesOrderApiHandler {
         return results;
     }
 
-    private List<SalesOrderType> createJaxbResultSet(Map<SalesOrderDto, List<SalesOrderItemDto>> resultsMap) {
+    private List<SalesOrderType> createJaxbResultSet(List<SalesOrderDto> salesOrders, Map<Integer, List<SalesOrderItemDto>> resultsMap) {
         List<SalesOrderType> jaxbResults = new ArrayList<>();
         if (resultsMap == null) {
             return jaxbResults;
         }
 
-        Set<SalesOrderDto> soDtoSet = resultsMap.keySet();
-        for (SalesOrderDto header : soDtoSet) {
-            List<SalesOrderItemDto> itemDtoList = resultsMap.get(header);
+        ObjectFactory f = new ObjectFactory();
+        for (SalesOrderDto header : salesOrders) {
+            List<SalesOrderItemDto> itemDtoList = resultsMap.get(header.getSalesOrderId());
             SalesOrderType sot = SalesOrderJaxbDtoFactory.createSalesOrderHeaderJaxbInstance(header);
+            sot.setSalesOrderItems(f.createSalesOrderItemListType());
 
             // Check if we need to add sales order items.
             if (itemDtoList != null) {
