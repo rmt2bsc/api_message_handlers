@@ -9,7 +9,7 @@ import java.util.Set;
 
 import org.ApiMessageHandlerConst;
 import org.apache.log4j.Logger;
-import org.dto.SalesOrderDto;
+import org.dto.SalesInvoiceDto;
 import org.dto.SalesOrderItemDto;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
@@ -98,19 +98,24 @@ public class QuerySalesOrderApiHandler extends SalesOrderApiHandler {
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         SalesOrderCriteria criteriaJaxb = req.getCriteria().getSalesCriteria();
         List<SalesOrderType> jaxbResults = new ArrayList<>();
-        List<SalesOrderDto> headerResults = new ArrayList<>();
-        Map<SalesOrderDto, List<SalesOrderItemDto>> resultsMap = new HashMap<>();
+        List<SalesInvoiceDto> headerResults = new ArrayList<>();
+        Map<SalesInvoiceDto, List<SalesOrderItemDto>> resultsMap = new HashMap<>();
         int recCount = 0;
 
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
 
-            SalesOrderDto salesOrderCriteriaDto = SalesOrderJaxbDtoFactory.createSalesOrderCriteriaDtoInstance(criteriaJaxb);
-            headerResults = api.getSalesOrder(salesOrderCriteriaDto);
+            // Use SalesInvoiceDto instance instead of SalesOrderDto for the
+            // purpose of obtaining extra sales order data
+            SalesInvoiceDto criteriaDto = SalesOrderJaxbDtoFactory.createSalesInvoiceCriteriaDtoInstance(criteriaJaxb);
+            headerResults = api.getInvoice(criteriaDto);
+
+            // Organize query results as a Map since we are dealing with sales
+            // orders and their items
             if (headerResults != null) {
                 recCount = headerResults.size();
-                for (SalesOrderDto header : headerResults) {
+                for (SalesInvoiceDto header : headerResults) {
                     List<SalesOrderItemDto> items = null;
                     if (criteriaJaxb.getTargetLevel() == XactCustomCriteriaTargetType.FULL) {
                         items = api.getLineItems(header.getSalesOrderId());
@@ -119,7 +124,7 @@ public class QuerySalesOrderApiHandler extends SalesOrderApiHandler {
                 }
             }
 
-            // Setup results as JAXB objects
+            // Convert query results to JAXB objects
             jaxbResults = this.createJaxbResultSet(resultsMap);
 
             // Assign messages to the reply status that apply to the outcome of
@@ -145,14 +150,14 @@ public class QuerySalesOrderApiHandler extends SalesOrderApiHandler {
         return results;
     }
 
-    private List<SalesOrderType> createJaxbResultSet(Map<SalesOrderDto, List<SalesOrderItemDto>> resultsMap) {
+    private List<SalesOrderType> createJaxbResultSet(Map<SalesInvoiceDto, List<SalesOrderItemDto>> resultsMap) {
         List<SalesOrderType> jaxbResults = new ArrayList<>();
         if (resultsMap == null) {
             return jaxbResults;
         }
 
-        Set<SalesOrderDto> soDtoSet = resultsMap.keySet();
-        for (SalesOrderDto header : soDtoSet) {
+        Set<SalesInvoiceDto> soDtoSet = resultsMap.keySet();
+        for (SalesInvoiceDto header : soDtoSet) {
             List<SalesOrderItemDto> itemDtoList = resultsMap.get(header);
             SalesOrderType sot = SalesOrderJaxbDtoFactory.createSalesOrderHeaderJaxbInstance(header);
 

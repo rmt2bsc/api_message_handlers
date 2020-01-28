@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.dao.mapping.orm.rmt2.SalesOrderItems;
+import org.dao.mapping.orm.rmt2.VwSalesOrderInvoice;
+import org.dto.SalesInvoiceDto;
 import org.dto.SalesOrderDto;
 import org.dto.SalesOrderItemDto;
 import org.dto.adapter.orm.transaction.sales.Rmt2SalesOrderDtoFactory;
@@ -67,6 +69,7 @@ public class SalesOrderJaxbDtoFactory extends TransactionJaxbDtoFactory {
 
         return dto;
     }
+
 
     /**
      * Creates an instance of <i>SalesOrderDto</i> using a valid
@@ -181,6 +184,43 @@ public class SalesOrderJaxbDtoFactory extends TransactionJaxbDtoFactory {
         return dto;
     }
     
+    /**
+     * 
+     * @param criteriaData
+     * @return
+     */
+    public static final SalesInvoiceDto createSalesInvoiceCriteriaDtoInstance(SalesOrderCriteria criteriaData) {
+        if (criteriaData == null) {
+            return null;
+        }
+
+        SalesInvoiceDto dto = Rmt2SalesOrderDtoFactory.createSalesIvoiceInstance(new VwSalesOrderInvoice());
+        if (criteriaData.getSalesOrderId() != null) {
+            dto.setSalesOrderId(criteriaData.getSalesOrderId().intValue());
+        }
+        if (criteriaData.getCustomerId() != null) {
+            dto.setCustomerId(criteriaData.getCustomerId().intValue());
+        }
+        if (criteriaData.getAccountNo() != null) {
+            dto.setAccountNo(criteriaData.getAccountNo());
+        }
+        if (criteriaData.getBusinessId() != null) {
+            dto.setBusinessId(criteriaData.getBusinessId().intValue());
+        }
+        if (criteriaData.getBusinessName() != null) {
+            dto.setCustomerName(criteriaData.getBusinessName());
+        }
+
+        if (criteriaData.getSalesOrderDate() != null) {
+            dto.setSaleOrderDate(criteriaData.getSalesOrderDate().toGregorianCalendar().getTime());
+        }
+        if (criteriaData.getSalesOrderTotal() != null) {
+            dto.setOrderTotal(criteriaData.getSalesOrderTotal().doubleValue());
+        }
+
+        return dto;
+    }
+
     /**
      * Creates an instance of <i>SalesOrderType</i> using a valid
      * <i>SalesOrderDto</i> DTO object.
