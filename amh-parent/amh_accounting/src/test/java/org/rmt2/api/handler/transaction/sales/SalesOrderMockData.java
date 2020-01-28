@@ -24,7 +24,7 @@ public class SalesOrderMockData extends SubsidiaryMockData {
     public static final int NEW_INVOICE_ID = 3786;
     public static final int NEW_SALES_ORDER_ID = 1000;
     public static final int EXISTING_XACT_ID = 7777;
-    public static final int CUSTOMER_ID = 2000;
+    public static final int CUSTOMER_ID = 3333;
     public static final int TOTAL_SALES_ORDERS_CLOSED = 1;
 
     /**
@@ -105,31 +105,31 @@ public class SalesOrderMockData extends SubsidiaryMockData {
         VwSalesOrderInvoice o = AccountingMockDataFactory
                 .createMockOrmVwSalesOrderInvoice(7000, 1000, "2017-01-01",
                         300.00, SalesApiConst.STATUS_CODE_INVOICED, "80000", 1,
-                        "2017-01-10", 444440, 2000, 1234, "111-111");
+                        "2017-01-10", 444440, CUSTOMER_ID, 1234, "111-111");
         SalesInvoiceDto dto = Rmt2SalesOrderDtoFactory.createSalesIvoiceInstance(o);
         list.add(dto);
 
         o = AccountingMockDataFactory.createMockOrmVwSalesOrderInvoice(7001,
                 1001, "2017-02-01", 600.00, SalesApiConst.STATUS_CODE_INVOICED,
-                "80001", 1, "2017-02-10", 444440, 2000, 1234, "111-111");
+                "80001", 1, "2017-02-10", 444440, CUSTOMER_ID, 1234, "111-111");
         dto = Rmt2SalesOrderDtoFactory.createSalesIvoiceInstance(o);
         list.add(dto);
 
         o = AccountingMockDataFactory.createMockOrmVwSalesOrderInvoice(7002,
                 1002, "2017-03-01", 900.00, SalesApiConst.STATUS_CODE_INVOICED,
-                "80002", 1, "2017-03-10", 444440, 2000, 1234, "111-111");
+                "80002", 1, "2017-03-10", 444440, CUSTOMER_ID, 1234, "111-111");
         dto = Rmt2SalesOrderDtoFactory.createSalesIvoiceInstance(o);
         list.add(dto);
 
         o = AccountingMockDataFactory.createMockOrmVwSalesOrderInvoice(7003,
                 1003, "2017-04-01", 1200.00, SalesApiConst.STATUS_CODE_INVOICED,
-                "80003", 1, "2017-04-10", 444440, 2000, 1234, "111-111");
+                "80003", 1, "2017-04-10", 444440, CUSTOMER_ID, 1234, "111-111");
         dto = Rmt2SalesOrderDtoFactory.createSalesIvoiceInstance(o);
         list.add(dto);
 
         o = AccountingMockDataFactory.createMockOrmVwSalesOrderInvoice(7004,
                 1004, "2017-05-01", 1500.00, SalesApiConst.STATUS_CODE_INVOICED,
-                "80004", 1, "2017-05-10", 444440, 2000, 1234, "111-111");
+                "80004", 1, "2017-05-10", 444440, CUSTOMER_ID, 1234, "111-111");
         dto = Rmt2SalesOrderDtoFactory.createSalesIvoiceInstance(o);
         list.add(dto);
         return list;

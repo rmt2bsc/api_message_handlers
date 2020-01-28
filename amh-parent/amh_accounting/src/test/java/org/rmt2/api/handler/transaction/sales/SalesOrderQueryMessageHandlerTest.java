@@ -7,9 +7,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
-import org.ApiMessageHandlerConst;
 import org.dto.SalesInvoiceDto;
-import org.dto.SalesOrderDto;
 import org.dto.SalesOrderItemDto;
 import org.junit.After;
 import org.junit.Assert;
@@ -25,8 +23,8 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.rmt2.api.handler.BaseAccountingMessageHandlerTest;
 import org.rmt2.api.handlers.transaction.receipts.CashReceiptsApiHandler;
-import org.rmt2.api.handlers.transaction.sales.CreateSalesOrderApiHandler;
 import org.rmt2.api.handlers.transaction.sales.QuerySalesOrderApiHandler;
+import org.rmt2.api.handlers.transaction.sales.SalesOrderApiHandler;
 import org.rmt2.api.handlers.transaction.sales.SalesOrderHandlerConst;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
@@ -176,19 +174,19 @@ public class SalesOrderQueryMessageHandlerTest extends BaseAccountingMessageHand
 
     @Test
     public void test_API_Error() {
-        String request = RMT2File.getFileContentsAsString("xml/transaction/sales/SalesOrderCreateRequest.xml");
+        String request = RMT2File.getFileContentsAsString("xml/transaction/sales/SalesOrderQueryFullRequest.xml");
 
         try {
-            when(this.mockApi.updateSalesOrder(isA(SalesOrderDto.class), isA(List.class))).thenThrow(
+            when(this.mockApi.getInvoice(isA(SalesInvoiceDto.class))).thenThrow(
                     new SalesApiException("A Sales order API test error occurred"));
         } catch (SalesApiException e) {
             Assert.fail("Unable to setup mock stub for sales order transaction");
         }
 
         MessageHandlerResults results = null;
-        CreateSalesOrderApiHandler handler = new CreateSalesOrderApiHandler();
+        QuerySalesOrderApiHandler handler = new QuerySalesOrderApiHandler();
         try {
-            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_CREATE, request);
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_GET, request);
         } catch (MessageHandlerCommandException e) {
             e.printStackTrace();
             Assert.fail("An unexpected exception was thrown");
@@ -207,10 +205,10 @@ public class SalesOrderQueryMessageHandlerTest extends BaseAccountingMessageHand
 
     @Test
     public void testError_Incorrect_Trans_Code() {
-        String request = RMT2File.getFileContentsAsString("xml/transaction/common/TransactionQueryInvalidTranCodeRequest.xml");
+        String request = RMT2File.getFileContentsAsString("xml/transaction/sales/SalesOrderQueryFullRequest.xml");
 
         MessageHandlerResults results = null;
-        CashReceiptsApiHandler handler = new CashReceiptsApiHandler();
+        QuerySalesOrderApiHandler handler = new QuerySalesOrderApiHandler();
         try {
             results = handler.processMessage("INCORRECT_TRAN_CODE", request);
         } catch (MessageHandlerCommandException e) {
@@ -228,21 +226,16 @@ public class SalesOrderQueryMessageHandlerTest extends BaseAccountingMessageHand
         Assert.assertEquals(CashReceiptsApiHandler.ERROR_MSG_TRANS_NOT_FOUND + "INCORRECT_TRAN_CODE", actualRepsonse.getReplyStatus().getMessage());
     }
 
-    @Test
-    public void testValidation_Missing_Profile() {
-        String request = RMT2File.getFileContentsAsString("xml/transaction/sales/SalesOrderCreateRequest_Missing_Profile.xml");
 
-        try {
-            when(this.mockApi.updateSalesOrder(isA(SalesOrderDto.class), isA(List.class))).thenThrow(
-                    new SalesApiException("A Sales order API test error occurred"));
-        } catch (SalesApiException e) {
-            Assert.fail("Unable to setup mock stub for sales order transaction");
-        }
+
+    @Test
+    public void testValidation_Missing_Criteria() {
+        String request = RMT2File.getFileContentsAsString("xml/transaction/sales/SalesOrderQueryMissingCriteriaRequest.xml");
 
         MessageHandlerResults results = null;
-        CreateSalesOrderApiHandler handler = new CreateSalesOrderApiHandler();
+        QuerySalesOrderApiHandler handler = new QuerySalesOrderApiHandler();
         try {
-            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_CREATE, request);
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_GET, request);
         } catch (MessageHandlerCommandException e) {
             e.printStackTrace();
             Assert.fail("An unexpected exception was thrown");
@@ -256,24 +249,17 @@ public class SalesOrderQueryMessageHandlerTest extends BaseAccountingMessageHand
         Assert.assertNull(actualRepsonse.getProfile());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(ApiMessageHandlerConst.MSG_MISSING_PROFILE_DATA, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(SalesOrderApiHandler.MSG_MISSING_GENERAL_CRITERIA, actualRepsonse.getReplyStatus().getMessage());
     }
 
     @Test
-    public void testValidation_Missing_SalesOrder_Structure() {
-        String request = RMT2File.getFileContentsAsString("xml/transaction/sales/SalesOrderCreateRequest_Missing_SalesOrder_Structure.xml");
-
-        try {
-            when(this.mockApi.updateSalesOrder(isA(SalesOrderDto.class), isA(List.class))).thenThrow(
-                    new SalesApiException("A Sales order API test error occurred"));
-        } catch (SalesApiException e) {
-            Assert.fail("Unable to setup mock stub for sales order transaction");
-        }
+    public void testValidation_Missing_TargetLevel() {
+        String request = RMT2File.getFileContentsAsString("xml/transaction/sales/SalesOrderQueryMissingTargetLevelRequest.xml");
 
         MessageHandlerResults results = null;
-        CreateSalesOrderApiHandler handler = new CreateSalesOrderApiHandler();
+        QuerySalesOrderApiHandler handler = new QuerySalesOrderApiHandler();
         try {
-            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_CREATE, request);
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_GET, request);
         } catch (MessageHandlerCommandException e) {
             e.printStackTrace();
             Assert.fail("An unexpected exception was thrown");
@@ -287,24 +273,18 @@ public class SalesOrderQueryMessageHandlerTest extends BaseAccountingMessageHand
         Assert.assertNull(actualRepsonse.getProfile());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(SalesOrderHandlerConst.MSG_MISSING_SALESORDER_STRUCTURE, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(SalesOrderApiHandler.MSG_MISSING_TARGET_LEVEL, actualRepsonse.getReplyStatus().getMessage());
     }
 
     @Test
-    public void testValidation_Missing_SalesOrder_List() {
-        String request = RMT2File.getFileContentsAsString("xml/transaction/sales/SalesOrderCreateRequest_SalesOrder_List_Empty.xml");
-
-        try {
-            when(this.mockApi.updateSalesOrder(isA(SalesOrderDto.class), isA(List.class))).thenThrow(
-                    new SalesApiException("A Sales order API test error occurred"));
-        } catch (SalesApiException e) {
-            Assert.fail("Unable to setup mock stub for sales order transaction");
-        }
+    public void testValidation_Unsupported_TargetLevel() {
+        String request = RMT2File
+                .getFileContentsAsString("xml/transaction/sales/SalesOrderQueryUnsupportedTargetLevelRequest.xml");
 
         MessageHandlerResults results = null;
-        CreateSalesOrderApiHandler handler = new CreateSalesOrderApiHandler();
+        QuerySalesOrderApiHandler handler = new QuerySalesOrderApiHandler();
         try {
-            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_CREATE, request);
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_GET, request);
         } catch (MessageHandlerCommandException e) {
             e.printStackTrace();
             Assert.fail("An unexpected exception was thrown");
@@ -318,37 +298,7 @@ public class SalesOrderQueryMessageHandlerTest extends BaseAccountingMessageHand
         Assert.assertNull(actualRepsonse.getProfile());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(SalesOrderHandlerConst.MSG_SALESORDER_LIST_EMPTY, actualRepsonse.getReplyStatus().getMessage());
-    }
-
-    @Test
-    public void testValidation_Too_Many_SalesOrders() {
-        String request = RMT2File.getFileContentsAsString("xml/transaction/sales/SalesOrderCreateRequest_Too_Many_SalesOrders.xml");
-
-        try {
-            when(this.mockApi.updateSalesOrder(isA(SalesOrderDto.class), isA(List.class))).thenThrow(
-                    new SalesApiException("A Sales order API test error occurred"));
-        } catch (SalesApiException e) {
-            Assert.fail("Unable to setup mock stub for sales order transaction");
-        }
-
-        MessageHandlerResults results = null;
-        CreateSalesOrderApiHandler handler = new CreateSalesOrderApiHandler();
-        try {
-            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_CREATE, request);
-        } catch (MessageHandlerCommandException e) {
-            e.printStackTrace();
-            Assert.fail("An unexpected exception was thrown");
-        }
-
-        Assert.assertNotNull(results);
-        Assert.assertNotNull(results.getPayload());
-
-        AccountingTransactionResponse actualRepsonse = (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-
-        Assert.assertNull(actualRepsonse.getProfile());
-        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(SalesOrderHandlerConst.MSG_SALESORDER_LIST_CONTAINS_TOO_MANY, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(SalesOrderApiHandler.MSG_TARGET_LEVEL_DETAILS_NOT_SUPPORTED, actualRepsonse.getReplyStatus()
+                .getMessage());
     }
 }
