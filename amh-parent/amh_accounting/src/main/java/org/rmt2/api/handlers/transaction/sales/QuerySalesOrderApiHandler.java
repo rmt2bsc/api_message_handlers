@@ -184,7 +184,7 @@ public class QuerySalesOrderApiHandler extends SalesOrderApiHandler {
             Verifier.verifyNotNull(req.getCriteria());
             Verifier.verifyNotNull(req.getCriteria().getSalesCriteria());
         } catch (VerifyException e) {
-            throw new InvalidRequestException(SalesOrderApiHandler.MSG_MISSING_GENERAL_CRITERIA);
+            throw new InvalidRequestException(SalesOrderHandlerConst.MSG_MISSING_GENERAL_CRITERIA);
         }
 
         // Must contain flag that indicates what level of the transaction object
@@ -192,7 +192,7 @@ public class QuerySalesOrderApiHandler extends SalesOrderApiHandler {
         try {
             Verifier.verifyNotNull(req.getCriteria().getSalesCriteria().getTargetLevel());
         } catch (VerifyException e) {
-            throw new InvalidRequestException(SalesOrderApiHandler.MSG_MISSING_TARGET_LEVEL, e);
+            throw new InvalidRequestException(SalesOrderHandlerConst.MSG_MISSING_TARGET_LEVEL, e);
         }
 
         // Target level "DETAILS" is not supported.
@@ -201,7 +201,7 @@ public class QuerySalesOrderApiHandler extends SalesOrderApiHandler {
                     .getTargetLevel().name()
                     .equalsIgnoreCase(ApiMessageHandlerConst.TARGET_LEVEL_DETAILS));
         } catch (VerifyException e) {
-            throw new InvalidRequestException(SalesOrderApiHandler.MSG_TARGET_LEVEL_DETAILS_NOT_SUPPORTED, e);
+            throw new InvalidRequestException(SalesOrderHandlerConst.MSG_TARGET_LEVEL_DETAILS_NOT_SUPPORTED, e);
         }
     }
 

@@ -16,4 +16,8 @@ public class SalesOrderHandlerConst {
     public static final String MSG_CLOSE_SUCCESS = "%s sales order(s) were closed successfully";
     public static final String MSG_CREATE_FAILURE = "Failure to create sales order";
     public static final String MSG_SALESORDER_CLOSE_TOO_MANY_TRANSACTIONS = "Too many transactions for close sales order operation";
+    public static final String MSG_MISSING_GENERAL_CRITERIA = "Sales order query request must contain a valid general criteria object";
+    public static final String MSG_MISSING_SUBJECT_CRITERIA = "Selection criteria is required for Accounting Sales Order fetch operation";
+    public static final String MSG_MISSING_TARGET_LEVEL = "Sales order fetch request must contain a target level value";
+    public static final String MSG_TARGET_LEVEL_DETAILS_NOT_SUPPORTED = "Sales order details only target level is not supported";
 }

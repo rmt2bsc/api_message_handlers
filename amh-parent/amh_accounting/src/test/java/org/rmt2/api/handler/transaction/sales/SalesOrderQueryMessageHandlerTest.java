@@ -24,7 +24,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.rmt2.api.handler.BaseAccountingMessageHandlerTest;
 import org.rmt2.api.handlers.transaction.receipts.CashReceiptsApiHandler;
 import org.rmt2.api.handlers.transaction.sales.QuerySalesOrderApiHandler;
-import org.rmt2.api.handlers.transaction.sales.SalesOrderApiHandler;
 import org.rmt2.api.handlers.transaction.sales.SalesOrderHandlerConst;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
@@ -249,7 +248,7 @@ public class SalesOrderQueryMessageHandlerTest extends BaseAccountingMessageHand
         Assert.assertNull(actualRepsonse.getProfile());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(SalesOrderApiHandler.MSG_MISSING_GENERAL_CRITERIA, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(SalesOrderHandlerConst.MSG_MISSING_GENERAL_CRITERIA, actualRepsonse.getReplyStatus().getMessage());
     }
 
     @Test
@@ -273,7 +272,7 @@ public class SalesOrderQueryMessageHandlerTest extends BaseAccountingMessageHand
         Assert.assertNull(actualRepsonse.getProfile());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(SalesOrderApiHandler.MSG_MISSING_TARGET_LEVEL, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(SalesOrderHandlerConst.MSG_MISSING_TARGET_LEVEL, actualRepsonse.getReplyStatus().getMessage());
     }
 
     @Test
@@ -298,7 +297,7 @@ public class SalesOrderQueryMessageHandlerTest extends BaseAccountingMessageHand
         Assert.assertNull(actualRepsonse.getProfile());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(SalesOrderApiHandler.MSG_TARGET_LEVEL_DETAILS_NOT_SUPPORTED, actualRepsonse.getReplyStatus()
+        Assert.assertEquals(SalesOrderHandlerConst.MSG_TARGET_LEVEL_DETAILS_NOT_SUPPORTED, actualRepsonse.getReplyStatus()
                 .getMessage());
     }
 }
