@@ -95,19 +95,20 @@ public class UpdateSalesOrderApiHandler extends SalesOrderApiHandler {
             SalesOrderDto salesOrderDto = SalesOrderJaxbDtoFactory.createSalesOrderHeaderDtoInstance(reqSalesOrder);
             List<SalesOrderItemDto> itemsDtoList = SalesOrderJaxbDtoFactory.createSalesOrderItemsDtoInstance(reqSalesOrder.getSalesOrderItems()
                     .getSalesOrderItem());
-
+            boolean newSalesOrder = (salesOrderDto.getSalesOrderId() == 0);
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
 
             // Create sales order
-            SalesOrderRequestUtil.createSalesOrder(this.api, salesOrderDto, itemsDtoList, reqSalesOrder);
+            int updateReturnCode = SalesOrderRequestUtil.updateSalesOrder(this.api, salesOrderDto, itemsDtoList, reqSalesOrder);
 
             // Update the request with current sales order status information
             SalesOrderRequestUtil.assignCurrentStatus(this.api, reqSalesOrder);
 
             // Assign messages to the reply status that apply to the outcome of
             // this operation
-            String msg = RMT2String.replace(SalesOrderHandlerConst.MSG_CREATE_SUCCESS, String.valueOf(reqSalesOrder.getSalesOrderId()), "%s");
+            String msg = RMT2String.replace(newSalesOrder ? SalesOrderHandlerConst.MSG_CREATE_SUCCESS
+                    : SalesOrderHandlerConst.MSG_UPDATE_SUCCESS, String.valueOf(updateReturnCode), "%s");
             rs.setMessage(msg);
             rs.setRecordCount(1);
 

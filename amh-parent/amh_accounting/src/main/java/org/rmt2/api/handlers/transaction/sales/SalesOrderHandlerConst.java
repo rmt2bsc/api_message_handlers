@@ -12,6 +12,7 @@ public class SalesOrderHandlerConst {
     public static final String MSG_SALESORDER_LIST_CONTAINS_TOO_MANY = "Sales order list must contain only 1 entry for create sales order operation";
     public static final String MSG_REVERSE_SUCCESS = "Existing Sales order transaction, %s1, was reversed: %s2";
     public static final String MSG_CREATE_SUCCESS = "New sales order transaction was created: %s";
+    public static final String MSG_UPDATE_SUCCESS = "%s sales order(s) were updated successfully";
     public static final String MSG_GET_SUCCESS = "%s sales order(s) were found";
     public static final String MSG_CLOSE_SUCCESS = "%s sales order(s) were closed successfully";
     public static final String MSG_CREATE_FAILURE = "Failure to create sales order";
