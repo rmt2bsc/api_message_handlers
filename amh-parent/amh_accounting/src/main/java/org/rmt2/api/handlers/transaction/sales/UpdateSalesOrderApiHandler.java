@@ -67,6 +67,7 @@ public class UpdateSalesOrderApiHandler extends SalesOrderApiHandler {
         }
         switch (command) {
             case ApiTransactionCodes.ACCOUNTING_SALESORDER_CREATE:
+            case ApiTransactionCodes.ACCOUNTING_SALESORDER_UPDATE:
                 r = this.doOperation(this.requestObj);
                 break;
 
@@ -90,12 +91,12 @@ public class UpdateSalesOrderApiHandler extends SalesOrderApiHandler {
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         SalesOrderType reqSalesOrder = req.getProfile().getSalesOrders().getSalesOrder().get(0);
         List<SalesOrderType> tranRresults = new ArrayList<>();
-
+        boolean newSalesOrder = false;
         try {
             SalesOrderDto salesOrderDto = SalesOrderJaxbDtoFactory.createSalesOrderHeaderDtoInstance(reqSalesOrder);
             List<SalesOrderItemDto> itemsDtoList = SalesOrderJaxbDtoFactory.createSalesOrderItemsDtoInstance(reqSalesOrder.getSalesOrderItems()
                     .getSalesOrderItem());
-            boolean newSalesOrder = (salesOrderDto.getSalesOrderId() == 0);
+            newSalesOrder = (salesOrderDto.getSalesOrderId() == 0);
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
 
@@ -117,7 +118,12 @@ public class UpdateSalesOrderApiHandler extends SalesOrderApiHandler {
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setMessage(SalesOrderHandlerConst.MSG_CREATE_FAILURE);
+            if (newSalesOrder) {
+                rs.setMessage(SalesOrderHandlerConst.MSG_CREATE_FAILURE);
+            }
+            else {
+                rs.setMessage(SalesOrderHandlerConst.MSG_UPDATE_FAILURE);
+            }
             rs.setExtMessage(e.getMessage());
         } finally {
             tranRresults.add(reqSalesOrder);

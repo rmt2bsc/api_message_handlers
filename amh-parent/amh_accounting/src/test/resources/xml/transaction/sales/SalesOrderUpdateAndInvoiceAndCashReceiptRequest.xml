@@ -1,0 +1,73 @@
+<AccountingTransactionRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>accounting</application>
+        <module>transaction</module>
+        <transaction>UPDATE_SALES_ORDER_AND_INVOICE_AND_CASHRECEIPT</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>01/13/2020 16:16:15</delivery_date>
+    </header>
+    <criteria>
+        <sales_criteria>
+            <invoice_on_sales_order_creation>false</invoice_on_sales_order_creation>
+            <apply_payment_on_sales_order_creation>false</apply_payment_on_sales_order_creation>
+        </sales_criteria>
+    </criteria>
+    <profile>
+        <sales_orders>
+            <sales_order>
+                <sales_order_id>1234567</sales_order_id>
+                <customer_id>3333</customer_id>
+                <customer_name>ABC Company</customer_name>
+                <customer_account_no>ACCT-NO-8888</customer_account_no>
+                <invoiced>false</invoiced>
+                <order_total>755.94</order_total>
+                <effective_date>2020-01-01-06:00</effective_date>
+                <sales_order_items>
+                    <sales_order_item>
+                        <sales_order_item_id>100</sales_order_item_id>
+                        <sales_order_id>1234567</sales_order_id>
+                        <item>
+                            <item_id>100</item_id>
+                            <item_type>
+                                <item_type_id>222</item_type_id>
+                            </item_type>
+                            <description>Dell Computer</description>
+                            <vendor_item_no>1234-4839</vendor_item_no>
+                            <item_serial_no>11111111</item_serial_no>
+                            <qty_on_hand>10</qty_on_hand>
+                            <unit_cost>150.99</unit_cost>
+                            <markup>3.0</markup>
+                            <active>1</active>
+                        </item>
+                        <markup>3.0</markup>
+                        <unit_cost>150.99</unit_cost>
+                        <order_qty>1</order_qty>
+                    </sales_order_item>
+                    <sales_order_item>
+                        <sales_order_item_id>200</sales_order_item_id>
+                        <sales_order_id>1234567</sales_order_id>
+                        <item>
+                            <item_id>200</item_id>
+                            <item_type>
+                                <item_type_id>222</item_type_id>
+                            </item_type>
+                            <description>HP Computer</description>
+                            <vendor_item_no>4444-4839</vendor_item_no>
+                            <item_serial_no>22222222</item_serial_no>
+                            <qty_on_hand>20</qty_on_hand>
+                            <unit_cost>100.99</unit_cost>
+                            <markup>3.0</markup>
+                            <active>1</active>
+                        </item>
+                        <markup>3.0</markup>
+                        <unit_cost>100.99</unit_cost>
+                        <order_qty>1</order_qty>
+                    </sales_order_item>
+                </sales_order_items>
+            </sales_order>
+        </sales_orders>
+    </profile>
+</AccountingTransactionRequest>
+
