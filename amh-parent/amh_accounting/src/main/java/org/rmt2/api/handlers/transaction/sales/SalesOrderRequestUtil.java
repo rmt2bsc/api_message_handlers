@@ -64,7 +64,7 @@ public class SalesOrderRequestUtil {
 
     /**
      * Makes various calls to the Sales Order API in order to fulfill creating a
-     * sales order.
+     * new or modifying an existing sales order.
      * 
      * @param api
      *            an instance of {@link SalesApi}
@@ -74,25 +74,31 @@ public class SalesOrderRequestUtil {
      *            A list of {@link SalesOrderItemDto}
      * @param reqSalesOrder
      *            an instance of {@link SalesOrderType}
-     * @return new transaction id
+     * @return int - transaction id for new sales orders or the total number of
+     *         rows updated for existing sales orders
      * @throws SalesApiException
      *             for sales order API error
      * @throws SystemException
      *             for data conversion errors.
      */
-    public static final int createSalesOrder(SalesApi api, SalesOrderDto salesOrderDto, List<SalesOrderItemDto> itemsDtoList,
+    public static final int updateSalesOrder(SalesApi api, SalesOrderDto salesOrderDto, List<SalesOrderItemDto> itemsDtoList,
             SalesOrderType reqSalesOrder) throws SalesApiException {
-        int newXactId = api.updateSalesOrder(salesOrderDto, itemsDtoList);
 
-        // Update XML with new sales order id
-        reqSalesOrder.setSalesOrderId(BigInteger.valueOf(newXactId));
+        boolean newSalesOrder = (salesOrderDto.getSalesOrderId() == 0);
+        int rc = api.updateSalesOrder(salesOrderDto, itemsDtoList);
 
-        // Ensure that each sales order item is associated with the sales
-        // order.
-        for (SalesOrderItemType item : reqSalesOrder.getSalesOrderItems().getSalesOrderItem()) {
-            item.setSalesOrderId(BigInteger.valueOf(newXactId));
+        if (newSalesOrder) {
+            // Update XML with new sales order id
+            reqSalesOrder.setSalesOrderId(BigInteger.valueOf(rc));
+
+            // Ensure that each sales order item is associated with the sales
+            // order.
+            for (SalesOrderItemType item : reqSalesOrder.getSalesOrderItems().getSalesOrderItem()) {
+                item.setSalesOrderId(BigInteger.valueOf(rc));
+            }
         }
-        return newXactId;
+
+        return rc;
     }
 
     /**
