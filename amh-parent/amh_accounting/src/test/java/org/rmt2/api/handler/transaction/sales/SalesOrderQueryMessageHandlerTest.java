@@ -168,7 +168,60 @@ public class SalesOrderQueryMessageHandlerTest extends BaseAccountingMessageHand
             Assert.assertNotNull(a.getCustomerId());
             Assert.assertEquals(SalesOrderMockData.CUSTOMER_ID, a.getCustomerId().intValue());
             Assert.assertEquals((TEST_ORDER_TOTAL * (ndx + 1)), a.getOrderTotal().doubleValue(), 0);
+            Assert.assertNotNull(a.getSalesOrderItems());
+            Assert.assertNotNull(a.getSalesOrderItems().getSalesOrderItem());
+            Assert.assertTrue(a.getSalesOrderItems().getSalesOrderItem().size() > 0);
         }
+    }
+
+    @Test
+    public void testSuccess_Query_Header() {
+        String request = RMT2File.getFileContentsAsString("xml/transaction/sales/SalesOrderQueryHeaderRequest.xml");
+
+        List<SalesInvoiceDto> mockSalesOrderDtoList = SalesOrderMockData.createMockSalesInvoices();
+
+        try {
+            when(this.mockApi.getInvoice(isA(SalesInvoiceDto.class))).thenReturn(mockSalesOrderDtoList);
+        } catch (Exception e) {
+            Assert.fail("Unable to setup mock stub for fetching sales order DTO list");
+        }
+
+        MessageHandlerResults results = null;
+        QuerySalesOrderApiHandler handler = new QuerySalesOrderApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_GET, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingTransactionResponse actualRepsonse = (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload()
+                .toString());
+        Assert.assertEquals(EXPECTED_REC_TOTAL, actualRepsonse.getProfile().getSalesOrders().getSalesOrder().size(), 0);
+        Assert.assertEquals(EXPECTED_REC_TOTAL, actualRepsonse.getReplyStatus().getRecordCount().intValue(), 0);
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
+
+        String expectedMsg = EXPECTED_REC_TOTAL + " sales order(s) were found";
+        Assert.assertEquals(expectedMsg, actualRepsonse.getReplyStatus().getMessage());
+
+        Assert.assertNotNull(actualRepsonse.getProfile());
+        Assert.assertNotNull(actualRepsonse.getProfile().getSalesOrders());
+        Assert.assertEquals(EXPECTED_REC_TOTAL, actualRepsonse.getProfile().getSalesOrders().getSalesOrder().size(), 0);
+        for (int ndx = 0; ndx < actualRepsonse.getProfile().getSalesOrders().getSalesOrder().size(); ndx++) {
+            SalesOrderType a = actualRepsonse.getProfile().getSalesOrders().getSalesOrder().get(ndx);
+            Assert.assertNotNull(a.getSalesOrderId());
+            Assert.assertEquals((1000 + ndx), a.getSalesOrderId().intValue());
+            Assert.assertNotNull(a.getCustomerId());
+            Assert.assertEquals(SalesOrderMockData.CUSTOMER_ID, a.getCustomerId().intValue());
+            Assert.assertEquals((TEST_ORDER_TOTAL * (ndx + 1)), a.getOrderTotal().doubleValue(), 0);
+            Assert.assertNotNull(a.getSalesOrderItems());
+            Assert.assertNotNull(a.getSalesOrderItems().getSalesOrderItem());
+            Assert.assertEquals(0, a.getSalesOrderItems().getSalesOrderItem().size());
+        }
+
     }
 
     @Test
