@@ -22,25 +22,25 @@ import com.api.util.assistants.Verifier;
 import com.api.util.assistants.VerifyException;
 
 /**
- * Handles and routes messages pertaining to the creation of and the immediate
- * invoicing of a Sales Order in the Accounting API.
+ * Handles and routes messages pertaining to creating new or updating an
+ * existing Sales Order in the Accounting API.
  * 
  * @author rterrell
  *
  */
-public class CreateSalesOrderAutoInvoiceApiHandler extends SalesOrderApiHandler {
-    private static final Logger logger = Logger.getLogger(CreateSalesOrderAutoInvoiceApiHandler.class);
+public class UpdateSalesOrderApiHandler extends SalesOrderApiHandler {
+    private static final Logger logger = Logger.getLogger(UpdateSalesOrderApiHandler.class);
 
     /**
      * 
      */
-    public CreateSalesOrderAutoInvoiceApiHandler() {
+    public UpdateSalesOrderApiHandler() {
         super();
-        logger.info(CreateSalesOrderAutoInvoiceApiHandler.class.getName() + " was instantiated successfully");
+        logger.info(UpdateSalesOrderApiHandler.class.getName() + " was instantiated successfully");
     }
 
     /**
-     * Processes requests pertaining to creation and invoicing of a sales order
+     * Processes requests pertaining to the creation of a sales order
      * transaction.
      * 
      * @param command
@@ -66,8 +66,8 @@ public class CreateSalesOrderAutoInvoiceApiHandler extends SalesOrderApiHandler 
             }
         }
         switch (command) {
-            case ApiTransactionCodes.ACCOUNTING_SALESORDER_INVOICE_CREATE:
-                r = this.create(this.requestObj);
+            case ApiTransactionCodes.ACCOUNTING_SALESORDER_CREATE:
+                r = this.doOperation(this.requestObj);
                 break;
 
             default:
@@ -79,13 +79,13 @@ public class CreateSalesOrderAutoInvoiceApiHandler extends SalesOrderApiHandler 
 
     /**
      * Handler for invoking the appropriate API in order to create a sales order
-     * and to immediately invoice the sales order.
+     * accounting transaction object.
      * 
      * @param req
      *            an instance of {@link AccountingTransactionRequest}
      * @return an instance of {@link MessageHandlerResults}
      */
-    protected MessageHandlerResults create(AccountingTransactionRequest req) {
+    protected MessageHandlerResults doOperation(AccountingTransactionRequest req) {
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         SalesOrderType reqSalesOrder = req.getProfile().getSalesOrders().getSalesOrder().get(0);
@@ -101,8 +101,6 @@ public class CreateSalesOrderAutoInvoiceApiHandler extends SalesOrderApiHandler 
 
             // Create sales order
             SalesOrderRequestUtil.createSalesOrder(this.api, salesOrderDto, itemsDtoList, reqSalesOrder);
-
-            SalesOrderRequestUtil.invoiceSalesOrder(api, salesOrderDto, itemsDtoList, false, reqSalesOrder);
 
             // Update the request with current sales order status information
             SalesOrderRequestUtil.assignCurrentStatus(this.api, reqSalesOrder);

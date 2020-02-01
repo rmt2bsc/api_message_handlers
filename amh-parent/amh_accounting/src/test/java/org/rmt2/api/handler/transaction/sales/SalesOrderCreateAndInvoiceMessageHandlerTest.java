@@ -29,7 +29,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.rmt2.api.handler.BaseAccountingMessageHandlerTest;
 import org.rmt2.api.handler.transaction.receipts.CashReceiptsMockData;
-import org.rmt2.api.handlers.transaction.sales.CreateSalesOrderAutoInvoiceApiHandler;
+import org.rmt2.api.handlers.transaction.sales.UpdateSalesOrderAutoInvoiceApiHandler;
 import org.rmt2.api.handlers.transaction.sales.SalesOrderHandlerConst;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
@@ -53,7 +53,7 @@ import com.api.util.RMT2String;
  *
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ AbstractDaoClientImpl.class, Rmt2OrmClientFactory.class, CreateSalesOrderAutoInvoiceApiHandler.class, SalesApiFactory.class,
+@PrepareForTest({ AbstractDaoClientImpl.class, Rmt2OrmClientFactory.class, UpdateSalesOrderAutoInvoiceApiHandler.class, SalesApiFactory.class,
         SystemConfigurator.class })
 public class SalesOrderCreateAndInvoiceMessageHandlerTest extends BaseAccountingMessageHandlerTest {
 
@@ -135,7 +135,7 @@ public class SalesOrderCreateAndInvoiceMessageHandlerTest extends BaseAccounting
         }
 
         MessageHandlerResults results = null;
-        CreateSalesOrderAutoInvoiceApiHandler handler = new CreateSalesOrderAutoInvoiceApiHandler();
+        UpdateSalesOrderAutoInvoiceApiHandler handler = new UpdateSalesOrderAutoInvoiceApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_INVOICE_CREATE, request);
         } catch (MessageHandlerCommandException e) {
@@ -188,7 +188,7 @@ public class SalesOrderCreateAndInvoiceMessageHandlerTest extends BaseAccounting
         }
 
         MessageHandlerResults results = null;
-        CreateSalesOrderAutoInvoiceApiHandler handler = new CreateSalesOrderAutoInvoiceApiHandler();
+        UpdateSalesOrderAutoInvoiceApiHandler handler = new UpdateSalesOrderAutoInvoiceApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_INVOICE_CREATE, request);
         } catch (MessageHandlerCommandException e) {
@@ -212,7 +212,7 @@ public class SalesOrderCreateAndInvoiceMessageHandlerTest extends BaseAccounting
         String request = RMT2File.getFileContentsAsString("xml/transaction/sales/SalesOrderCreateAndInvoiceRequest.xml");
 
         MessageHandlerResults results = null;
-        CreateSalesOrderAutoInvoiceApiHandler handler = new CreateSalesOrderAutoInvoiceApiHandler();
+        UpdateSalesOrderAutoInvoiceApiHandler handler = new UpdateSalesOrderAutoInvoiceApiHandler();
         try {
             results = handler.processMessage("INCORRECT_TRAN_CODE", request);
         } catch (MessageHandlerCommandException e) {
@@ -227,7 +227,7 @@ public class SalesOrderCreateAndInvoiceMessageHandlerTest extends BaseAccounting
         Assert.assertNull(actualRepsonse.getProfile());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(CreateSalesOrderAutoInvoiceApiHandler.ERROR_MSG_TRANS_NOT_FOUND + "INCORRECT_TRAN_CODE", actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(UpdateSalesOrderAutoInvoiceApiHandler.ERROR_MSG_TRANS_NOT_FOUND + "INCORRECT_TRAN_CODE", actualRepsonse.getReplyStatus().getMessage());
     }
 
     @Test
@@ -242,7 +242,7 @@ public class SalesOrderCreateAndInvoiceMessageHandlerTest extends BaseAccounting
         }
 
         MessageHandlerResults results = null;
-        CreateSalesOrderAutoInvoiceApiHandler handler = new CreateSalesOrderAutoInvoiceApiHandler();
+        UpdateSalesOrderAutoInvoiceApiHandler handler = new UpdateSalesOrderAutoInvoiceApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_INVOICE_CREATE, request);
         } catch (MessageHandlerCommandException e) {
@@ -273,7 +273,7 @@ public class SalesOrderCreateAndInvoiceMessageHandlerTest extends BaseAccounting
         }
 
         MessageHandlerResults results = null;
-        CreateSalesOrderAutoInvoiceApiHandler handler = new CreateSalesOrderAutoInvoiceApiHandler();
+        UpdateSalesOrderAutoInvoiceApiHandler handler = new UpdateSalesOrderAutoInvoiceApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_INVOICE_CREATE, request);
         } catch (MessageHandlerCommandException e) {
@@ -304,7 +304,7 @@ public class SalesOrderCreateAndInvoiceMessageHandlerTest extends BaseAccounting
         }
 
         MessageHandlerResults results = null;
-        CreateSalesOrderAutoInvoiceApiHandler handler = new CreateSalesOrderAutoInvoiceApiHandler();
+        UpdateSalesOrderAutoInvoiceApiHandler handler = new UpdateSalesOrderAutoInvoiceApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_INVOICE_CREATE, request);
         } catch (MessageHandlerCommandException e) {
@@ -335,7 +335,7 @@ public class SalesOrderCreateAndInvoiceMessageHandlerTest extends BaseAccounting
         }
 
         MessageHandlerResults results = null;
-        CreateSalesOrderAutoInvoiceApiHandler handler = new CreateSalesOrderAutoInvoiceApiHandler();
+        UpdateSalesOrderAutoInvoiceApiHandler handler = new UpdateSalesOrderAutoInvoiceApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_INVOICE_CREATE, request);
         } catch (MessageHandlerCommandException e) {

@@ -74,7 +74,7 @@ public class QuerySalesOrderApiHandler extends SalesOrderApiHandler {
         }
         switch (command) {
             case ApiTransactionCodes.ACCOUNTING_SALESORDER_GET:
-                r = this.doHandler(this.requestObj);
+                r = this.doOperation(this.requestObj);
                 break;
 
             default:
@@ -93,7 +93,7 @@ public class QuerySalesOrderApiHandler extends SalesOrderApiHandler {
      *            an instance of {@link AccountingTransactionRequest}
      * @return an instance of {@link MessageHandlerResults}
      */
-    protected MessageHandlerResults doHandler(AccountingTransactionRequest req) {
+    protected MessageHandlerResults doOperation(AccountingTransactionRequest req) {
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         SalesOrderCriteria criteriaJaxb = req.getCriteria().getSalesCriteria();

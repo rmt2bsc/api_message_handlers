@@ -29,7 +29,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.rmt2.api.handler.BaseAccountingMessageHandlerTest;
 import org.rmt2.api.handler.transaction.receipts.CashReceiptsMockData;
-import org.rmt2.api.handlers.transaction.sales.CreateSalesOrderAutoInvoiceCashReceiptApiHandler;
+import org.rmt2.api.handlers.transaction.sales.UpdateSalesOrderAutoInvoiceCashReceiptApiHandler;
 import org.rmt2.api.handlers.transaction.sales.SalesOrderHandlerConst;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
@@ -54,7 +54,7 @@ import com.api.util.RMT2String;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ AbstractDaoClientImpl.class, Rmt2OrmClientFactory.class,
-        CreateSalesOrderAutoInvoiceCashReceiptApiHandler.class, SalesApiFactory.class,
+        UpdateSalesOrderAutoInvoiceCashReceiptApiHandler.class, SalesApiFactory.class,
         SystemConfigurator.class })
 public class SalesOrderCreateAndInvoiceAndCashReceiptMessageHandlerTest extends BaseAccountingMessageHandlerTest {
 
@@ -138,7 +138,7 @@ public class SalesOrderCreateAndInvoiceAndCashReceiptMessageHandlerTest extends 
         }
 
         MessageHandlerResults results = null;
-        CreateSalesOrderAutoInvoiceCashReceiptApiHandler handler = new CreateSalesOrderAutoInvoiceCashReceiptApiHandler();
+        UpdateSalesOrderAutoInvoiceCashReceiptApiHandler handler = new UpdateSalesOrderAutoInvoiceCashReceiptApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_INVOICE_PAYMENT_CREATE, request);
         } catch (MessageHandlerCommandException e) {
@@ -191,7 +191,7 @@ public class SalesOrderCreateAndInvoiceAndCashReceiptMessageHandlerTest extends 
         }
 
         MessageHandlerResults results = null;
-        CreateSalesOrderAutoInvoiceCashReceiptApiHandler handler = new CreateSalesOrderAutoInvoiceCashReceiptApiHandler();
+        UpdateSalesOrderAutoInvoiceCashReceiptApiHandler handler = new UpdateSalesOrderAutoInvoiceCashReceiptApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_INVOICE_PAYMENT_CREATE, request);
         } catch (MessageHandlerCommandException e) {
@@ -216,7 +216,7 @@ public class SalesOrderCreateAndInvoiceAndCashReceiptMessageHandlerTest extends 
                 .getFileContentsAsString("xml/transaction/sales/SalesOrderCreateAndInvoiceAndCashReceiptRequest.xml");
 
         MessageHandlerResults results = null;
-        CreateSalesOrderAutoInvoiceCashReceiptApiHandler handler = new CreateSalesOrderAutoInvoiceCashReceiptApiHandler();
+        UpdateSalesOrderAutoInvoiceCashReceiptApiHandler handler = new UpdateSalesOrderAutoInvoiceCashReceiptApiHandler();
         try {
             results = handler.processMessage("INCORRECT_TRAN_CODE", request);
         } catch (MessageHandlerCommandException e) {
@@ -231,7 +231,7 @@ public class SalesOrderCreateAndInvoiceAndCashReceiptMessageHandlerTest extends 
         Assert.assertNull(actualRepsonse.getProfile());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(CreateSalesOrderAutoInvoiceCashReceiptApiHandler.ERROR_MSG_TRANS_NOT_FOUND + "INCORRECT_TRAN_CODE",
+        Assert.assertEquals(UpdateSalesOrderAutoInvoiceCashReceiptApiHandler.ERROR_MSG_TRANS_NOT_FOUND + "INCORRECT_TRAN_CODE",
                 actualRepsonse.getReplyStatus().getMessage());
     }
 
@@ -247,7 +247,7 @@ public class SalesOrderCreateAndInvoiceAndCashReceiptMessageHandlerTest extends 
         }
 
         MessageHandlerResults results = null;
-        CreateSalesOrderAutoInvoiceCashReceiptApiHandler handler = new CreateSalesOrderAutoInvoiceCashReceiptApiHandler();
+        UpdateSalesOrderAutoInvoiceCashReceiptApiHandler handler = new UpdateSalesOrderAutoInvoiceCashReceiptApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_INVOICE_PAYMENT_CREATE, request);
         } catch (MessageHandlerCommandException e) {
@@ -278,7 +278,7 @@ public class SalesOrderCreateAndInvoiceAndCashReceiptMessageHandlerTest extends 
         }
 
         MessageHandlerResults results = null;
-        CreateSalesOrderAutoInvoiceCashReceiptApiHandler handler = new CreateSalesOrderAutoInvoiceCashReceiptApiHandler();
+        UpdateSalesOrderAutoInvoiceCashReceiptApiHandler handler = new UpdateSalesOrderAutoInvoiceCashReceiptApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_INVOICE_PAYMENT_CREATE, request);
         } catch (MessageHandlerCommandException e) {
@@ -309,7 +309,7 @@ public class SalesOrderCreateAndInvoiceAndCashReceiptMessageHandlerTest extends 
         }
 
         MessageHandlerResults results = null;
-        CreateSalesOrderAutoInvoiceCashReceiptApiHandler handler = new CreateSalesOrderAutoInvoiceCashReceiptApiHandler();
+        UpdateSalesOrderAutoInvoiceCashReceiptApiHandler handler = new UpdateSalesOrderAutoInvoiceCashReceiptApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_INVOICE_PAYMENT_CREATE, request);
         } catch (MessageHandlerCommandException e) {
@@ -340,7 +340,7 @@ public class SalesOrderCreateAndInvoiceAndCashReceiptMessageHandlerTest extends 
         }
 
         MessageHandlerResults results = null;
-        CreateSalesOrderAutoInvoiceCashReceiptApiHandler handler = new CreateSalesOrderAutoInvoiceCashReceiptApiHandler();
+        UpdateSalesOrderAutoInvoiceCashReceiptApiHandler handler = new UpdateSalesOrderAutoInvoiceCashReceiptApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_INVOICE_PAYMENT_CREATE, request);
         } catch (MessageHandlerCommandException e) {
