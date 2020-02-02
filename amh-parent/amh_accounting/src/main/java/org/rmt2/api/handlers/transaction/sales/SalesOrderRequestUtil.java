@@ -101,6 +101,7 @@ public class SalesOrderRequestUtil {
         return rc;
     }
 
+
     /**
      * Initiates the Sales Order API invoicing process.
      * 
