@@ -15,12 +15,14 @@ public class SalesOrderHandlerConst {
     public static final String MSG_UPDATE_SUCCESS = "%s sales order(s) were updated successfully";
     public static final String MSG_DELETE_SUCCESS = "%s sales order(s) were deleted successfully";
     public static final String MSG_CANCEL_SUCCESS = "%s sales order(s) were cancelled successfully";
+    public static final String MSG_REFUND_SUCCESS = "%s sales order(s) were refunded successfully";
     public static final String MSG_GET_SUCCESS = "%s sales order(s) were found";
     public static final String MSG_CLOSE_SUCCESS = "%s sales order(s) were closed successfully";
     public static final String MSG_CREATE_FAILURE = "Failure to create sales order";
     public static final String MSG_UPDATE_FAILURE = "Failure to update sales order(s)";
     public static final String MSG_DELETE_FAILURE = "Failure to delete sales order(s)";
     public static final String MSG_CANCEL_FAILURE = "Failure to cancel one or more sales orders";
+    public static final String MSG_REFUND_FAILURE = "Failure to refund one or more sales orders";
     public static final String MSG_SALESORDER_CLOSE_TOO_MANY_TRANSACTIONS = "Too many transactions for close sales order operation";
     public static final String MSG_MISSING_GENERAL_CRITERIA = "Sales order query request must contain a valid general criteria object";
     public static final String MSG_MISSING_SUBJECT_CRITERIA = "Selection criteria is required for Accounting Sales Order fetch operation";
