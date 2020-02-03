@@ -126,11 +126,13 @@ public class ItemApiHandler extends
            rs.setMessage("Inventory item was activated successfully");
            rs.setReturnCode(rc);
             this.responseObj.setHeader(req.getHeader());
+            this.api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to activate inventory item, " + criteriaDto.getItemId());
             rs.setExtMessage(e.getMessage());
+            this.api.rollbackTrans();
         } finally {
             this.api.close();
         }
@@ -163,11 +165,13 @@ public class ItemApiHandler extends
            rs.setMessage("Inventory item was deactivated successfully");
            rs.setReturnCode(rc);
             this.responseObj.setHeader(req.getHeader());
+            this.api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to deactivate inventory item, " + criteriaDto.getItemId());
             rs.setExtMessage(e.getMessage());
+            this.api.rollbackTrans();
         } finally {
             this.api.close();
         }
@@ -201,11 +205,13 @@ public class ItemApiHandler extends
            rs.setMessage("Inventory item retail override was applied");
            rs.setReturnCode(rc);
             this.responseObj.setHeader(req.getHeader());
+            this.api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to apply inventory item retail override, " + criteriaDto.getItemId());
             rs.setExtMessage(e.getMessage());
+            this.api.rollbackTrans();
         } finally {
             this.api.close();
         }
@@ -239,11 +245,13 @@ public class ItemApiHandler extends
            rs.setMessage("Inventory item retail override was removed");
            rs.setReturnCode(rc);
             this.responseObj.setHeader(req.getHeader());
+            this.api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to remove inventory item retail override, " + criteriaDto.getItemId());
             rs.setExtMessage(e.getMessage());
+            this.api.rollbackTrans();
         } finally {
             this.api.close();
         }

@@ -211,6 +211,7 @@ public class VendorItemApiHandler extends
             rs.setMessage(rc + " inventory items were assigned to vendor, " + criteriaDto.getVendorId());
             rs.setReturnCode(rc);
             this.responseObj.setHeader(req.getHeader());
+            this.api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, "
                     + this.command, e);
@@ -218,6 +219,7 @@ public class VendorItemApiHandler extends
             rs.setMessage("Failure to assign inventory items to vendor, "
                     + criteriaDto.getVendorId());
             rs.setExtMessage(e.getMessage());
+            this.api.rollbackTrans();
         } finally {
             this.api.close();
         }
@@ -251,6 +253,7 @@ public class VendorItemApiHandler extends
             rs.setMessage(rc + " inventory items were removed from vendor, " + criteriaDto.getVendorId());
             rs.setReturnCode(rc);
             this.responseObj.setHeader(req.getHeader());
+            this.api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, "
                     + this.command, e);
@@ -258,6 +261,7 @@ public class VendorItemApiHandler extends
             rs.setMessage("Failure to remove inventory items from vendor, "
                     + criteriaDto.getVendorId());
             rs.setExtMessage(e.getMessage());
+            this.api.rollbackTrans();
         } finally {
             this.api.close();
         }
@@ -288,12 +292,14 @@ public class VendorItemApiHandler extends
             rs.setMessage("Vendor inventory item was updated");
             rs.setReturnCode(rc);
             this.responseObj.setHeader(req.getHeader());
+            this.api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, "
                     + this.command, e);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to update vendor inventory item");
             rs.setExtMessage(e.getMessage());
+            this.api.rollbackTrans();
         } finally {
             this.api.close();
         }

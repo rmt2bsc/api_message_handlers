@@ -88,16 +88,17 @@ public class CancelSalesOrderApiHandler extends SalesOrderApiHandler {
 
         try {
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
-            int cancelReturnCode = 0;
-            for (int ndx = 0; ndx < reqSalesOrder.size(); ndx++) {
-                cancelReturnCode += api.cancelSalesOrder(reqSalesOrder.get(ndx).getSalesOrderId().intValue());
+            int cancelTotal = 0;
+            for (SalesOrderType so : reqSalesOrder) {
+                api.cancelSalesOrder(so.getSalesOrderId().intValue());
+                cancelTotal++;
             }
 
             // Assign messages to the reply status that apply to the outcome of
             // this operation
-            String msg = RMT2String.replace(SalesOrderHandlerConst.MSG_CANCEL_SUCCESS, String.valueOf(cancelReturnCode), "%s");
+            String msg = RMT2String.replace(SalesOrderHandlerConst.MSG_CANCEL_SUCCESS, String.valueOf(cancelTotal), "%s");
             rs.setMessage(msg);
-            rs.setRecordCount(cancelReturnCode);
+            rs.setRecordCount(cancelTotal);
 
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.responseObj.setHeader(req.getHeader());
@@ -107,6 +108,7 @@ public class CancelSalesOrderApiHandler extends SalesOrderApiHandler {
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage(SalesOrderHandlerConst.MSG_CANCEL_FAILURE);
             rs.setExtMessage(e.getMessage());
+            rs.setRecordCount(0);
             this.api.rollbackTrans();
         } finally {
             tranRresults.addAll(reqSalesOrder);

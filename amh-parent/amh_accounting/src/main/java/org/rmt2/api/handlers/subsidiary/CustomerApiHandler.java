@@ -171,11 +171,13 @@ public class CustomerApiHandler extends
             }
             rs.setReturnCode(rc);
             this.responseObj.setHeader(req.getHeader());
+            this.api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to update customer");
             rs.setExtMessage(e.getMessage());
+            this.api.rollbackTrans();
         } finally {
             this.api.close();
         }
@@ -212,11 +214,13 @@ public class CustomerApiHandler extends
             rs.setExtMessage("Total records deleted: " + rc);
             rs.setReturnCode(rc);
             this.responseObj.setHeader(req.getHeader());
+            this.api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to delete customer: " + criteriaDto.getCustomerId());
             rs.setExtMessage(e.getMessage());
+            this.api.rollbackTrans();
         } finally {
             this.api.close();
         }

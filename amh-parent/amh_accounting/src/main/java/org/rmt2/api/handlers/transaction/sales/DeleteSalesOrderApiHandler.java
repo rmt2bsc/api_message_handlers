@@ -101,11 +101,13 @@ public class DeleteSalesOrderApiHandler extends SalesOrderApiHandler {
 
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.responseObj.setHeader(req.getHeader());
+            this.api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage(SalesOrderHandlerConst.MSG_DELETE_FAILURE);
             rs.setExtMessage(e.getMessage());
+            this.api.rollbackTrans();
         } finally {
             tranRresults.addAll(reqSalesOrder);
             this.api.close();

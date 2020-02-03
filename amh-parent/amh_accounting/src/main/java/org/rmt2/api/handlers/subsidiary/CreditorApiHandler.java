@@ -179,11 +179,13 @@ public class CreditorApiHandler extends
                 rs.setReturnCode(rc);
             }
             this.responseObj.setHeader(req.getHeader());
+            this.api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to update creditor(s)");
             rs.setExtMessage(e.getMessage());
+            this.api.rollbackTrans();
         } finally {
             this.api.close();
         }
@@ -217,11 +219,13 @@ public class CreditorApiHandler extends
             rs.setExtMessage("Total records deleted: " + rc);
             rs.setReturnCode(rc);
             this.responseObj.setHeader(req.getHeader());
+            this.api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to delete creditor: "  + criteriaDto.getCreditorId());
             rs.setExtMessage(e.getMessage());
+            this.api.rollbackTrans();
         } finally {
             this.api.close();
         }

@@ -118,6 +118,7 @@ public class UpdateSalesOrderAutoInvoiceApiHandler extends SalesOrderApiHandler 
 
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.responseObj.setHeader(req.getHeader());
+            this.api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
@@ -128,6 +129,7 @@ public class UpdateSalesOrderAutoInvoiceApiHandler extends SalesOrderApiHandler 
                 rs.setMessage(SalesOrderHandlerConst.MSG_UPDATE_FAILURE);
             }
             rs.setExtMessage(e.getMessage());
+            this.api.rollbackTrans();
         } finally {
             tranRresults.add(reqSalesOrder);
             this.api.close();

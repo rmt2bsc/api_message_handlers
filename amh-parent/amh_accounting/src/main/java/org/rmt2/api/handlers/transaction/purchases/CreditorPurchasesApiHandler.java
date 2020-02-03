@@ -194,11 +194,13 @@ public class CreditorPurchasesApiHandler extends XactApiHandler {
             
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.responseObj.setHeader(req.getHeader());
+            this.api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage(CreditorPurchasesApiHandler.MSG_CREATE_FAILURE);
             rs.setExtMessage(e.getMessage());
+            this.api.rollbackTrans();
         } finally {
             tranRresults.add(reqXact);
             this.api.close();

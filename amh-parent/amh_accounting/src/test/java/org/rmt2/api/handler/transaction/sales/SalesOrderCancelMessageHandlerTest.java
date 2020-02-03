@@ -90,7 +90,7 @@ public class SalesOrderCancelMessageHandlerTest extends BaseAccountingMessageHan
         String request = RMT2File.getFileContentsAsString("xml/transaction/sales/SalesOrderCancelRequest.xml");
 
         try {
-            when(this.mockApi.cancelSalesOrder(isA(Integer.class))).thenReturn(1);
+            when(this.mockApi.cancelSalesOrder(isA(Integer.class))).thenReturn(1234567);
         } catch (SalesApiException e) {
             Assert.fail("Unable to setup mock stub for cancelling a sales order");
         }

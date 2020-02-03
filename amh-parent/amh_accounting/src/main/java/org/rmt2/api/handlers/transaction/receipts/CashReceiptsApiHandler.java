@@ -176,11 +176,13 @@ public class CashReceiptsApiHandler extends XactApiHandler {
 
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.responseObj.setHeader(req.getHeader());
+            this.api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during Cash Receipts API Message Handler operation, " + this.command, e);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage(CashReceiptsApiHandler.MSG_FAILURE);
             rs.setExtMessage(e.getMessage());
+            this.api.rollbackTrans();
         } finally {
             tranRresults.add(reqXact);
             this.api.close();
