@@ -54,7 +54,6 @@ public class ContactProfileApiHandler extends
     
     private static final Logger logger = Logger.getLogger(ContactProfileApiHandler.class);
     private ObjectFactory jaxbObjFactory;
-    protected ContactsApiFactory cf;
     protected ContactsApi api;
 
     /**
@@ -64,8 +63,7 @@ public class ContactProfileApiHandler extends
         super();
         this.jaxbObjFactory = new ObjectFactory();
         this.responseObj = jaxbObjFactory.createAddressBookResponse();
-        this.cf = new ContactsApiFactory();
-        this.api = cf.createApi();
+        this.api = ContactsApiFactory.createApi();
         logger.info(ContactProfileApiHandler.class.getName() + " was instantiated successfully");
     }
 
@@ -117,8 +115,8 @@ public class ContactProfileApiHandler extends
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         ContactDetailGroup cdg = null;
 
-        ContactsApiFactory cf = new ContactsApiFactory();
-        ContactsApi api = cf.createApi();
+        // ContactsApiFactory cf = new ContactsApiFactory();
+        ContactsApi api = ContactsApiFactory.createApi();
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);

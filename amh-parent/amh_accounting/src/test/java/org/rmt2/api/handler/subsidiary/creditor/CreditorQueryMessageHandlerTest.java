@@ -53,7 +53,7 @@ import com.api.util.RMT2File;
     CreditorApiHandler.class, SubsidiaryApiFactory.class, XactApiFactory.class, SystemConfigurator.class })
 public class CreditorQueryMessageHandlerTest extends BaseAccountingMessageHandlerTest {
 
-    private SubsidiaryApiFactory mockApiFactory;
+    // private SubsidiaryApiFactory mockApiFactory;
     private CreditorApi mockApi;
     private XactApi mockXactApi;
 
@@ -73,15 +73,10 @@ public class CreditorQueryMessageHandlerTest extends BaseAccountingMessageHandle
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        mockApiFactory = Mockito.mock(SubsidiaryApiFactory.class);        
-        try {
-            PowerMockito.whenNew(SubsidiaryApiFactory.class)
-                    .withNoArguments().thenReturn(this.mockApiFactory);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         mockApi = Mockito.mock(CreditorApi.class);
-        when(mockApiFactory.createCreditorApi(isA(String.class))).thenReturn(mockApi);
+        PowerMockito.mockStatic(SubsidiaryApiFactory.class);
+        when(SubsidiaryApiFactory.createCreditorApi(isA(String.class))).thenReturn(mockApi);
+
         doNothing().when(this.mockApi).close();
         
         XactDaoFactory mockXactDaoFactory = Mockito.mock(XactDaoFactory.class);

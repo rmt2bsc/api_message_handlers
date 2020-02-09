@@ -1,30 +1,56 @@
 package org.rmt2.api.handlers.transaction.sales;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.ApiMessageHandlerConst;
 import org.apache.log4j.Logger;
+import org.dao.mapping.orm.rmt2.Customer;
+import org.dao.mapping.orm.rmt2.Xact;
+import org.dto.ContactDto;
+import org.dto.CustomerDto;
 import org.dto.SalesInvoiceDto;
 import org.dto.SalesOrderItemDto;
+import org.dto.XactDto;
+import org.dto.adapter.orm.Rmt2AddressBookDtoFactory;
+import org.dto.adapter.orm.account.subsidiary.Rmt2SubsidiaryDtoFactory;
+import org.dto.adapter.orm.transaction.Rmt2XactDtoFactory;
+import org.modules.contacts.ContactsApi;
+import org.modules.contacts.ContactsApiFactory;
+import org.modules.subsidiary.CustomerApi;
+import org.modules.subsidiary.SubsidiaryApiFactory;
+import org.modules.transaction.XactApi;
+import org.modules.transaction.XactApiFactory;
+import org.rmt2.api.handler.util.MessageHandlerUtility;
+import org.rmt2.api.handlers.XmlReportUtility;
+import org.rmt2.api.handlers.transaction.TransactionJaxbDtoFactory;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.AccountingTransactionRequest;
+import org.rmt2.jaxb.BusinessType;
+import org.rmt2.jaxb.CustomerCriteriaType;
 import org.rmt2.jaxb.ObjectFactory;
+import org.rmt2.jaxb.ReplyStatusType;
+import org.rmt2.jaxb.SalesInvoiceType;
 import org.rmt2.jaxb.SalesOrderCriteria;
 import org.rmt2.jaxb.SalesOrderItemType;
 import org.rmt2.jaxb.SalesOrderType;
-import org.rmt2.jaxb.XactCustomCriteriaTargetType;
+import org.rmt2.jaxb.TransactionDetailGroup;
+import org.rmt2.jaxb.XactCriteriaType;
+import org.rmt2.jaxb.XactType;
+import org.rmt2.util.addressbook.BusinessTypeBuilder;
 
 import com.InvalidDataException;
+import com.RMT2Exception;
+import com.SystemException;
 import com.api.messaging.InvalidRequestException;
 import com.api.messaging.handler.MessageHandlerCommandException;
 import com.api.messaging.handler.MessageHandlerCommonReplyStatus;
 import com.api.messaging.handler.MessageHandlerResults;
-import com.api.util.RMT2String;
+import com.api.util.RMT2Date;
 import com.api.util.assistants.Verifier;
 import com.api.util.assistants.VerifyException;
 
@@ -74,7 +100,7 @@ public class PrintSalesOrderApiHandler extends SalesOrderApiHandler {
             }
         }
         switch (command) {
-            case ApiTransactionCodes.ACCOUNTING_SALESORDER_GET:
+            case ApiTransactionCodes.ACCOUNTING_SALESORDER_PRINT:
                 r = this.doOperation(this.requestObj);
                 break;
 
@@ -97,11 +123,16 @@ public class PrintSalesOrderApiHandler extends SalesOrderApiHandler {
     protected MessageHandlerResults doOperation(AccountingTransactionRequest req) {
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
-        SalesOrderCriteria criteriaJaxb = req.getCriteria().getSalesCriteria();
+        SalesOrderCriteria jaxbSalesOrderCriteria = req.getCriteria().getSalesCriteria();
+        XactCriteriaType jaxbXactCriteria = req.getCriteria().getXactCriteria();
+        CustomerCriteriaType jaxbCustomerCriteria = req.getCriteria().getCustomerCriteria();
         List<SalesOrderType> jaxbResults = new ArrayList<>();
-        List<SalesInvoiceDto> headerResults = new ArrayList<>();
-        Map<Integer, List<SalesOrderItemDto>> resultsMap = new HashMap<>();
+        List<SalesInvoiceDto> salesOrders = new ArrayList<>();
+        Map<Integer, List<SalesOrderItemDto>> itemsMap = new HashMap<>();
+        Map<Integer, List<XactDto>> xactMap = new HashMap<>();
+        Map<Integer, CustomerDto> custMap = new HashMap<>();
         int recCount = 0;
+        boolean error = false;
 
         try {
             // Set reply status
@@ -109,29 +140,50 @@ public class PrintSalesOrderApiHandler extends SalesOrderApiHandler {
 
             // Use SalesInvoiceDto instance instead of SalesOrderDto for the
             // purpose of obtaining extra sales order data
-            SalesInvoiceDto criteriaDto = SalesOrderJaxbDtoFactory.createSalesInvoiceCriteriaDtoInstance(criteriaJaxb);
-            headerResults = api.getInvoice(criteriaDto);
+            SalesInvoiceDto criteriaDto = SalesOrderJaxbDtoFactory.createSalesInvoiceCriteriaDtoInstance(jaxbSalesOrderCriteria);
+            salesOrders = api.getInvoice(criteriaDto);
+            
+            // Get customer info
+            CustomerApi custApi = SubsidiaryApiFactory.createCustomerApi();
+            Customer cust = new Customer();
+            cust.setCustomerId(jaxbCustomerCriteria.getCustomer().getCustomerId().intValue());
+            CustomerDto custDto = Rmt2SubsidiaryDtoFactory.createCustomerInstance(cust, null);
+            List<CustomerDto> customer = custApi.getExt(custDto);
+            if (customer != null && customer.size() == 1) {
+                // Get contact info and assign to customer object
+                ContactsApi contactApi = ContactsApiFactory.createApi();
+                ContactDto criteria = Rmt2AddressBookDtoFactory.getNewContactInstance();
+                criteria.setContactId(customer.get(0).getContactId());
+                List<ContactDto> contacts = contactApi.getContact(criteria);
+                if (contacts != null && contacts.size() == 1) {
+                    customer.get(0).setContactId(contacts.get(0).getContactId());
+                    customer.get(0).setContactName(contacts.get(0).getContactName());
+                }
+                custMap.put(criteriaDto.getSalesOrderId(), customer.get(0));
+            }
 
             // Organize query results as a Map since we are dealing with sales
             // orders and their items
-            if (headerResults != null) {
-                recCount = headerResults.size();
-                for (SalesInvoiceDto header : headerResults) {
-                    List<SalesOrderItemDto> items = null;
-                    if (criteriaJaxb.getTargetLevel() == XactCustomCriteriaTargetType.FULL) {
-                        items = api.getLineItems(header.getSalesOrderId());
-                    }
-                    resultsMap.put(header.getSalesOrderId(), items);
+            if (salesOrders != null) {
+                recCount = salesOrders.size();
+                XactApi xactApi = XactApiFactory.createDefaultXactApi();
+                for (SalesInvoiceDto header : salesOrders) {
+                    List<SalesOrderItemDto> items = api.getLineItems(header.getSalesOrderId());
+                    itemsMap.put(header.getSalesOrderId(), items);
+                    Xact orm = new Xact();
+                    orm.setXactId(jaxbXactCriteria.getBasicCriteria().getXactId().intValue());
+                    XactDto xactDto = Rmt2XactDtoFactory.createXactBaseInstance(orm);
+                    List<XactDto> xact = xactApi.getXact(xactDto);
+                    xactMap.put(header.getSalesOrderId(), xact);
                 }
             }
 
             // Convert query results to JAXB objects
-            jaxbResults = this.createJaxbResultSet(headerResults, resultsMap);
+            jaxbResults = this.createJaxbResultSet(salesOrders, custMap, itemsMap, xactMap);
 
             // Assign messages to the reply status that apply to the outcome of
             // this operation
-            String msg = RMT2String.replace(SalesOrderHandlerConst.MSG_GET_SUCCESS, String.valueOf(recCount), "%s");
-            rs.setMessage(msg);
+            rs.setMessage(SalesOrderHandlerConst.MSG_PRINT_SUCCESS);
             rs.setRecordCount(recCount);
 
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
@@ -141,37 +193,73 @@ public class PrintSalesOrderApiHandler extends SalesOrderApiHandler {
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage(SalesOrderHandlerConst.MSG_CREATE_FAILURE);
             rs.setExtMessage(e.getMessage());
+            error = true;
         } finally {
 //             jaxbResults.add(reqSalesOrder);
             this.api.close();
-        }
+            String xml = this.buildResponse(jaxbResults, rs);
 
-        String xml = this.buildResponse(jaxbResults, rs);
-        results.setPayload(xml);
+            // Create PDF file from JAXB XML.
+            if (!error) {
+                try {
+                    this.generatePdf(xml);
+                } catch (Exception e) {
+                    rs.setExtMessage(rs.getExtMessage() + "; " + e.getMessage());
+                    xml = this.buildResponse(jaxbResults, rs);
+                }
+            }
+            results.setPayload(xml);
+        }
         return results;
     }
 
-    private List<SalesOrderType> createJaxbResultSet(List<SalesInvoiceDto> headerResults,
-            Map<Integer, List<SalesOrderItemDto>> resultsMap) {
+    private List<SalesOrderType> createJaxbResultSet(List<SalesInvoiceDto> salesOrders, Map<Integer, CustomerDto> custMap,
+            Map<Integer, List<SalesOrderItemDto>> itemMap, Map<Integer, List<XactDto>> xactMap) {
         List<SalesOrderType> jaxbResults = new ArrayList<>();
-        if (resultsMap == null) {
+        if (itemMap == null) {
             return jaxbResults;
         }
 
         ObjectFactory f = new ObjectFactory();
-        for (SalesInvoiceDto header : headerResults) {
-            List<SalesOrderItemDto> itemDtoList = resultsMap.get(header.getSalesOrderId());
+        for (SalesInvoiceDto header : salesOrders) {
             SalesOrderType sot = SalesOrderJaxbDtoFactory.createSalesOrderHeaderJaxbInstance(header);
-            sot.setSalesOrderItems(f.createSalesOrderItemListType());
 
             // Check if we need to add sales order items.
+            List<SalesOrderItemDto> itemDtoList = itemMap.get(header.getSalesOrderId());
             if (itemDtoList != null) {
+                sot.setSalesOrderItems(f.createSalesOrderItemListType());
                 List<SalesOrderItemType> soitList = SalesOrderJaxbDtoFactory.createSalesOrderItemJaxbInstance(itemDtoList);
                 sot.getSalesOrderItems().getSalesOrderItem().addAll(soitList);
             }
+
+            // Add customer data
+            CustomerDto custDto = custMap.get(header.getSalesOrderId());
+            sot.setCustomerId(BigInteger.valueOf(custDto.getCustomerId()));
+            sot.setCustomerName(custDto.getContactName());
+
+            // Add transaction info
+            SalesInvoiceType sit = f.createSalesInvoiceType();
+            sit.setInvoiceId(BigInteger.valueOf(header.getInvoiceId()));
+            sit.setInvoiceDate(RMT2Date.toXmlDate(header.getInvoiceDate()));
+            sit.setInvoiceNo(header.getInvoiceNo());
+            sot.setInvoiceDetails(sit);
+            XactDto xactDto = xactMap.get(header.getSalesOrderId()).get(0);
+            XactType xact = TransactionJaxbDtoFactory.createXactJaxbInstance(xactDto, 0, null);
+            sot.getInvoiceDetails().setTransaction(xact);
+
             jaxbResults.add(sot);
         }
         return jaxbResults;
+    }
+
+    private void generatePdf(String jaxbXml) {
+        XmlReportUtility xform = new XmlReportUtility(REPORT_NAME, jaxbXml, true);
+        try {
+            xform.buildReport();
+        } catch (RMT2Exception e) {
+            e.printStackTrace();
+            throw new SystemException("Failed to generate PDF file", e);
+        }
     }
 
     /**
@@ -188,32 +276,46 @@ public class PrintSalesOrderApiHandler extends SalesOrderApiHandler {
             throw new InvalidRequestException(SalesOrderHandlerConst.MSG_MISSING_GENERAL_CRITERIA);
         }
 
-        // Must contain flag that indicates what level of the transaction object
-        // to populate with data
-        try {
-            Verifier.verifyNotNull(req.getCriteria().getSalesCriteria().getTargetLevel());
-        } catch (VerifyException e) {
-            throw new InvalidRequestException(SalesOrderHandlerConst.MSG_MISSING_TARGET_LEVEL, e);
-        }
-
-        // Target level "DETAILS" is not supported.
-        try {
-            Verifier.verifyFalse(req.getCriteria().getSalesCriteria()
-                    .getTargetLevel().name()
-                    .equalsIgnoreCase(ApiMessageHandlerConst.TARGET_LEVEL_DETAILS));
-        } catch (VerifyException e) {
-            throw new InvalidRequestException(SalesOrderHandlerConst.MSG_TARGET_LEVEL_DETAILS_NOT_SUPPORTED, e);
-        }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.api.messaging.handler.AbstractJaxbMessageHandler#getReportName()
-     */
+
     @Override
-    public String getReportName() {
-        return PrintSalesOrderApiHandler.REPORT_NAME;
-    }
+    protected String buildResponse(List<SalesOrderType> payload, MessageHandlerCommonReplyStatus replyStatus) {
+        if (replyStatus != null) {
+            ReplyStatusType rs = MessageHandlerUtility.createReplyStatus(replyStatus);
+            this.responseObj.setReplyStatus(rs);
+        }
 
+        if (payload != null) {
+            TransactionDetailGroup profile = this.jaxbObjFactory.createTransactionDetailGroup();
+            // Add Company data
+            int busId = Integer.valueOf(System.getProperty("CompContactId"));
+            BusinessType bt = BusinessTypeBuilder.Builder.create()
+                    .withBusinessId(busId)
+                    .withContactFirstname(System.getProperty("CompContactFirstname"))
+                    .withContactLastname(System.getProperty("CompContactLastname"))
+                    .withContactPhone(System.getProperty("CompContactPhone"))
+                    .withLongname(System.getProperty("CompanyName"))
+                    .withTaxId(System.getProperty("CompTaxId"))
+                    .withWebsite(System.getProperty("CompWebsite"))
+                    .withContactEmail(System.getProperty("CompContactEmail"))
+                    .build();
+            profile.setCompany(bt);
+            profile.getCompany().setBusinessId(BigInteger.valueOf(Long.valueOf(System.getProperty("CompContactId"))));
+            profile.getCompany().setLongName(System.getProperty("CompContactId"));
+            profile.getCompany().setContactFirstname(System.getProperty("CompContactFirstname"));
+            profile.getCompany().setContactLastname(System.getProperty("CompContactLastname"));
+            profile.getCompany().setContactPhone(System.getProperty("CompContactPhone"));
+            profile.getCompany().setContactEmail(System.getProperty("CompContactEmail"));
+            profile.getCompany().setTaxId(System.getProperty("CompTaxId"));
+            profile.getCompany().setWebsite(System.getProperty("CompWebsite"));
+
+            profile.setSalesOrders(jaxbObjFactory.createSalesOrderListType());
+            profile.getSalesOrders().getSalesOrder().addAll(payload);
+            this.responseObj.setProfile(profile);
+        }
+
+        String xml = this.jaxb.marshalMessage(this.responseObj);
+        return xml;
+    }
 }

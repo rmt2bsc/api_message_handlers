@@ -57,8 +57,7 @@ public class CustomerApiHandler extends
      */
     public CustomerApiHandler() {
         super();
-        SubsidiaryApiFactory f = new SubsidiaryApiFactory();
-        this.api = f.createCustomerApi(CommonAccountingConst.APP_NAME);
+        this.api = SubsidiaryApiFactory.createCustomerApi(CommonAccountingConst.APP_NAME);
         this.jaxbObjFactory = new ObjectFactory();
         this.responseObj = jaxbObjFactory.createAccountingTransactionResponse();
         logger.info(CustomerApiHandler.class.getName() + " was instantiated successfully");

@@ -48,11 +48,11 @@ import com.api.util.RMT2File;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ AbstractDaoClientImpl.class, Rmt2OrmClientFactory.class,
-        ContactProfileApiHandler.class, PostalApiFactory.class,
+        ContactProfileApiHandler.class, PostalApiFactory.class, ContactsApiFactory.class,
         SystemConfigurator.class })
 public class ContactProfileMessageHandlerTest extends BaseAddressBookMessageHandlerTest {
 
-    private ContactsApiFactory mockApiFactory;
+    // private ContactsApiFactory mockApiFactory;
     private ContactsApi mockApi;
 
 
@@ -83,15 +83,10 @@ public class ContactProfileMessageHandlerTest extends BaseAddressBookMessageHand
     }
 
     private void setupMockContactApiCall() {
-      this.mockApiFactory = Mockito.mock(ContactsApiFactory.class);
-      this.mockApi = Mockito.mock(ContactsApi.class);
-      try {
-          PowerMockito.whenNew(ContactsApiFactory.class).withNoArguments().thenReturn(this.mockApiFactory);
-      } catch (Exception e) {
-          e.printStackTrace();
-      }
-      when(this.mockApiFactory.createApi()).thenReturn(this.mockApi);
-      doNothing().when(this.mockApi).close();
+        this.mockApi = Mockito.mock(ContactsApi.class);
+        PowerMockito.mockStatic(ContactsApiFactory.class);
+        when(ContactsApiFactory.createApi()).thenReturn(this.mockApi);
+        doNothing().when(this.mockApi).close();
     }
     
     private void setupMockForContactInsert() {

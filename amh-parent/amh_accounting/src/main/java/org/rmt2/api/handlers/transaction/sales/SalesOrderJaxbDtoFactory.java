@@ -15,10 +15,12 @@ import org.dto.adapter.orm.transaction.sales.Rmt2SalesOrderDtoFactory;
 import org.modules.transaction.sales.SalesApiConst;
 import org.rmt2.api.handlers.transaction.TransactionJaxbDtoFactory;
 import org.rmt2.jaxb.RecordTrackingType;
+import org.rmt2.jaxb.SalesInvoiceType;
 import org.rmt2.jaxb.SalesOrderCriteria;
 import org.rmt2.jaxb.SalesOrderItemType;
 import org.rmt2.jaxb.SalesOrderType;
 import org.rmt2.util.RecordTrackingTypeBuilder;
+import org.rmt2.util.accounting.transaction.sales.SalesInvoiceTypeBuilder;
 import org.rmt2.util.accounting.transaction.sales.SalesOrderItemTypeBuilder;
 import org.rmt2.util.accounting.transaction.sales.SalesOrderTypeBuilder;
 
@@ -240,6 +242,16 @@ public class SalesOrderJaxbDtoFactory extends TransactionJaxbDtoFactory {
                 .withUserId(dto.getUpdateUserId())
                 .build();
 
+        SalesInvoiceType si = null;
+        if (dto instanceof SalesInvoiceDto) {
+            SalesInvoiceDto siDto = (SalesInvoiceDto) dto;
+            si = SalesInvoiceTypeBuilder.Builder.create()
+                    .withInvoiceId(siDto.getInvoiceId())
+                    .withInvoiceNo(siDto.getInvoiceNo())
+                    .withInvoiceDate(siDto.getInvoiceDate())
+                    .build();
+        }
+
         SalesOrderType jaxb = SalesOrderTypeBuilder.Builder.create()
                 .withCustomerAcctNo(dto.getAccountNo())
                 .withInvoiced(dto.getSoStatusId() == SalesApiConst.STATUS_CODE_INVOICED)
@@ -250,11 +262,13 @@ public class SalesOrderJaxbDtoFactory extends TransactionJaxbDtoFactory {
                 .withEffectiveDate(dto.getEffectiveDate())
                 .withStatusId(dto.getSoStatusId())
                 .withStatusDescription(dto.getSoStatusDescription())
+                .withSalesInvoiceType(si)
                 .withRecordTracking(tracking)
                 .build();
         
         return jaxb;
     }
+
 
     /**
      * Creates an instance of <i>SalesOrderItemType</i> using a valid

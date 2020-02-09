@@ -5,10 +5,14 @@ import java.util.List;
 
 import org.dao.mapping.orm.rmt2.SalesOrder;
 import org.dao.mapping.orm.rmt2.SalesOrderItems;
+import org.dao.mapping.orm.rmt2.VwBusinessAddress;
 import org.dao.mapping.orm.rmt2.VwSalesOrderInvoice;
+import org.dto.BusinessContactDto;
+import org.dto.ContactDto;
 import org.dto.SalesInvoiceDto;
 import org.dto.SalesOrderDto;
 import org.dto.SalesOrderItemDto;
+import org.dto.adapter.orm.Rmt2AddressBookDtoFactory;
 import org.dto.adapter.orm.transaction.sales.Rmt2SalesOrderDtoFactory;
 import org.modules.transaction.sales.SalesApiConst;
 import org.rmt2.api.AccountingMockDataFactory;
@@ -132,6 +136,48 @@ public class SalesOrderMockData extends SubsidiaryMockData {
                 "80004", 1, "2017-05-10", 444440, CUSTOMER_ID, 1234, "111-111");
         dto = Rmt2SalesOrderDtoFactory.createSalesIvoiceInstance(o);
         list.add(dto);
+        return list;
+    }
+
+    public static final List<SalesInvoiceDto> createMockSalesInvoice() {
+        List<SalesInvoiceDto> list = new ArrayList<>();
+        VwSalesOrderInvoice o = AccountingMockDataFactory
+                .createMockOrmVwSalesOrderInvoice(7000, 1000, "2017-01-01",
+                        300.00, SalesApiConst.STATUS_CODE_INVOICED, "80000", 1,
+                        "2017-01-10", 444440, CUSTOMER_ID, 1234, "111-111");
+        SalesInvoiceDto dto = Rmt2SalesOrderDtoFactory.createSalesIvoiceInstance(o);
+        list.add(dto);
+        return list;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public static final List<ContactDto> createMockSingleBusinessContactDto() {
+        List<ContactDto> list = new ArrayList<ContactDto>();
+        VwBusinessAddress bus = new VwBusinessAddress();
+        bus.setBusinessId(1351);
+        bus.setBusLongname("BusinessName_1");
+        bus.setBusContactFirstname("firstname_1");
+        bus.setBusContactLastname("lastname_1");
+        bus.setContactEmail(bus.getBusContactFirstname() + "." + bus.getBusContactLastname() + "@gte.net");
+        bus.setBusContactPhone("9999999991");
+        bus.setAddrId(2001);
+        bus.setBusinessId(1351);
+        bus.setAddr1("address_line1_1");
+        bus.setAddr2("address_line2_1");
+        bus.setAddr3("address_line3_1");
+        bus.setAddr4("address_line4_1");
+        bus.setZipCity("Dallas");
+        bus.setZipState("Tx");
+        bus.setAddrZip(75232);
+        bus.setAddrPhoneMain("2143738001");
+        bus.setBusTaxId("750000001");
+        bus.setBusWebsite("www.BusinessName_1.com");
+        bus.setBusShortname("shortname");
+        BusinessContactDto busDto = Rmt2AddressBookDtoFactory.getBusinessInstance(bus);
+        list.add(busDto);
         return list;
     }
 
