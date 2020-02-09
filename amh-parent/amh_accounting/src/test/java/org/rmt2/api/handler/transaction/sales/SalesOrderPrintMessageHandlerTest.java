@@ -111,6 +111,9 @@ public class SalesOrderPrintMessageHandlerTest extends BaseAccountingMessageHand
         System.setProperty("CompTaxId", "449999999");
         System.setProperty("CompWebsite", "www.xya.com");
 
+        System.setProperty("javax.xml.transform.TransformerFactory", "net.sf.saxon.TransformerFactoryImpl");
+        String xsltTransformer = System.getProperty("javax.xml.transform.TransformerFactory");
+
         return;
     }
 
