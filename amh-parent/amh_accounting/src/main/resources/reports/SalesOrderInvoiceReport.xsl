@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fo="http://www.w3.org/1999/XSL/Format">
-	<xsl:output method="xml" version="1.0" omit-xml-declaration="no" indent="yes"/>
+	<xsl:output method="xml" version="2.0" omit-xml-declaration="no" indent="yes"/>
 	<xsl:variable name="tableBorder" select="'solid'"/>
 	<xsl:variable name="normalTextSize" select="'9pt'"/>
 	<xsl:variable name="signatureBorder" select="'solid'"/>
