@@ -49,6 +49,14 @@
 					<fo:block>
 						<xsl:text>&#xA0;</xsl:text>
 					</fo:block>
+					<fo:block>
+						<fo:inline font-weight="bold">
+							<xsl:text>*** This Sales Order has been invoiced and is final ***</xsl:text>
+						</fo:inline>
+					</fo:block>
+					<fo:block>
+						<xsl:text>&#xA0;</xsl:text>
+					</fo:block>
 					
 					<fo:table width="80%" table-layout="fixed">
 						<fo:table-column column-width="25%"/>
