@@ -1,5 +1,7 @@
 package org.rmt2.api.handlers.transaction.sales;
 
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -34,6 +36,7 @@ import org.rmt2.jaxb.BusinessType;
 import org.rmt2.jaxb.CustomerCriteriaType;
 import org.rmt2.jaxb.ObjectFactory;
 import org.rmt2.jaxb.ReplyStatusType;
+import org.rmt2.jaxb.ReportAttachmentType;
 import org.rmt2.jaxb.SalesInvoiceType;
 import org.rmt2.jaxb.SalesOrderCriteria;
 import org.rmt2.jaxb.SalesOrderItemType;
@@ -41,6 +44,7 @@ import org.rmt2.jaxb.SalesOrderType;
 import org.rmt2.jaxb.TransactionDetailGroup;
 import org.rmt2.jaxb.XactCriteriaType;
 import org.rmt2.jaxb.XactType;
+import org.rmt2.util.ReportAttachmentTypeBuilder;
 import org.rmt2.util.addressbook.BusinessTypeBuilder;
 
 import com.InvalidDataException;
@@ -64,6 +68,7 @@ import com.api.util.assistants.VerifyException;
 public class PrintSalesOrderApiHandler extends SalesOrderApiHandler {
     private static final Logger logger = Logger.getLogger(PrintSalesOrderApiHandler.class);
     private static final String REPORT_NAME = "SalesOrderInvoiceReport.xsl";
+    private XmlReportUtility xform;
 
     /**
      * 
@@ -179,7 +184,7 @@ public class PrintSalesOrderApiHandler extends SalesOrderApiHandler {
             }
 
             // Convert query results to JAXB objects
-            jaxbResults = this.createJaxbResultSet(salesOrders, custMap, itemsMap, xactMap);
+            jaxbResults = this.createJaxbReportXml(salesOrders, custMap, itemsMap, xactMap);
 
             // Assign messages to the reply status that apply to the outcome of
             // this operation
@@ -197,23 +202,50 @@ public class PrintSalesOrderApiHandler extends SalesOrderApiHandler {
         } finally {
 //             jaxbResults.add(reqSalesOrder);
             this.api.close();
-            String xml = this.buildResponse(jaxbResults, rs);
+            String xml = this.buildResponse(jaxbResults, null, rs);
 
             // Create PDF file from JAXB XML.
             if (!error) {
+                ByteArrayOutputStream pdf = null;
                 try {
-                    this.generatePdf(xml);
+                    Object obj = this.generatePdf(xml);
+                    if (obj instanceof ByteArrayOutputStream) {
+                        pdf = (ByteArrayOutputStream) obj;
+                    }
                 } catch (Exception e) {
                     rs.setExtMessage(rs.getExtMessage() + "; " + e.getMessage());
-                    xml = this.buildResponse(jaxbResults, rs);
+                } finally {
+                    jaxbResults = this.createJaxbReportResponse(salesOrders, custMap);
+                    xml = this.buildResponse(jaxbResults, pdf, rs);
                 }
+
             }
             results.setPayload(xml);
         }
         return results;
     }
 
-    private List<SalesOrderType> createJaxbResultSet(List<SalesInvoiceDto> salesOrders, Map<Integer, CustomerDto> custMap,
+    private List<SalesOrderType> createJaxbReportResponse(List<SalesInvoiceDto> salesOrders,
+            Map<Integer, CustomerDto> custMap) {
+
+        List<SalesOrderType> jaxbResults = new ArrayList<>();
+
+        ObjectFactory f = new ObjectFactory();
+        for (SalesInvoiceDto header : salesOrders) {
+            SalesOrderType sot = SalesOrderJaxbDtoFactory.createSalesOrderHeaderJaxbInstance(header);
+
+            // Add customer data
+            CustomerDto custDto = custMap.get(header.getSalesOrderId());
+            sot.setCustomerId(BigInteger.valueOf(custDto.getCustomerId()));
+            sot.setCustomerName(custDto.getContactName());
+
+
+            jaxbResults.add(sot);
+        }
+        return jaxbResults;
+    }
+
+    private List<SalesOrderType> createJaxbReportXml(List<SalesInvoiceDto> salesOrders, Map<Integer, CustomerDto> custMap,
             Map<Integer, List<SalesOrderItemDto>> itemMap, Map<Integer, List<XactDto>> xactMap) {
         List<SalesOrderType> jaxbResults = new ArrayList<>();
         if (itemMap == null) {
@@ -252,10 +284,10 @@ public class PrintSalesOrderApiHandler extends SalesOrderApiHandler {
         return jaxbResults;
     }
 
-    private void generatePdf(String jaxbXml) {
-        XmlReportUtility xform = new XmlReportUtility(REPORT_NAME, jaxbXml, true);
+    private OutputStream generatePdf(String jaxbXml) {
+        this.xform = new XmlReportUtility(REPORT_NAME, jaxbXml, true);
         try {
-            xform.buildReport();
+            return this.xform.buildReport();
         } catch (RMT2Exception e) {
             e.printStackTrace();
             throw new SystemException("Failed to generate PDF file", e);
@@ -279,8 +311,8 @@ public class PrintSalesOrderApiHandler extends SalesOrderApiHandler {
     }
 
 
-    @Override
-    protected String buildResponse(List<SalesOrderType> payload, MessageHandlerCommonReplyStatus replyStatus) {
+    protected String buildResponse(List<SalesOrderType> payload, ByteArrayOutputStream pdf,
+            MessageHandlerCommonReplyStatus replyStatus) {
         if (replyStatus != null) {
             ReplyStatusType rs = MessageHandlerUtility.createReplyStatus(replyStatus);
             this.responseObj.setReplyStatus(rs);
@@ -312,8 +344,21 @@ public class PrintSalesOrderApiHandler extends SalesOrderApiHandler {
 
             profile.setSalesOrders(jaxbObjFactory.createSalesOrderListType());
             profile.getSalesOrders().getSalesOrder().addAll(payload);
+
+            if (pdf != null) {
+                ReportAttachmentType rat = ReportAttachmentTypeBuilder.Builder.create()
+                        .withFilePath(this.xform.getPdfFileName())
+                        .withFileSize(pdf.toByteArray().length)
+                        .withMimeType("pdf")
+                        .withReportId(this.xform.getReportId())
+                        .withReportContent(pdf)
+                        .build();
+                profile.setAttachment(rat);
+            }
+
             this.responseObj.setProfile(profile);
         }
+
 
         String xml = this.jaxb.marshalMessage(this.responseObj);
         return xml;

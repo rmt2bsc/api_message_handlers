@@ -210,4 +210,11 @@ public class XmlReportUtility extends RMT2Base {
         return reportId;
     }
 
+    /**
+     * @return the pdfFileName
+     */
+    public String getPdfFileName() {
+        return pdfFileName;
+    }
+
 }

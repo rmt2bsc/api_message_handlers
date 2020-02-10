@@ -202,9 +202,7 @@ public class SalesOrderPrintMessageHandlerTest extends BaseAccountingMessageHand
             Assert.assertNotNull(a.getCustomerId());
             Assert.assertEquals(SalesOrderMockData.CUSTOMER_ID, a.getCustomerId().intValue());
             Assert.assertEquals(TEST_ORDER_TOTAL, a.getOrderTotal().doubleValue(), 0);
-            Assert.assertNotNull(a.getSalesOrderItems());
-            Assert.assertNotNull(a.getSalesOrderItems().getSalesOrderItem());
-            Assert.assertTrue(a.getSalesOrderItems().getSalesOrderItem().size() > 0);
+            Assert.assertNull(a.getSalesOrderItems());
         }
     }
 
