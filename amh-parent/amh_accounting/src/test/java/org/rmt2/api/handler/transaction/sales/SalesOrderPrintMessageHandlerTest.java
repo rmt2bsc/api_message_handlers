@@ -28,13 +28,16 @@ import org.modules.transaction.XactApi;
 import org.modules.transaction.XactApiException;
 import org.modules.transaction.XactApiFactory;
 import org.modules.transaction.sales.SalesApi;
+import org.modules.transaction.sales.SalesApiException;
 import org.modules.transaction.sales.SalesApiFactory;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.rmt2.api.handler.BaseAccountingMessageHandlerTest;
 import org.rmt2.api.handler.transaction.common.CommonXactMockData;
+import org.rmt2.api.handlers.transaction.receipts.CashReceiptsApiHandler;
 import org.rmt2.api.handlers.transaction.sales.PrintSalesOrderApiHandler;
+import org.rmt2.api.handlers.transaction.sales.SalesOrderHandlerConst;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.AccountingTransactionResponse;
@@ -206,171 +209,296 @@ public class SalesOrderPrintMessageHandlerTest extends BaseAccountingMessageHand
         }
     }
 
-    // @Test
-    // public void test_API_Error() {
-    // String request =
-    // RMT2File.getFileContentsAsString("xml/transaction/sales/SalesOrderQueryFullRequest.xml");
-    //
-    // try {
-    // when(this.mockSalesApi.getInvoice(isA(SalesInvoiceDto.class))).thenThrow(
-    // new SalesApiException("A Sales order API test error occurred"));
-    // } catch (SalesApiException e) {
-    // Assert.fail("Unable to setup mock stub for sales order transaction");
-    // }
-    //
-    // MessageHandlerResults results = null;
-    // QuerySalesOrderApiHandler handler = new QuerySalesOrderApiHandler();
-    // try {
-    // results =
-    // handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_GET,
-    // request);
-    // } catch (MessageHandlerCommandException e) {
-    // e.printStackTrace();
-    // Assert.fail("An unexpected exception was thrown");
-    // }
-    //
-    // Assert.assertNotNull(results);
-    // Assert.assertNotNull(results.getPayload());
-    //
-    // AccountingTransactionResponse actualRepsonse =
-    // (AccountingTransactionResponse)
-    // jaxb.unMarshalMessage(results.getPayload().toString());
-    // Assert.assertNotNull(actualRepsonse.getProfile());
-    // Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS,
-    // actualRepsonse.getReplyStatus().getReturnStatus());
-    // Assert.assertEquals(-1,
-    // actualRepsonse.getReplyStatus().getReturnCode().intValue());
-    // Assert.assertEquals(SalesOrderHandlerConst.MSG_CREATE_FAILURE,
-    // actualRepsonse.getReplyStatus().getMessage());
-    // Assert.assertEquals("A Sales order API test error occurred",
-    // actualRepsonse.getReplyStatus().getExtMessage());
-    // }
-    //
-    // @Test
-    // public void testError_Incorrect_Trans_Code() {
-    // String request =
-    // RMT2File.getFileContentsAsString("xml/transaction/sales/SalesOrderQueryFullRequest.xml");
-    //
-    // MessageHandlerResults results = null;
-    // QuerySalesOrderApiHandler handler = new QuerySalesOrderApiHandler();
-    // try {
-    // results = handler.processMessage("INCORRECT_TRAN_CODE", request);
-    // } catch (MessageHandlerCommandException e) {
-    // e.printStackTrace();
-    // Assert.fail("An unexpected exception was thrown");
-    // }
-    //
-    // Assert.assertNotNull(results);
-    // Assert.assertNotNull(results.getPayload());
-    //
-    // AccountingTransactionResponse actualRepsonse =
-    // (AccountingTransactionResponse)
-    // jaxb.unMarshalMessage(results.getPayload().toString());
-    // Assert.assertNull(actualRepsonse.getProfile());
-    // Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST,
-    // actualRepsonse.getReplyStatus().getReturnStatus());
-    // Assert.assertEquals(-1,
-    // actualRepsonse.getReplyStatus().getReturnCode().intValue());
-    // Assert.assertEquals(CashReceiptsApiHandler.ERROR_MSG_TRANS_NOT_FOUND +
-    // "INCORRECT_TRAN_CODE", actualRepsonse.getReplyStatus().getMessage());
-    // }
-    //
-    //
-    //
-    // @Test
-    // public void testValidation_Missing_Criteria() {
-    // String request =
-    // RMT2File.getFileContentsAsString("xml/transaction/sales/SalesOrderQueryMissingCriteriaRequest.xml");
-    //
-    // MessageHandlerResults results = null;
-    // QuerySalesOrderApiHandler handler = new QuerySalesOrderApiHandler();
-    // try {
-    // results =
-    // handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_GET,
-    // request);
-    // } catch (MessageHandlerCommandException e) {
-    // e.printStackTrace();
-    // Assert.fail("An unexpected exception was thrown");
-    // }
-    //
-    // Assert.assertNotNull(results);
-    // Assert.assertNotNull(results.getPayload());
-    //
-    // AccountingTransactionResponse actualRepsonse =
-    // (AccountingTransactionResponse)
-    // jaxb.unMarshalMessage(results.getPayload().toString());
-    //
-    // Assert.assertNull(actualRepsonse.getProfile());
-    // Assert.assertEquals(-1,
-    // actualRepsonse.getReplyStatus().getReturnCode().intValue());
-    // Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST,
-    // actualRepsonse.getReplyStatus().getReturnStatus());
-    // Assert.assertEquals(SalesOrderHandlerConst.MSG_MISSING_GENERAL_CRITERIA,
-    // actualRepsonse.getReplyStatus().getMessage());
-    // }
-    //
-    // @Test
-    // public void testValidation_Missing_TargetLevel() {
-    // String request =
-    // RMT2File.getFileContentsAsString("xml/transaction/sales/SalesOrderQueryMissingTargetLevelRequest.xml");
-    //
-    // MessageHandlerResults results = null;
-    // QuerySalesOrderApiHandler handler = new QuerySalesOrderApiHandler();
-    // try {
-    // results =
-    // handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_GET,
-    // request);
-    // } catch (MessageHandlerCommandException e) {
-    // e.printStackTrace();
-    // Assert.fail("An unexpected exception was thrown");
-    // }
-    //
-    // Assert.assertNotNull(results);
-    // Assert.assertNotNull(results.getPayload());
-    //
-    // AccountingTransactionResponse actualRepsonse =
-    // (AccountingTransactionResponse)
-    // jaxb.unMarshalMessage(results.getPayload().toString());
-    //
-    // Assert.assertNull(actualRepsonse.getProfile());
-    // Assert.assertEquals(-1,
-    // actualRepsonse.getReplyStatus().getReturnCode().intValue());
-    // Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST,
-    // actualRepsonse.getReplyStatus().getReturnStatus());
-    // Assert.assertEquals(SalesOrderHandlerConst.MSG_MISSING_TARGET_LEVEL,
-    // actualRepsonse.getReplyStatus().getMessage());
-    // }
-    //
-    // @Test
-    // public void testValidation_Unsupported_TargetLevel() {
-    // String request = RMT2File
-    // .getFileContentsAsString("xml/transaction/sales/SalesOrderQueryUnsupportedTargetLevelRequest.xml");
-    //
-    // MessageHandlerResults results = null;
-    // QuerySalesOrderApiHandler handler = new QuerySalesOrderApiHandler();
-    // try {
-    // results =
-    // handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_GET,
-    // request);
-    // } catch (MessageHandlerCommandException e) {
-    // e.printStackTrace();
-    // Assert.fail("An unexpected exception was thrown");
-    // }
-    //
-    // Assert.assertNotNull(results);
-    // Assert.assertNotNull(results.getPayload());
-    //
-    // AccountingTransactionResponse actualRepsonse =
-    // (AccountingTransactionResponse)
-    // jaxb.unMarshalMessage(results.getPayload().toString());
-    //
-    // Assert.assertNull(actualRepsonse.getProfile());
-    // Assert.assertEquals(-1,
-    // actualRepsonse.getReplyStatus().getReturnCode().intValue());
-    // Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST,
-    // actualRepsonse.getReplyStatus().getReturnStatus());
-    // Assert.assertEquals(SalesOrderHandlerConst.MSG_TARGET_LEVEL_DETAILS_NOT_SUPPORTED,
-    // actualRepsonse.getReplyStatus()
-    // .getMessage());
-    // }
+    @Test
+    public void test_API_Error() {
+        String request =
+                RMT2File.getFileContentsAsString("xml/transaction/sales/SalesOrderPrintRequest.xml");
+
+        try {
+            when(this.mockSalesApi.getInvoice(isA(SalesInvoiceDto.class)))
+                    .thenThrow(new SalesApiException("A Sales order API test error occurred"));
+        } catch (SalesApiException e) {
+            Assert.fail("Unable to setup mock stub for sales order transaction");
+        }
+
+        MessageHandlerResults results = null;
+        PrintSalesOrderApiHandler handler = new PrintSalesOrderApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_PRINT, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingTransactionResponse actualRepsonse =
+                (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertNotNull(actualRepsonse.getProfile());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(SalesOrderHandlerConst.MSG_PRINT_FAILURE, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals("A Sales order API test error occurred", actualRepsonse.getReplyStatus().getExtMessage());
+    }
+
+    @Test
+    public void testError_Incorrect_Trans_Code() {
+        String request =
+                RMT2File.getFileContentsAsString("xml/transaction/sales/SalesOrderPrintRequest.xml");
+
+        MessageHandlerResults results = null;
+        PrintSalesOrderApiHandler handler = new PrintSalesOrderApiHandler();
+        try {
+            results = handler.processMessage("INCORRECT_TRAN_CODE", request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingTransactionResponse actualRepsonse = (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload()
+                .toString());
+        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(CashReceiptsApiHandler.ERROR_MSG_TRANS_NOT_FOUND +
+                "INCORRECT_TRAN_CODE", actualRepsonse.getReplyStatus().getMessage());
+    }
+
+    @Test
+    public void testValidation_Missing_Criteria() {
+        String request = RMT2File
+                .getFileContentsAsString("xml/transaction/sales/SalesOrderPrintMissingGeneralCriteriaRequest.xml");
+
+        MessageHandlerResults results = null;
+        PrintSalesOrderApiHandler handler = new PrintSalesOrderApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_PRINT, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingTransactionResponse actualRepsonse = (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload()
+                .toString());
+
+        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(SalesOrderHandlerConst.MSG_MISSING_GENERAL_CRITERIA, actualRepsonse.getReplyStatus().getMessage());
+    }
+
+    @Test
+    public void testValidation_Missing_Sales_Order_Criteria() {
+        String request = RMT2File
+                .getFileContentsAsString("xml/transaction/sales/SalesOrderPrintRequestMissingSalesCriteria.xml");
+
+        MessageHandlerResults results = null;
+        PrintSalesOrderApiHandler handler = new PrintSalesOrderApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_PRINT, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingTransactionResponse actualRepsonse = (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload()
+                .toString());
+
+        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(SalesOrderHandlerConst.MSG_MISSING_SALESORDER_STRUCTURE, actualRepsonse.getReplyStatus().getMessage());
+    }
+
+    @Test
+    public void testValidation_Missing_Customer_Criteria1() {
+        String request = RMT2File
+                .getFileContentsAsString("xml/transaction/sales/SalesOrderPrintRequestMissingCustomerCriteria.xml");
+
+        MessageHandlerResults results = null;
+        PrintSalesOrderApiHandler handler = new PrintSalesOrderApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_PRINT, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingTransactionResponse actualRepsonse = (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload()
+                .toString());
+
+        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(SalesOrderHandlerConst.MSG_MISSING_CUSTOMER_STRUCTURE, actualRepsonse.getReplyStatus().getMessage());
+    }
+
+    @Test
+    public void testValidation_Missing_Customer_Criteria2() {
+        String request = RMT2File
+                .getFileContentsAsString("xml/transaction/sales/SalesOrderPrintRequestMissingCustomerCriteria2.xml");
+
+        MessageHandlerResults results = null;
+        PrintSalesOrderApiHandler handler = new PrintSalesOrderApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_PRINT, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingTransactionResponse actualRepsonse = (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload()
+                .toString());
+
+        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(SalesOrderHandlerConst.MSG_MISSING_CUSTOMER_STRUCTURE, actualRepsonse.getReplyStatus().getMessage());
+    }
+
+    @Test
+    public void testValidation_Missing_Transaction_Criteria() {
+        String request = RMT2File
+                .getFileContentsAsString("xml/transaction/sales/SalesOrderPrintRequestMissingTransactionCriteria.xml");
+
+        MessageHandlerResults results = null;
+        PrintSalesOrderApiHandler handler = new PrintSalesOrderApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_PRINT, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingTransactionResponse actualRepsonse = (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload()
+                .toString());
+
+        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(SalesOrderHandlerConst.MSG_MISSING_XACT_STRUCTURE, actualRepsonse.getReplyStatus().getMessage());
+    }
+
+    @Test
+    public void testValidation_Missing_Transaction_Criteria2() {
+        String request = RMT2File
+                .getFileContentsAsString("xml/transaction/sales/SalesOrderPrintRequestMissingTransactionCriteria2.xml");
+
+        MessageHandlerResults results = null;
+        PrintSalesOrderApiHandler handler = new PrintSalesOrderApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_PRINT, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingTransactionResponse actualRepsonse = (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload()
+                .toString());
+
+        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(SalesOrderHandlerConst.MSG_MISSING_XACT_STRUCTURE, actualRepsonse.getReplyStatus().getMessage());
+    }
+
+    @Test
+    public void testValidation_Missing_SalesOrderId_Criteria() {
+        String request = RMT2File
+                .getFileContentsAsString("xml/transaction/sales/SalesOrderPrintRequestMissingSalesOrderId.xml");
+
+        MessageHandlerResults results = null;
+        PrintSalesOrderApiHandler handler = new PrintSalesOrderApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_PRINT, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingTransactionResponse actualRepsonse = (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload()
+                .toString());
+
+        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(SalesOrderHandlerConst.MSG_MISSING_PRINT_PARAMETERS, actualRepsonse.getReplyStatus().getMessage());
+    }
+
+    @Test
+    public void testValidation_Missing_CustomerId_Criteria() {
+        String request = RMT2File
+                .getFileContentsAsString("xml/transaction/sales/SalesOrderPrintRequestMissingCustomerId.xml");
+
+        MessageHandlerResults results = null;
+        PrintSalesOrderApiHandler handler = new PrintSalesOrderApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_PRINT, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingTransactionResponse actualRepsonse = (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload()
+                .toString());
+
+        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(SalesOrderHandlerConst.MSG_MISSING_PRINT_PARAMETERS, actualRepsonse.getReplyStatus().getMessage());
+    }
+
+    @Test
+    public void testValidation_Missing_XactId_Criteria() {
+        String request = RMT2File
+                .getFileContentsAsString("xml/transaction/sales/SalesOrderPrintRequestMissingXactId.xml");
+
+        MessageHandlerResults results = null;
+        PrintSalesOrderApiHandler handler = new PrintSalesOrderApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_PRINT, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingTransactionResponse actualRepsonse = (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload()
+                .toString());
+
+        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(SalesOrderHandlerConst.MSG_MISSING_PRINT_PARAMETERS, actualRepsonse.getReplyStatus().getMessage());
+    }
 }

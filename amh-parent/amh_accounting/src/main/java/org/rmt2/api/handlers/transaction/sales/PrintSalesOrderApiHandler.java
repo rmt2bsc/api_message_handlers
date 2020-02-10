@@ -196,7 +196,7 @@ public class PrintSalesOrderApiHandler extends SalesOrderApiHandler {
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setMessage(SalesOrderHandlerConst.MSG_CREATE_FAILURE);
+            rs.setMessage(SalesOrderHandlerConst.MSG_PRINT_FAILURE);
             rs.setExtMessage(e.getMessage());
             error = true;
         } finally {
@@ -229,8 +229,6 @@ public class PrintSalesOrderApiHandler extends SalesOrderApiHandler {
             Map<Integer, CustomerDto> custMap) {
 
         List<SalesOrderType> jaxbResults = new ArrayList<>();
-
-        ObjectFactory f = new ObjectFactory();
         for (SalesInvoiceDto header : salesOrders) {
             SalesOrderType sot = SalesOrderJaxbDtoFactory.createSalesOrderHeaderJaxbInstance(header);
 
@@ -238,8 +236,6 @@ public class PrintSalesOrderApiHandler extends SalesOrderApiHandler {
             CustomerDto custDto = custMap.get(header.getSalesOrderId());
             sot.setCustomerId(BigInteger.valueOf(custDto.getCustomerId()));
             sot.setCustomerName(custDto.getContactName());
-
-
             jaxbResults.add(sot);
         }
         return jaxbResults;
@@ -303,11 +299,37 @@ public class PrintSalesOrderApiHandler extends SalesOrderApiHandler {
         super.validateRequest(req);
         try {
             Verifier.verifyNotNull(req.getCriteria());
-            Verifier.verifyNotNull(req.getCriteria().getSalesCriteria());
         } catch (VerifyException e) {
             throw new InvalidRequestException(SalesOrderHandlerConst.MSG_MISSING_GENERAL_CRITERIA);
         }
 
+        try {
+            Verifier.verifyNotNull(req.getCriteria().getSalesCriteria());
+        } catch (VerifyException e) {
+            throw new InvalidRequestException(SalesOrderHandlerConst.MSG_MISSING_SALESORDER_STRUCTURE);
+        }
+
+        try {
+            Verifier.verifyNotNull(req.getCriteria().getCustomerCriteria());
+            Verifier.verifyNotNull(req.getCriteria().getCustomerCriteria().getCustomer());
+        } catch (VerifyException e) {
+            throw new InvalidRequestException(SalesOrderHandlerConst.MSG_MISSING_CUSTOMER_STRUCTURE);
+        }
+        
+        try {
+            Verifier.verifyNotNull(req.getCriteria().getXactCriteria());
+            Verifier.verifyNotNull(req.getCriteria().getXactCriteria().getBasicCriteria());
+        } catch (VerifyException e) {
+            throw new InvalidRequestException(SalesOrderHandlerConst.MSG_MISSING_XACT_STRUCTURE);
+        }
+
+        try {
+            Verifier.verifyNotNull(req.getCriteria().getXactCriteria().getBasicCriteria().getXactId());
+            Verifier.verifyNotNull(req.getCriteria().getCustomerCriteria().getCustomer().getCustomerId());
+            Verifier.verifyPositive(req.getCriteria().getSalesCriteria().getSalesOrderId());
+        } catch (VerifyException e) {
+            throw new InvalidRequestException(SalesOrderHandlerConst.MSG_MISSING_PRINT_PARAMETERS);
+        }
     }
 
 

@@ -1,0 +1,23 @@
+<AccountingTransactionRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>accounting</application>
+        <module>transaction</module>
+        <transaction>PRINT_SALES_ORDER</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>02/05/2020 23:09:47</delivery_date>
+    </header>
+    <criteria>
+        <sales_criteria>
+            <sales_order_id>1000</sales_order_id>
+            <invoice_on_sales_order_creation>false</invoice_on_sales_order_creation>
+            <apply_payment_on_sales_order_creation>false</apply_payment_on_sales_order_creation>
+        </sales_criteria>
+        <xact_criteria>
+            <basic_criteria>
+                <xact_id>111111</xact_id>
+            </basic_criteria>
+        </xact_criteria>
+    </criteria>
+</AccountingTransactionRequest>
