@@ -6,7 +6,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
-import org.ApiMessageHandlerConst;
 import org.dto.XactDto;
 import org.junit.After;
 import org.junit.Assert;
@@ -20,6 +19,7 @@ import org.modules.transaction.sales.SalesApiFactory;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.rmt2.api.ApiMessageHandlerConst;
 import org.rmt2.api.handler.BaseAccountingMessageHandlerTest;
 import org.rmt2.api.handlers.transaction.XactApiHandler;
 import org.rmt2.api.handlers.transaction.sales.CloseSalesOrderWithPaymentApiHandler;

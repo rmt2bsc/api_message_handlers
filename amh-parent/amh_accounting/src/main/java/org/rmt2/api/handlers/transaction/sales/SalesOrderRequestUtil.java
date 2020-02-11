@@ -3,13 +3,13 @@ package org.rmt2.api.handlers.transaction.sales;
 import java.math.BigInteger;
 import java.util.List;
 
-import org.ApiMessageHandlerConst;
 import org.dto.SalesOrderDto;
 import org.dto.SalesOrderItemDto;
 import org.dto.SalesOrderStatusDto;
 import org.dto.SalesOrderStatusHistDto;
 import org.modules.transaction.sales.SalesApi;
 import org.modules.transaction.sales.SalesApiException;
+import org.rmt2.api.ApiMessageHandlerConst;
 import org.rmt2.jaxb.AccountingTransactionRequest;
 import org.rmt2.jaxb.ObjectFactory;
 import org.rmt2.jaxb.SalesInvoiceType;

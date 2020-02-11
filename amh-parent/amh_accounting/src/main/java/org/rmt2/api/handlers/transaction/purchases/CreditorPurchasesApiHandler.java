@@ -5,7 +5,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ApiMessageHandlerConst;
 import org.apache.log4j.Logger;
 import org.dto.XactCreditChargeDto;
 import org.dto.XactCustomCriteriaDto;
@@ -13,6 +12,7 @@ import org.dto.XactTypeItemActivityDto;
 import org.modules.transaction.purchases.creditor.CreditorPurchasesApi;
 import org.modules.transaction.purchases.creditor.CreditorPurchasesApiException;
 import org.modules.transaction.purchases.creditor.CreditorPurchasesApiFactory;
+import org.rmt2.api.ApiMessageHandlerConst;
 import org.rmt2.api.handlers.transaction.TransactionJaxbDtoFactory;
 import org.rmt2.api.handlers.transaction.XactApiHandler;
 import org.rmt2.constants.ApiTransactionCodes;

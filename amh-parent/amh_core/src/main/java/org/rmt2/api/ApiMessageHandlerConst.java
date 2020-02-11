@@ -1,4 +1,4 @@
-package org;
+package org.rmt2.api;
 
 /**
  * Common message handler API constants
@@ -15,7 +15,6 @@ public class ApiMessageHandlerConst {
     public static final String MSG_MISSING_TARGET_LEVEL = "Fetch request must contain a target level value";
     public static final String MSG_INCORRECT_TARGET_LEVEL = "Fetch request contains an invalid target level: %s";
     public static final String MSG_MISSING_PROFILE_DATA = "Profile data is required for create operation";
-    public static final String MSG_MISSING_TRANSACTION_SECTION = "Transaction section is missing from the profile data section";
 
     /**
      * 

@@ -6,10 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.ApiMessageHandlerConst;
 import org.apache.log4j.Logger;
 import org.dto.SalesInvoiceDto;
 import org.dto.SalesOrderItemDto;
+import org.rmt2.api.ApiMessageHandlerConst;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.AccountingTransactionRequest;

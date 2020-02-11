@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ApiMessageHandlerConst;
 import org.apache.log4j.Logger;
 import org.dao.mapping.orm.rmt2.XactTypeItemActivity;
 import org.dto.CreditorDto;
@@ -15,6 +14,7 @@ import org.dto.adapter.orm.transaction.Rmt2XactDtoFactory;
 import org.modules.transaction.XactApiException;
 import org.modules.transaction.disbursements.DisbursementsApi;
 import org.modules.transaction.disbursements.DisbursementsApiFactory;
+import org.rmt2.api.ApiMessageHandlerConst;
 import org.rmt2.api.handlers.transaction.TransactionJaxbDtoFactory;
 import org.rmt2.api.handlers.transaction.XactApiHandler;
 import org.rmt2.constants.ApiTransactionCodes;

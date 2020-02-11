@@ -7,7 +7,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
-import org.ApiMessageHandlerConst;
 import org.dao.mapping.orm.rmt2.SalesOrderStatus;
 import org.dao.mapping.orm.rmt2.SalesOrderStatusHist;
 import org.dto.SalesOrderDto;
@@ -27,6 +26,7 @@ import org.modules.transaction.sales.SalesApiFactory;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.rmt2.api.ApiMessageHandlerConst;
 import org.rmt2.api.handler.BaseAccountingMessageHandlerTest;
 import org.rmt2.api.handler.transaction.receipts.CashReceiptsMockData;
 import org.rmt2.api.handlers.transaction.sales.UpdateSalesOrderAutoInvoiceApiHandler;
