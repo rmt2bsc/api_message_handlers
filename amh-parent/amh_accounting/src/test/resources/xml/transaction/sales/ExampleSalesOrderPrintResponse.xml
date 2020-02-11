@@ -16,21 +16,70 @@
     </reply_status>
     <profile>
         <company>
-            <business_id>7777</business_id>
-            <long_name>7777</long_name>
-            <contact_firstname>test</contact_firstname>
-            <contact_lastname>user</contact_lastname>
-            <contact_phone>999.999.9999</contact_phone>
-            <contact_email>test.user@xyz.com</contact_email>
-            <taxId>449999999</taxId>
-            <website>www.xya.com</website>
+            <business_id>1343</business_id>
+            <long_name>RMT2 Business Systems Corp</long_name>
+            <contact_firstname>Roy</contact_firstname>
+            <contact_lastname>Terrell</contact_lastname>
+            <contact_phone>9999999991</contact_phone>
+            <contact_email>Roy.Terrell@gte.net</contact_email>
+            <taxId>750000001</taxId>
+            <website>www.rmt2.com</website>
+            <address>
+                <addr_id>2001</addr_id>
+                <person_id>0</person_id>
+                <business_id>0</business_id>
+                <addr1>3030 Hall Ave</addr1>
+                <addr2>Suite 493</addr2>
+                <addr3>PMB 2494</addr3>
+                <addr4>Room #123</addr4>
+                <zip>
+                    <zip_id>0</zip_id>
+                    <zipcode>75232</zipcode>
+                    <city>Dallas</city>
+                    <state>Tx</state>
+                </zip>
+                <zip_ext>0</zip_ext>
+            </address>
         </company>
+        <customers>
+            <customer>
+                <customer_id>3333</customer_id>
+                <business_contact_details>
+                    <business_id>1351</business_id>
+                    <long_name>BusinessName_1</long_name>
+                    <contact_firstname>firstname_1</contact_firstname>
+                    <contact_lastname>lastname_1</contact_lastname>
+                    <contact_phone>9999999991</contact_phone>
+                    <contact_email>firstname_1.lastname_1@gte.net</contact_email>
+                    <taxId>750000001</taxId>
+                    <website>www.BusinessName_1.com</website>
+                    <address>
+                        <addr_id>2001</addr_id>
+                        <person_id>0</person_id>
+                        <business_id>0</business_id>
+                        <addr1>address_line1_1</addr1>
+                        <addr2>address_line2_1</addr2>
+                        <addr3>address_line3_1</addr3>
+                        <addr4>address_line4_1</addr4>
+                        <zip>
+                            <zip_id>0</zip_id>
+                            <zipcode>75232</zipcode>
+                            <city>Dallas</city>
+                            <state>Tx</state>
+                        </zip>
+                        <zip_ext>0</zip_ext>
+                    </address>
+                </business_contact_details>
+                <account_no>C1234580</account_no>
+                <credit_limit>10000.0</credit_limit>
+                <transactions/>
+            </customer>
+        </customers>
         <sales_orders>
             <sales_order>
                 <sales_order_id>1000</sales_order_id>
                 <customer_id>3333</customer_id>
-                <customer_name>Outer Circles Corp</customer_name>
-                <customer_account_no>U1465-20120901</customer_account_no>
+                <customer_account_no>111-111</customer_account_no>
                 <invoiced>true</invoiced>
                 <invoice_details>
                     <invoice_id>7000</invoice_id>
@@ -51,7 +100,7 @@
                         <xact_amount>300.0</xact_amount>
                         <xact_date>2017-01-13-06:00</xact_date>
                         <posted_date>2017-01-13-06:00</posted_date>
-                        <xact_reason>Drum Services for gig at Mordern Arts Museum on 1-3-2020</xact_reason>
+                        <xact_reason>reason for transaction id 111111</xact_reason>
                         <neg_instr_no>1111-1111-1111-1111</neg_instr_no>
                         <tender_id>200</tender_id>
                         <confirm_no>1484287200000</confirm_no>

@@ -6,6 +6,7 @@ import java.util.List;
 import org.dao.mapping.orm.rmt2.SalesOrder;
 import org.dao.mapping.orm.rmt2.SalesOrderItems;
 import org.dao.mapping.orm.rmt2.VwBusinessAddress;
+import org.dao.mapping.orm.rmt2.VwCommonContact;
 import org.dao.mapping.orm.rmt2.VwSalesOrderInvoice;
 import org.dto.BusinessContactDto;
 import org.dto.ContactDto;
@@ -181,4 +182,71 @@ public class SalesOrderMockData extends SubsidiaryMockData {
         return list;
     }
 
+    /**
+     * 
+     * @return
+     */
+    public static final List<ContactDto> createMockMainCompanyContactDto() {
+        List<ContactDto> list = new ArrayList<ContactDto>();
+        VwBusinessAddress bus = new VwBusinessAddress();
+        bus.setBusinessId(1343);
+        bus.setBusLongname("RMT2 Business Systems Corp");
+        bus.setBusContactFirstname("Roy");
+        bus.setBusContactLastname("Terrell");
+        bus.setContactEmail(bus.getBusContactFirstname() + "." + bus.getBusContactLastname() + "@gte.net");
+        bus.setBusContactPhone("9999999991");
+        bus.setAddrId(2001);
+        bus.setBusinessId(1351);
+        bus.setAddr1("3030 Hall Ave");
+        bus.setAddr2("Suite 493");
+        bus.setAddr3("PMB 2494");
+        bus.setAddr4("Room #123");
+        bus.setZipCity("Dallas");
+        bus.setZipState("Tx");
+        bus.setAddrZip(75232);
+        bus.setAddrPhoneMain("2143738001");
+        bus.setBusTaxId("750000001");
+        bus.setBusWebsite("www.rmt2.com");
+        bus.setBusShortname("shortname");
+        BusinessContactDto busDto = Rmt2AddressBookDtoFactory.getBusinessInstance(bus);
+        list.add(busDto);
+        return list;
+    }
+
+    /**
+     * 
+     * @param contactId
+     * @param contactName
+     * @param contactType
+     * @param addressId
+     * @param addr1
+     * @param addr2
+     * @param addr3
+     * @param addr4
+     * @param city
+     * @param state
+     * @param zip
+     * @return
+     */
+    public static final VwCommonContact createMockOrmCommonContact(
+            int contactId, String contactName, String contactType,
+            int addressId, String addr1, String addr2, String addr3,
+            String addr4, String city, String state, int zip) {
+        VwCommonContact o = new VwCommonContact();
+        o.setContactId(contactId);
+        o.setContactName(contactName);
+        o.setContactType(contactType);
+
+        o.setAddrId(addressId);
+        o.setContactId(contactId);
+        o.setAddr1(addr1);
+        o.setAddr2(addr2);
+        o.setAddr3(addr3);
+        o.setAddr4(addr4);
+        o.setZipCity(city);
+        o.setZipState(state);
+        o.setAddrZip(zip);
+        o.setAddrZipext(7001);
+        return o;
+    }
 }

@@ -7,11 +7,13 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
+import org.dto.BusinessContactDto;
 import org.dto.ContactDto;
 import org.dto.CustomerDto;
 import org.dto.SalesInvoiceDto;
 import org.dto.SalesOrderItemDto;
 import org.dto.XactDto;
+import org.dto.adapter.orm.Rmt2AddressBookDtoFactory;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -65,6 +67,8 @@ public class SalesOrderPrintMessageHandlerTest extends BaseAccountingMessageHand
     protected static final double TEST_ORDER_TOTAL = 300;
     protected static final int EXPECTED_REC_TOTAL = 1;
     protected static final int SALES_ORDER_ID = 1000;
+    protected static final int CUSTOMER_CONTACT_ID = 1351;
+    protected static final int MAIN_COMPANY_CONTACT_ID = 1343;
 
     private SalesApi mockSalesApi;
     private CustomerApi mockCustApi;
@@ -105,15 +109,7 @@ public class SalesOrderPrintMessageHandlerTest extends BaseAccountingMessageHand
         System.setProperty("SerialPath", "/temp/");
         System.setProperty("SerialDrive", "c:");
         System.setProperty("RptXsltPath", "reports");
-        System.setProperty("CompContactId", "7777");
-        System.setProperty("CompanyName", "XYZ Company");
-        System.setProperty("CompContactFirstname", "test");
-        System.setProperty("CompContactLastname", "user");
-        System.setProperty("CompContactPhone", "999.999.9999");
-        System.setProperty("CompContactEmail", "test.user@xyz.com");
-        System.setProperty("CompTaxId", "449999999");
-        System.setProperty("CompWebsite", "www.xya.com");
-
+        System.setProperty("CompContactId", "1343");
         System.setProperty("javax.xml.transform.TransformerFactory", "net.sf.saxon.TransformerFactoryImpl");
         String xsltTransformer = System.getProperty("javax.xml.transform.TransformerFactory");
 
@@ -141,7 +137,8 @@ public class SalesOrderPrintMessageHandlerTest extends BaseAccountingMessageHand
         List<SalesOrderItemDto> mockSalesOrderItems = SalesOrderMockData.createMockSalesOrderItems(SALES_ORDER_ID);
         List<CustomerDto> mockCustomerListData = SalesOrderMockData.createMockCustomer();
         mockCustomerListData.get(0).setCustomerId(SalesOrderMockData.CUSTOMER_ID);
-        List<ContactDto> mockBusinessContactDtoList = SalesOrderMockData.createMockSingleBusinessContactDto();
+        List<ContactDto> mockCustomerContactDtoList = SalesOrderMockData.createMockSingleBusinessContactDto();
+        List<ContactDto> mockMainCompanyContactDtoList = SalesOrderMockData.createMockMainCompanyContactDto();
         List<XactDto> mockXactListData = CommonXactMockData.createMockSingleCommonTransactions();
         mockXactListData.get(0).setXactAmount(TEST_ORDER_TOTAL);
 
@@ -164,9 +161,20 @@ public class SalesOrderPrintMessageHandlerTest extends BaseAccountingMessageHand
         }
 
         try {
-            when(this.mockContactApi.getContact(isA(ContactDto.class))).thenReturn(mockBusinessContactDtoList);
+            BusinessContactDto criteria = Rmt2AddressBookDtoFactory.getBusinessInstance(null);
+            criteria.setContactId(CUSTOMER_CONTACT_ID);
+            when(this.mockContactApi.getContact(eq(criteria))).thenReturn(mockCustomerContactDtoList);
+            // when(this.mockContactApi.getContact(isA(BusinessContactDto.class))).thenReturn(mockCustomerContactDtoList);
         } catch (ContactsApiException e) {
-            Assert.fail("Unable to setup mock stub for fetching a list of contacts");
+            Assert.fail("Unable to setup mock stub for fetching customer contact info");
+        }
+
+        try {
+            BusinessContactDto criteria = Rmt2AddressBookDtoFactory.getBusinessInstance(null);
+            criteria.setContactId(MAIN_COMPANY_CONTACT_ID);
+            when(this.mockContactApi.getContact(eq(criteria))).thenReturn(mockMainCompanyContactDtoList);
+        } catch (ContactsApiException e) {
+            Assert.fail("Unable to setup mock stub for fetching main company contact info");
         }
 
         try {

@@ -12,6 +12,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.dao.mapping.orm.rmt2.Customer;
 import org.dao.mapping.orm.rmt2.Xact;
+import org.dto.BusinessContactDto;
 import org.dto.ContactDto;
 import org.dto.CustomerDto;
 import org.dto.SalesInvoiceDto;
@@ -27,13 +28,16 @@ import org.modules.subsidiary.SubsidiaryApiFactory;
 import org.modules.transaction.XactApi;
 import org.modules.transaction.XactApiFactory;
 import org.rmt2.api.handler.util.MessageHandlerUtility;
-import org.rmt2.api.handlers.XmlReportUtility;
+import org.rmt2.api.handler.util.PdfReportUtility;
 import org.rmt2.api.handlers.transaction.TransactionJaxbDtoFactory;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.AccountingTransactionRequest;
+import org.rmt2.jaxb.AddressType;
 import org.rmt2.jaxb.BusinessType;
 import org.rmt2.jaxb.CustomerCriteriaType;
+import org.rmt2.jaxb.CustomerListType;
+import org.rmt2.jaxb.CustomerType;
 import org.rmt2.jaxb.ObjectFactory;
 import org.rmt2.jaxb.ReplyStatusType;
 import org.rmt2.jaxb.ReportAttachmentType;
@@ -44,8 +48,12 @@ import org.rmt2.jaxb.SalesOrderType;
 import org.rmt2.jaxb.TransactionDetailGroup;
 import org.rmt2.jaxb.XactCriteriaType;
 import org.rmt2.jaxb.XactType;
+import org.rmt2.jaxb.ZipcodeType;
 import org.rmt2.util.ReportAttachmentTypeBuilder;
+import org.rmt2.util.accounting.subsidiary.CustomerTypeBuilder;
+import org.rmt2.util.addressbook.AddressTypeBuilder;
 import org.rmt2.util.addressbook.BusinessTypeBuilder;
+import org.rmt2.util.addressbook.ZipcodeTypeBuilder;
 
 import com.InvalidDataException;
 import com.RMT2Exception;
@@ -68,7 +76,7 @@ import com.api.util.assistants.VerifyException;
 public class PrintSalesOrderApiHandler extends SalesOrderApiHandler {
     private static final Logger logger = Logger.getLogger(PrintSalesOrderApiHandler.class);
     private static final String REPORT_NAME = "SalesOrderInvoiceReport.xsl";
-    private XmlReportUtility xform;
+    private PdfReportUtility xform;
 
     /**
      * 
@@ -136,6 +144,7 @@ public class PrintSalesOrderApiHandler extends SalesOrderApiHandler {
         Map<Integer, List<SalesOrderItemDto>> itemsMap = new HashMap<>();
         Map<Integer, List<XactDto>> xactMap = new HashMap<>();
         Map<Integer, CustomerDto> custMap = new HashMap<>();
+        Map<Integer, ContactDto> contactMap = new HashMap<>();
         int recCount = 0;
         boolean error = false;
 
@@ -154,18 +163,25 @@ public class PrintSalesOrderApiHandler extends SalesOrderApiHandler {
             cust.setCustomerId(jaxbCustomerCriteria.getCustomer().getCustomerId().intValue());
             CustomerDto custDto = Rmt2SubsidiaryDtoFactory.createCustomerInstance(cust, null);
             List<CustomerDto> customer = custApi.getExt(custDto);
+
+            ContactsApi contactApi = ContactsApiFactory.createApi();
             if (customer != null && customer.size() == 1) {
                 // Get contact info and assign to customer object
-                ContactsApi contactApi = ContactsApiFactory.createApi();
-                ContactDto criteria = Rmt2AddressBookDtoFactory.getNewContactInstance();
+
+                // Get contact info for customer
+                BusinessContactDto criteria = Rmt2AddressBookDtoFactory.getBusinessInstance(null);
                 criteria.setContactId(customer.get(0).getContactId());
-                List<ContactDto> contacts = contactApi.getContact(criteria);
-                if (contacts != null && contacts.size() == 1) {
-                    customer.get(0).setContactId(contacts.get(0).getContactId());
-                    customer.get(0).setContactName(contacts.get(0).getContactName());
-                }
+                List<ContactDto> custContacts = contactApi.getContact(criteria);
+                contactMap.put(customer.get(0).getContactId(), custContacts.get(0));
                 custMap.put(criteriaDto.getSalesOrderId(), customer.get(0));
             }
+
+            // Get contact info for main company
+            int compContactId = Integer.valueOf(System.getProperty("CompContactId")).intValue();
+            BusinessContactDto criteria = Rmt2AddressBookDtoFactory.getBusinessInstance(null);
+            criteria.setContactId(compContactId);
+            List<ContactDto> compContacts = contactApi.getContact(criteria);
+            contactMap.put(compContactId, compContacts.get(0));
 
             // Organize query results as a Map since we are dealing with sales
             // orders and their items
@@ -184,7 +200,7 @@ public class PrintSalesOrderApiHandler extends SalesOrderApiHandler {
             }
 
             // Convert query results to JAXB objects
-            jaxbResults = this.createJaxbReportXml(salesOrders, custMap, itemsMap, xactMap);
+            jaxbResults = this.setupJaxbSalesOrderReportXml(salesOrders, itemsMap, xactMap);
 
             // Assign messages to the reply status that apply to the outcome of
             // this operation
@@ -202,7 +218,7 @@ public class PrintSalesOrderApiHandler extends SalesOrderApiHandler {
         } finally {
 //             jaxbResults.add(reqSalesOrder);
             this.api.close();
-            String xml = this.buildResponse(jaxbResults, null, rs);
+            String xml = this.buildResponse(jaxbResults, custMap, contactMap, null, rs);
 
             // Create PDF file from JAXB XML.
             if (!error) {
@@ -216,7 +232,7 @@ public class PrintSalesOrderApiHandler extends SalesOrderApiHandler {
                     rs.setExtMessage(rs.getExtMessage() + "; " + e.getMessage());
                 } finally {
                     jaxbResults = this.createJaxbReportResponse(salesOrders, custMap);
-                    xml = this.buildResponse(jaxbResults, pdf, rs);
+                    xml = this.buildResponse(jaxbResults, custMap, contactMap, pdf, rs);
                 }
 
             }
@@ -241,7 +257,7 @@ public class PrintSalesOrderApiHandler extends SalesOrderApiHandler {
         return jaxbResults;
     }
 
-    private List<SalesOrderType> createJaxbReportXml(List<SalesInvoiceDto> salesOrders, Map<Integer, CustomerDto> custMap,
+    private List<SalesOrderType> setupJaxbSalesOrderReportXml(List<SalesInvoiceDto> salesOrders,
             Map<Integer, List<SalesOrderItemDto>> itemMap, Map<Integer, List<XactDto>> xactMap) {
         List<SalesOrderType> jaxbResults = new ArrayList<>();
         if (itemMap == null) {
@@ -249,6 +265,7 @@ public class PrintSalesOrderApiHandler extends SalesOrderApiHandler {
         }
 
         ObjectFactory f = new ObjectFactory();
+        // Really just expecting one element in the salesOrders List
         for (SalesInvoiceDto header : salesOrders) {
             SalesOrderType sot = SalesOrderJaxbDtoFactory.createSalesOrderHeaderJaxbInstance(header);
 
@@ -259,11 +276,6 @@ public class PrintSalesOrderApiHandler extends SalesOrderApiHandler {
                 List<SalesOrderItemType> soitList = SalesOrderJaxbDtoFactory.createSalesOrderItemJaxbInstance(itemDtoList);
                 sot.getSalesOrderItems().getSalesOrderItem().addAll(soitList);
             }
-
-            // Add customer data
-            CustomerDto custDto = custMap.get(header.getSalesOrderId());
-            sot.setCustomerId(BigInteger.valueOf(custDto.getCustomerId()));
-            sot.setCustomerName(custDto.getContactName());
 
             // Add transaction info
             SalesInvoiceType sit = f.createSalesInvoiceType();
@@ -281,7 +293,7 @@ public class PrintSalesOrderApiHandler extends SalesOrderApiHandler {
     }
 
     private OutputStream generatePdf(String jaxbXml) {
-        this.xform = new XmlReportUtility(REPORT_NAME, jaxbXml, true);
+        this.xform = new PdfReportUtility(REPORT_NAME, jaxbXml, true);
         try {
             return this.xform.buildReport();
         } catch (RMT2Exception e) {
@@ -333,8 +345,10 @@ public class PrintSalesOrderApiHandler extends SalesOrderApiHandler {
     }
 
 
-    protected String buildResponse(List<SalesOrderType> payload, ByteArrayOutputStream pdf,
+    protected String buildResponse(List<SalesOrderType> payload, Map<Integer, CustomerDto> custMap,
+            Map<Integer, ContactDto> contactMap, ByteArrayOutputStream pdf,
             MessageHandlerCommonReplyStatus replyStatus) {
+
         if (replyStatus != null) {
             ReplyStatusType rs = MessageHandlerUtility.createReplyStatus(replyStatus);
             this.responseObj.setReplyStatus(rs);
@@ -342,28 +356,83 @@ public class PrintSalesOrderApiHandler extends SalesOrderApiHandler {
 
         if (payload != null) {
             TransactionDetailGroup profile = this.jaxbObjFactory.createTransactionDetailGroup();
-            // Add Company data
-            int busId = Integer.valueOf(System.getProperty("CompContactId"));
-            BusinessType bt = BusinessTypeBuilder.Builder.create()
-                    .withBusinessId(busId)
-                    .withContactFirstname(System.getProperty("CompContactFirstname"))
-                    .withContactLastname(System.getProperty("CompContactLastname"))
-                    .withContactPhone(System.getProperty("CompContactPhone"))
-                    .withLongname(System.getProperty("CompanyName"))
-                    .withTaxId(System.getProperty("CompTaxId"))
-                    .withWebsite(System.getProperty("CompWebsite"))
-                    .withContactEmail(System.getProperty("CompContactEmail"))
-                    .build();
-            profile.setCompany(bt);
-            profile.getCompany().setBusinessId(BigInteger.valueOf(Long.valueOf(System.getProperty("CompContactId"))));
-            profile.getCompany().setLongName(System.getProperty("CompContactId"));
-            profile.getCompany().setContactFirstname(System.getProperty("CompContactFirstname"));
-            profile.getCompany().setContactLastname(System.getProperty("CompContactLastname"));
-            profile.getCompany().setContactPhone(System.getProperty("CompContactPhone"));
-            profile.getCompany().setContactEmail(System.getProperty("CompContactEmail"));
-            profile.getCompany().setTaxId(System.getProperty("CompTaxId"));
-            profile.getCompany().setWebsite(System.getProperty("CompWebsite"));
 
+            // We don't want to included detail contact info for customer and
+            // main company when building the final reply which includes the PDF
+            // file.
+            if (pdf == null) {
+                // Add Company data
+                int busId = Integer.valueOf(System.getProperty("CompContactId"));
+                BusinessContactDto mainCompContactDto = (BusinessContactDto) contactMap.get(busId);
+                if (mainCompContactDto != null) {
+                    ZipcodeType zt = ZipcodeTypeBuilder.Builder.create()
+                            .withCity(mainCompContactDto.getCity())
+                            .withState(mainCompContactDto.getState())
+                            .withZipcode(mainCompContactDto.getZip())
+                            .build();
+                    AddressType at = AddressTypeBuilder.Builder.create()
+                            .withAddrId(mainCompContactDto.getAddrId())
+                            .withAddressLine1(mainCompContactDto.getAddr1())
+                            .withAddressLine2(mainCompContactDto.getAddr2())
+                            .withAddressLine3(mainCompContactDto.getAddr3())
+                            .withAddressLine4(mainCompContactDto.getAddr4())
+                            .withZipcode(zt)
+                            .build();
+                    BusinessType bt = BusinessTypeBuilder.Builder.create()
+                            .withBusinessId(busId)
+                            .withContactFirstname(mainCompContactDto.getContactFirstname())
+                            .withContactLastname(mainCompContactDto.getContactLastname())
+                            .withContactPhone(mainCompContactDto.getContactPhone())
+                            .withLongname(mainCompContactDto.getContactName())
+                            .withTaxId(mainCompContactDto.getTaxId())
+                            .withWebsite(mainCompContactDto.getWebsite())
+                            .withContactEmail(mainCompContactDto.getContactEmail())
+                            .withAddress(at)
+                            .build();
+                    profile.setCompany(bt);
+                }
+
+                // Add Customer data
+                if (payload != null && payload.size() > 0) {
+                    CustomerDto custDto = custMap.get(payload.get(0).getSalesOrderId().intValue());
+                    BusinessContactDto custContactDto = (BusinessContactDto) contactMap.get(custDto.getContactId());
+                    ZipcodeType zt = ZipcodeTypeBuilder.Builder.create()
+                            .withCity(custContactDto.getCity())
+                            .withState(custContactDto.getState())
+                            .withZipcode(custContactDto.getZip())
+                            .build();
+                    AddressType at = AddressTypeBuilder.Builder.create()
+                            .withAddrId(custContactDto.getAddrId())
+                            .withAddressLine1(custContactDto.getAddr1())
+                            .withAddressLine2(custContactDto.getAddr2())
+                            .withAddressLine3(custContactDto.getAddr3())
+                            .withAddressLine4(custContactDto.getAddr4())
+                            .withZipcode(zt)
+                            .build();
+                    BusinessType bt = BusinessTypeBuilder.Builder.create()
+                            .withBusinessId(custContactDto.getContactId())
+                            .withContactFirstname(custContactDto.getContactFirstname())
+                            .withContactLastname(custContactDto.getContactLastname())
+                            .withContactPhone(custContactDto.getContactPhone())
+                            .withLongname(custContactDto.getContactName())
+                            .withTaxId(custContactDto.getTaxId())
+                            .withWebsite(custContactDto.getWebsite())
+                            .withContactEmail(custContactDto.getContactEmail())
+                            .withAddress(at)
+                            .build();
+                    CustomerType cust = CustomerTypeBuilder.Builder.create()
+                            .withAccountNo(custDto.getAccountNo())
+                            .withCustomerId(custDto.getCustomerId())
+                            .withCreditLimit(custDto.getCreditLimit())
+                            .withBusinessType(bt)
+                            .build();
+
+                    ObjectFactory f = new ObjectFactory();
+                    CustomerListType clt = f.createCustomerListType();
+                    profile.setCustomers(clt);
+                    profile.getCustomers().getCustomer().add(cust);
+                }
+            }
             profile.setSalesOrders(jaxbObjFactory.createSalesOrderListType());
             profile.getSalesOrders().getSalesOrder().addAll(payload);
 

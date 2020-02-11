@@ -1,4 +1,4 @@
-package org.rmt2.api.handlers;
+package org.rmt2.api.handler.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -31,8 +31,8 @@ import com.api.xml.RMT2XmlUtility;
  * @author rterrell
  * 
  */
-public class XmlReportUtility extends RMT2Base {
-    private static final Logger logger = Logger.getLogger(XmlReportUtility.class);
+public class PdfReportUtility extends RMT2Base {
+    private static final Logger logger = Logger.getLogger(PdfReportUtility.class);
     private static final String OS = System.getProperty("os.name");
     private static final String IMAGE_PATH_PLACEHOLDER = "$IMAGES_DIRECTORY$";
 
@@ -71,7 +71,7 @@ public class XmlReportUtility extends RMT2Base {
     /**
      * Default constructor.
      */
-    private XmlReportUtility() {
+    private PdfReportUtility() {
         super();
     }
 
@@ -81,7 +81,7 @@ public class XmlReportUtility extends RMT2Base {
      * @param xml
      * @param outpurAsFile
      */
-    public XmlReportUtility(String xslFile, String xml, boolean outpurAsFile) {
+    public PdfReportUtility(String xslFile, String xml, boolean outpurAsFile) {
         this();
         this.outputAsFile = outpurAsFile;
         this.setupReportLayout(xslFile, xml);
@@ -161,7 +161,7 @@ public class XmlReportUtility extends RMT2Base {
             }
             // Substitute place holders in the report layout
             fileData = RMT2File.getStreamStringData(is);
-            fileData = RMT2String.replaceAll2(fileData, this.imageDirPath, XmlReportUtility.IMAGE_PATH_PLACEHOLDER);
+            fileData = RMT2String.replaceAll2(fileData, this.imageDirPath, PdfReportUtility.IMAGE_PATH_PLACEHOLDER);
             // Copy report layout to the user's work area.
             RMT2File.outputFile(fileData, this.xslFileName);
             return userRptPath;
