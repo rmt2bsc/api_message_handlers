@@ -36,8 +36,8 @@
 							<fo:table-row>
 								<fo:table-cell>
 									<fo:block text-align="left">
-										<xsl:text>Replace this with image...</xsl:text>
-										<!--<fo:external-graphic src="url('$IMAGES_DIRECTORY$RMT2_logo.gif')"/>-->
+										<!--<xsl:text>Replace this with image...</xsl:text>-->
+										<fo:external-graphic src="url(reports/RMT2_logo.gif')"/>
 									</fo:block>
 								</fo:table-cell>
 							</fo:table-row>
@@ -51,6 +51,13 @@
 							<fo:table-row>
 								<fo:table-cell>
 									<fo:block font-size="18pt" text-align="center" font-weight="bold">
+										<xsl:text>RMT2 Business Systems Corp.</xsl:text>
+									</fo:block>
+								</fo:table-cell>
+							</fo:table-row>
+							<fo:table-row>
+								<fo:table-cell>
+									<fo:block font-size="16pt" text-align="center" font-weight="bold">
 										<xsl:text>Sales Order Invoice</xsl:text>
 									</fo:block>
 								</fo:table-cell>
@@ -146,6 +153,9 @@
 				</fo:static-content>
 				
 				<fo:flow flow-name="xsl-region-body">
+					<fo:block>
+						<xsl:text>&#xA0;</xsl:text>
+					</fo:block>
 					<xsl:apply-templates select="AccountingTransactionResponse/profile/sales_orders/sales_order"/>
 				</fo:flow>
 				
