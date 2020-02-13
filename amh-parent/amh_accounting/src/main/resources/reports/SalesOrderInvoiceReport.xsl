@@ -229,6 +229,38 @@
 					<fo:table-cell>
 						<fo:block text-align="right" font-size="{$normalTextSize}">
 							<fo:inline font-weight="bold">
+								<xsl:text>Satus:&#xA0;</xsl:text>
+							</fo:inline>
+						</fo:block>
+					</fo:table-cell>
+					<fo:table-cell>
+						<fo:block text-align="left" font-size="{$normalTextSize}">
+							<fo:inline>
+								<xsl:value-of select="status/description"/>
+							</fo:inline>
+						</fo:block>
+					</fo:table-cell>
+				</fo:table-row>	
+				<fo:table-row>
+					<fo:table-cell>
+						<fo:block text-align="right" font-size="{$normalTextSize}">
+							<fo:inline font-weight="bold">
+								<xsl:text>Invoice No:&#xA0;</xsl:text>
+							</fo:inline>
+						</fo:block>
+					</fo:table-cell>
+					<fo:table-cell>
+						<fo:block text-align="left" font-size="{$normalTextSize}">
+							<fo:inline>
+								<xsl:value-of select="invoice_details/invoice_no"/>
+							</fo:inline>
+						</fo:block>
+					</fo:table-cell>
+				</fo:table-row>	
+				<fo:table-row>
+					<fo:table-cell>
+						<fo:block text-align="right" font-size="{$normalTextSize}">
+							<fo:inline font-weight="bold">
 								<xsl:text>Invoice Date:&#xA0;</xsl:text>
 							</fo:inline>
 						</fo:block>
@@ -257,26 +289,168 @@
 						</fo:block>
 					</fo:table-cell>
 				</fo:table-row>
+			</fo:table-body>
+		</fo:table>
+		
+		<fo:block>
+			<xsl:text>&#xA0;</xsl:text>
+		</fo:block>
+		
+		<fo:table width="100%" table-layout="fixed" border-color="black" border-width=".5pt" border-style="solid">
+			<fo:table-column column-width="10%"/>
+			<fo:table-column column-width="50%"/>
+			<fo:table-column column-width="10%"/>
+			<fo:table-column column-width="15%"/>
+			<fo:table-column column-width="15%"/>
+			<fo:table-header>
+				<fo:table-row background-color="{$lightGray}">
+					<fo:table-cell border-color="black" border-width=".5pt" border-style="solid">
+						<fo:block text-align="center" font-weight="bold" font-size="11pt">
+							<xsl:text>Item No.</xsl:text>
+						</fo:block>
+					</fo:table-cell>
+					<fo:table-cell border-color="black" border-width=".5pt" border-style="solid">
+						<fo:block text-align="center" font-weight="bold" font-size="11pt">
+							<xsl:text>Item Description</xsl:text>
+						</fo:block>
+					</fo:table-cell>
+					<fo:table-cell border-color="black" border-width=".5pt" border-style="solid">
+						<fo:block text-align="center" font-weight="bold" font-size="11pt">
+							<xsl:text>Qty</xsl:text>
+						</fo:block>
+					</fo:table-cell>
+					<fo:table-cell border-color="black" border-width=".5pt" border-style="solid">
+						<fo:block text-align="right" font-weight="bold" font-size="11pt">
+							<xsl:text>Unit Price</xsl:text>
+						</fo:block>
+					</fo:table-cell>
+					<fo:table-cell border-color="black" border-width=".5pt" border-style="solid">
+						<fo:block text-align="right" font-weight="bold" font-size="11pt">
+							<xsl:text>Amount</xsl:text>
+						</fo:block>
+					</fo:table-cell>
+				</fo:table-row>
+			</fo:table-header>
+			<fo:table-body>
+				<xsl:apply-templates select="sales_order_items/sales_order_item"/>
+			</fo:table-body>
+		</fo:table>
+		
+		<fo:table width="100%" table-layout="fixed">
+			<fo:table-column column-width="10%"/>
+			<fo:table-column column-width="50%"/>
+			<fo:table-column column-width="10%"/>
+			<fo:table-column column-width="15%"/>
+			<fo:table-column column-width="15%"/>
+			<fo:table-body>
+				<xsl:apply-templates select="invoice_details"/>
+			</fo:table-body>
+		</fo:table>
+		
+		<fo:block>
+			<xsl:text>&#xA0;</xsl:text>
+		</fo:block>
+		
+		<!-- Print Signature line -->
+		<fo:table width="100%">
+			<fo:table-column column-width="100%"/>
+			<fo:table-body>
 				<fo:table-row>
 					<fo:table-cell>
-						<fo:block text-align="right" font-size="{$normalTextSize}">
-							<fo:inline font-weight="bold">
-								<xsl:text>Invoice No:&#xA0;</xsl:text>
-							</fo:inline>
+						<fo:block>
+							<xsl:text>&#xA0;</xsl:text>
 						</fo:block>
 					</fo:table-cell>
+				</fo:table-row>
+				<fo:table-row>
 					<fo:table-cell>
-						<fo:block text-align="left" font-size="{$normalTextSize}">
-							<fo:inline>
-								<xsl:value-of select="invoice_details/invoice_no"/>
-							</fo:inline>
+						<fo:block>
+							<xsl:text>&#xA0;</xsl:text>
 						</fo:block>
 					</fo:table-cell>
-				</fo:table-row>	
+				</fo:table-row>
+				<fo:table-row>
+					<fo:table-cell>
+						<fo:block>
+							<xsl:text>_____________________________</xsl:text>
+						</fo:block>
+						<fo:block font-weight="bold">
+							<xsl:text>Customer Signature</xsl:text>
+						</fo:block>
+					</fo:table-cell>
+				</fo:table-row>
+				<fo:table-row>
+					<fo:table-cell>
+						<fo:block>
+							<xsl:text>&#xA0;</xsl:text>
+						</fo:block>
+					</fo:table-cell>
+				</fo:table-row>
 			</fo:table-body>
 		</fo:table>
 	</xsl:template>
 
+	<!-- Sales Order Items -->
+	<xsl:template match="sales_order_item">
+		<fo:table-row>
+			<fo:table-cell border-right-color="black" border-right-width=".5pt" border-right-style="solid">
+				<fo:block text-align="left" font-size="11pt">
+					<xsl:text>&#xA0;</xsl:text>
+					<xsl:value-of select="sales_order_item_id"/>
+				</fo:block>
+			</fo:table-cell>
+			<fo:table-cell border-right-color="black" border-right-width=".5pt" border-right-style="solid">
+				<fo:block text-align="left" font-size="11pt">
+					<xsl:text>&#xA0;</xsl:text>
+					<xsl:value-of select="item/description"/>
+				</fo:block>
+			</fo:table-cell>
+			<fo:table-cell border-right-color="black" border-right-width=".5pt" border-right-style="solid">
+				<fo:block text-align="center" font-size="11pt">
+					<xsl:value-of select="format-number(order_qty, '#,##0.##')"/>
+				</fo:block>
+			</fo:table-cell>
+			<fo:table-cell border-right-color="black" border-right-width=".5pt" border-right-style="solid">
+				<fo:block text-align="right" font-size="11pt">
+					<xsl:value-of select="format-number(unit_cost, '#,##0.00')"/>
+				</fo:block>
+			</fo:table-cell>
+			<fo:table-cell border-right-color="black" border-right-width=".5pt" border-right-style="solid">
+				<fo:block text-align="right" font-size="11pt">
+					<xsl:value-of select="format-number((unit_cost * order_qty), '#,##0.00')"/>
+				</fo:block>
+			</fo:table-cell>
+		</fo:table-row>
+	</xsl:template>
+	
+	<!-- Sales Order Line Item Total -->
+	<xsl:template match="invoice_details">
+		<fo:table-row>
+			<fo:table-cell number-columns-spanned="5">
+				<fo:block text-align="left" font-size="11pt">
+					<xsl:text>&#xA0;</xsl:text>
+				</fo:block>
+			</fo:table-cell>
+		</fo:table-row>
+		<fo:table-row>
+			<fo:table-cell number-columns-spanned="3">
+				<fo:block text-align="left" font-size="11pt">
+					<xsl:text>&#xA0;</xsl:text>
+				</fo:block>
+			</fo:table-cell>
+			<fo:table-cell>
+				<fo:block text-align="right" font-weight="bold" font-size="11pt">
+					<xsl:text>Total:</xsl:text>
+				</fo:block>
+			</fo:table-cell>
+			<fo:table-cell>
+				<fo:block text-align="right" font-weight="bold" font-size="11pt">
+					<xsl:value-of select="format-number(invoice_total, '$#,##0.00')"/>
+				</fo:block>
+			</fo:table-cell>
+		</fo:table-row>
+	</xsl:template>
+	
 	<!-- Company Template -->
 	<xsl:template match="company">
 		<fo:table width="100%" table-layout="fixed" border-style="solid" border-width="1pt" border-color="black">
