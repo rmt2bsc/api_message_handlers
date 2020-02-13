@@ -77,7 +77,7 @@
 							<fo:table-row>
 								<fo:table-cell>
 									<fo:block>
-										<fo:table width="100%" table-layout="fixed" border-style="solid" border-width="1pt" border-color="black">
+										<fo:table width="100%">
 											<fo:table-column column-width="100%"/>
 											<fo:table-body>
 												<fo:table-row>
@@ -89,7 +89,7 @@
 													</fo:table-cell>
 												</fo:table-row>
 												<fo:table-row>
-													<fo:table-cell border-color="black" border-width=".5pt" background-color="{$white}" border-style="solid">
+													<fo:table-cell background-color="{$white}">
 														<fo:block text-align="left" font-size="11pt" font-weight="bold">
 															<xsl:apply-templates select="AccountingTransactionResponse/profile/company"/>
 														</fo:block>
@@ -101,7 +101,7 @@
 								</fo:table-cell>
 								<fo:table-cell>
 									<fo:block>
-										<fo:table width="100%" table-layout="fixed" border-style="solid" border-width="1pt" border-color="black">
+										<fo:table width="100%" table-layout="fixed">
 											<fo:table-column column-width="100%"/>
 											<fo:table-body>
 												<fo:table-row>
@@ -113,7 +113,7 @@
 													</fo:table-cell>
 												</fo:table-row>
 												<fo:table-row>
-													<fo:table-cell border-color="black" border-width=".5pt" background-color="{$white}" border-style="solid">
+													<fo:table-cell background-color="{$white}">
 														<fo:block text-align="left" font-size="11pt" font-weight="bold">
 															<xsl:apply-templates select="AccountingTransactionResponse/profile/customers/customer"/>
 														</fo:block>
@@ -453,7 +453,7 @@
 	
 	<!-- Company Template -->
 	<xsl:template match="company">
-		<fo:table width="100%" table-layout="fixed" border-style="solid" border-width="1pt" border-color="black">
+		<fo:table width="100%" table-layout="fixed">
 			<fo:table-column column-width="100%"/>
 			<fo:table-body>
 				<fo:table-row>
@@ -552,7 +552,7 @@
 	
 	<!-- Customer Template -->
 	<xsl:template match="customer">
-		<fo:table width="100%" table-layout="fixed" border-style="solid" border-width="1pt" border-color="black">
+		<fo:table width="100%" table-layout="fixed">
 			<fo:table-column column-width="100%"/>
 			<fo:table-body>
 				<fo:table-row>

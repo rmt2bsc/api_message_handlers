@@ -23,9 +23,6 @@
                 <person_id>0</person_id>
                 <business_id>0</business_id>
                 <addr1>3030 Hall Ave</addr1>
-                <addr2>Suite 456</addr2>
-                <addr3>Room 6</addr3>
-                <addr4>PMB 456</addr4>
                 <zip>
                     <zip_id>0</zip_id>
                     <zipcode>75232</zipcode>
