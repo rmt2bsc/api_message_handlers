@@ -2,10 +2,13 @@
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fo="http://www.w3.org/1999/XSL/Format">
 	<xsl:output method="xml" version="1.0" omit-xml-declaration="no" indent="yes"/>
 	<xsl:variable name="tableBorder" select="'solid'"/>
-	<xsl:variable name="normalTextSize" select="'9pt'"/>
+	<xsl:variable name="normalTextSize" select="'normal'"/>
 	<xsl:variable name="signatureBorder" select="'solid'"/>
 	<xsl:variable name="imagePath" select="'$IMAGES_DIRECTORY$'"/>
 	<xsl:variable name="lightGray">#CCCCCC</xsl:variable>
+	<xsl:variable name="white">#FFFFFF</xsl:variable>
+	<xsl:variable name="listColHeaderShade">#FACC2E</xsl:variable>
+	
 	
 	<xsl:variable name="dateFormat" select="'[Y0001]-[M01]-[D01]'"/>
 
@@ -16,9 +19,9 @@
 				<fo:simple-page-master master-name="main_page"  page-width="8.5in"
 					page-height="11in" margin-left="1in" margin-right="1in"	margin-top="0.5in" margin-bottom="0.5in">
 					<!-- Body -->
-					<fo:region-body margin-top="1.25in" margin-bottom="1.25in"/>
+					<fo:region-body margin-top="3.25in" margin-bottom="1.25in"/>
 					<!-- Header -->
-					<fo:region-before extent="3in"/>
+					<fo:region-before extent="4in"/>
 					<!-- Footer -->
 					<fo:region-after extent="1in"/>
 				</fo:simple-page-master>
@@ -61,15 +64,68 @@
 							</fo:table-row>
 						</fo:table-body>
 					</fo:table>
+					
 					<fo:block>
 						<xsl:text>&#xA0;</xsl:text>
 					</fo:block>
-					
-					<!-- Client Identification -->
-					<xsl:apply-templates select="AccountingTransactionResponse/profile/customers/customer"/>
-					
-					<!-- Vendor Identification -->
-					<xsl:apply-templates select="AccountingTransactionResponse/profile/company"/>
+					 
+					 <!-- Identify the billable client and billing company -->
+					<fo:table width="100%" table-layout="fixed">
+						<fo:table-column column-width="50%"/>
+						<fo:table-column column-width="50%"/>
+						<fo:table-body>
+							<fo:table-row>
+								<fo:table-cell>
+									<fo:block>
+										<fo:table width="100%" table-layout="fixed" border-style="solid" border-width="1pt" border-color="black">
+											<fo:table-column column-width="100%"/>
+											<fo:table-body>
+												<fo:table-row>
+													<fo:table-cell border-color="black" border-width=".5pt" background-color="{$lightGray}" border-style="solid">
+														<fo:block text-align="left" font-size="11pt" font-weight="bold">
+															<xsl:text>&#xA0;</xsl:text>
+															<xsl:text>FROM</xsl:text>
+														</fo:block>
+													</fo:table-cell>
+												</fo:table-row>
+												<fo:table-row>
+													<fo:table-cell border-color="black" border-width=".5pt" background-color="{$white}" border-style="solid">
+														<fo:block text-align="left" font-size="11pt" font-weight="bold">
+															<xsl:apply-templates select="AccountingTransactionResponse/profile/company"/>
+														</fo:block>
+													</fo:table-cell>
+												</fo:table-row>
+											</fo:table-body>
+										</fo:table>
+									</fo:block>
+								</fo:table-cell>
+								<fo:table-cell>
+									<fo:block>
+										<fo:table width="100%" table-layout="fixed" border-style="solid" border-width="1pt" border-color="black">
+											<fo:table-column column-width="100%"/>
+											<fo:table-body>
+												<fo:table-row>
+													<fo:table-cell border-color="black" border-width=".5pt" background-color="{$lightGray}" border-style="solid">
+														<fo:block text-align="left" font-size="11pt" font-weight="bold">
+															<xsl:text>&#xA0;</xsl:text>
+															<xsl:text>TO</xsl:text>
+														</fo:block>
+													</fo:table-cell>
+												</fo:table-row>
+												<fo:table-row>
+													<fo:table-cell border-color="black" border-width=".5pt" background-color="{$white}" border-style="solid">
+														<fo:block text-align="left" font-size="11pt" font-weight="bold">
+															<xsl:apply-templates select="AccountingTransactionResponse/profile/customers/customer"/>
+														</fo:block>
+													</fo:table-cell>
+												</fo:table-row>
+											</fo:table-body>
+										</fo:table>
+									</fo:block>
+								</fo:table-cell>
+							</fo:table-row>
+						</fo:table-body>
+					</fo:table>
 				</fo:static-content>
 				
 				<fo:static-content flow-name="xsl-region-after">
@@ -101,7 +157,7 @@
 
 	<!-- Sales Order Header Template -->
 	<xsl:template match="sales_order">
-		<fo:table width="80%" table-layout="fixed">
+		<fo:table width="100%" table-layout="fixed">
 			<fo:table-column column-width="25%"/>
 			<fo:table-column column-width="75%"/>
 			<fo:table-body>
@@ -221,4 +277,202 @@
 		</fo:table>
 	</xsl:template>
 
+	<!-- Company Template -->
+	<xsl:template match="company">
+		<fo:table width="100%" table-layout="fixed" border-style="solid" border-width="1pt" border-color="black">
+			<fo:table-column column-width="100%"/>
+			<fo:table-body>
+				<fo:table-row>
+					<fo:table-cell>
+						<fo:block font-size="{$normalTextSize}" font-weight="bold">
+							<xsl:text>&#xA0;</xsl:text>
+							<xsl:value-of select="long_name"/>
+						</fo:block>
+					</fo:table-cell>
+				</fo:table-row>
+				<fo:table-row>
+					<fo:table-cell>
+						<fo:block font-size="{$normalTextSize}" font-weight="normal">
+							<xsl:text>&#xA0;</xsl:text>
+							<xsl:value-of select="address/addr1"/>
+						</fo:block>
+						<xsl:if test="address/addr2">
+							<fo:block font-size="{$normalTextSize}" font-weight="normal">
+								<xsl:text>&#xA0;</xsl:text>
+								<xsl:value-of select="address/addr2"/>
+							</fo:block>
+						</xsl:if>
+						<xsl:if test="address/addr3">
+							<fo:block font-size="{$normalTextSize}" font-weight="normal">
+								<xsl:text>&#xA0;</xsl:text>
+								<xsl:value-of select="address/addr3"/>
+							</fo:block>
+						</xsl:if>
+						<xsl:if test="address/addr4">
+							<fo:block font-size="{$normalTextSize}" font-weight="normal">
+								<xsl:text>&#xA0;</xsl:text>
+								<xsl:value-of select="address/addr4"/>
+							</fo:block>
+						</xsl:if>
+					</fo:table-cell>
+				</fo:table-row>
+				<fo:table-row>
+					<fo:table-cell>
+						<fo:block font-size="{$normalTextSize}" font-weight="normal">
+							<xsl:text>&#xA0;</xsl:text>
+							<xsl:value-of select="address/zip/city"/>
+							<xsl:text>,&#xA0;</xsl:text>
+							<xsl:value-of select="address/zip/state"/>
+							<xsl:text>&#xA0;</xsl:text>
+							<xsl:value-of select="address/zip/zipcode"/>
+						</fo:block>
+					</fo:table-cell>
+				</fo:table-row>
+				<xsl:if test="contact_phone">
+					<fo:table-row>
+						<fo:table-cell>
+							<fo:block font-size="{$normalTextSize}" font-weight="normal">
+								<xsl:text>&#xA0;</xsl:text>
+								<xsl:text>Phone&#xA0;</xsl:text>
+								<xsl:value-of select="contact_phone"/>
+							</fo:block>
+						</fo:table-cell>
+					</fo:table-row>
+				</xsl:if>
+				<xsl:if test="fax">
+					<fo:table-row>
+						<fo:table-cell>
+							<fo:block font-size="{$normalTextSize}" font-weight="normal">
+								<xsl:text>&#xA0;</xsl:text>
+								<xsl:text>Fax &#xA0;</xsl:text>
+								<xsl:value-of select="fax"/>
+							</fo:block>
+						</fo:table-cell>
+					</fo:table-row>
+				</xsl:if>
+				<xsl:if test="contact_email">
+					<fo:table-row>
+						<fo:table-cell>
+							<fo:block font-size="{$normalTextSize}" font-weight="normal">
+								<xsl:text>&#xA0;</xsl:text>
+								<xsl:text>Email&#xA0;</xsl:text>
+								<xsl:value-of select="contact_email"/>
+							</fo:block>
+						</fo:table-cell>
+					</fo:table-row>
+				</xsl:if>
+				<xsl:if test="website">
+					<fo:table-row>
+						<fo:table-cell>
+							<fo:block font-size="{$normalTextSize}" font-weight="normal">
+								<xsl:text>&#xA0;</xsl:text>
+								<xsl:text>Website&#xA0;</xsl:text>
+								<xsl:value-of select="website"/>
+							</fo:block>
+						</fo:table-cell>
+					</fo:table-row>
+				</xsl:if>
+			</fo:table-body>
+		</fo:table>
+	</xsl:template>
+	
+	<!-- Customer Template -->
+	<xsl:template match="customer">
+		<fo:table width="100%" table-layout="fixed" border-style="solid" border-width="1pt" border-color="black">
+			<fo:table-column column-width="100%"/>
+			<fo:table-body>
+				<fo:table-row>
+					<fo:table-cell>
+						<fo:block font-size="{$normalTextSize}" font-weight="bold">
+							<xsl:text>&#xA0;</xsl:text>
+							<xsl:value-of select="business_contact_details/long_name"/>
+						</fo:block>
+					</fo:table-cell>
+				</fo:table-row>
+				<fo:table-row>
+					<fo:table-cell>
+						<fo:block font-size="{$normalTextSize}" font-weight="normal">
+							<xsl:text>&#xA0;</xsl:text>
+							<xsl:value-of select="business_contact_details/address/addr1"/>
+						</fo:block>
+						<xsl:if test="business_contact_details/address/addr2">
+							<fo:block font-size="{$normalTextSize}" font-weight="normal">
+								<xsl:text>&#xA0;</xsl:text>
+								<xsl:value-of select="business_contact_details/address/addr2"/>
+							</fo:block>
+						</xsl:if>
+						<xsl:if test="business_contact_details/address/addr3">
+							<fo:block font-size="{$normalTextSize}" font-weight="normal">
+								<xsl:text>&#xA0;</xsl:text>
+								<xsl:value-of select="business_contact_details/address/addr3"/>
+							</fo:block>
+						</xsl:if>
+						<xsl:if test="business_contact_details/address/addr4">
+							<fo:block font-size="{$normalTextSize}" font-weight="normal">
+								<xsl:text>&#xA0;</xsl:text>
+								<xsl:value-of select="business_contact_details/address/addr4"/>
+							</fo:block>
+						</xsl:if>
+					</fo:table-cell>
+				</fo:table-row>
+				<fo:table-row>
+					<fo:table-cell>
+						<fo:block font-size="{$normalTextSize}" font-weight="normal">
+							<xsl:text>&#xA0;</xsl:text>
+							<xsl:value-of select="business_contact_details/address/zip/city"/>
+							<xsl:text>,&#xA0;</xsl:text>
+							<xsl:value-of select="business_contact_details/address/zip/state"/>
+							<xsl:text>&#xA0;</xsl:text>
+							<xsl:value-of select="business_contact_details/address/zip/zipcode"/>
+						</fo:block>
+					</fo:table-cell>
+				</fo:table-row>
+				<xsl:if test="business_contact_details/contact_phone">
+					<fo:table-row>
+						<fo:table-cell>
+							<fo:block font-size="{$normalTextSize}" font-weight="normal">
+								<xsl:text>&#xA0;</xsl:text>
+								<xsl:text>Phone&#xA0;</xsl:text>
+								<xsl:value-of select="business_contact_details/contact_phone"/>
+							</fo:block>
+						</fo:table-cell>
+					</fo:table-row>
+				</xsl:if>
+				<xsl:if test="fax">
+					<fo:table-row>
+						<fo:table-cell>
+							<fo:block font-size="{$normalTextSize}" font-weight="normal">
+								<xsl:text>&#xA0;</xsl:text>
+								<xsl:text>Fax &#xA0;</xsl:text>
+								<xsl:value-of select="fax"/>
+							</fo:block>
+						</fo:table-cell>
+					</fo:table-row>
+				</xsl:if>
+				<xsl:if test="business_contact_details/contact_email">
+					<fo:table-row>
+						<fo:table-cell>
+							<fo:block font-size="{$normalTextSize}" font-weight="normal">
+								<xsl:text>&#xA0;</xsl:text>
+								<xsl:text>Email&#xA0;</xsl:text>
+								<xsl:value-of select="business_contact_details/contact_email"/>
+							</fo:block>
+						</fo:table-cell>
+					</fo:table-row>
+				</xsl:if>
+				<xsl:if test="business_contact_details/website">
+					<fo:table-row>
+						<fo:table-cell>
+							<fo:block font-size="{$normalTextSize}" font-weight="normal">
+								<xsl:text>&#xA0;</xsl:text>
+								<xsl:text>Website&#xA0;</xsl:text>
+								<xsl:value-of select="business_contact_details/website"/>
+							</fo:block>
+						</fo:table-cell>
+					</fo:table-row>
+				</xsl:if>
+			</fo:table-body>
+		</fo:table>
+	</xsl:template>
+	
 </xsl:stylesheet>
