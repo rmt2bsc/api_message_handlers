@@ -38,7 +38,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.rmt2.api.handler.BaseAccountingMessageHandlerTest;
 import org.rmt2.api.handler.transaction.common.CommonXactMockData;
 import org.rmt2.api.handlers.transaction.receipts.CashReceiptsApiHandler;
-import org.rmt2.api.handlers.transaction.sales.PrintSalesOrderApiHandler;
+import org.rmt2.api.handlers.transaction.sales.PrintCustomerSalesOrderApiHandler;
 import org.rmt2.api.handlers.transaction.sales.SalesOrderHandlerConst;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
@@ -59,7 +59,7 @@ import com.api.util.RMT2File;
  *
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ AbstractDaoClientImpl.class, Rmt2OrmClientFactory.class, PrintSalesOrderApiHandler.class,
+@PrepareForTest({ AbstractDaoClientImpl.class, Rmt2OrmClientFactory.class, PrintCustomerSalesOrderApiHandler.class,
         SalesApiFactory.class, SubsidiaryApiFactory.class, ContactsApiFactory.class, XactApiFactory.class,
         SystemConfigurator.class })
 public class SalesOrderPrintMessageHandlerTest extends BaseAccountingMessageHandlerTest {
@@ -184,7 +184,7 @@ public class SalesOrderPrintMessageHandlerTest extends BaseAccountingMessageHand
         }
 
         MessageHandlerResults results = null;
-        PrintSalesOrderApiHandler handler = new PrintSalesOrderApiHandler();
+        PrintCustomerSalesOrderApiHandler handler = new PrintCustomerSalesOrderApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_PRINT, request);
         } catch (MessageHandlerCommandException e) {
@@ -230,7 +230,7 @@ public class SalesOrderPrintMessageHandlerTest extends BaseAccountingMessageHand
         }
 
         MessageHandlerResults results = null;
-        PrintSalesOrderApiHandler handler = new PrintSalesOrderApiHandler();
+        PrintCustomerSalesOrderApiHandler handler = new PrintCustomerSalesOrderApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_PRINT, request);
         } catch (MessageHandlerCommandException e) {
@@ -256,7 +256,7 @@ public class SalesOrderPrintMessageHandlerTest extends BaseAccountingMessageHand
                 RMT2File.getFileContentsAsString("xml/transaction/sales/SalesOrderPrintRequest.xml");
 
         MessageHandlerResults results = null;
-        PrintSalesOrderApiHandler handler = new PrintSalesOrderApiHandler();
+        PrintCustomerSalesOrderApiHandler handler = new PrintCustomerSalesOrderApiHandler();
         try {
             results = handler.processMessage("INCORRECT_TRAN_CODE", request);
         } catch (MessageHandlerCommandException e) {
@@ -282,7 +282,7 @@ public class SalesOrderPrintMessageHandlerTest extends BaseAccountingMessageHand
                 .getFileContentsAsString("xml/transaction/sales/SalesOrderPrintMissingGeneralCriteriaRequest.xml");
 
         MessageHandlerResults results = null;
-        PrintSalesOrderApiHandler handler = new PrintSalesOrderApiHandler();
+        PrintCustomerSalesOrderApiHandler handler = new PrintCustomerSalesOrderApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_PRINT, request);
         } catch (MessageHandlerCommandException e) {
@@ -308,7 +308,7 @@ public class SalesOrderPrintMessageHandlerTest extends BaseAccountingMessageHand
                 .getFileContentsAsString("xml/transaction/sales/SalesOrderPrintRequestMissingSalesCriteria.xml");
 
         MessageHandlerResults results = null;
-        PrintSalesOrderApiHandler handler = new PrintSalesOrderApiHandler();
+        PrintCustomerSalesOrderApiHandler handler = new PrintCustomerSalesOrderApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_PRINT, request);
         } catch (MessageHandlerCommandException e) {
@@ -334,7 +334,7 @@ public class SalesOrderPrintMessageHandlerTest extends BaseAccountingMessageHand
                 .getFileContentsAsString("xml/transaction/sales/SalesOrderPrintRequestMissingCustomerCriteria.xml");
 
         MessageHandlerResults results = null;
-        PrintSalesOrderApiHandler handler = new PrintSalesOrderApiHandler();
+        PrintCustomerSalesOrderApiHandler handler = new PrintCustomerSalesOrderApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_PRINT, request);
         } catch (MessageHandlerCommandException e) {
@@ -360,7 +360,7 @@ public class SalesOrderPrintMessageHandlerTest extends BaseAccountingMessageHand
                 .getFileContentsAsString("xml/transaction/sales/SalesOrderPrintRequestMissingCustomerCriteria2.xml");
 
         MessageHandlerResults results = null;
-        PrintSalesOrderApiHandler handler = new PrintSalesOrderApiHandler();
+        PrintCustomerSalesOrderApiHandler handler = new PrintCustomerSalesOrderApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_PRINT, request);
         } catch (MessageHandlerCommandException e) {
@@ -386,7 +386,7 @@ public class SalesOrderPrintMessageHandlerTest extends BaseAccountingMessageHand
                 .getFileContentsAsString("xml/transaction/sales/SalesOrderPrintRequestMissingTransactionCriteria.xml");
 
         MessageHandlerResults results = null;
-        PrintSalesOrderApiHandler handler = new PrintSalesOrderApiHandler();
+        PrintCustomerSalesOrderApiHandler handler = new PrintCustomerSalesOrderApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_PRINT, request);
         } catch (MessageHandlerCommandException e) {
@@ -412,7 +412,7 @@ public class SalesOrderPrintMessageHandlerTest extends BaseAccountingMessageHand
                 .getFileContentsAsString("xml/transaction/sales/SalesOrderPrintRequestMissingTransactionCriteria2.xml");
 
         MessageHandlerResults results = null;
-        PrintSalesOrderApiHandler handler = new PrintSalesOrderApiHandler();
+        PrintCustomerSalesOrderApiHandler handler = new PrintCustomerSalesOrderApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_PRINT, request);
         } catch (MessageHandlerCommandException e) {
@@ -438,7 +438,7 @@ public class SalesOrderPrintMessageHandlerTest extends BaseAccountingMessageHand
                 .getFileContentsAsString("xml/transaction/sales/SalesOrderPrintRequestMissingSalesOrderId.xml");
 
         MessageHandlerResults results = null;
-        PrintSalesOrderApiHandler handler = new PrintSalesOrderApiHandler();
+        PrintCustomerSalesOrderApiHandler handler = new PrintCustomerSalesOrderApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_PRINT, request);
         } catch (MessageHandlerCommandException e) {
@@ -464,7 +464,7 @@ public class SalesOrderPrintMessageHandlerTest extends BaseAccountingMessageHand
                 .getFileContentsAsString("xml/transaction/sales/SalesOrderPrintRequestMissingCustomerId.xml");
 
         MessageHandlerResults results = null;
-        PrintSalesOrderApiHandler handler = new PrintSalesOrderApiHandler();
+        PrintCustomerSalesOrderApiHandler handler = new PrintCustomerSalesOrderApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_PRINT, request);
         } catch (MessageHandlerCommandException e) {
@@ -490,7 +490,7 @@ public class SalesOrderPrintMessageHandlerTest extends BaseAccountingMessageHand
                 .getFileContentsAsString("xml/transaction/sales/SalesOrderPrintRequestMissingXactId.xml");
 
         MessageHandlerResults results = null;
-        PrintSalesOrderApiHandler handler = new PrintSalesOrderApiHandler();
+        PrintCustomerSalesOrderApiHandler handler = new PrintCustomerSalesOrderApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_PRINT, request);
         } catch (MessageHandlerCommandException e) {

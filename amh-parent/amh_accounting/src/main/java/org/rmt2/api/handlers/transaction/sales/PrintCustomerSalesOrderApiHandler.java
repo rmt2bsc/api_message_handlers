@@ -73,17 +73,17 @@ import com.api.util.assistants.VerifyException;
  * @author rterrell
  *
  */
-public class PrintSalesOrderApiHandler extends SalesOrderApiHandler {
-    private static final Logger logger = Logger.getLogger(PrintSalesOrderApiHandler.class);
+public class PrintCustomerSalesOrderApiHandler extends SalesOrderApiHandler {
+    private static final Logger logger = Logger.getLogger(PrintCustomerSalesOrderApiHandler.class);
     private static final String REPORT_NAME = "SalesOrderInvoiceReport.xsl";
     private PdfReportUtility xform;
 
     /**
      * 
      */
-    public PrintSalesOrderApiHandler() {
+    public PrintCustomerSalesOrderApiHandler() {
         super();
-        logger.info(PrintSalesOrderApiHandler.class.getName() + " was instantiated successfully");
+        logger.info(PrintCustomerSalesOrderApiHandler.class.getName() + " was instantiated successfully");
     }
 
     /**
