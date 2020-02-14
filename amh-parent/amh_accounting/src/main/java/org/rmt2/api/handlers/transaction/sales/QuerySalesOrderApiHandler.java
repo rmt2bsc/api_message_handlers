@@ -30,7 +30,8 @@ import com.api.util.assistants.VerifyException;
 
 /**
  * Handles and routes messages pertaining to the query of Sales Orders in the
- * Accounting API.
+ * Accounting API. The result set should contain a list of sales orders that
+ * could potentially span one or more customers.
  * 
  * @author rterrell
  *
@@ -47,8 +48,7 @@ public class QuerySalesOrderApiHandler extends SalesOrderApiHandler {
     }
 
     /**
-     * Processes requests pertaining to the creation of a sales order
-     * transaction.
+     * Processes requests pertaining to the query of a sales order transaction.
      * 
      * @param command
      *            The name of the operation.
