@@ -67,8 +67,8 @@ import com.api.util.assistants.Verifier;
 import com.api.util.assistants.VerifyException;
 
 /**
- * Handles and routes messages pertaining to the query of Sales Orders in the
- * Accounting API.
+ * Handles and routes messages pertaining to the printing of a customer's aales
+ * order in the Accounting API.
  * 
  * @author rterrell
  *
