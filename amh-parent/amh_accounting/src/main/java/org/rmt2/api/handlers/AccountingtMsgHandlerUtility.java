@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.dto.CommonXactDto;
 import org.dto.XactDto;
 import org.dto.XactTypeDto;
 import org.dto.XactTypeItemActivityDto;
@@ -251,4 +252,42 @@ public class AccountingtMsgHandlerUtility {
         return xactType;
     }
     
+    /**
+     * 
+     * @param xact
+     * @return
+     */
+    public static final XactType buildGenericTransactionDetails(CommonXactDto xact) {
+        XactType xactType = null;
+        if (xact != null) {
+            XacttypeType xt = XacttypeTypeBuilder.Builder.create()
+                    .withXactTypeId(xact.getXactTypeId())
+                    .withDescription(xact.getXactTypeDescription())
+                    .build();
+
+            XacttypeType xst = XacttypeTypeBuilder.Builder.create()
+                    .withXactTypeId(xact.getXactSubtypeId())
+                    .build();
+
+            xactType = XactTypeBuilder.Builder.create()
+                    .withXactId(xact.getXactId())
+                    .withXactAmount(xact.getXactAmount())
+                    .withXactDate(xact.getXactDate())
+                    .withReason(xact.getReason())
+                    .withConfirmNo(xact.getConfirmNo())
+                    .withAccountNo(xact.getAccountNo())
+                    .withBusinessName(xact.getBusinessName())
+                    .withBusinessId(xact.getBusinessId())
+                    .withParentEntityId(xact.getParentEntityId())
+                    .withSpecialXactLevel1Id(xact.getSpecXactLevel1Id())
+                    .withSpecialXactLevel2Id(xact.getSpecXactLevel2Id())
+                    .withSpecialXactLevel1Date(xact.getSpecXactLevel1Date())
+                    .withSpecialXactLevel2Date(xact.getSpecXactLevel2Date())
+                    .withDocumentId(xact.getDocumentId())
+                    .withInvoiceNo(null)
+                    .withXactType(xt)
+                    .withXactSubtype(xst).build();
+        }
+        return xactType;
+    }
 }

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.dto.CommonXactDto;
 import org.dto.CreditorDto;
 import org.dto.XactCodeDto;
 import org.dto.XactCodeGroupDto;
@@ -248,6 +249,46 @@ public class TransactionJaxbDtoFactory extends RMT2Base {
         return dto;
     }
     
+    /**
+     * Creates an instance of <i>CommonXactDto</i> using a valid
+     * <i>XactBasicCriteriaType</i> JAXB object.
+     * 
+     * @param criteria
+     *            an instance of {@link XactBasicCriteriaType}
+     * @return an instance of {@link CommonXactDto}
+     * @throws {@link com.SystemException} Transaction date could not converted
+     *         from a String.
+     */
+    public static final CommonXactDto createGerericXactDtoCriteriaInstance(XactBasicCriteriaType jaxbCriteria) {
+        if (jaxbCriteria == null) {
+            return null;
+        }
+
+        CommonXactDto dto = Rmt2XactDtoFactory.createGenericXactInstance(null);
+        if (jaxbCriteria.getXactReason() != null) {
+            dto.setReason(jaxbCriteria.getXactReason());
+        }
+        if (!RMT2String2.isEmpty(jaxbCriteria.getConfirmNo())) {
+            dto.setConfirmNo(jaxbCriteria.getConfirmNo());
+        }
+        if (jaxbCriteria.getXactId() != null) {
+            dto.setXactId(jaxbCriteria.getXactId().intValue());
+        }
+        if (jaxbCriteria.getXactDate() != null) {
+            dto.setXactDate(RMT2Date.stringToDate(jaxbCriteria.getXactDate()));
+        }
+        if (jaxbCriteria.getXactTypeId() != null) {
+            dto.setXactTypeId(jaxbCriteria.getXactTypeId().intValue());
+        }
+        if (jaxbCriteria.getContactId() != null) {
+            dto.setBusinessId(jaxbCriteria.getContactId().intValue());
+        }
+        if (jaxbCriteria.getBusinessName() != null) {
+            dto.setBusinessName(jaxbCriteria.getBusinessName());
+        }
+        return dto;
+    }
+
     /**
      * 
      * @param jaxbCriteria
