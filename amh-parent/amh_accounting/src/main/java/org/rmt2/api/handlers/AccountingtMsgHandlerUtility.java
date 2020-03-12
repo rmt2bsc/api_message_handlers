@@ -253,9 +253,11 @@ public class AccountingtMsgHandlerUtility {
     }
     
     /**
+     * Sets up aa JAXB generic transaction object using a CommonXactDto object
      * 
      * @param xact
-     * @return
+     *            instance of {@link CommonXactDto}
+     * @return {@link XactType}
      */
     public static final XactType buildGenericTransactionDetails(CommonXactDto xact) {
         XactType xactType = null;
