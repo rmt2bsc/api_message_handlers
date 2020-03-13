@@ -139,7 +139,7 @@ public class SalesOrderPrintMessageHandlerTest extends BaseAccountingMessageHand
         mockCustomerListData.get(0).setCustomerId(SalesOrderMockData.CUSTOMER_ID);
         List<ContactDto> mockCustomerContactDtoList = SalesOrderMockData.createMockSingleBusinessContactDto();
         List<ContactDto> mockMainCompanyContactDtoList = SalesOrderMockData.createMockMainCompanyContactDto();
-        List<XactDto> mockXactListData = CommonXactMockData.createMockSingleCommonTransactions();
+        List<XactDto> mockXactListData = CommonXactMockData.createMockSingleXact();
         mockXactListData.get(0).setXactAmount(TEST_ORDER_TOTAL);
 
         try {

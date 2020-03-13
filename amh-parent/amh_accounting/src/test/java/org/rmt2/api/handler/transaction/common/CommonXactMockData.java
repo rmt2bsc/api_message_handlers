@@ -62,7 +62,7 @@ public class CommonXactMockData extends SubsidiaryMockData {
      * 
      * @return
      */
-    public static final List<XactDto> createMockSingleCommonTransactions() {
+    public static final List<XactDto> createMockSingleXact() {
         List<XactDto> list = new ArrayList<XactDto>();
         VwXactList o = AccountingMockDataFactory.createMockOrmXact(111111, XactConst.XACT_TYPE_CASH_DISBURSE,
                 XactConst.XACT_SUBTYPE_NOT_ASSIGNED, RMT2Date.stringToDate("2017-01-13"), 100.00, 200, "1111-1111-1111-1111");

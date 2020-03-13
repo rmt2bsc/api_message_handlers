@@ -99,7 +99,7 @@ public class XactQueryMessageHandlerTest extends BaseAccountingMessageHandlerTes
     @Test
     public void testSuccess_Fetch_Header() {
         String request = RMT2File.getFileContentsAsString("xml/transaction/common/TransactionQueryRequestHeader.xml");
-        List<XactDto> mockListData = CommonXactMockData.createMockSingleCommonTransactions();
+        List<XactDto> mockListData = CommonXactMockData.createMockSingleXact();
 
         try {
             when(this.mockApi.getXact(isA(XactDto.class))).thenReturn(mockListData);
@@ -139,7 +139,7 @@ public class XactQueryMessageHandlerTest extends BaseAccountingMessageHandlerTes
     @Test
     public void testSuccess_Fetch_Full() {
         String request = RMT2File.getFileContentsAsString("xml/transaction/common/TransactionQueryRequestFull.xml");
-        List<XactDto> mockListData = CommonXactMockData.createMockSingleCommonTransactions();
+        List<XactDto> mockListData = CommonXactMockData.createMockSingleXact();
         List<XactTypeItemActivityDto> mockItemListData = CommonXactMockData.createMockXactItems();
 
         try {
