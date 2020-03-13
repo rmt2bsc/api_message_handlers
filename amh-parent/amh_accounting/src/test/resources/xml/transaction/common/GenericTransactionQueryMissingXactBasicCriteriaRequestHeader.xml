@@ -1,0 +1,14 @@
+<AccountingTransactionRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>accounting</application>
+        <module>transaction</module>
+        <transaction>GET_GENERIC_TRANSACTION</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>12/13/2018 10:38:56</delivery_date>
+    </header>
+    <criteria>
+        <xact_criteria/>
+    </criteria>
+</AccountingTransactionRequest>

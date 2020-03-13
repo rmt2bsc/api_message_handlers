@@ -46,18 +46,6 @@ public class GenericXactApiHandler extends
     public static final String MSG_MISSING_SUBJECT_CRITERIA = "Selection criteria is required for Accounting Transaction fetch operation";
     public static final String MSG_MISSING_BASIC_CRITERIA = "Transaction fetch request must contain a basic criteria object";
 
-    // public static final String MSG_MISSING_PROFILE_DATA =
-    // "Transaction profile is required for create transaction operation";
-    // public static final String MSG_MISSING_TRANSACTION_SECTION =
-    // "Transaction section is missing from the transaction profile";
-    // public static final String MSG_REQUIRED_NO_TRANSACTIONS_INCORRECT =
-    // "Transaction profile is required to contain one and only one transaction for the create transaction operation";
-    // public static final String MSG_REVERSE_SUCCESS =
-    // "Existing Accounting Transaction, %s1, was reversed: %s2";
-    // public static final String MSG_DETAILS_NOT_SUPPORTED =
-    // "Transaction level \"DETAILS\" is not supported at this time";
-    
-    
     private XactApi api;
     protected ObjectFactory jaxbObjFactory;
     protected String targetLevel;

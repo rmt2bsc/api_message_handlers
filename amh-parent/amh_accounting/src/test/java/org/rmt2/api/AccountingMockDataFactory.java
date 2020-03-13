@@ -28,6 +28,7 @@ import org.dao.mapping.orm.rmt2.VwBusinessAddress;
 import org.dao.mapping.orm.rmt2.VwCommonContact;
 import org.dao.mapping.orm.rmt2.VwCreditorXactHist;
 import org.dao.mapping.orm.rmt2.VwCustomerXactHist;
+import org.dao.mapping.orm.rmt2.VwGenericXactList;
 import org.dao.mapping.orm.rmt2.VwItemAssociations;
 import org.dao.mapping.orm.rmt2.VwSalesOrderInvoice;
 import org.dao.mapping.orm.rmt2.VwSalesorderItemsBySalesorder;
@@ -1195,6 +1196,50 @@ public class AccountingMockDataFactory {
         o.setEffectiveDate(RMT2Date.stringToDate(effectiveDate));
         o.setEndDate(endDate == null ? null : RMT2Date.stringToDate(endDate));
         o.setUserId("testuser");
+        return o;
+    }
+
+    /**
+     * 
+     * @param xactId
+     * @param xactTypeId
+     * @param xactSubType
+     * @param xactDate
+     * @param xactAmount
+     * @param xactTypeName
+     * @param businessId
+     * @param businessName
+     * @param acctNo
+     * @param invoiceNo
+     * @param pareentEntityId
+     * @param level1Id
+     * @param level1Date
+     * @param level2Id
+     * @param level2Date
+     * @return
+     */
+    public static final VwGenericXactList createMockOrmGenericXact(int xactId, int xactTypeId,
+            int xactSubType, Date xactDate, double xactAmount, String xactTypeName, int businessId, String businessName,
+            String acctNo, String invoiceNo, int pareentEntityId, int level1Id, Date level1Date, int level2Id, Date level2Date) {
+        VwGenericXactList o = new VwGenericXactList();
+        o.setXactId(xactId);
+        o.setXactReason("reason for transaction id " + xactId);
+        o.setXactTypeId(xactTypeId);
+        o.setXactSubtypeId(xactSubType);
+        o.setXactDate(xactDate);
+        o.setXactAmount(xactAmount);
+        o.setBusinessId(businessId);
+        o.setBusinessName(businessName);
+        o.setInvoiceNo(invoiceNo);
+        o.setConfirmNo(String.valueOf(xactDate.getTime()));
+        o.setAccountNo(acctNo);
+        o.setDocumentId(xactId + xactTypeId);
+        o.setXactTypeName(xactTypeName);
+        o.setParentEntityId(pareentEntityId);
+        o.setSpecXactLevel1Id(level1Id);
+        o.setSpecXactLevel1Date(level1Date);
+        o.setSpecXactLevel2Id(level2Id);
+        o.setSpecXactLevel2Date(level2Date);
         return o;
     }
 }
