@@ -1,0 +1,19 @@
+<InvalidRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>addressbook</application>
+        <module>postal</module>
+        <transaction>GET_ACCOUNT</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>07/03/2018 15:57:16</delivery_date>
+    </header>
+    <data>
+        <province>
+            <state_id>2222</state_id>
+            <country_id>12345</country_id>
+            <state_name>Texas</state_name>
+            <state_code>TX</state_code>
+        </province>
+    </data>
+</InvalidRequest>

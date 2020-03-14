@@ -1,0 +1,34 @@
+<AccountingGeneralLedgerRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>accounting</application>
+        <module>unknown</module>
+        <transaction>INCORRECT_TRAN_CODE</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>07/18/2018 15:18:20</delivery_date>
+    </header>
+    <criteria>
+        <criteria>
+            <acct_id>200</acct_id>
+            <acct_type>
+                <acct_type_id>111</acct_type_id>
+                <description>GL Account Type Description Test</description>
+            </acct_type>
+            <acct_catg>
+                <acct_catg_id>300</acct_catg_id>
+                <acct_type>
+                    <acct_type_id>111</acct_type_id>
+                    <description>GL Account Type Description Test</description>
+                </acct_type>
+                <description>GL Account Category Test</description>
+            </acct_catg>
+            <account_no>GL Account Number Test</account_no>
+            <account_name>GL Account Name Test</account_name>
+            <account_description>GL ACcount Description Test</account_description>
+            <balance_type>
+                <account_baltype_id>1</account_baltype_id>
+            </balance_type>
+        </criteria>
+    </criteria>
+</AccountingGeneralLedgerRequest>

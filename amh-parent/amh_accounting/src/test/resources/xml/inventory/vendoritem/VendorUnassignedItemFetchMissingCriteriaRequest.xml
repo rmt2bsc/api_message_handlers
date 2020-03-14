@@ -1,0 +1,11 @@
+<InventoryRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>accounting</application>
+        <module>inventory</module>
+        <transaction>GET_VENDOR_UNASSIGNED_ITEMS</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>08/03/2018 16:23:12</delivery_date>
+    </header>
+</InventoryRequest>

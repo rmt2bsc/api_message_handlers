@@ -1,0 +1,30 @@
+<AccountingTransactionRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>accounting</application>
+        <module>transaction</module>
+        <transaction>DELETE_SALES_ORDER</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>02/01/2020 19:58:05</delivery_date>
+    </header>
+    <profile>
+        <sales_orders>
+            <sales_order>
+                <sales_order_id>1234567</sales_order_id>
+                <invoiced>false</invoiced>
+                <status/>
+            </sales_order>
+            <sales_order>
+                <sales_order_id>2234567</sales_order_id>
+                <invoiced>false</invoiced>
+                <status/>
+            </sales_order>
+            <sales_order>
+                <sales_order_id>3234567</sales_order_id>
+                <invoiced>false</invoiced>
+                <status/>
+            </sales_order>
+        </sales_orders>
+    </profile>
+</AccountingTransactionRequest>

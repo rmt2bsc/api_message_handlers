@@ -1,0 +1,19 @@
+<InventoryRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>accounting</application>
+        <module>inventory</module>
+        <transaction>GET_VENDOR_ITEM</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>08/02/2018 18:18:09</delivery_date>
+    </header>
+    <criteria>
+        <vendor_item_criteria>
+            <item_id>100</item_id>
+            <creditor_id>1234567</creditor_id>
+            <item_serial_no>1234KDJSK</item_serial_no>
+            <vendor_item_no>111-222-333</vendor_item_no>
+        </vendor_item_criteria>
+    </criteria>
+</InventoryRequest>

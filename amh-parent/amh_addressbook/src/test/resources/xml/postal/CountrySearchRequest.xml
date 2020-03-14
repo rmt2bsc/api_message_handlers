@@ -1,0 +1,17 @@
+<PostalRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>addressbook</application>
+        <module>postal</module>
+        <transaction>GET_COUNTRY</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>07/03/2018 15:51:43</delivery_date>
+    </header>
+    <postal_criteria>
+        <country>
+            <country_id>12345</country_id>
+            <countyName>United States</countyName>
+        </country>
+    </postal_criteria>
+</PostalRequest>

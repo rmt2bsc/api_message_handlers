@@ -1,0 +1,23 @@
+<AccountingTransactionRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>accounting</application>
+        <module>subsidiary</module>
+        <transaction>GET_CREDITOR</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>12/13/2018 10:51:59</delivery_date>
+    </header>
+    <criteria>
+        <creditor_criteria>
+            <target_level>FULL</target_level>
+            <creditor_id>3333</creditor_id>
+            <acct_id>1234567</acct_id>
+            <account_no>ACCT-NO-8888</account_no>
+            <business_id>1351</business_id>
+            <business_name>Business Type Description</business_name>
+            <creditor_type_id>4444</creditor_type_id>
+            <ext_account_no>43A-567-989</ext_account_no>
+        </creditor_criteria>
+    </criteria>
+</AccountingTransactionRequest>

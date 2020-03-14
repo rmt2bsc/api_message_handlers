@@ -1,0 +1,16 @@
+<InventoryRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>accounting</application>
+        <module>inventory</module>
+        <transaction>GET_CURRENT_ITEM_STATUS_HIST</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>07/26/2018 17:47:43</delivery_date>
+    </header>
+    <criteria>
+        <item_status_hist_criteria>
+            <item_id>1000</item_id>
+        </item_status_hist_criteria>
+    </criteria>
+</InventoryRequest>

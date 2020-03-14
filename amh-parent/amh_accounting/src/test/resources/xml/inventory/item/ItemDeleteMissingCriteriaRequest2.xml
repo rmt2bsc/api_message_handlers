@@ -1,0 +1,11 @@
+<InventoryRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>accounting</application>
+        <module>inventory</module>
+        <transaction>DELETE_ITEM_MASTER</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>07/27/2018 12:30:44</delivery_date>
+    </header>
+</InventoryRequest>

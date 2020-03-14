@@ -1,0 +1,26 @@
+<AccountingGeneralLedgerRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>accounting</application>
+        <module>unknown</module>
+        <transaction>GET_GL_ACCOUNT_CATG</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>07/19/2018 15:43:23</delivery_date>
+    </header>
+    <criteria>
+        <criteria>
+            <acct_catg>
+                <acct_catg_id>300</acct_catg_id>
+                <acct_type>
+                    <acct_type_id>111</acct_type_id>
+                    <description>GL Account Type Description Test</description>
+                    <balance_type>
+                        <account_baltype_id>1</account_baltype_id>
+                    </balance_type>
+                </acct_type>
+                <description>GL Account Category Test</description>
+            </acct_catg>
+        </criteria>
+    </criteria>
+</AccountingGeneralLedgerRequest>

@@ -1,0 +1,25 @@
+<AccountingTransactionRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>accounting</application>
+        <module>transaction</module>
+        <transaction>GET_SALES_ORDER</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>01/23/2020 01:05:16</delivery_date>
+    </header>
+    <criteria>
+        <sales_criteria>
+            <target_level>FULL</target_level>
+            <sales_order_id>33333</sales_order_id>
+            <customer_id>222222</customer_id>
+            <account_no>ACCTNO-1234</account_no>
+            <business_id>11111</business_id>
+            <business_name>ABC Company</business_name>
+            <sales_order_date>2020-01-01-06:00</sales_order_date>
+            <sales_order_total>1000.0</sales_order_total>
+            <invoice_on_sales_order_creation>false</invoice_on_sales_order_creation>
+            <apply_payment_on_sales_order_creation>false</apply_payment_on_sales_order_creation>
+        </sales_criteria>
+    </criteria>
+</AccountingTransactionRequest>

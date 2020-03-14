@@ -1,0 +1,16 @@
+<AccountingGeneralLedgerRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>accounting</application>
+        <module>unknown</module>
+        <transaction>DELETE_GL_ACCOUNT</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>07/18/2018 15:18:19</delivery_date>
+    </header>
+    <profile>
+        <account>
+            <acct_id>200</acct_id>
+        </account>
+    </profile>
+</AccountingGeneralLedgerRequest>

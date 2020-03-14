@@ -1,0 +1,26 @@
+<AccountingTransactionRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>accounting</application>
+        <module>transaction</module>
+        <transaction>INCORRECT_TRAN_CODE</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>12/20/2018 13:12:08</delivery_date>
+    </header>
+    <criteria>
+        <xact_criteria>
+            <target_level>HEADER</target_level>
+            <basic_criteria>
+                <xactId>34567</xactId>
+                <business_name>ABC Complay</business_name>
+                <account_no>123-345-678</account_no>
+                <xact_date>2018-12-01</xact_date>
+                <tender_id>100</tender_id>
+                <confirm_no>ADB-49384343</confirm_no>
+                <invoice_no>1234566</invoice_no>
+            </basic_criteria>
+            <custom_criteria/>
+        </xact_criteria>
+    </criteria>
+</AccountingTransactionRequest>

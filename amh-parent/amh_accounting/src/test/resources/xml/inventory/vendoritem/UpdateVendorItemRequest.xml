@@ -1,0 +1,23 @@
+<InventoryRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>accounting</application>
+        <module>inventory</module>
+        <transaction>UPDATE_VENDOR_ITEM</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>08/16/2018 16:52:02</delivery_date>
+    </header>
+    <profile>
+        <vendor_item>
+            <item_id>77777</item_id>
+            <creditor>
+                <creditor_id>1234567</creditor_id>
+            </creditor>
+            <description>Vendor item description</description>
+            <vendor_item_no>8473848</vendor_item_no>
+            <item_serial_no>111-111-111</item_serial_no>
+            <unit_cost>500.99</unit_cost>
+        </vendor_item>
+    </profile>
+</InventoryRequest>

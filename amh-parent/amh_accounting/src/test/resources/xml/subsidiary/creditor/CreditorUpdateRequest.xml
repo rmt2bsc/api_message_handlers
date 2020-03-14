@@ -1,0 +1,41 @@
+<AccountingTransactionRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>accounting</application>
+        <module>subsidiary</module>
+        <transaction>UPDATE_CREDITOR</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>08/28/2018 16:52:01</delivery_date>
+    </header>
+    <profile>
+        <creditors>
+            <creditor>
+                <creditor_id>3333</creditor_id>
+                <creditor_type>
+                    <creditor_type_id>3456</creditor_type_id>
+                    <description>Creditor type description</description>
+                </creditor_type>
+                <contact_details>
+                    <business_id>1351</business_id>
+                    <long_name>Business Type Name</long_name>
+                </contact_details>
+                <acct_id>1234567</acct_id>
+                <account_no>ACCT-NO-8888</account_no>
+                <credit_limit>10000.0</credit_limit>
+                <apr>2.456</apr>
+                <balance>4000.0</balance>
+                <ext_account_no>A943943-349394</ext_account_no>
+                <active>1</active>
+                <transactions/>
+                <tracking>
+                    <date_created>2018-01-01T00:00:00.000-06:00</date_created>
+                    <date_updated>2018-01-01T00:00:00.000-06:00</date_updated>
+                    <user_id>rterrell</user_id>
+                    <ip_created>192.168.0.1</ip_created>
+                    <ip_updated>192.168.0.1</ip_updated>
+                </tracking>
+            </creditor>
+        </creditors>
+    </profile>
+</AccountingTransactionRequest>

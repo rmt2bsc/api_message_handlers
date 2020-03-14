@@ -1,0 +1,174 @@
+<AccountingTransactionResponse>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>accounting</application>
+        <module>transaction</module>
+        <transaction>PRINT_SALES_ORDER</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>02/11/2020 11:18:30</delivery_date>
+    </header>
+    <profile>
+        <company>
+            <business_id>1343</business_id>
+            <long_name>RMT2 Business Systems Corp.</long_name>
+            <contact_firstname>Roy</contact_firstname>
+            <contact_lastname>Terrell</contact_lastname>
+            <contact_phone>9998887777</contact_phone>
+            <contact_email>roy.terrell@rmt2.com</contact_email>
+            <taxId>759987483</taxId>
+            <website>www.rmt2.com</website>
+            <address>
+                <addr_id>2001</addr_id>
+                <person_id>0</person_id>
+                <business_id>0</business_id>
+                <addr1>3030 Hall Ave</addr1>
+                <zip>
+                    <zip_id>0</zip_id>
+                    <zipcode>75232</zipcode>
+                    <city>Dallas</city>
+                    <state>TX</state>
+                </zip>
+                <zip_ext>0</zip_ext>
+            </address>
+        </company>
+        <customers>
+            <customer>
+                <customer_id>111111</customer_id>
+                <business_contact_details>
+                    <business_id>1343</business_id>
+                    <long_name>Outer Circles Inc</long_name>
+                    <contact_firstname>Bob</contact_firstname>
+                    <contact_lastname>Jones</contact_lastname>
+                    <contact_phone>5555555555</contact_phone>
+                    <contact_email>bob.jones@gte.net</contact_email>
+                    <taxId>349283921</taxId>
+                    <website>www.outercircles.com</website>
+                    <address>
+                        <addr_id>2001</addr_id>
+                        <person_id>0</person_id>
+                        <business_id>0</business_id>
+                        <addr1>8432 Lucky Ave</addr1>
+                        <addr2>Building 500</addr2>
+                        <addr3>Suite 54324</addr3>
+                        <addr4>P.O Box 34</addr4>
+                        <zip>
+                            <zip_id>0</zip_id>
+                            <zipcode>71106</zipcode>
+                            <city>Shreveport</city>
+                            <state>LA</state>
+                        </zip>
+                        <zip_ext>0</zip_ext>
+                    </address>
+                </business_contact_details>
+                <account_no>U1465-20120901</account_no>
+                <transactions/>
+            </customer>
+        </customers>
+        <sales_orders>
+            <sales_order>
+                <sales_order_id>222222</sales_order_id>
+                <customer_id>111111</customer_id>
+                <customer_name>ABC Company</customer_name>
+                <customer_account_no>U1465-20120901</customer_account_no>
+                <invoiced>false</invoiced>
+                <invoice_details>
+                    <invoice_id>444444</invoice_id>
+                    <sales_order_id>222222</sales_order_id>
+                    <transaction>
+                        <xact_id>333333</xact_id>
+                        <xact_type>
+                            <xact_type_id>2</xact_type_id>
+                            <description>CASH RECEIPTS</description>
+                        </xact_type>
+                        <xact_code_group>
+                            <xact_code_grp_id>1</xact_code_grp_id>
+                            <description>Transaction Types</description>
+                        </xact_code_group>
+                        <xact_code>
+                            <xact_code_id>4</xact_code_id>
+                            <description>CASH RECEIPTS</description>
+                        </xact_code>
+                        <xact_amount>1000.0</xact_amount>
+                        <xact_date>2020-01-01-06:00</xact_date>
+                        <posted_date>2020-01-01-06:00</posted_date>
+                        <xact_reason>Drum Services for gig at Mordern Arts Museum on 1-3-2020</xact_reason>
+                        <tender_id>100</tender_id>
+                        <confirm_no>12345BDC93839</confirm_no>
+                        <document_id>102</document_id>
+                        <bank_trans_ind>Trans_Ind</bank_trans_ind>
+                        <item_total>1000.0</item_total>
+                    </transaction>
+                    <invoice_no>1297-20200104</invoice_no>
+                    <invoice_date>2020-01-01-06:00</invoice_date>
+                    <item_count>2</item_count>
+                    <invoice_total>1620.0</invoice_total>
+                    <tracking>
+                        <date_created>2020-01-01T00:00:00.000-06:00</date_created>
+                        <date_updated>2020-02-01T00:00:00.000-06:00</date_updated>
+                        <user_id>testuser</user_id>
+                    </tracking>
+                </invoice_details>
+                <order_total>1620.0</order_total>
+                <effective_date>2020-01-15-06:00</effective_date>
+                <status>
+                    <status_id>1</status_id>
+                    <description>Quote</description>
+                </status>
+                <sales_order_items>
+                    <sales_order_item>
+                        <sales_order_item_id>4321</sales_order_item_id>
+                        <sales_order_id>222222</sales_order_id>
+                        <item>
+                            <item_id>100</item_id>
+                            <description>Dell Computer</description>
+                            <vendor_item_no>839KJFDL9329</vendor_item_no>
+                            <item_serial_no>COMP-9329393</item_serial_no>
+                            <qty_on_hand>10</qty_on_hand>
+                            <unit_cost>150.0</unit_cost>
+                            <markup>3.0</markup>
+                            <active>1</active>
+                        </item>
+                        <back_order_qty>0.0</back_order_qty>
+                        <markup>3.0</markup>
+                        <unit_cost>450.0</unit_cost>
+                        <order_qty>3</order_qty>
+                        <tracking>
+                            <date_created>2020-01-01T00:00:00.000-06:00</date_created>
+                            <date_updated>2020-01-01T00:00:00.000-06:00</date_updated>
+                            <user_id>testuser</user_id>
+                        </tracking>
+                    </sales_order_item>
+                    <sales_order_item>
+                        <sales_order_item_id>5432</sales_order_item_id>
+                        <sales_order_id>222222</sales_order_id>
+                        <item>
+                            <item_id>100</item_id>
+                            <description>Western Digital 6TB Hard Drive</description>
+                            <vendor_item_no>8943923833</vendor_item_no>
+                            <item_serial_no>HD-9843844</item_serial_no>
+                            <qty_on_hand>10</qty_on_hand>
+                            <unit_cost>45.0</unit_cost>
+                            <markup>3.0</markup>
+                            <active>1</active>
+                        </item>
+                        <back_order_qty>0.0</back_order_qty>
+                        <markup>3.0</markup>
+                        <unit_cost>135.0</unit_cost>
+                        <order_qty>2</order_qty>
+                        <tracking>
+                            <date_created>2020-01-01T00:00:00.000-06:00</date_created>
+                            <date_updated>2020-01-01T00:00:00.000-06:00</date_updated>
+                            <user_id>testuser</user_id>
+                        </tracking>
+                    </sales_order_item>
+                </sales_order_items>
+                <tracking>
+                    <date_created>2020-01-01T00:00:00.000-06:00</date_created>
+                    <date_updated>2020-02-01T00:00:00.000-06:00</date_updated>
+                    <user_id>testuser</user_id>
+                </tracking>
+            </sales_order>
+        </sales_orders>
+    </profile>
+</AccountingTransactionResponse>

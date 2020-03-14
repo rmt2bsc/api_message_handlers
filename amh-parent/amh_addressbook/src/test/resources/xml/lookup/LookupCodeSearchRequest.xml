@@ -1,0 +1,18 @@
+<LookupCodesRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>addressbook</application>
+        <module>lookup</module>
+        <transaction>GET_LOOKUP_CODE</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>06/25/2018 15:36:24</delivery_date>
+    </header>
+    <criteria>
+        <all>true</all>
+        <group>200</group>
+        <code>100</code>
+        <code_short_description>Code short description test</code_short_description>
+        <code_long_description>Code long description test</code_long_description>
+    </criteria>
+</LookupCodesRequest>

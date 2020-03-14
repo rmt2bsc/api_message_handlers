@@ -1,0 +1,14 @@
+<AccountingGeneralLedgerRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>accounting</application>
+        <module>unknown</module>
+        <transaction>GET_GL_ACCOUNT_TYPE</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>07/19/2018 13:46:50</delivery_date>
+    </header>
+    <criteria>
+        <criteria></criteria>
+    </criteria>
+</AccountingGeneralLedgerRequest>

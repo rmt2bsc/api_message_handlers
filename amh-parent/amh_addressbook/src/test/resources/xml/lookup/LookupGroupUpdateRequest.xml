@@ -1,0 +1,15 @@
+<LookupCodesRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>addressbook</application>
+        <module>lookup</module>
+        <transaction>UPDATE_LOOKUP_GROUP</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>06/22/2018 15:51:32</delivery_date>
+    </header>
+    <group_codes>
+        <group_id>200</group_id>
+        <group_desc>Group Description Test</group_desc>
+    </group_codes>
+</LookupCodesRequest>

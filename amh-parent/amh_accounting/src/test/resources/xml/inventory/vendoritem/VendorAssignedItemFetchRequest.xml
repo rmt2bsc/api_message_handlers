@@ -1,0 +1,16 @@
+<InventoryRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>accounting</application>
+        <module>inventory</module>
+        <transaction>GET_VENDOR_ASSIGNED_ITEMS</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>08/03/2018 16:22:46</delivery_date>
+    </header>
+    <criteria>
+        <vendor_item_criteria>
+            <creditor_id>1234567</creditor_id>
+        </vendor_item_criteria>
+    </criteria>
+</InventoryRequest>

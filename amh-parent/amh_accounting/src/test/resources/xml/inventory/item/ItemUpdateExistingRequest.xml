@@ -1,0 +1,32 @@
+<InventoryRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>accounting</application>
+        <module>inventory</module>
+        <transaction>UPDATE_ITEM_MASTER</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>07/27/2018 12:30:43</delivery_date>
+    </header>
+    <profile>
+        <inv_item>
+            <item_id>100</item_id>
+            <item_type>
+                <item_type_id>222</item_type_id>
+            </item_type>
+            <creditor>
+                <creditor_id>1234567</creditor_id>
+            </creditor>
+            <description>Dell Computer</description>
+            <vendor_item_no>1234-4839</vendor_item_no>
+            <item_serial_no>11111111</item_serial_no>
+            <qty_on_hand>10</qty_on_hand>
+            <unit_cost>150.99</unit_cost>
+            <markup>3.0</markup>
+            <active>1</active>
+            <tracking>
+                <date_created>2018-01-01T10:10:44.000-06:00</date_created>
+            </tracking>
+        </inv_item>
+    </profile>
+</InventoryRequest>

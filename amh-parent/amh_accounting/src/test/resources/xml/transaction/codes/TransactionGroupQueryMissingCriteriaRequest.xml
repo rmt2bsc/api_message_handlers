@@ -1,0 +1,11 @@
+<AccountingTransactionRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>accounting</application>
+        <module>transaction</module>
+        <transaction>GET_TRANS_GROUP</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>12/11/2018 16:51:57</delivery_date>
+    </header>
+</AccountingTransactionRequest>
