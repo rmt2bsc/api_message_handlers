@@ -125,41 +125,6 @@ public class QueryEmployeeApiHandler extends EmployeeApiHandler {
     @Override
     protected void validateRequest(ProjectProfileRequest req) throws InvalidDataException {
         super.validateRequest(req);
-        
-        // Validate request for update/delete operation
-        // switch (this.command) {
-        // case ApiTransactionCodes.GL_ACCOUNT_UPDATE:
-        // case ApiTransactionCodes.GL_ACCOUNT_DELETE:
-        // try {
-        // Verifier.verifyNotNull(req.getProfile());
-        // Verifier.verifyNotEmpty(req.getProfile().getAccount());
-        // }
-        // catch (VerifyException e) {
-        // throw new
-        // InvalidRequestException("GL Account data is required for update/delete operation");
-        // }
-        // try {
-        // Verifier.verifyTrue(req.getProfile().getAccount().size() == 1);
-        // }
-        // catch (VerifyException e) {
-        // throw new
-        // InvalidRequestException("Only one (1) GL Account record is required for update/delete operation");
-        // }
-        //
-        // if (this.command.equals(ApiTransactionCodes.GL_ACCOUNT_DELETE)) {
-        // try {
-        // Verifier.verifyNotNull(req.getProfile().getAccount().get(0).getAcctId());
-        // Verifier.verifyPositive(req.getProfile().getAccount().get(0).getAcctId());
-        // }
-        // catch (VerifyException e) {
-        // throw new
-        // InvalidRequestException("A valid account id is required when deleting a GL Account from the database");
-        // }
-        // }
-        // break;
-        // default:
-        // break;
-        // }
     }
 
     @Override
