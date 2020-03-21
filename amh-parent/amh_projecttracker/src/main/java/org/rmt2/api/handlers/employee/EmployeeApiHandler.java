@@ -43,7 +43,7 @@ public class EmployeeApiHandler extends
     public EmployeeApiHandler() {
         super();
         EmployeeApiFactory f = new EmployeeApiFactory();
-        this.api = f.createApi(ProjectTrackerApiConst.APP_NAME);
+        this.api = EmployeeApiFactory.createApi(ProjectTrackerApiConst.APP_NAME);
         this.jaxbObjFactory = new ObjectFactory();
         this.responseObj = jaxbObjFactory.createProjectProfileResponse();
         logger.info(EmployeeApiHandler.class.getName() + " was instantiated successfully");
