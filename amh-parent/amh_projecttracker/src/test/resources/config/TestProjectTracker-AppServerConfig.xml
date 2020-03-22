@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AppServerConfig>
+
+        <!-- ******************************* -->
+	<!-- Application Properties          -->
+	<!-- ******************************* -->
+	<LoggerConfigPath>src/test/resources/config/log4j.properties</LoggerConfigPath>
+	<ContainerManagedPool>true</ContainerManagedPool>
+        <PageLinkMax>10</PageLinkMax>
+	<PaginationPageSize>20</PaginationPageSize>
+	<PollingPage>/polling_wait_page.jsp</PollingPage>
+	<ProtocolInformation>http</ProtocolInformation>
+	<RemoteSrvcApp>ServiceDispatch</RemoteSrvcApp>
+	<RptFileExt>.xsl</RptFileExt>
+	<RptXsltPath>/reports</RptXsltPath>
+	<SerialDrive>c:</SerialDrive>
+	<SerialExt>.txt</SerialExt>
+	<SerialPath>\\temp\\</SerialPath>
+	<TimeoutInterval>1800</TimeoutInterval>
+	<WebAppMapping>AppCommandMappings</WebAppMapping>
+	<WebAppsDir>/Program Files/Apache Software Foundation/Tomcat 6.0/webapps</WebAppsDir>
+	<WebAppsDrive>c\:</WebAppsDrive>
+
+	
+	<!-- ******************************* -->
+	<!-- JVM System Properties           -->
+	<!-- ******************************* -->
+	<SystemProperties>
+	   <environment></environment>
+	   <soaphost>http://localhost:8080/server-external-webservices/services/web</soaphost>
+	   <!-- THe SaxDriver tag is no longer needed since we are now using the javax.xml.parsers.SAXParser packaged within the SDK  -->
+	   <!-- <SaxDriver>org.apache.xerces.parsers.SAXParser</SaxDriver> -->
+	   <SaxDriver>javax.xml.parsers.SAXParser</SaxDriver>
+	   <EmailConfig>
+	       <Authentication>true</Authentication>
+	       <Defaultcontent>text/html</Defaultcontent>
+	       <HostPop3>incoming.verizon.net</HostPop3>
+	       <HostSmtp>outgoing.verizon.net</HostSmtp> 
+	       <InternalSmtpDomain>verizon.net</InternalSmtpDomain>
+	       <UserId>rmt2it</UserId> 
+	       <Password>drum7777</Password>
+	       <Resourcetype>file</Resourcetype>
+	       <TemplatePath>\\source\\dotcom5\\aviall\\resources\\templates\\</TemplatePath> 
+	   </EmailConfig>
+	   <ConsumerMsgHandlerMappingsKey>msg_handler_reg_pkg</ConsumerMsgHandlerMappingsKey>
+	   <ConsumerMsgHandlerMappingsLocation>config.transactions</ConsumerMsgHandlerMappingsLocation>
+	</SystemProperties>
+	
+	<!-- ******************************************************************** -->
+	<!-- Configurators used to initialize individual Api environments.        -->
+	<!-- Each class must derive ApiConfigurator interface.                    -->
+	<!-- ******************************************************************** -->
+	<ApiConfigurators>
+	  <ApiConfigurator className="org.modules.AddressBookConfigurator"/>
+	  <ApiConfigurator className="org.modules.AccountingConfigurator"/>
+	  <ApiConfigurator className="org.modules.ProjectTrackerConfigurator"/>
+	  <ApiConfigurator className="org.modules.MediaConfigurator"/>
+	  <ApiConfigurator className="org.modules.SecurityConfigurator"/>
+	</ApiConfigurators>
+	
+	<!-- ******************************* -->
+	<!-- Messaging related configuration -->
+	<!-- ******************************* -->
+	<JaxbContexts>
+			<JaxbContext name="RMT2">org.rmt2.jaxb</JaxbContext>
+			<JaxbContext name="CONFIG">com.api.config.jaxb</JaxbContext>
+	</JaxbContexts>
+	<MessagingSystemsInfo>
+		<System>
+		    <Name>RMT2</Name>
+		    <UseJndi>true</UseJndi>
+		    <UseAuthentication>false</UseAuthentication>
+		    <InitialContextFactory>org.apache.activemq.jndi.ActiveMQInitialContextFactory</InitialContextFactory>
+		    <ConnectionFactory>ConnectionFactory</ConnectionFactory>
+		    <ProviderUrl>tcp://localhost:61616</ProviderUrl>
+		    <UserId>admin</UserId>
+		    <Password>admin</Password>
+		    <MaxConnectAttemps>30</MaxConnectAttemps>
+		    <ConnectAttemptInterval>30000</ConnectAttemptInterval>
+		</System>
+	</MessagingSystemsInfo>
+	<DestinationMappings>
+		<Destination>
+			<Rmt2Name>JMS_P2P_ADDRESSBOOK_DEST</Rmt2Name>
+			<JndiName>addressbook-p2p-dest</JndiName>
+			<ContainSuffix>false</ContainSuffix>
+		</Destination>
+		<Destination>
+			<Rmt2Name>JMS_PUBSUB_ADDRESSBOOK_DEST</Rmt2Name>
+			<JndiName>addressbook-pubsub-dest</JndiName>
+			<ContainSuffix>false</ContainSuffix>
+		</Destination>
+		<Destination>
+			<Rmt2Name>JMS_P2P_ACCOUNTING_DEST</Rmt2Name>
+			<JndiName>accounting-p2p-dest</JndiName>
+			<ContainSuffix>false</ContainSuffix>
+		</Destination>
+		<Destination>
+			<Rmt2Name>JMS_P2P_PROJECTTRACKER_DEST</Rmt2Name>
+			<JndiName>projecttracker-p2p-dest</JndiName>
+			<ContainSuffix>false</ContainSuffix>
+		</Destination>
+		<Destination>
+			<Rmt2Name>JMS_P2P_MEDIA_DEST</Rmt2Name>
+			<JndiName>media-p2p-dest</JndiName>
+			<ContainSuffix>false</ContainSuffix>
+		</Destination>
+		<Destination>
+			<Rmt2Name>JMS_P2P_SECURITY_DEST</Rmt2Name>
+			<JndiName>security-p2p-dest</JndiName>
+			<ContainSuffix>false</ContainSuffix>
+		</Destination>
+ </DestinationMappings>
+ <ServiceRegistry>
+		<Service>
+			<Name>get-all-business-contacts</Name>
+			<ServiceType>JMS</ServiceType>
+			<application>addressbook</application>
+			<module>profile</module>
+			<transaction>GET_ALL_BUSINESS_CONTACTS</transaction>
+			<destination>JMS_P2P_ADDRESSBOOK_DEST</destination>
+			<description>Retrieves all Business Contact profiles</description>
+			<secure>true</secure>
+			<deliveryMode>SYNC</deliveryMode>
+			<host></host>
+		</Service>
+		<Service>
+			<Name>get-single-business-contacts</Name>
+			<ServiceType>JMS</ServiceType>
+			<application>addressbook</application>
+			<module>profile</module>
+			<transaction>GET_BUSINESS_CONTACT</transaction>
+			<destination>JMS_P2P_ADDRESSBOOK_DEST</destination>
+			<description>Retrieves a single Business Contact profile</description>
+			<secure>true</secure>
+			<deliveryMode>SYNC</deliveryMode>
+			<host></host>
+		</Service>
+		<Service>
+			<Name>get-business-contacts-by-criteria</Name>
+			<ServiceType>JMS</ServiceType>
+			<application>addressbook</application>
+			<module>profile</module>
+			<transaction>GET_BUSINESS_CONTACTS_USING_CRITERIA</transaction>
+			<destination>JMS_P2P_ADDRESSBOOK_DEST</destination>
+			<description>Retrieves Business Contact profile(s) using one or more selection criteria</description>
+			<secure>true</secure>
+			<deliveryMode>SYNC</deliveryMode>
+			<host></host>
+		</Service>
+		<Service>
+			<Name>add-business-contact</Name>
+			<ServiceType>JMS</ServiceType>
+			<application>addressbook</application>
+			<module>profile</module>
+			<transaction>ADD_BUSINESS_CONTACT</transaction>
+			<destination>JMS_P2P_ADDRESSBOOK_DEST</destination>
+			<description>Adds a business contact profile</description>
+			<secure>true</secure>
+			<deliveryMode>SYNC</deliveryMode>
+			<host></host>
+		</Service>
+		<Service>
+			<Name>update-business-contact</Name>
+			<ServiceType>JMS</ServiceType>
+			<application>addressbook</application>
+			<module>profile</module>
+			<transaction>UPDATE_BUSINESS_CONTACT</transaction>
+			<destination>JMS_P2P_ADDRESSBOOK_DEST</destination>
+			<description>Update a business contact profile</description>
+			<secure>true</secure>
+			<deliveryMode>SYNC</deliveryMode>
+			<host></host>
+		</Service>
+		<Service>
+			<Name>delete-business-contact</Name>
+			<ServiceType>JMS</ServiceType>
+			<application>addressbook</application>
+			<module>profile</module>
+			<transaction>DELETE_BUSINESS_CONTACT</transaction>
+			<destination>JMS_P2P_ADDRESSBOOK_DEST</destination>
+			<description>Delete a business contact profile</description>
+			<secure>true</secure>
+			<deliveryMode>SYNC</deliveryMode>
+			<host></host>
+		</Service>
+		<Service>
+			<Name>get-document-content</Name>
+			<ServiceType>JMS</ServiceType>
+			<application>media</application>
+			<module>document</module>
+			<transaction>GET_CONTENT_ATTACHMENT</transaction>
+			<destination>JMS_P2P_MEDIA_DEST</destination>
+			<description>Fetches the content of a single document</description>
+			<secure>false</secure>
+			<deliveryMode>SYNC</deliveryMode>
+			<host>RMTDALDB01:8080</host>
+		</Service>
+		<Service>
+			<Name>save-document-content</Name>
+			<ServiceType>JMS</ServiceType>
+			<application>media</application>
+			<module>document</module>
+			<transaction>SAVE_CONTENT_ATTACHMENT</transaction>
+			<destination>JMS_DEST_MEDIA_DEST</destination>
+			<description>Save the content of a single document</description>
+			<secure>false</secure>
+			<deliveryMode>SYNC</deliveryMode>
+			<host>RMTDALDB01:8080</host>
+		</Service>
+	</ServiceRegistry>	
+</AppServerConfig>
