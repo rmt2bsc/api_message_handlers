@@ -28,16 +28,19 @@ import com.api.messaging.handler.MessageHandlerResults;
  * @author roy.terrell
  *
  */
-public class QueryEmployeeApiHandler extends EmployeeApiHandler {
+public class EmployeeQueryApiHandler extends EmployeeApiHandler {
     
-    private static final Logger logger = Logger.getLogger(QueryEmployeeApiHandler.class);
+    private static final Logger logger = Logger.getLogger(EmployeeQueryApiHandler.class);
+    public static final String MESSAGE_FOUND = "Employee record(s) found";
+    public static final String MESSAGE_NOT_FOUND = "Employee data not found!";
+    public static final String MESSAGE_ERROR = "Failure to retrieve Employee(s)";
 
     /**
      * @param payload
      */
-    public QueryEmployeeApiHandler() {
+    public EmployeeQueryApiHandler() {
         super();
-        logger.info(QueryEmployeeApiHandler.class.getName() + " was instantiated successfully");
+        logger.info(EmployeeQueryApiHandler.class.getName() + " was instantiated successfully");
     }
 
     /*
@@ -87,12 +90,12 @@ public class QueryEmployeeApiHandler extends EmployeeApiHandler {
             
             List<EmployeeDto> dtoList = this.api.getEmployeeExt(criteriaDto);
             if (dtoList == null) {
-                rs.setMessage("Employee data not found!");
+                rs.setMessage(EmployeeQueryApiHandler.MESSAGE_NOT_FOUND);
                 rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             }
             else {
                 queryDtoResults = this.buildJaxbResults(dtoList);
-                rs.setMessage("Employee record(s) found");
+                rs.setMessage(EmployeeQueryApiHandler.MESSAGE_FOUND);
                 rs.setRecordCount(dtoList.size());
                 rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             }
@@ -101,7 +104,7 @@ public class QueryEmployeeApiHandler extends EmployeeApiHandler {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setRecordCount(0);
-            rs.setMessage("Failure to retrieve Employee(s)");
+            rs.setMessage(EmployeeQueryApiHandler.MESSAGE_ERROR);
             rs.setExtMessage(e.getMessage());
         } finally {
             this.api.close();

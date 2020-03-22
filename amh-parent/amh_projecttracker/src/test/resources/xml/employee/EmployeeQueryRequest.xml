@@ -1,0 +1,25 @@
+<ProjectProfileRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>projecttracker</application>
+        <module>unknown</module>
+        <transaction>GET_EMPLOYEE</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>03/22/2020 15:51:04</delivery_date>
+    </header>
+    <criteria>
+        <employee_criteria>
+            <employee_id>200</employee_id>
+            <employee_type_id>1</employee_type_id>
+            <manager_id>2</manager_id>
+            <employee_title_id>3</employee_title_id>
+            <first_name>Roy</first_name>
+            <last_name>Terrell</last_name>
+            <company_name>XYA Company</company_name>
+            <project_name>Project 1</project_name>
+            <login_name>roy.terrell</login_name>
+            <ssn>555-55-5555</ssn>
+        </employee_criteria>
+    </criteria>
+</ProjectProfileRequest>
