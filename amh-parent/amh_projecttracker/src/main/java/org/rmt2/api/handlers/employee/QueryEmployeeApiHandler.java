@@ -91,7 +91,7 @@ public class QueryEmployeeApiHandler extends EmployeeApiHandler {
                 rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             }
             else {
-                queryDtoResults = this.buildJaxbListData(dtoList);
+                queryDtoResults = this.buildJaxbResults(dtoList);
                 rs.setMessage("Employee record(s) found");
                 rs.setRecordCount(dtoList.size());
                 rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
@@ -112,7 +112,7 @@ public class QueryEmployeeApiHandler extends EmployeeApiHandler {
         return results;
     }
     
-    private List<EmployeeType> buildJaxbListData(List<EmployeeDto> results) {
+    private List<EmployeeType> buildJaxbResults(List<EmployeeDto> results) {
         List<EmployeeType> list = new ArrayList<>();
         for (EmployeeDto item : results) {
             EmployeeType jaxbObj = EmployeeJaxbDtoFactory.createEmployeeDtoInstance(item);
