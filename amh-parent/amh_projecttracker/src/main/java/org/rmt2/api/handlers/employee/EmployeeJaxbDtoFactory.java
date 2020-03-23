@@ -40,7 +40,7 @@ public class EmployeeJaxbDtoFactory extends RMT2Base {
         if (jaxbObj == null) {
             return null;
         }
-        EmployeeDto dto = EmployeeObjectFactory.createEmployeeDtoInstance(null);
+        EmployeeDto dto = EmployeeObjectFactory.createEmployeeExtendedDtoInstance(null);
         if (jaxbObj.getEmployeeId() != null) {
             dto.setEmployeeId(jaxbObj.getEmployeeId().intValue());
         }
