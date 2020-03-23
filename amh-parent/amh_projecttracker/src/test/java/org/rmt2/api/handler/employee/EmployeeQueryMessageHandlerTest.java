@@ -43,7 +43,7 @@ import com.api.util.RMT2File;
 @PrepareForTest({ AbstractDaoClientImpl.class, Rmt2OrmClientFactory.class,
         EmployeeQueryApiHandler.class, EmployeeApiFactory.class, SystemConfigurator.class })
 public class EmployeeQueryMessageHandlerTest extends BaseProjectTrackerMessageHandlerTest {
-
+    public static final int PROJECT_COUNT = 28;
     private EmployeeApi mockApi;
 
 
@@ -128,6 +128,7 @@ public class EmployeeQueryMessageHandlerTest extends BaseProjectTrackerMessageHa
             EmployeeType a = actualRepsonse.getProfile().getEmployee().get(ndx);
             Assert.assertNotNull(a.getEmployeeId());
             Assert.assertEquals(2220 + ndx, a.getEmployeeId().intValue());
+            Assert.assertEquals(PROJECT_COUNT, a.getProjectCount().intValue());
         }
     }
     

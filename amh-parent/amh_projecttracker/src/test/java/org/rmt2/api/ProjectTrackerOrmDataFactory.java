@@ -175,6 +175,7 @@ public class ProjectTrackerOrmDataFactory {
         o.setSsn(ssn);
         o.setCompanyName(companyName);
         o.setEmail(firstName + "." + lastName + "@gte.net");
+        o.setProjCount(28);
         return o;
     }
     
