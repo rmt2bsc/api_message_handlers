@@ -2,7 +2,7 @@
     <header>
         <routing>XXXXXXX</routing>
         <application>projecttracker</application>
-        <module>unknown</module>
+        <module>employee</module>
         <transaction>GET_EMPLOYEE</transaction>
         <delivery_mode>XXXXXXX</delivery_mode>
         <message_mode>REQUEST</message_mode>
