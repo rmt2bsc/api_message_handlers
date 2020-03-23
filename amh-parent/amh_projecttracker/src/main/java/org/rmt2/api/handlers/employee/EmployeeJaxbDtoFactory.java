@@ -125,6 +125,9 @@ public class EmployeeJaxbDtoFactory extends RMT2Base {
             dto.setTerminationDate(jaxbObj.getTerminationDate().toGregorianCalendar().getTime());
         }
 
+        if (jaxbObj.getProjectCount() != null) {
+            dto.setProjectCount(jaxbObj.getProjectCount().intValue());
+        }
         if (jaxbObj.getTracking() != null) {
             dto.setUpdateUserId(jaxbObj.getTracking().getUserId());
             if (jaxbObj.getTracking().getDateCreated() != null) {
@@ -184,7 +187,7 @@ public class EmployeeJaxbDtoFactory extends RMT2Base {
 
         jaxbObj.setStartDate(RMT2Date.toXmlDate(dto.getStartDate()));
         jaxbObj.setTerminationDate(RMT2Date.toXmlDate(dto.getTerminationDate()));
-
+        jaxbObj.setProjectCount(BigInteger.valueOf(dto.getProjectCount()));
         RecordTrackingType rtt = RecordTrackingTypeBuilder.Builder.create()
                 .withDateCreated(dto.getDateCreated())
                 .withDateUpdate(dto.getDateUpdated())
