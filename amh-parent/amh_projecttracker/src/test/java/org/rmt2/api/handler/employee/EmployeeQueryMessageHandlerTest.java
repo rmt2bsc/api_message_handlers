@@ -21,6 +21,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.rmt2.api.ProjectTrackerMockData;
 import org.rmt2.api.handler.BaseProjectTrackerMessageHandlerTest;
+import org.rmt2.api.handlers.employee.EmployeeMessageHandlerConst;
 import org.rmt2.api.handlers.employee.EmployeeQueryApiHandler;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
@@ -122,7 +123,7 @@ public class EmployeeQueryMessageHandlerTest extends BaseProjectTrackerMessageHa
         Assert.assertEquals(5, actualRepsonse.getReplyStatus().getRecordCount().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(EmployeeQueryApiHandler.MESSAGE_FOUND, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(EmployeeMessageHandlerConst.MESSAGE_EMPLOYEE_FOUND, actualRepsonse.getReplyStatus().getMessage());
         
         for (int ndx = 0; ndx < actualRepsonse.getProfile().getEmployee().size(); ndx++) {
             EmployeeType a = actualRepsonse.getProfile().getEmployee().get(ndx);
@@ -157,7 +158,7 @@ public class EmployeeQueryMessageHandlerTest extends BaseProjectTrackerMessageHa
         Assert.assertNull(actualRepsonse.getProfile());
         Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(EmployeeQueryApiHandler.MESSAGE_NOT_FOUND, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(EmployeeMessageHandlerConst.MESSAGE_EMPLOYEE_NOT_FOUND, actualRepsonse.getReplyStatus().getMessage());
     }
     
     @Test
@@ -186,7 +187,7 @@ public class EmployeeQueryMessageHandlerTest extends BaseProjectTrackerMessageHa
         Assert.assertNull(actualRepsonse.getProfile());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(EmployeeQueryApiHandler.MESSAGE_ERROR, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(EmployeeMessageHandlerConst.MESSAGE_EMPLOYEE_ERROR, actualRepsonse.getReplyStatus().getMessage());
         Assert.assertEquals("Test validation error: selection criteria is required",
                 actualRepsonse.getReplyStatus().getExtMessage());
     }

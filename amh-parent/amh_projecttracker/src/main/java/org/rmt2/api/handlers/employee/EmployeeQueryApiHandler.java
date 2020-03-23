@@ -31,10 +31,6 @@ import com.api.messaging.handler.MessageHandlerResults;
 public class EmployeeQueryApiHandler extends EmployeeApiHandler {
     
     private static final Logger logger = Logger.getLogger(EmployeeQueryApiHandler.class);
-    public static final String MESSAGE_FOUND = "Employee record(s) found";
-    public static final String MESSAGE_NOT_FOUND = "Employee data not found!";
-    public static final String MESSAGE_ERROR = "Failure to retrieve Employee(s)";
-
     /**
      * @param payload
      */
@@ -90,12 +86,12 @@ public class EmployeeQueryApiHandler extends EmployeeApiHandler {
             
             List<EmployeeDto> dtoList = this.api.getEmployeeExt(criteriaDto);
             if (dtoList == null) {
-                rs.setMessage(EmployeeQueryApiHandler.MESSAGE_NOT_FOUND);
+                rs.setMessage(EmployeeMessageHandlerConst.MESSAGE_EMPLOYEE_NOT_FOUND);
                 rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             }
             else {
                 queryDtoResults = this.buildJaxbResults(dtoList);
-                rs.setMessage(EmployeeQueryApiHandler.MESSAGE_FOUND);
+                rs.setMessage(EmployeeMessageHandlerConst.MESSAGE_EMPLOYEE_FOUND);
                 rs.setRecordCount(dtoList.size());
                 rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             }
@@ -104,7 +100,7 @@ public class EmployeeQueryApiHandler extends EmployeeApiHandler {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setRecordCount(0);
-            rs.setMessage(EmployeeQueryApiHandler.MESSAGE_ERROR);
+            rs.setMessage(EmployeeMessageHandlerConst.MESSAGE_EMPLOYEE_ERROR);
             rs.setExtMessage(e.getMessage());
         } finally {
             this.api.close();
