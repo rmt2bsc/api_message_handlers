@@ -1,7 +1,6 @@
 package org.rmt2.api.handlers.contacts;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -165,8 +164,7 @@ public class ContactProfileApiHandler extends
         ContactDetailGroup cdg = null;
         
         boolean newContact = false;
-        ContactsApiFactory cf = new ContactsApiFactory();
-        ContactsApi api = cf.createApi();
+        ContactsApi api = ContactsApiFactory.createApi();
         int rc = 0;
         try {
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
@@ -178,11 +176,9 @@ public class ContactProfileApiHandler extends
             api.beginTrans();
             rc = api.updateContact(contactDto);
             
-            // prepare response with updated contact data
-            List<ContactDto> updateList = new ArrayList<>();
-            updateList.add(contactDto);
-            cdg = this.buildContactDetailGroup(updateList);
-            
+            // // prepare response with updated contact data
+            cdg = req.getProfile();
+
             // Return code is either the total number of rows updated or the business id of the contact created
             rs.setReturnCode(rc);
             if (newContact) {
