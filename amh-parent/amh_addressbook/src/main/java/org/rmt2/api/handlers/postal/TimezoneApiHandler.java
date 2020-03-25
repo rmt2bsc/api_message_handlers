@@ -96,6 +96,7 @@ public class TimezoneApiHandler extends AbstractJaxbMessageHandler<PostalRequest
         try {
             // Set reply status
             rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.validateRequest(req);
             TimeZoneDto criteriaDto = this.extractSelectionCriteria(req.getPostalCriteria().getTimezone());
             
@@ -104,12 +105,12 @@ public class TimezoneApiHandler extends AbstractJaxbMessageHandler<PostalRequest
             dtoList = api.getTimezone(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage("No Timezone data found!");
-                rs.setReturnCode(0);
+                rs.setRecordCount(0);
             }
             else {
                 queryResults = this.buildJaxbListData(dtoList);
                 rs.setMessage("Timezone record(s) found");
-                rs.setReturnCode(queryResults.size());
+                rs.setRecordCount(queryResults.size());
             }
             this.responseObj.setHeader(req.getHeader());
             

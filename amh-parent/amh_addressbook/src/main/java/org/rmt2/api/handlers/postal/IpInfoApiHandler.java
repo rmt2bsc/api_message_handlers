@@ -93,6 +93,7 @@ public class IpInfoApiHandler extends AbstractJaxbMessageHandler<PostalRequest, 
         try {
             // Set reply status
             rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.validateRequest(req);
             IpLocationDto criteriaDto = this.extractSelectionCriteria(req.getPostalCriteria().getIpAddr());
             
@@ -105,12 +106,12 @@ public class IpInfoApiHandler extends AbstractJaxbMessageHandler<PostalRequest, 
             }
             if (dtoList == null) {
                 rs.setMessage("No IP data found!");
-                rs.setReturnCode(0);
+                rs.setRecordCount(0);
             }
             else {
                 queryResults = this.buildJaxbListData(dtoList);
                 rs.setMessage("IP record(s) found");
-                rs.setReturnCode(1);
+                rs.setRecordCount(1);
             }
             this.responseObj.setHeader(req.getHeader());
             
