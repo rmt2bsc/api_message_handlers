@@ -221,8 +221,7 @@ public class ContactProfileApiHandler extends
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         
-        ContactsApiFactory cf = new ContactsApiFactory();
-        ContactsApi api = cf.createApi();
+        ContactsApi api = ContactsApiFactory.createApi();
         int rc = 0;
         try {
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
