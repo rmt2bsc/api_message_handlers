@@ -9,6 +9,6 @@
         <delivery_date>07/19/2018 13:46:50</delivery_date>
     </header>
     <criteria>
-        <criteria></criteria>
+        <gl_criteria></gl_criteria>
     </criteria>
 </AccountingGeneralLedgerRequest>

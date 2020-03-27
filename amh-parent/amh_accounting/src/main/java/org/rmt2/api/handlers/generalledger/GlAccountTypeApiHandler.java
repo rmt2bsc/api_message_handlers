@@ -100,7 +100,7 @@ public class GlAccountTypeApiHandler extends
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             this.validateRequest(req);
             AccountTypeDto criteriaDto = GeneralLedgerJaxbDtoFactory
-                    .createGlAccountTypeDtoCriteriaInstance(req.getCriteria().getCriteria());
+                    .createGlAccountTypeDtoCriteriaInstance(req.getCriteria().getGlCriteria());
             
             List<AccountTypeDto> dtoList = this.api.getAccountType(criteriaDto);
             if (dtoList == null) {
@@ -151,8 +151,8 @@ public class GlAccountTypeApiHandler extends
         // Validate that the request contains an AccountType criteria element
         try {
             Verifier.verifyNotNull(req.getCriteria());
-            Verifier.verifyNotNull(req.getCriteria().getCriteria());
-            Verifier.verifyNotNull(req.getCriteria().getCriteria().getAcctType());
+            Verifier.verifyNotNull(req.getCriteria().getGlCriteria());
+            Verifier.verifyNotNull(req.getCriteria().getGlCriteria().getAcctType());
         }
         catch (VerifyException e) {
             throw new InvalidRequestException("GL Account Type criteria is required");
