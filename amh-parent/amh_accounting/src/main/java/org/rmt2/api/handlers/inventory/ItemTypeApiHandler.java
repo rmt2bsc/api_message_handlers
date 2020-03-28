@@ -99,19 +99,20 @@ public class ItemTypeApiHandler extends
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             ItemMasterTypeDto criteriaDto = InventoryJaxbDtoFactory
                     .createItemTypeDtoCriteriaInstance(req.getCriteria().getItemTypeCriteria());
             
             List<ItemMasterTypeDto> dtoList = this.api.getItemType(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage("Inventory item type data not found!");
+                rs.setRecordCount(0);
             }
             else {
                 queryDtoResults = this.buildJaxbListData(dtoList);
                 rs.setMessage("Inventory item  type record(s) found");
                 rs.setRecordCount(dtoList.size());
             }
-            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
