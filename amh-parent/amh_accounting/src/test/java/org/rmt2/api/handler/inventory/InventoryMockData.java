@@ -6,8 +6,8 @@ import java.util.List;
 
 import org.dao.mapping.orm.rmt2.ItemMaster;
 import org.dao.mapping.orm.rmt2.ItemMasterStatus;
-import org.dao.mapping.orm.rmt2.ItemMasterStatusHist;
 import org.dao.mapping.orm.rmt2.ItemMasterType;
+import org.dao.mapping.orm.rmt2.VwItemStatusHistory;
 import org.dao.mapping.orm.rmt2.VwVendorItems;
 import org.dto.ItemMasterDto;
 import org.dto.ItemMasterStatusDto;
@@ -97,15 +97,17 @@ public class InventoryMockData {
      * @param effDate
      * @param endDate
      * @param reason
+     * @param statusName
      * @return
      */
-    public static final ItemMasterStatusHist createMockOrmItemMasterStatusHistory(
+    public static final VwItemStatusHistory createMockOrmItemMasterStatusHistory(
             int id, int itemId, int statusId, double unitCost, double markup,
-            String effDate, String endDate, String reason) {
-        ItemMasterStatusHist i = new ItemMasterStatusHist();
+            String effDate, String endDate, String reason, String statusName) {
+        VwItemStatusHistory i = new VwItemStatusHistory();
         i.setItemStatusHistId(id);
         i.setItemId(itemId);
         i.setItemStatusId(statusId);
+        i.setDescription(statusName);
         i.setUnitCost(unitCost);
         i.setMarkup(markup);
         try {
@@ -129,33 +131,33 @@ public class InventoryMockData {
      */
     public static final List<ItemMasterStatusHistDto> createMockItemStatusHistoryList() {
         List<ItemMasterStatusHistDto> list = new ArrayList<ItemMasterStatusHistDto>();
-        ItemMasterStatusHist o = InventoryMockData.createMockOrmItemMasterStatusHistory(10, 100, 1000, 12.50, 3,
+        VwItemStatusHistory o = InventoryMockData.createMockOrmItemMasterStatusHistory(10, 100, 1000, 12.50, 3,
                         "2017-01-01", "2017-03-01",
-                        "Item Status History Description 1");
+                        "Item Status History Description 1", "Status Name 1");
         ItemMasterStatusHistDto p = Rmt2InventoryDtoFactory.createItemStatusHistoryInstance(o);
         list.add(p);
 
         o = InventoryMockData.createMockOrmItemMasterStatusHistory(11,
                 101, 1001, 13.50, 3, "2017-01-02", "2017-03-02",
-                "Item Status History Description 2");
+                "Item Status History Description 2", "Status Name 2");
         p = Rmt2InventoryDtoFactory.createItemStatusHistoryInstance(o);
         list.add(p);
 
         o = InventoryMockData.createMockOrmItemMasterStatusHistory(12,
                 102, 1002, 14.50, 3, "2017-01-03", "2017-03-03",
-                "Item Status History Description 3");
+                "Item Status History Description 3", "Status Name 3");
         p = Rmt2InventoryDtoFactory.createItemStatusHistoryInstance(o);
         list.add(p);
 
         o = InventoryMockData.createMockOrmItemMasterStatusHistory(13,
                 103, 1003, 15.50, 3, "2017-01-04", "2017-03-04",
-                "Item Status History Description 4");
+                "Item Status History Description 4", "Status Name 4");
         p = Rmt2InventoryDtoFactory.createItemStatusHistoryInstance(o);
         list.add(p);
 
         o = InventoryMockData.createMockOrmItemMasterStatusHistory(14,
                 104, 1004, 16.50, 3, "2017-01-05", "2017-03-05",
-                "Item Status History Description 5");
+                "Item Status History Description 5", "Status Name 5");
         p = Rmt2InventoryDtoFactory.createItemStatusHistoryInstance(o);
         list.add(p);
         return list;
