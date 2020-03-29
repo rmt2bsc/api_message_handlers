@@ -119,16 +119,17 @@ public class ItemApiHandler extends
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             criteriaDto = InventoryJaxbDtoFactory
                     .createItemMasterDtoCriteriaInstance(req.getCriteria().getItemCriteria());
-            
-           int rc = this.api.activateItemMaster(criteriaDto.getItemId());
-           rs.setMessage("Inventory item was activated successfully");
-           rs.setReturnCode(rc);
+
+            int rc = this.api.activateItemMaster(criteriaDto.getItemId());
+            rs.setMessage("Inventory item was activated successfully");
+            rs.setReturnCode(rc);
             this.responseObj.setHeader(req.getHeader());
             this.api.commitTrans();
         } catch (Exception e) {
-            logger.error("Error occurred during API Message Handler operation, " + this.command, e );
+            logger.error("Error occurred during API Message Handler operation, " + this.command, e);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to activate inventory item, " + criteriaDto.getItemId());
             rs.setExtMessage(e.getMessage());
@@ -276,18 +277,18 @@ public class ItemApiHandler extends
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             ItemMasterDto criteriaDto = InventoryJaxbDtoFactory
                     .createItemMasterDtoCriteriaInstance(req.getCriteria().getItemCriteria());
             
             List<ItemMasterDto> dtoList = this.api.getItem(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage("Inventory item data not found!");
-                rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+                rs.setRecordCount(0);
             }
             else {
                 queryDtoResults = this.buildJaxbListData(dtoList);
                 rs.setMessage("Inventory item record(s) found");
-                rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
                 rs.setRecordCount(dtoList.size());
             }
             this.responseObj.setHeader(req.getHeader());
