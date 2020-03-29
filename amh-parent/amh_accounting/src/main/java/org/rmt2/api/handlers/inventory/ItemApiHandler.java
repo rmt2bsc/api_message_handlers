@@ -351,7 +351,7 @@ public class ItemApiHandler extends
     
     /**
      * Handler for invoking the appropriate API in order to update the specified
-     * GL Account.
+     * Inventory item.
      * 
      * @param req
      *            an instance of {@link InventoryRequest}
@@ -366,6 +366,7 @@ public class ItemApiHandler extends
         int rc = 0;
         try {
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             ItemMasterDto dataObjDto = InventoryJaxbDtoFactory
                     .createItemMasterDtoInstance(req.getProfile().getInvItem().get(0));
             newRec = (dataObjDto.getItemId() == 0);
@@ -379,8 +380,6 @@ public class ItemApiHandler extends
             updateList.add(dataObjDto);
             updateData = this.buildJaxbListData(updateList);
             
-            // Return code is either the total number of rows updated or the new group id
-            rs.setReturnCode(rc);
             if (newRec) {
                 rs.setMessage("Inventory item was created successfully");
                 rs.setExtMessage("The new acct id is " + rc);
@@ -389,6 +388,10 @@ public class ItemApiHandler extends
                 rs.setMessage("Inventory item was modified successfully");
                 rs.setExtMessage("Total number of rows modified: " + rc);
             }
+
+            // Record count is either the total number of rows updated or the
+            // new item master id
+            rs.setRecordCount(rc);
             this.api.commitTrans();
             
         } catch (Exception e) {
@@ -421,6 +424,7 @@ public class ItemApiHandler extends
         int rc = 0;
         try {
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             ItemMasterDto criteriaDto = InventoryJaxbDtoFactory
                     .createItemMasterDtoCriteriaInstance(req.getCriteria().getItemCriteria());
             
@@ -428,8 +432,8 @@ public class ItemApiHandler extends
             this.api.beginTrans();
             rc = this.api.deleteItemMaster(criteriaDto.getItemId());
             
-            // Return code is either the total number of rows deleted
-            rs.setReturnCode(rc);
+            // Return code is the total number of rows deleted
+            rs.setRecordCount(rc);
             
             if (rc > 0) {
                 rs.setMessage("Inventory item was deleted successfully");
