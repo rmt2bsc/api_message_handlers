@@ -121,6 +121,7 @@ public class CreditorApiHandler extends
             List<CreditorDto> dtoList = this.api.getExt(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage("Creditor data not found!");
+                rs.setRecordCount(0);
             }
             else {
                 queryDtoResults = this.buildJaxbListData(dtoList);

@@ -144,7 +144,7 @@ public class ItemMasterUpdateMessageHandlerTest extends BaseAccountingMessageHan
 
         InventoryResponse actualRepsonse = 
                 (InventoryResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-        Assert.assertEquals(UPDATE_RC_NEW, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(UPDATE_RC_NEW, actualRepsonse.getReplyStatus().getRecordCount().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS,
                 actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Inventory item was created successfully",
@@ -175,7 +175,7 @@ public class ItemMasterUpdateMessageHandlerTest extends BaseAccountingMessageHan
 
         InventoryResponse actualRepsonse = 
                 (InventoryResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getRecordCount().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS,
                 actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Inventory item was modified successfully",
