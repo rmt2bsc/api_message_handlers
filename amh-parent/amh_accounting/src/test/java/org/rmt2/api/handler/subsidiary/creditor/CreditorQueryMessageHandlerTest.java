@@ -4,6 +4,7 @@ import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
+import java.math.MathContext;
 import java.util.List;
 
 import org.dao.transaction.XactDao;
@@ -267,7 +268,7 @@ public class CreditorQueryMessageHandlerTest extends BaseAccountingMessageHandle
                 Assert.assertEquals(tran.getXactId(), tran.getXactId());
                 Assert.assertEquals(1200 + ndx2++, tran.getXactId().intValue());
             }
-            Assert.assertEquals(8580.26, a.getBalance().doubleValue(), 0);
+            Assert.assertEquals(1419.74, a.getBalance().round(MathContext.DECIMAL64).doubleValue(), 0);
         }
     }
     

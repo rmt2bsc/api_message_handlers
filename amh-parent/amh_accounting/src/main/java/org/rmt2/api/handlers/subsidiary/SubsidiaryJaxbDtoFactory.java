@@ -117,6 +117,9 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
         if (jaxbObj.getCustomerId() != null) {
             dto.setCustomerId(jaxbObj.getCustomerId().intValue());    
         }
+        if (jaxbObj.getCreditLimit() != null) {
+            dto.setCreditLimit(jaxbObj.getCreditLimit().doubleValue());
+        }
         if (jaxbObj.getBusinessContactDetails() != null) {
             if (jaxbObj.getBusinessContactDetails().getBusinessId() != null) {
                 dto.setContactId(jaxbObj.getBusinessContactDetails().getBusinessId().intValue());    
@@ -487,7 +490,7 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
         }
         
         // Calculate balance
-        double balance = dto.getCreditLimit() - xactHistTotal;
+        double balance = xactHistTotal;
         
         CreditorType jaxbObj = CreditorTypeBuilder.Builder.create()
                 .withCreditorId(dto.getCreditorId())

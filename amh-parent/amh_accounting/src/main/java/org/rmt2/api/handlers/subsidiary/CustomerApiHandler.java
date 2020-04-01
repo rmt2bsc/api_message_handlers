@@ -159,6 +159,7 @@ public class CustomerApiHandler extends
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             CustomerDto criteriaDto = SubsidiaryJaxbDtoFactory
                     .createCustomerDtoInstance(req.getProfile().getCustomers().getCustomer().get(0));
             
@@ -168,7 +169,7 @@ public class CustomerApiHandler extends
             } else {
                 rs.setMessage("Customer profile was not found - No updates performed");
             }
-            rs.setReturnCode(rc);
+            rs.setRecordCount(rc);
             this.responseObj.setHeader(req.getHeader());
             this.api.commitTrans();
         } catch (Exception e) {
@@ -205,13 +206,14 @@ public class CustomerApiHandler extends
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             criteriaDto = SubsidiaryJaxbDtoFactory
                     .createCustomerDtoCriteriaInstance(req.getCriteria().getCustomerCriteria());
             
             rc = this.api.delete(criteriaDto);
             rs.setMessage("Customer delete operation completed!");
             rs.setExtMessage("Total records deleted: " + rc);
-            rs.setReturnCode(rc);
+            rs.setRecordCount(rc);
             this.responseObj.setHeader(req.getHeader());
             this.api.commitTrans();
         } catch (Exception e) {
