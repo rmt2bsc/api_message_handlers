@@ -245,6 +245,9 @@ public class TransactionJaxbDtoFactory extends RMT2Base {
         if (jaxbCriteria.getTenderId() != null) {
             dto.setXactTenderId(jaxbCriteria.getTenderId().intValue());    
         }
+        if (jaxbCriteria.getXactReason() != null) {
+            dto.setXactReason(jaxbCriteria.getXactReason());
+        }
         
         return dto;
     }
