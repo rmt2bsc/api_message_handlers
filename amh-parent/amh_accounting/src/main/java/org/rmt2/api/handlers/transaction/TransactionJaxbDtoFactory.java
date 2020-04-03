@@ -291,6 +291,9 @@ public class TransactionJaxbDtoFactory extends RMT2Base {
         if (jaxbCriteria.getBusinessName() != null) {
             dto.setBusinessName(jaxbCriteria.getBusinessName());
         }
+        if (jaxbCriteria.getInvoiceNo() != null) {
+            dto.setInvoiceNo(jaxbCriteria.getInvoiceNo());
+        }
         return dto;
     }
 
