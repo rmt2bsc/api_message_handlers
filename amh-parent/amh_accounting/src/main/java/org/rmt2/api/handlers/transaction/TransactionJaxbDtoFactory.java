@@ -1,5 +1,6 @@
 package org.rmt2.api.handlers.transaction;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +16,7 @@ import org.dto.XactTypeItemActivityDto;
 import org.dto.adapter.orm.account.subsidiary.Rmt2SubsidiaryDtoFactory;
 import org.dto.adapter.orm.transaction.Rmt2XactDtoFactory;
 import org.modules.transaction.XactApiFactory;
+import org.modules.transaction.XactConst;
 import org.rmt2.api.handlers.AccountingtMsgHandlerUtility;
 import org.rmt2.jaxb.RecordTrackingType;
 import org.rmt2.jaxb.RelationalOperatorType;
@@ -355,14 +357,18 @@ public class TransactionJaxbDtoFactory extends RMT2Base {
         if (jaxbObj.getXactId() != null) {
             dto.setXactId(jaxbObj.getXactId().intValue());    
         }
+        else {
+            // When creating a new disbursement, use may not include the xact id
+            // element in request.
+            jaxbObj.setXactId(BigInteger.ZERO);
+        }
         if (jaxbObj.getXactType() != null && jaxbObj.getXactType().getXactTypeId() != null) {
-            dto.setXactTypeId(jaxbObj.getXactType().getXactTypeId().intValue());    
+            dto.setXactTypeId(jaxbObj.getXactType().getXactTypeId().intValue());
         }
-        if (jaxbObj.getXactSubtype() != null && jaxbObj.getXactSubtype().getXactTypeId() != null) {
-            dto.setXactSubtypeId(jaxbObj.getXactSubtype().getXactTypeId().intValue());    
-        }
-        if (jaxbObj.getXactSubtype() != null && jaxbObj.getXactSubtype().getXactTypeId() != null) {
-            dto.setXactSubtypeId(jaxbObj.getXactSubtype().getXactTypeId().intValue());    
+        else {
+            // When creating a new disbursement, use may not include the xact
+            // type id element in request.
+            dto.setXactTypeId(XactConst.XACT_TYPE_CASH_DISBURSE);
         }
         if (jaxbObj.getXactCodeGroup() != null) {
             if (jaxbObj.getXactCodeGroup().getXactCodeGrpId() != null) {
@@ -503,16 +509,27 @@ public class TransactionJaxbDtoFactory extends RMT2Base {
             return null;
         }
         XactTypeItemActivityDto dto = Rmt2XactDtoFactory.createXactTypeItemActivityExtInstance(null);
+        if (jaxbObj.getXactTypeItemActvId() != null) {
+            dto.setXactTypeItemActvId(jaxbObj.getXactTypeItemActvId().intValue());
+        }
+        else {
+            // When creating a new disbursement, use may not include the xact
+            // type item activity id element in request.
+            jaxbObj.setXactTypeItemActvId(BigInteger.ZERO);
+            dto.setXactTypeItemActvId(jaxbObj.getXactTypeItemActvId().intValue());
+        }
         if (jaxbObj.getXactId() != null) {
+            dto.setXactId(jaxbObj.getXactId().intValue());
+        }
+        else {
+            // When creating a new disbursement, use may not include the xact id
+            // element in request.
+            jaxbObj.setXactId(BigInteger.ZERO);
             dto.setXactId(jaxbObj.getXactId().intValue());
         }
         if (jaxbObj.getItemId() != null) {
             dto.setXactItemId(jaxbObj.getItemId().intValue());
         }
-        if (jaxbObj.getXactTypeItemActvId() != null) {
-            dto.setXactTypeItemActvId(jaxbObj.getItemId().intValue());
-        }
-
         if (jaxbObj.getName() != null) {
             dto.setXactTypeItemActvName(jaxbObj.getName());
         }
