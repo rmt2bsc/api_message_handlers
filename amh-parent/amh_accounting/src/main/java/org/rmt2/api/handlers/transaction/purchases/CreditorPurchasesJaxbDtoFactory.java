@@ -51,6 +51,8 @@ public class CreditorPurchasesJaxbDtoFactory extends TransactionJaxbDtoFactory {
         if (jaxbCriteria.getXactDate() != null) {
             dto.setXactDate(RMT2Date.stringToDate(jaxbCriteria.getXactDate()));    
         }  
+        // Xact Type Id is ignored as a selection criteria property on the API
+        // side.
         if (jaxbCriteria.getXactTypeId() != null) {
             dto.setXactTypeId(jaxbCriteria.getXactTypeId().intValue());    
         }
