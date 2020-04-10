@@ -1,5 +1,6 @@
 package org.rmt2.api.handler.transaction.purchases;
 
+import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -8,6 +9,7 @@ import java.util.List;
 
 import org.dto.XactCreditChargeDto;
 import org.dto.XactTypeDto;
+import org.dto.adapter.orm.transaction.purchases.creditor.Rmt2CreditChargeDtoFactory;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -15,6 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.modules.transaction.XactApiException;
+import org.modules.transaction.XactConst;
 import org.modules.transaction.purchases.creditor.CreditorPurchasesApi;
 import org.modules.transaction.purchases.creditor.CreditorPurchasesApiException;
 import org.modules.transaction.purchases.creditor.CreditorPurchasesApiFactory;
@@ -102,6 +105,15 @@ public class CreditorPurchasesUpdateMessageHandlerTest extends BaseAccountingMes
             Assert.fail("Unable to setup mock stub for updating a creditor purchases transaction");
         }
 
+        XactCreditChargeDto newMockXactDto = Rmt2CreditChargeDtoFactory.createCreditChargeInstance();
+        newMockXactDto.setXactId(CreditorPurchasesMockData.NEW_XACT_ID);
+        newMockXactDto.setXactTypeId(XactConst.XACT_TYPE_CREDITOR_PURCHASE);
+        try {
+            when(this.mockApi.get(eq(CreditorPurchasesMockData.NEW_XACT_ID))).thenReturn(newMockXactDto);
+        } catch (CreditorPurchasesApiException e) {
+            Assert.fail("Unable to setup mock stub for updating a creditor purchases transaction");
+        }
+
         MessageHandlerResults results = null;
         CreateCreditorPurchasesApiHandler handler = new CreateCreditorPurchasesApiHandler();
         try {
@@ -114,12 +126,20 @@ public class CreditorPurchasesUpdateMessageHandlerTest extends BaseAccountingMes
         Assert.assertNotNull(results.getPayload());
 
         AccountingTransactionResponse actualRepsonse = (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertNotNull(actualRepsonse.getProfile());
+        Assert.assertNotNull(actualRepsonse.getProfile().getTransactions());
+        Assert.assertNotNull(actualRepsonse.getProfile().getTransactions().getTransaction());
+        Assert.assertEquals(1, actualRepsonse.getProfile().getTransactions().getTransaction().size());
         Assert.assertEquals(1, actualRepsonse.getReplyStatus().getRecordCount().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         String msg = RMT2String.replace(CreateCreditorPurchasesApiHandler.MSG_CREATE_SUCCESS,
                 String.valueOf(CreditorPurchasesMockData.NEW_XACT_ID), "%s");
         Assert.assertEquals(msg, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertNotNull(actualRepsonse.getProfile().getTransactions().getTransaction().get(0));
+        Assert.assertNotNull(actualRepsonse.getProfile().getTransactions().getTransaction().get(0).getXactId());
+        Assert.assertEquals(CreditorPurchasesMockData.NEW_XACT_ID, actualRepsonse.getProfile().getTransactions().getTransaction()
+                .get(0).getXactId().intValue());
     }
 
     @Test

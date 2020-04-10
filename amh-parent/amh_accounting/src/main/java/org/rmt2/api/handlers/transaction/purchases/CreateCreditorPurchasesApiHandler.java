@@ -16,6 +16,9 @@ import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.AccountingTransactionRequest;
 import org.rmt2.jaxb.XactType;
+import org.rmt2.jaxb.XacttypeType;
+import org.rmt2.util.accounting.transaction.XactTypeBuilder;
+import org.rmt2.util.accounting.transaction.XacttypeTypeBuilder;
 
 import com.InvalidDataException;
 import com.api.messaging.InvalidRequestException;
@@ -123,6 +126,7 @@ public class CreateCreditorPurchasesApiHandler extends XactApiHandler {
             }
             else {
                 rs.setExtMessage(dto.getXactReason());
+                tranRresults = this.buildJaxbTransaction(dto);
             }
 
             String msg = RMT2String.replace(MSG_CREATE_SUCCESS, String.valueOf(reqXact.getXactId()), "%s");
@@ -140,7 +144,6 @@ public class CreateCreditorPurchasesApiHandler extends XactApiHandler {
             rs.setExtMessage(e.getMessage());
             this.api.rollbackTrans();
         } finally {
-            tranRresults.add(reqXact);
             this.api.close();
         }
         
@@ -149,6 +152,34 @@ public class CreateCreditorPurchasesApiHandler extends XactApiHandler {
         return results;
     }
     
+    /**
+     * Builds a List of XactType objects from a List of XactCreditChargeDto
+     * objects.
+     * 
+     * @param results
+     *            List<{@link XactCreditChargeDto}>
+     * @param customCriteriaDto
+     *            custom relational criteria (optional)
+     * @return List<{@link XactType}>
+     */
+    private List<XactType> buildJaxbTransaction(XactCreditChargeDto xact) {
+
+        XacttypeType xt = XacttypeTypeBuilder.Builder.create()
+                .withXactTypeId(xact.getXactTypeId())
+                .withDescription(xact.getXactTypeDescription())
+                .withCode(xact.getXactTypeCode())
+                .build();
+
+        XactType x = XactTypeBuilder.Builder.create()
+                .withXactId(xact.getXactId())
+                .withXactType(xt)
+                .build();
+
+        List<XactType> list = new ArrayList<>();
+        list.add(x);
+        return list;
+    }
+
     /* (non-Javadoc)
      * @see org.rmt2.api.handlers.transaction.XactApiHandler#validateRequest(org.rmt2.jaxb.AccountingTransactionRequest)
      */
@@ -173,7 +204,7 @@ public class CreateCreditorPurchasesApiHandler extends XactApiHandler {
      */
     @Override
     protected String buildResponse(List<XactType> payload, MessageHandlerCommonReplyStatus replyStatus) {
-        return super.buildResponse(null, replyStatus);
+        return super.buildResponse(payload, replyStatus);
     }
 
 }
