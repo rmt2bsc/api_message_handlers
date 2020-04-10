@@ -16,7 +16,6 @@ import org.dto.XactTypeItemActivityDto;
 import org.dto.adapter.orm.account.subsidiary.Rmt2SubsidiaryDtoFactory;
 import org.dto.adapter.orm.transaction.Rmt2XactDtoFactory;
 import org.modules.transaction.XactApiFactory;
-import org.modules.transaction.XactConst;
 import org.rmt2.api.handlers.AccountingtMsgHandlerUtility;
 import org.rmt2.jaxb.RecordTrackingType;
 import org.rmt2.jaxb.RelationalOperatorType;
@@ -235,6 +234,9 @@ public class TransactionJaxbDtoFactory extends RMT2Base {
         if (jaxbCriteria.getXactId() != null) {
             dto.setXactId(jaxbCriteria.getXactId().intValue());    
         }
+        else {
+            dto.setXactId(0);
+        }
         if (jaxbCriteria.getXactDate() != null) {
             dto.setXactDate(RMT2Date.stringToDate(jaxbCriteria.getXactDate()));    
         }  
@@ -361,17 +363,12 @@ public class TransactionJaxbDtoFactory extends RMT2Base {
             dto.setXactId(jaxbObj.getXactId().intValue());    
         }
         else {
-            // When creating a new disbursement, use may not include the xact id
+            // When creating a new transaction, use may not include the xact id
             // element in request.
             jaxbObj.setXactId(BigInteger.ZERO);
         }
         if (jaxbObj.getXactType() != null && jaxbObj.getXactType().getXactTypeId() != null) {
             dto.setXactTypeId(jaxbObj.getXactType().getXactTypeId().intValue());
-        }
-        else {
-            // When creating a new disbursement, use may not include the xact
-            // type id element in request.
-            dto.setXactTypeId(XactConst.XACT_TYPE_CASH_DISBURSE);
         }
         if (jaxbObj.getXactCodeGroup() != null) {
             if (jaxbObj.getXactCodeGroup().getXactCodeGrpId() != null) {

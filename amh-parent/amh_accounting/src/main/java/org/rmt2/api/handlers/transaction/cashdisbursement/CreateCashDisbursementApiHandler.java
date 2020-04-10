@@ -5,25 +5,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.dao.mapping.orm.rmt2.XactTypeItemActivity;
 import org.dto.CreditorDto;
-import org.dto.XactCustomCriteriaDto;
 import org.dto.XactDto;
 import org.dto.XactTypeItemActivityDto;
 import org.dto.adapter.orm.transaction.Rmt2XactDtoFactory;
-import org.modules.transaction.XactApiException;
+import org.modules.transaction.XactConst;
 import org.modules.transaction.disbursements.DisbursementsApi;
 import org.modules.transaction.disbursements.DisbursementsApiFactory;
-import org.rmt2.api.ApiMessageHandlerConst;
 import org.rmt2.api.handlers.transaction.TransactionJaxbDtoFactory;
 import org.rmt2.api.handlers.transaction.XactApiHandler;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.AccountingTransactionRequest;
+import org.rmt2.jaxb.CreditorType;
 import org.rmt2.jaxb.XactType;
+import org.rmt2.jaxb.XacttypeType;
+import org.rmt2.util.accounting.subsidiary.CreditorTypeBuilder;
+import org.rmt2.util.accounting.transaction.XactTypeBuilder;
+import org.rmt2.util.accounting.transaction.XacttypeTypeBuilder;
 
 import com.InvalidDataException;
-import com.RMT2Exception;
 import com.api.messaging.InvalidRequestException;
 import com.api.messaging.handler.MessageHandlerCommandException;
 import com.api.messaging.handler.MessageHandlerCommonReplyStatus;
@@ -38,11 +39,9 @@ import com.api.util.assistants.VerifyException;
  * @author rterrell
  *
  */
-public class CashDisbursementApiHandler extends XactApiHandler {
-    private static final Logger logger = Logger.getLogger(CashDisbursementApiHandler.class);
-    public static final String MSG_DATA_FOUND = "Cash disbursement record(s) found";
-    public static final String MSG_DATA_NOT_FOUND = "Cash disbursement data not found!";
-    public static final String MSG_FAILURE = "Failure to retrieve Cash disbursement transaction(s)";
+public class CreateCashDisbursementApiHandler extends XactApiHandler {
+    private static final Logger logger = Logger.getLogger(CreateCashDisbursementApiHandler.class);
+    public static final String MSG_FAILURE = "Failure to create Cash disbursement transaction(s)";
     public static final String MSG_CREATE_SUCCESS = "New cash disbursement transaction was created: %s";
     public static final String MSG_MISSING_CREDITOR_PROFILE_DATA = "Creditor profile is required when creating a cash disbursement for a creditor";
     
@@ -51,10 +50,10 @@ public class CashDisbursementApiHandler extends XactApiHandler {
     /**
      * 
      */
-    public CashDisbursementApiHandler() {
+    public CreateCashDisbursementApiHandler() {
         super();
         this.api = DisbursementsApiFactory.createApi();
-        logger.info(CashDisbursementApiHandler.class.getName() + " was instantiated successfully");
+        logger.info(CreateCashDisbursementApiHandler.class.getName() + " was instantiated successfully");
     }
 
     /**
@@ -84,10 +83,6 @@ public class CashDisbursementApiHandler extends XactApiHandler {
             }
         }
         switch (command) {
-            case ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_GET:
-                r = this.fetch(this.requestObj);
-                break;
-                
             case ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_CREATE:
                 r = this.create(this.requestObj);
                 break;
@@ -102,68 +97,6 @@ public class CashDisbursementApiHandler extends XactApiHandler {
                         ERROR_MSG_TRANS_NOT_FOUND + command);
         }
         return r;
-    }
-
-    
-    /**
-     * Handler for invoking the appropriate API in order to fetch one or more
-     * cash disbursement transaction objects. 
-     * <p>
-     * Currently, the target level, <i>DETAILS</i>, is not supported.
-     * 
-     * @param req
-     *            an instance of {@link AccountingTransactionRequest}
-     * @return an instance of {@link MessageHandlerResults}
-     */
-    @Override
-    protected MessageHandlerResults fetch(AccountingTransactionRequest req) {
-        MessageHandlerResults results = new MessageHandlerResults();
-        MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
-        List<XactType> queryDtoResults = null;
-
-        try {
-            // Set reply status
-            rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
-            XactDto criteriaDto = TransactionJaxbDtoFactory
-                    .createBaseXactDtoCriteriaInstance(req.getCriteria().getXactCriteria().getBasicCriteria());
-            XactCustomCriteriaDto customCriteriaDto = TransactionJaxbDtoFactory
-                    .createCustomXactDtoCriteriaInstance(req.getCriteria().getXactCriteria().getCustomCriteria());
-            
-            this.targetLevel = req.getCriteria().getXactCriteria().getTargetLevel().name().toUpperCase();
-            switch (this.targetLevel) {
-                case ApiMessageHandlerConst.TARGET_LEVEL_HEADER:
-                case ApiMessageHandlerConst.TARGET_LEVEL_FULL:
-                    List<XactDto> dtoList = this.api.get(criteriaDto, customCriteriaDto);
-                    if (dtoList == null) {
-                        rs.setMessage(CashDisbursementApiHandler.MSG_DATA_NOT_FOUND);
-                        rs.setRecordCount(0);
-                    }
-                    else {
-                        queryDtoResults = this.buildJaxbTransaction(dtoList, customCriteriaDto);
-                        rs.setMessage(CashDisbursementApiHandler.MSG_DATA_FOUND);
-                        rs.setRecordCount(dtoList.size());
-                    }
-                    break;
-                    
-                default:
-                    String msg = RMT2String.replace(MSG_INCORRECT_TARGET_LEVEL, targetLevel, "%s");
-                    throw new RMT2Exception(msg);
-            }
-            
-            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
-            this.responseObj.setHeader(req.getHeader());
-        } catch (Exception e) {
-            logger.error("Error occurred during API Message Handler operation, " + this.command, e );
-            rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setMessage(CashDisbursementApiHandler.MSG_FAILURE);
-            rs.setExtMessage(e.getMessage());
-        } finally {
-            this.api.close();
-        }
-
-        String xml = this.buildResponse(queryDtoResults, rs);
-        results.setPayload(xml);
-        return results;
     }
 
     /**
@@ -188,11 +121,25 @@ public class CashDisbursementApiHandler extends XactApiHandler {
             List<XactTypeItemActivityDto> itemsDtoList = TransactionJaxbDtoFactory
                     .createXactItemDtoInstance(reqXact.getLineitems().getLineitem());
             
+            // Force transaction type to plain cash disbursement
+            xactDto.setXactTypeId(XactConst.XACT_TYPE_CASH_DISBURSE);
+
             int newXactId = this.api.updateTrans(xactDto, itemsDtoList);
             xactDto.setXactId(newXactId);
-            XactType XactResults = TransactionJaxbDtoFactory.createXactJaxbInstance(xactDto, 0, itemsDtoList);
-            tranRresults.add(XactResults);
-            String msg = RMT2String.replace(MSG_CREATE_SUCCESS, String.valueOf(XactResults.getXactId()), "%s");
+
+            // Verify new transaction.
+            XactDto newXactCriteriaDto = Rmt2XactDtoFactory.createXactBaseInstance(null);
+            newXactCriteriaDto.setXactId(newXactId);
+            List<XactDto> newDto = this.api.get(newXactCriteriaDto, null);
+            if (newDto == null) {
+                rs.setExtMessage("Unable to obtain confirmation message for new cash disbursment transaction");
+            }
+            else {
+                rs.setExtMessage(newDto.get(0).getXactReason());
+                tranRresults = this.buildJaxbTransaction(newDto.get(0), null);
+            }
+
+            String msg = RMT2String.replace(MSG_CREATE_SUCCESS, String.valueOf(newXactId), "%s");
             rs.setMessage(msg);
             rs.setRecordCount(1);
             
@@ -202,7 +149,7 @@ public class CashDisbursementApiHandler extends XactApiHandler {
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setMessage(CashDisbursementApiHandler.MSG_FAILURE);
+            rs.setMessage(CreateCashDisbursementApiHandler.MSG_FAILURE);
             rs.setExtMessage(e.getMessage());
             this.api.rollbackTrans();
         } finally {
@@ -232,15 +179,29 @@ public class CashDisbursementApiHandler extends XactApiHandler {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             XactDto xactDto = TransactionJaxbDtoFactory.createXactDtoInstance(reqXact);
-            List<XactTypeItemActivityDto> itemsDtoList = TransactionJaxbDtoFactory
-                    .createXactItemDtoInstance(reqXact.getLineitems().getLineitem());
+            List<XactTypeItemActivityDto> itemsDtoList =
+                    TransactionJaxbDtoFactory.createXactItemDtoInstance(reqXact.getLineitems().getLineitem());
             CreditorDto credDto = TransactionJaxbDtoFactory.createCreditorDtoInstance(reqXact); 
             
+            // Force transaction type to creditor cash disbursement
+            xactDto.setXactTypeId(XactConst.XACT_TYPE_CREDITOR_PURCHASE);
+
             int newXactId = this.api.updateTrans(xactDto, itemsDtoList, credDto.getCreditorId());
             xactDto.setXactId(newXactId);
-            XactType XactResults = TransactionJaxbDtoFactory.createXactJaxbInstance(xactDto, 0, itemsDtoList);
-            tranRresults.add(XactResults);
-            String msg = RMT2String.replace(MSG_CREATE_SUCCESS, String.valueOf(XactResults.getXactId()), "%s");
+
+            // Verify new transaction
+            XactDto newXactCriteriaDto = Rmt2XactDtoFactory.createXactBaseInstance(null);
+            newXactCriteriaDto.setXactId(newXactId);
+            List<XactDto> newDto = this.api.get(newXactCriteriaDto, null);
+            if (newDto == null) {
+                rs.setExtMessage("Unable to obtain confirmation message for new creditor cash disbursment transaction");
+            }
+            else {
+                rs.setExtMessage(newDto.get(0).getXactReason());
+                tranRresults = this.buildJaxbTransaction(newDto.get(0), credDto.getCreditorId());
+            }
+
+            String msg = RMT2String.replace(MSG_CREATE_SUCCESS, String.valueOf(newXactId), "%s");
             rs.setMessage(msg);
             rs.setRecordCount(1);
             
@@ -249,7 +210,7 @@ public class CashDisbursementApiHandler extends XactApiHandler {
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setMessage(CashDisbursementApiHandler.MSG_FAILURE);
+            rs.setMessage(CreateCashDisbursementApiHandler.MSG_FAILURE);
             rs.setExtMessage(e.getMessage());
         } finally {
             this.api.close();
@@ -258,6 +219,45 @@ public class CashDisbursementApiHandler extends XactApiHandler {
         String xml = this.buildResponse(tranRresults, rs);
         results.setPayload(xml);
         return results;
+    }
+
+    /**
+     * Builds a List of XactType objects from a List of XactDto objects.
+     * 
+     * @param results
+     *            List<{@link XactDto}>
+     * @return List<{@link XactType}>
+     */
+    private List<XactType> buildJaxbTransaction(XactDto item, Integer creditorId) {
+        List<XactType> list = new ArrayList<>();
+
+        XacttypeType xt = XacttypeTypeBuilder.Builder.create()
+                .withXactTypeId(item.getXactTypeId())
+                .withDescription(item.getXactTypeDescription())
+                .withCode(item.getXactTypeCode())
+                .build();
+
+        XactType x = null;
+        if (creditorId != null) {
+            CreditorType c = CreditorTypeBuilder.Builder.create()
+                    .withCreditorId(creditorId)
+                    .build();
+
+            x = XactTypeBuilder.Builder.create()
+                    .withXactId(item.getXactId())
+                    .withXactType(xt)
+                    .withCreditor(c)
+                    .build();
+        }
+        else {
+            x = XactTypeBuilder.Builder.create()
+                    .withXactId(item.getXactId())
+                    .withXactType(xt)
+                    .build();
+        }
+
+        list.add(x);
+        return list;
     }
 
     /* (non-Javadoc)
@@ -302,41 +302,11 @@ public class CashDisbursementApiHandler extends XactApiHandler {
                 Verifier.verifyNotNull(req.getProfile().getTransactions().getTransaction().get(0).getCreditor());
             }
             catch (VerifyException e) {
-                throw new InvalidRequestException(CashDisbursementApiHandler.MSG_MISSING_CREDITOR_PROFILE_DATA, e);    
+                throw new InvalidRequestException(CreateCashDisbursementApiHandler.MSG_MISSING_CREDITOR_PROFILE_DATA, e);    
             }    
         }
     }
 
-    /**
-     * Builds a List of XactType objects from a List of XactDto objects.
-     * 
-     * @param results List<{@link XactDto}>
-     * @param customCriteriaDto custom relational criteria (optional)
-     * @return List<{@link XactType}>
-     */
-    private List<XactType> buildJaxbTransaction(List<XactDto> results, XactCustomCriteriaDto customCriteriaDto) {
-        List<XactType> list = new ArrayList<>();
-        
-        for (XactDto item : results) {
-            List<XactTypeItemActivityDto> xactItems = null;
-            
-            // retrieve line items if requested
-            if (this.targetLevel.equals(ApiMessageHandlerConst.TARGET_LEVEL_FULL)) {
-                XactTypeItemActivityDto itemCriteria = Rmt2XactDtoFactory.createXactTypeItemActivityInstance((XactTypeItemActivity) null);
-                itemCriteria.setXactId(item.getXactId());
-                try {
-                    xactItems = this.api.getItems(itemCriteria, customCriteriaDto);
-                } catch (XactApiException e) {
-                    logger.error("Unable to fetch line items for transaction id, " + item.getXactId());
-                }    
-            }
-            
-            XactType jaxbObj = TransactionJaxbDtoFactory.createXactJaxbInstance(item, 0, xactItems);
-            list.add(jaxbObj);
-        }
-        return list;
-    }
-    
     /* (non-Javadoc)
      * @see org.rmt2.api.handlers.transaction.XactApiHandler#buildResponse(java.util.List, com.api.messaging.handler.MessageHandlerCommonReplyStatus)
      */
