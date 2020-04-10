@@ -518,8 +518,7 @@ public class TransactionJaxbDtoFactory extends RMT2Base {
         else {
             // When creating a new disbursement, use may not include the xact
             // type item activity id element in request.
-            jaxbObj.setXactTypeItemActvId(BigInteger.ZERO);
-            dto.setXactTypeItemActvId(jaxbObj.getXactTypeItemActvId().intValue());
+            dto.setXactTypeItemActvId(0);
         }
         if (jaxbObj.getXactId() != null) {
             dto.setXactId(jaxbObj.getXactId().intValue());
@@ -527,8 +526,7 @@ public class TransactionJaxbDtoFactory extends RMT2Base {
         else {
             // When creating a new disbursement, use may not include the xact id
             // element in request.
-            jaxbObj.setXactId(BigInteger.ZERO);
-            dto.setXactId(jaxbObj.getXactId().intValue());
+            dto.setXactId(0);
         }
         if (jaxbObj.getItemId() != null) {
             dto.setXactItemId(jaxbObj.getItemId().intValue());
