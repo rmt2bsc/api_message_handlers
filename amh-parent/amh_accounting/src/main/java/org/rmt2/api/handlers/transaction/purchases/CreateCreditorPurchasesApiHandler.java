@@ -78,7 +78,7 @@ public class CreateCreditorPurchasesApiHandler extends XactApiHandler {
         }
         switch (command) {
             case ApiTransactionCodes.ACCOUNTING_CREDITPURCHASE_CREATE:
-                r = this.create(this.requestObj);
+                r = this.update(this.requestObj);
                 break;
                 
             default:
@@ -100,7 +100,7 @@ public class CreateCreditorPurchasesApiHandler extends XactApiHandler {
      * @return an instance of {@link MessageHandlerResults}
      */
     @Override
-    protected MessageHandlerResults create(AccountingTransactionRequest req) {
+    protected MessageHandlerResults update(AccountingTransactionRequest req) {
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         XactType reqXact = req.getProfile().getTransactions().getTransaction().get(0);

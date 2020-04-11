@@ -79,7 +79,7 @@ public class CreateCashReceiptsApiHandler extends XactApiHandler {
         switch (command) {
             case ApiTransactionCodes.ACCOUNTING_CASHRECEIPT_CREATE:
                 // Handles cash receipt creation and reversal
-                r = this.create(this.requestObj);
+                r = this.update(this.requestObj);
                 break;
 
             default:
@@ -99,7 +99,7 @@ public class CreateCashReceiptsApiHandler extends XactApiHandler {
      * @return an instance of {@link MessageHandlerResults}
      */
     @Override
-    protected MessageHandlerResults create(AccountingTransactionRequest req) {
+    protected MessageHandlerResults update(AccountingTransactionRequest req) {
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         XactType reqXact = req.getProfile().getTransactions().getTransaction().get(0);

@@ -79,11 +79,11 @@ public class CreateCashDisbursementApiHandler extends XactApiHandler {
         }
         switch (command) {
             case ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_CREATE:
-                r = this.create(this.requestObj);
+                r = this.update(this.requestObj);
                 break;
                 
             case ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_CREDITOR_CREATE:
-                r = this.createForCreditor(this.requestObj);
+                r = this.updateForCreditor(this.requestObj);
                 break;
                 
             default:
@@ -103,7 +103,7 @@ public class CreateCashDisbursementApiHandler extends XactApiHandler {
      * @return an instance of {@link MessageHandlerResults}
      */
     @Override
-    protected MessageHandlerResults create(AccountingTransactionRequest req) {
+    protected MessageHandlerResults update(AccountingTransactionRequest req) {
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         XactType reqXact = req.getProfile().getTransactions().getTransaction().get(0);
@@ -164,7 +164,7 @@ public class CreateCashDisbursementApiHandler extends XactApiHandler {
      *            an instance of {@link AccountingTransactionRequest}
      * @return an instance of {@link MessageHandlerResults}
      */
-    protected MessageHandlerResults createForCreditor(AccountingTransactionRequest req) {
+    protected MessageHandlerResults updateForCreditor(AccountingTransactionRequest req) {
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         XactType reqXact = req.getProfile().getTransactions().getTransaction().get(0);

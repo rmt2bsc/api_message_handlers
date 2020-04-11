@@ -104,7 +104,7 @@ public class XactApiHandler extends
                 break;
                 
             case ApiTransactionCodes.ACCOUNTING_TRANSACTION_CREATE:
-                r = this.create(this.requestObj);
+                r = this.update(this.requestObj);
                 break;
                 
             case ApiTransactionCodes.ACCOUNTING_TRANSACTION_REVERSE:
@@ -185,7 +185,7 @@ public class XactApiHandler extends
      *            an instance of {@link AccountingTransactionRequest}
      * @return an instance of {@link MessageHandlerResults}
      */
-    protected MessageHandlerResults create(AccountingTransactionRequest req) {
+    protected MessageHandlerResults update(AccountingTransactionRequest req) {
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         XactType reqXact = req.getProfile().getTransactions().getTransaction().get(0);
