@@ -17,12 +17,7 @@ import org.rmt2.api.handlers.transaction.XactApiHandler;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.AccountingTransactionRequest;
-import org.rmt2.jaxb.CreditorType;
 import org.rmt2.jaxb.XactType;
-import org.rmt2.jaxb.XacttypeType;
-import org.rmt2.util.accounting.subsidiary.CreditorTypeBuilder;
-import org.rmt2.util.accounting.transaction.XactTypeBuilder;
-import org.rmt2.util.accounting.transaction.XacttypeTypeBuilder;
 
 import com.InvalidDataException;
 import com.api.messaging.InvalidRequestException;
@@ -136,7 +131,7 @@ public class CreateCashDisbursementApiHandler extends XactApiHandler {
             }
             else {
                 rs.setExtMessage(newDto.get(0).getXactReason());
-                tranRresults = this.buildJaxbTransaction(newDto.get(0), null);
+                tranRresults = TransactionJaxbDtoFactory.buildJaxbCreditorTransaction(newDto.get(0), null);
             }
 
             String msg = RMT2String.replace(MSG_CREATE_SUCCESS, String.valueOf(newXactId), "%s");
@@ -198,7 +193,7 @@ public class CreateCashDisbursementApiHandler extends XactApiHandler {
             }
             else {
                 rs.setExtMessage(newDto.get(0).getXactReason());
-                tranRresults = this.buildJaxbTransaction(newDto.get(0), credDto.getCreditorId());
+                tranRresults = TransactionJaxbDtoFactory.buildJaxbCreditorTransaction(newDto.get(0), credDto.getCreditorId());
             }
 
             String msg = RMT2String.replace(MSG_CREATE_SUCCESS, String.valueOf(newXactId), "%s");
@@ -219,45 +214,6 @@ public class CreateCashDisbursementApiHandler extends XactApiHandler {
         String xml = this.buildResponse(tranRresults, rs);
         results.setPayload(xml);
         return results;
-    }
-
-    /**
-     * Builds a List of XactType objects from a List of XactDto objects.
-     * 
-     * @param results
-     *            List<{@link XactDto}>
-     * @return List<{@link XactType}>
-     */
-    private List<XactType> buildJaxbTransaction(XactDto item, Integer creditorId) {
-        List<XactType> list = new ArrayList<>();
-
-        XacttypeType xt = XacttypeTypeBuilder.Builder.create()
-                .withXactTypeId(item.getXactTypeId())
-                .withDescription(item.getXactTypeDescription())
-                .withCode(item.getXactTypeCode())
-                .build();
-
-        XactType x = null;
-        if (creditorId != null) {
-            CreditorType c = CreditorTypeBuilder.Builder.create()
-                    .withCreditorId(creditorId)
-                    .build();
-
-            x = XactTypeBuilder.Builder.create()
-                    .withXactId(item.getXactId())
-                    .withXactType(xt)
-                    .withCreditor(c)
-                    .build();
-        }
-        else {
-            x = XactTypeBuilder.Builder.create()
-                    .withXactId(item.getXactId())
-                    .withXactType(xt)
-                    .build();
-        }
-
-        list.add(x);
-        return list;
     }
 
     /* (non-Javadoc)

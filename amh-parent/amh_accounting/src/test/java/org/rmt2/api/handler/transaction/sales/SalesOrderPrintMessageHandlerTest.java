@@ -37,7 +37,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.rmt2.api.handler.BaseAccountingMessageHandlerTest;
 import org.rmt2.api.handler.transaction.common.CommonXactMockData;
-import org.rmt2.api.handlers.transaction.receipts.CashReceiptsApiHandler;
+import org.rmt2.api.handlers.transaction.receipts.QueryCashReceiptsApiHandler;
 import org.rmt2.api.handlers.transaction.sales.PrintCustomerSalesOrderApiHandler;
 import org.rmt2.api.handlers.transaction.sales.SalesOrderHandlerConst;
 import org.rmt2.constants.ApiTransactionCodes;
@@ -272,7 +272,7 @@ public class SalesOrderPrintMessageHandlerTest extends BaseAccountingMessageHand
         Assert.assertNull(actualRepsonse.getProfile());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(CashReceiptsApiHandler.ERROR_MSG_TRANS_NOT_FOUND +
+        Assert.assertEquals(QueryCashReceiptsApiHandler.ERROR_MSG_TRANS_NOT_FOUND +
                 "INCORRECT_TRAN_CODE", actualRepsonse.getReplyStatus().getMessage());
     }
 

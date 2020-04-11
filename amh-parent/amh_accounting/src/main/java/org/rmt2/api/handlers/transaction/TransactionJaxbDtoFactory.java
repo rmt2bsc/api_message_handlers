@@ -10,6 +10,7 @@ import org.dto.CommonXactDto;
 import org.dto.CreditorDto;
 import org.dto.XactCodeDto;
 import org.dto.XactCodeGroupDto;
+import org.dto.XactCreditChargeDto;
 import org.dto.XactCustomCriteriaDto;
 import org.dto.XactDto;
 import org.dto.XactTypeItemActivityDto;
@@ -17,6 +18,8 @@ import org.dto.adapter.orm.account.subsidiary.Rmt2SubsidiaryDtoFactory;
 import org.dto.adapter.orm.transaction.Rmt2XactDtoFactory;
 import org.modules.transaction.XactApiFactory;
 import org.rmt2.api.handlers.AccountingtMsgHandlerUtility;
+import org.rmt2.jaxb.CreditorType;
+import org.rmt2.jaxb.CustomerType;
 import org.rmt2.jaxb.RecordTrackingType;
 import org.rmt2.jaxb.RelationalOperatorType;
 import org.rmt2.jaxb.XactBasicCriteriaType;
@@ -27,10 +30,15 @@ import org.rmt2.jaxb.XactCodeType;
 import org.rmt2.jaxb.XactCustomRelationalCriteriaType;
 import org.rmt2.jaxb.XactLineitemType;
 import org.rmt2.jaxb.XactType;
+import org.rmt2.jaxb.XacttypeType;
 import org.rmt2.util.RecordTrackingTypeBuilder;
+import org.rmt2.util.accounting.subsidiary.CreditorTypeBuilder;
+import org.rmt2.util.accounting.subsidiary.CustomerTypeBuilder;
 import org.rmt2.util.accounting.transaction.XactCodeGroupTypeBuilder;
 import org.rmt2.util.accounting.transaction.XactCodeTypeBuilder;
 import org.rmt2.util.accounting.transaction.XactItemTypeBuilder;
+import org.rmt2.util.accounting.transaction.XactTypeBuilder;
+import org.rmt2.util.accounting.transaction.XacttypeTypeBuilder;
 
 import com.RMT2Base;
 import com.api.util.RMT2Date;
@@ -535,6 +543,124 @@ public class TransactionJaxbDtoFactory extends RMT2Base {
             dto.setActivityAmount(jaxbObj.getAmount().doubleValue());
         }
         return dto;
+    }
+
+    /**
+     * Builds a List of XactType objects from a List of XactDto objects that are
+     * associated with a creditor.
+     * 
+     * @param results
+     *            List<{@link XactDto}>
+     * @param creditorId
+     *            the id of the creditor. If null, the creditor element is not
+     *            included in the results.
+     * @return List<{@link XactType}>
+     */
+    public static final List<XactType> buildJaxbCreditorTransaction(XactDto item, Integer creditorId) {
+        List<XactType> list = new ArrayList<>();
+
+        XacttypeType xt = XacttypeTypeBuilder.Builder.create()
+                .withXactTypeId(item.getXactTypeId())
+                .withDescription(item.getXactTypeDescription())
+                .withCode(item.getXactTypeCode())
+                .build();
+
+        XactType x = null;
+        if (creditorId != null) {
+            CreditorType c = CreditorTypeBuilder.Builder.create()
+                    .withCreditorId(creditorId)
+                    .build();
+
+            x = XactTypeBuilder.Builder.create()
+                    .withXactId(item.getXactId())
+                    .withXactAmount(item.getXactAmount())
+                    .withXactType(xt)
+                    .withCreditor(c)
+                    .build();
+        }
+        else {
+            x = XactTypeBuilder.Builder.create()
+                    .withXactId(item.getXactId())
+                    .withXactAmount(item.getXactAmount())
+                    .withXactType(xt)
+                    .build();
+        }
+
+        list.add(x);
+        return list;
+    }
+
+    /**
+     * Builds a List of XactType objects from a List of XactDto objects that are
+     * associated with a customer.
+     * 
+     * @param results
+     *            List<{@link XactDto}>
+     * @param customerId
+     *            the id of the customer. If null, the customer element is not
+     *            included in the results.
+     * @return List<{@link XactType}>
+     */
+    public static final List<XactType> buildJaxbCustomerTransaction(XactDto item, Integer customerId) {
+        List<XactType> list = new ArrayList<>();
+
+        XacttypeType xt = XacttypeTypeBuilder.Builder.create()
+                .withXactTypeId(item.getXactTypeId())
+                .withDescription(item.getXactTypeDescription())
+                .withCode(item.getXactTypeCode())
+                .build();
+
+        XactType x = null;
+        if (customerId != null) {
+            CustomerType c = CustomerTypeBuilder.Builder.create()
+                    .withCustomerId(customerId)
+                    .build();
+
+            x = XactTypeBuilder.Builder.create()
+                    .withXactId(item.getXactId())
+                    .withXactAmount(item.getXactAmount())
+                    .withXactType(xt)
+                    .withCustomer(c)
+                    .build();
+        }
+        else {
+            x = XactTypeBuilder.Builder.create()
+                    .withXactId(item.getXactId())
+                    .withXactAmount(item.getXactAmount())
+                    .withXactType(xt)
+                    .build();
+        }
+
+        list.add(x);
+        return list;
+    }
+
+    /**
+     * Builds a List of XactType objects from a List of XactCreditChargeDto
+     * objects.
+     * 
+     * @param results
+     *            List<{@link XactCreditChargeDto}>
+     * @param customCriteriaDto
+     *            custom relational criteria (optional)
+     * @return List<{@link XactType}>
+     */
+    public static final List<XactType> buildJaxbCreditPurchasesTransaction(XactCreditChargeDto xact) {
+    
+        XacttypeType xt = XacttypeTypeBuilder.Builder.create()
+                .withXactTypeId(xact.getXactTypeId())
+                .withDescription(xact.getXactTypeDescription())
+                .withCode(xact.getXactTypeCode())
+                .build();
+    
+        XactType x = XactTypeBuilder.Builder.create()
+                .withXactId(xact.getXactId())
+                .withXactType(xt)
+                .build();
+    
+        List<XactType> list = new ArrayList<>();
+        list.add(x);
+        return list;
     }
 }
 
