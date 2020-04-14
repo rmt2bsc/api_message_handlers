@@ -92,6 +92,11 @@ public class SalesOrderJaxbDtoFactory extends TransactionJaxbDtoFactory {
         if (profileData.getSalesOrderId() != null) {
             dto.setSalesOrderId(profileData.getSalesOrderId().intValue());
         }
+        else {
+            // In the event client did not supply the sales order id, initialize
+            // it as "new".
+            dto.setSalesOrderId(0);
+        }
         if (profileData.getCustomerId() != null) {
             dto.setCustomerId(profileData.getCustomerId().intValue());
         }
@@ -162,8 +167,14 @@ public class SalesOrderJaxbDtoFactory extends TransactionJaxbDtoFactory {
         if (profileItem.getSalesOrderItemId() != null) {
             dto.setSoItemId(profileItem.getSalesOrderItemId().intValue());
         }
+        else {
+            dto.setSoItemId(0);
+        }
         if (profileItem.getSalesOrderId() != null) {
             dto.setSalesOrderId(profileItem.getSalesOrderId().intValue());
+        }
+        else {
+            dto.setSalesOrderId(0);
         }
         if (profileItem.getItem() != null && profileItem.getItem().getItemId() != null) {
             dto.setItemId(profileItem.getItem().getItemId().intValue());
