@@ -1,5 +1,6 @@
 package org.rmt2.api.handler.transaction.sales;
 
+import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -31,7 +32,6 @@ import org.rmt2.api.handlers.transaction.sales.UpdateSalesOrderApiHandler;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.AccountingTransactionResponse;
-import org.rmt2.jaxb.SalesOrderItemType;
 import org.rmt2.jaxb.SalesOrderType;
 
 import com.api.config.SystemConfigurator;
@@ -124,6 +124,15 @@ public class SalesOrderUpdateMessageHandlerTest extends BaseAccountingMessageHan
             Assert.fail("Unable to setup mock stub for creating a sales order status DTO object");
         }
 
+        try {
+            SalesOrderDto dto = SalesOrderMockData.createMockSalesOrder().get(0);
+            dto.setSalesOrderId(SalesOrderMockData.NEW_XACT_ID);
+            dto.setOrderTotal(TEST_ORDER_TOTAL);
+            when(this.mockApi.getSalesOrder(eq(SalesOrderMockData.NEW_XACT_ID))).thenReturn(dto);
+        } catch (SalesApiException e) {
+            Assert.fail("Unable to setup mock stub for creating a sales order status DTO object");
+        }
+
         MessageHandlerResults results = null;
         UpdateSalesOrderApiHandler handler = new UpdateSalesOrderApiHandler();
         try {
@@ -152,18 +161,9 @@ public class SalesOrderUpdateMessageHandlerTest extends BaseAccountingMessageHan
             SalesOrderType a = actualRepsonse.getProfile().getSalesOrders().getSalesOrder().get(ndx);
             Assert.assertNotNull(a.getSalesOrderId());
             Assert.assertEquals(SalesOrderMockData.NEW_XACT_ID, a.getSalesOrderId().intValue());
-            Assert.assertNotNull(a.getCustomerId());
-            Assert.assertEquals(SalesOrderMockData.CUSTOMER_ID, a.getCustomerId().intValue());
             Assert.assertEquals(TEST_ORDER_TOTAL, a.getOrderTotal().doubleValue(), 0);
-            Assert.assertEquals(SalesApiConst.STATUS_CODE_QUOTE, a.getStatus().getStatusId().intValue());
             Assert.assertEquals("Quote", a.getStatus().getDescription());
-
-            // Test that order total equals sum of sales order items
-            double itemTotal = 0;
-            for (SalesOrderItemType item : a.getSalesOrderItems().getSalesOrderItem()) {
-                itemTotal += item.getMarkup().doubleValue() * item.getUnitCost().doubleValue();
-            }
-            Assert.assertEquals(TEST_ORDER_TOTAL, itemTotal, 0);
+            Assert.assertEquals(TEST_ORDER_TOTAL, a.getOrderTotal().doubleValue(), 0);
         }
     }
 
