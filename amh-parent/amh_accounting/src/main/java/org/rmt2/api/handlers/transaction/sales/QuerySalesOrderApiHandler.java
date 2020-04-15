@@ -122,10 +122,10 @@ public class QuerySalesOrderApiHandler extends SalesOrderApiHandler {
                     }
                     resultsMap.put(header.getSalesOrderId(), items);
                 }
-            }
 
-            // Convert query results to JAXB objects
-            jaxbResults = this.createJaxbResultSet(headerResults, resultsMap);
+                // Convert query results to JAXB objects
+                jaxbResults = this.createJaxbResultSet(headerResults, resultsMap);
+            }
 
             // Assign messages to the reply status that apply to the outcome of
             // this operation
