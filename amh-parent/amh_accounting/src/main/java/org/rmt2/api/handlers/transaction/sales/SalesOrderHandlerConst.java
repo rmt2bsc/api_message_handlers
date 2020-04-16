@@ -16,6 +16,10 @@ public class SalesOrderHandlerConst {
     public static final String MSG_REVERSE_SUCCESS = "Existing Sales order transaction, %s1, was reversed: %s2";
     public static final String MSG_CREATE_SUCCESS = "New sales order transaction was created: %s";
     public static final String MSG_UPDATE_SUCCESS = "%s sales order(s) were updated successfully";
+    public static final String MSG_CREATE_AND_INVOICED_SUCCESS = "Sales order was created and invoiced successfully";
+    public static final String MSG_INVOICED_SUCCESS = "Sales order was invoiced successfully";
+    public static final String MSG_CREATE_INVOICED_PAYMENT_SUCCESS = "Created, invoiced, and received payment for sales order successfully";
+    public static final String MSG_INVOICED_PAYMENT_SUCCESS = "Invoiced and received payment for sales order successfully";
     public static final String MSG_DELETE_SUCCESS = "%s sales order(s) were deleted successfully";
     public static final String MSG_CANCEL_SUCCESS = "%s sales order(s) were cancelled successfully";
     public static final String MSG_REFUND_SUCCESS = "%s sales order(s) were refunded successfully";
@@ -25,6 +29,10 @@ public class SalesOrderHandlerConst {
     public static final String MSG_CLOSE_SUCCESS = "%s sales order(s) were closed successfully";
     public static final String MSG_CREATE_FAILURE = "Failure to create sales order";
     public static final String MSG_UPDATE_FAILURE = "Failure to update sales order(s)";
+    public static final String MSG_CREATE_AND_INVOICE_FAILURE = "Failure to create and invoice sales order";
+    public static final String MSG_INVOICE_FAILURE = "Failure to invoice sales order";
+    public static final String MSG_CREATE_INVOICE_PAYMENT_FAILURE = "Failure to create, invoice, receive payment for sales order";
+    public static final String MSG_INVOICE_PAYMENT_FAILURE = "Failure to invoice and receive payment for sales order";
     public static final String MSG_DELETE_FAILURE = "Failure to delete sales order(s)";
     public static final String MSG_CANCEL_FAILURE = "Failure to cancel one or more sales orders";
     public static final String MSG_REFUND_FAILURE = "Failure to refund one or more sales orders";

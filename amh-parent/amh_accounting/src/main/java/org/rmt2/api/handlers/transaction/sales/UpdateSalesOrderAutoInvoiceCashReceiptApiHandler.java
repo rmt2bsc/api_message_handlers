@@ -1,23 +1,30 @@
 package org.rmt2.api.handlers.transaction.sales;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.dto.SalesInvoiceDto;
 import org.dto.SalesOrderDto;
 import org.dto.SalesOrderItemDto;
+import org.dto.SalesOrderStatusDto;
+import org.dto.SalesOrderStatusHistDto;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.AccountingTransactionRequest;
+import org.rmt2.jaxb.SalesInvoiceType;
+import org.rmt2.jaxb.SalesOrderStatusType;
 import org.rmt2.jaxb.SalesOrderType;
+import org.rmt2.util.accounting.transaction.sales.SalesInvoiceTypeBuilder;
 
 import com.InvalidDataException;
 import com.api.messaging.InvalidRequestException;
 import com.api.messaging.handler.MessageHandlerCommandException;
 import com.api.messaging.handler.MessageHandlerCommonReplyStatus;
 import com.api.messaging.handler.MessageHandlerResults;
-import com.api.util.RMT2String;
 import com.api.util.assistants.Verifier;
 import com.api.util.assistants.VerifyException;
 
@@ -92,6 +99,8 @@ public class UpdateSalesOrderAutoInvoiceCashReceiptApiHandler extends SalesOrder
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         SalesOrderType reqSalesOrder = req.getProfile().getSalesOrders().getSalesOrder().get(0);
         List<SalesOrderType> tranRresults = new ArrayList<>();
+        SalesOrderType respSalesOrder = this.jaxbObjFactory.createSalesOrderType();
+        SalesOrderStatusType respSOST = this.jaxbObjFactory.createSalesOrderStatusType();
         boolean newSalesOrder = false;
         try {
             SalesOrderDto salesOrderDto = SalesOrderJaxbDtoFactory.createSalesOrderHeaderDtoInstance(reqSalesOrder);
@@ -102,17 +111,30 @@ public class UpdateSalesOrderAutoInvoiceCashReceiptApiHandler extends SalesOrder
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
 
             // Create sales order
-            int updateReturnCode = SalesOrderRequestUtil.updateSalesOrder(this.api, salesOrderDto, itemsDtoList, reqSalesOrder);
+            SalesOrderRequestUtil.updateSalesOrder(this.api, salesOrderDto, itemsDtoList, reqSalesOrder);
 
             SalesOrderRequestUtil.invoiceSalesOrder(api, salesOrderDto, itemsDtoList, true, reqSalesOrder);
 
-            // Update the request with current sales order status information
-            SalesOrderRequestUtil.assignCurrentStatus(this.api, reqSalesOrder);
+            // Verify transaction
+            SalesInvoiceDto soiDto = this.api.getInvoice(salesOrderDto.getSalesOrderId());
+            SalesOrderStatusHistDto statusHistDto = this.api.getCurrentStatus(salesOrderDto.getSalesOrderId());
+            SalesOrderStatusDto statusDto = this.api.getStatus(statusHistDto.getSoStatusId());
+            if (soiDto != null) {
+                respSalesOrder.setSalesOrderId(BigInteger.valueOf(soiDto.getSalesOrderId()));
+                respSalesOrder.setOrderTotal(BigDecimal.valueOf(soiDto.getOrderTotal()));
+                respSalesOrder.setInvoiced(soiDto.isInvoiced());
+                SalesInvoiceType sit = SalesInvoiceTypeBuilder.Builder.create()
+                        .withInvoiceNo(soiDto.getInvoiceNo())
+                        .build();
+                respSalesOrder.setInvoiceDetails(sit);
+                respSOST.setDescription(statusDto.getSoStatusDescription());
+                respSalesOrder.setStatus(respSOST);
+            }
 
             // Assign messages to the reply status that apply to the outcome of
             // this operation
-            String msg = RMT2String.replace(newSalesOrder ? SalesOrderHandlerConst.MSG_CREATE_SUCCESS
-                    : SalesOrderHandlerConst.MSG_UPDATE_SUCCESS, String.valueOf(updateReturnCode), "%s");
+            String msg = (newSalesOrder ? SalesOrderHandlerConst.MSG_CREATE_INVOICED_PAYMENT_SUCCESS
+                    : SalesOrderHandlerConst.MSG_INVOICED_PAYMENT_SUCCESS);
             rs.setMessage(msg);
             rs.setRecordCount(1);
 
@@ -123,15 +145,16 @@ public class UpdateSalesOrderAutoInvoiceCashReceiptApiHandler extends SalesOrder
             logger.error("Error occurred during API Message Handler operation, " + this.command, e);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             if (newSalesOrder) {
-                rs.setMessage(SalesOrderHandlerConst.MSG_CREATE_FAILURE);
+                rs.setMessage(SalesOrderHandlerConst.MSG_CREATE_INVOICE_PAYMENT_FAILURE);
             }
             else {
-                rs.setMessage(SalesOrderHandlerConst.MSG_UPDATE_FAILURE);
+                rs.setMessage(SalesOrderHandlerConst.MSG_INVOICE_PAYMENT_FAILURE);
             }
             rs.setExtMessage(e.getMessage());
             this.api.rollbackTrans();
+            rs.setRecordCount(0);
         } finally {
-            tranRresults.add(reqSalesOrder);
+            tranRresults.add(respSalesOrder);
             this.api.close();
         }
 

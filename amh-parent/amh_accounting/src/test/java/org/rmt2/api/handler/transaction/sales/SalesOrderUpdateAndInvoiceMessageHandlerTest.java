@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.dao.mapping.orm.rmt2.SalesOrderStatus;
 import org.dao.mapping.orm.rmt2.SalesOrderStatusHist;
+import org.dto.SalesInvoiceDto;
 import org.dto.SalesOrderDto;
 import org.dto.SalesOrderStatusDto;
 import org.dto.SalesOrderStatusHistDto;
@@ -32,7 +33,6 @@ import org.rmt2.api.handlers.transaction.sales.UpdateSalesOrderAutoInvoiceApiHan
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.AccountingTransactionResponse;
-import org.rmt2.jaxb.SalesOrderItemType;
 import org.rmt2.jaxb.SalesOrderType;
 
 import com.api.config.SystemConfigurator;
@@ -41,7 +41,6 @@ import com.api.messaging.handler.MessageHandlerResults;
 import com.api.persistence.AbstractDaoClientImpl;
 import com.api.persistence.db.orm.Rmt2OrmClientFactory;
 import com.api.util.RMT2File;
-import com.api.util.RMT2String;
 
 /**
  * Tests updating and invoicing the sales order as one transaction for the Sales
@@ -132,6 +131,19 @@ public class SalesOrderUpdateAndInvoiceMessageHandlerTest extends BaseAccounting
             Assert.fail("Unable to setup mock stub for creating a sales order status DTO object");
         }
 
+        try {
+            List<SalesInvoiceDto> dto = SalesOrderMockData.createMockSalesInvoice();
+            dto.get(0).setSalesOrderId(SalesOrderMockData.NEW_XACT_ID);
+            dto.get(0).setOrderTotal(TEST_ORDER_TOTAL);
+            dto.get(0).setInvoiced(true);
+            dto.get(0).setInvoiceNo(SalesOrderMockData.NEW_INVOICE_NO);
+            dto.get(0).setSoStatusDescription("Invoice");
+            dto.get(0).setSoStatusId(SalesOrderMockData.SALES_ORDER_STAT_INVOICES);
+            when(this.mockApi.getInvoice(isA(Integer.class))).thenReturn(dto.get(0));
+        } catch (SalesApiException e) {
+            Assert.fail("Unable to setup mock stub for creating a sales invoice DTO object");
+        }
+
         MessageHandlerResults results = null;
         UpdateSalesOrderAutoInvoiceApiHandler handler = new UpdateSalesOrderAutoInvoiceApiHandler();
         try {
@@ -148,10 +160,7 @@ public class SalesOrderUpdateAndInvoiceMessageHandlerTest extends BaseAccounting
         Assert.assertEquals(1, actualRepsonse.getReplyStatus().getRecordCount().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
-
-        String expectedMsg = RMT2String.replace(SalesOrderHandlerConst.MSG_UPDATE_SUCCESS,
-                String.valueOf(actualRepsonse.getProfile().getSalesOrders().getSalesOrder().size()), "%s");
-        Assert.assertEquals(expectedMsg, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(SalesOrderHandlerConst.MSG_INVOICED_SUCCESS, actualRepsonse.getReplyStatus().getMessage());
 
         Assert.assertNotNull(actualRepsonse.getProfile());
         Assert.assertNotNull(actualRepsonse.getProfile().getSalesOrders());
@@ -160,18 +169,9 @@ public class SalesOrderUpdateAndInvoiceMessageHandlerTest extends BaseAccounting
             SalesOrderType a = actualRepsonse.getProfile().getSalesOrders().getSalesOrder().get(ndx);
             Assert.assertNotNull(a.getSalesOrderId());
             Assert.assertEquals(SalesOrderMockData.NEW_XACT_ID, a.getSalesOrderId().intValue());
-            Assert.assertNotNull(a.getCustomerId());
-            Assert.assertEquals(SalesOrderMockData.CUSTOMER_ID, a.getCustomerId().intValue());
             Assert.assertEquals(TEST_ORDER_TOTAL, a.getOrderTotal().doubleValue(), 0);
-            Assert.assertEquals(SalesApiConst.STATUS_CODE_INVOICED, a.getStatus().getStatusId().intValue());
             Assert.assertEquals("Invoice", a.getStatus().getDescription());
-
-            // Test that order total equals sum of sales order items
-            double itemTotal = 0;
-            for (SalesOrderItemType item : a.getSalesOrderItems().getSalesOrderItem()) {
-                itemTotal += item.getMarkup().doubleValue() * item.getUnitCost().doubleValue();
-            }
-            Assert.assertEquals(TEST_ORDER_TOTAL, itemTotal, 0);
+            Assert.assertEquals(TEST_ORDER_TOTAL, a.getOrderTotal().doubleValue(), 0);
         }
     }
 
@@ -202,7 +202,7 @@ public class SalesOrderUpdateAndInvoiceMessageHandlerTest extends BaseAccounting
         Assert.assertNotNull(actualRepsonse.getProfile());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(SalesOrderHandlerConst.MSG_UPDATE_FAILURE, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(SalesOrderHandlerConst.MSG_INVOICE_FAILURE, actualRepsonse.getReplyStatus().getMessage());
         Assert.assertEquals("A Sales order API test error occurred", actualRepsonse.getReplyStatus().getExtMessage());
     }
 
