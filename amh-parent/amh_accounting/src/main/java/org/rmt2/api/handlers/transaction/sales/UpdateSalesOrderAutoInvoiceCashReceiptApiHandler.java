@@ -12,6 +12,8 @@ import org.dto.SalesOrderDto;
 import org.dto.SalesOrderItemDto;
 import org.dto.SalesOrderStatusDto;
 import org.dto.SalesOrderStatusHistDto;
+import org.rmt2.api.handlers.transaction.receipts.CashReceiptsRequestUtil;
+import org.rmt2.api.handlers.transaction.receipts.PaymentEmailConfirmationException;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.AccountingTransactionRequest;
@@ -102,6 +104,10 @@ public class UpdateSalesOrderAutoInvoiceCashReceiptApiHandler extends SalesOrder
         SalesOrderType respSalesOrder = this.jaxbObjFactory.createSalesOrderType();
         SalesOrderStatusType respSOST = this.jaxbObjFactory.createSalesOrderStatusType();
         boolean newSalesOrder = false;
+        int xactId = 0;
+        int salesOrderId = 0;
+        int customerId = 0;
+
         try {
             SalesOrderDto salesOrderDto = SalesOrderJaxbDtoFactory.createSalesOrderHeaderDtoInstance(reqSalesOrder);
             List<SalesOrderItemDto> itemsDtoList = SalesOrderJaxbDtoFactory.createSalesOrderItemsDtoInstance(reqSalesOrder.getSalesOrderItems()
@@ -112,8 +118,11 @@ public class UpdateSalesOrderAutoInvoiceCashReceiptApiHandler extends SalesOrder
 
             // Create sales order
             SalesOrderRequestUtil.updateSalesOrder(this.api, salesOrderDto, itemsDtoList, reqSalesOrder);
+            salesOrderId = salesOrderDto.getSalesOrderId();
+            customerId = salesOrderDto.getCustomerId();
 
-            SalesOrderRequestUtil.invoiceSalesOrder(api, salesOrderDto, itemsDtoList, true, reqSalesOrder);
+            // Invoice sales order which should produce a new transaction
+            xactId = SalesOrderRequestUtil.invoiceSalesOrder(api, salesOrderDto, itemsDtoList, true, reqSalesOrder);
 
             // Verify transaction
             SalesInvoiceDto soiDto = this.api.getInvoice(salesOrderDto.getSalesOrderId());
@@ -160,6 +169,15 @@ public class UpdateSalesOrderAutoInvoiceCashReceiptApiHandler extends SalesOrder
 
         String xml = this.buildResponse(tranRresults, rs);
         results.setPayload(xml);
+
+        // Send Email Confirmation
+        try {
+            CashReceiptsRequestUtil util = new CashReceiptsRequestUtil();
+            util.emailPaymentConfirmation(customerId, salesOrderId, xactId);
+        } catch (PaymentEmailConfirmationException e) {
+            logger.error(e);
+        }
+
         return results;
     }
 

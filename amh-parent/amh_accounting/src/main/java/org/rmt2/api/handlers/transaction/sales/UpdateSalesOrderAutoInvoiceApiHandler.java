@@ -102,6 +102,7 @@ public class UpdateSalesOrderAutoInvoiceApiHandler extends SalesOrderApiHandler 
         SalesOrderType respSalesOrder = this.jaxbObjFactory.createSalesOrderType();
         SalesOrderStatusType respSOST = this.jaxbObjFactory.createSalesOrderStatusType();
         boolean newSalesOrder = false;
+
         try {
             SalesOrderDto salesOrderDto = SalesOrderJaxbDtoFactory.createSalesOrderHeaderDtoInstance(reqSalesOrder);
             List<SalesOrderItemDto> itemsDtoList = SalesOrderJaxbDtoFactory.createSalesOrderItemsDtoInstance(reqSalesOrder.getSalesOrderItems()
@@ -113,6 +114,7 @@ public class UpdateSalesOrderAutoInvoiceApiHandler extends SalesOrderApiHandler 
             // Create sales order
             SalesOrderRequestUtil.updateSalesOrder(this.api, salesOrderDto, itemsDtoList, reqSalesOrder);
 
+            // Invoice sales order which should produce a new transaction
             SalesOrderRequestUtil.invoiceSalesOrder(api, salesOrderDto, itemsDtoList, false, reqSalesOrder);
 
             // Verify transaction
