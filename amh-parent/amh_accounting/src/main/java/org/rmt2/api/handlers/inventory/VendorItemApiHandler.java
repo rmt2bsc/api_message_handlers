@@ -207,6 +207,8 @@ public class VendorItemApiHandler extends
                     .createVendorItemDtoCriteriaInstance(req.getCriteria().getVendorItemCriteria());
             List<SimpleItemType> items = req.getCriteria().getVendorItemCriteria().getItems().getItem();
             Integer[] itemIdList = AccountingtMsgHandlerUtility.getInventoryItemIdArray(items);
+
+            api.beginTrans();
             int rc = this.api.assignVendorItems(criteriaDto.getVendorId(), itemIdList);
             rs.setMessage(rc + " inventory items were assigned to vendor, " + criteriaDto.getVendorId());
             rs.setReturnCode(rc);
@@ -249,6 +251,7 @@ public class VendorItemApiHandler extends
                     .createVendorItemDtoCriteriaInstance(req.getCriteria().getVendorItemCriteria());
             List<SimpleItemType> items = req.getCriteria().getVendorItemCriteria().getItems().getItem();
             Integer[] itemIdList = AccountingtMsgHandlerUtility.getInventoryItemIdArray(items);
+            api.beginTrans();
             int rc = this.api.removeVendorItems(criteriaDto.getVendorId(), itemIdList);
             rs.setMessage(rc + " inventory items were removed from vendor, " + criteriaDto.getVendorId());
             rs.setReturnCode(rc);
@@ -288,6 +291,8 @@ public class VendorItemApiHandler extends
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             viDto = InventoryJaxbDtoFactory
                     .createVendorItemDtoInstance(req.getProfile().getVendorItem().get(0));
+
+            api.beginTrans();
             int rc = this.api.updateVendorItem(viDto);
             rs.setMessage("Vendor inventory item was updated");
             rs.setReturnCode(rc);

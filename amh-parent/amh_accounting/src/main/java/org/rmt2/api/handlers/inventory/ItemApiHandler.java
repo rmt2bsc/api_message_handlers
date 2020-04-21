@@ -123,6 +123,7 @@ public class ItemApiHandler extends
             criteriaDto = InventoryJaxbDtoFactory
                     .createItemMasterDtoCriteriaInstance(req.getCriteria().getItemCriteria());
 
+            api.beginTrans();
             int rc = this.api.activateItemMaster(criteriaDto.getItemId());
             rs.setMessage("Inventory item was activated successfully");
             rs.setReturnCode(rc);
@@ -161,10 +162,10 @@ public class ItemApiHandler extends
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             criteriaDto = InventoryJaxbDtoFactory
                     .createItemMasterDtoCriteriaInstance(req.getCriteria().getItemCriteria());
-            
-           int rc = this.api.deactivateItemMaster(criteriaDto.getItemId());
-           rs.setMessage("Inventory item was deactivated successfully");
-           rs.setReturnCode(rc);
+            api.beginTrans();
+            int rc = this.api.deactivateItemMaster(criteriaDto.getItemId());
+            rs.setMessage("Inventory item was deactivated successfully");
+            rs.setReturnCode(rc);
             this.responseObj.setHeader(req.getHeader());
             this.api.commitTrans();
         } catch (Exception e) {
@@ -200,11 +201,12 @@ public class ItemApiHandler extends
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             criteriaDto = InventoryJaxbDtoFactory
                     .createItemMasterDtoCriteriaInstance(req.getCriteria().getItemCriteria());
-            
-           Integer[] itemIdList = AccountingtMsgHandlerUtility.getInventoryItemIdArray(req.getCriteria().getItemCriteria().getItems().getItem());
-           int rc = this.api.addInventoryOverride(criteriaDto.getVendorId(), itemIdList);
-           rs.setMessage("Inventory item retail override was applied");
-           rs.setReturnCode(rc);
+            api.beginTrans();
+            Integer[] itemIdList = AccountingtMsgHandlerUtility.getInventoryItemIdArray(req.getCriteria().getItemCriteria()
+                    .getItems().getItem());
+            int rc = this.api.addInventoryOverride(criteriaDto.getVendorId(), itemIdList);
+            rs.setMessage("Inventory item retail override was applied");
+            rs.setReturnCode(rc);
             this.responseObj.setHeader(req.getHeader());
             this.api.commitTrans();
         } catch (Exception e) {
@@ -240,11 +242,12 @@ public class ItemApiHandler extends
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             criteriaDto = InventoryJaxbDtoFactory
                     .createItemMasterDtoCriteriaInstance(req.getCriteria().getItemCriteria());
-            
-           Integer[] itemIdList = AccountingtMsgHandlerUtility.getInventoryItemIdArray(req.getCriteria().getItemCriteria().getItems().getItem());
-           int rc = this.api.removeInventoryOverride(criteriaDto.getVendorId(), itemIdList);
-           rs.setMessage("Inventory item retail override was removed");
-           rs.setReturnCode(rc);
+            api.beginTrans();
+            Integer[] itemIdList = AccountingtMsgHandlerUtility.getInventoryItemIdArray(req.getCriteria().getItemCriteria()
+                    .getItems().getItem());
+            int rc = this.api.removeInventoryOverride(criteriaDto.getVendorId(), itemIdList);
+            rs.setMessage("Inventory item retail override was removed");
+            rs.setReturnCode(rc);
             this.responseObj.setHeader(req.getHeader());
             this.api.commitTrans();
         } catch (Exception e) {

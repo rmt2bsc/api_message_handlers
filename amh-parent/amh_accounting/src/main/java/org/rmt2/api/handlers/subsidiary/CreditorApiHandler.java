@@ -164,8 +164,8 @@ public class CreditorApiHandler extends
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             CreditorDto profileDto = SubsidiaryJaxbDtoFactory
                     .createCreditorDtoInstance(req.getProfile().getCreditors().getCreditor().get(0));
-            
-           rc = this.api.update(profileDto);
+            api.beginTrans();
+            rc = this.api.update(profileDto);
             if (rc <= 0) {
                 rs.setMessage("Creditor data not found for update");
                 String extraMsg = "Creditor Id: " + profileDto.getCreditorId() + ", Creditor Name: " + profileDto.getContactName();
@@ -215,7 +215,7 @@ public class CreditorApiHandler extends
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             criteriaDto = SubsidiaryJaxbDtoFactory
                     .createCreditorDtoCriteriaInstance(req.getCriteria().getCreditorCriteria());
-            
+            api.beginTrans();
             rc = this.api.delete(criteriaDto);
             rs.setMessage("Creditor delete operation completed!");
             rs.setExtMessage("Total records deleted: " + rc);

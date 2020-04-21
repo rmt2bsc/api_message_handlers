@@ -119,6 +119,7 @@ public class CreateCashDisbursementApiHandler extends XactApiHandler {
             // Force transaction type to plain cash disbursement
             xactDto.setXactTypeId(XactConst.XACT_TYPE_CASH_DISBURSE);
 
+            api.beginTrans();
             int newXactId = this.api.updateTrans(xactDto, itemsDtoList);
             xactDto.setXactId(newXactId);
 
@@ -181,6 +182,7 @@ public class CreateCashDisbursementApiHandler extends XactApiHandler {
             // Force transaction type to creditor cash disbursement
             xactDto.setXactTypeId(XactConst.XACT_TYPE_CREDITOR_PURCHASE);
 
+            api.beginTrans();
             int newXactId = this.api.updateTrans(xactDto, itemsDtoList, credDto.getCreditorId());
             xactDto.setXactId(newXactId);
 

@@ -89,6 +89,7 @@ public class DeleteSalesOrderApiHandler extends SalesOrderApiHandler {
         try {
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             int deleteReturnCode = 0;
+            api.beginTrans();
             for (int ndx = 0; ndx < reqSalesOrder.size(); ndx++) {
                 deleteReturnCode += api.deleteSalesOrder(reqSalesOrder.get(ndx).getSalesOrderId().intValue());
             }

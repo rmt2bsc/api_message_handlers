@@ -118,6 +118,7 @@ public class CreateCashReceiptsApiHandler extends XactApiHandler {
             // Get customer data
             CustomerDto criteriaDto = SubsidiaryJaxbDtoFactory.createCustomerDtoInstance(reqXact.getCustomer());
 
+            api.beginTrans();
             newXactId = this.api.receivePayment(xactDto, criteriaDto.getCustomerId());
             xactDto.setXactId(newXactId);
             customerId = criteriaDto.getCustomerId();

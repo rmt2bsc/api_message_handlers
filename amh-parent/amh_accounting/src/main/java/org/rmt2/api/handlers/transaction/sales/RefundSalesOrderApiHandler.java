@@ -89,6 +89,7 @@ public class RefundSalesOrderApiHandler extends SalesOrderApiHandler {
         try {
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             int refundTotal = 0;
+            api.beginTrans();
             for (SalesOrderType so : reqSalesOrder) {
                 api.refundSalesOrder(so.getSalesOrderId().intValue());
                 refundTotal++;

@@ -162,7 +162,7 @@ public class CustomerApiHandler extends
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             CustomerDto criteriaDto = SubsidiaryJaxbDtoFactory
                     .createCustomerDtoInstance(req.getProfile().getCustomers().getCustomer().get(0));
-            
+            api.beginTrans();
             rc = this.api.update(criteriaDto);
             if (rc > 0) {
                 rs.setMessage("Customer profile was updated successfully");    
@@ -209,7 +209,7 @@ public class CustomerApiHandler extends
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             criteriaDto = SubsidiaryJaxbDtoFactory
                     .createCustomerDtoCriteriaInstance(req.getCriteria().getCustomerCriteria());
-            
+            api.beginTrans();
             rc = this.api.delete(criteriaDto);
             rs.setMessage("Customer delete operation completed!");
             rs.setExtMessage("Total records deleted: " + rc);

@@ -104,6 +104,7 @@ public class CloseSalesOrderWithPaymentApiHandler extends SalesOrderApiHandler {
             XactDto xactDto = TransactionJaxbDtoFactory.createXactDtoInstance(reqXact);
 
             // Call API method to close sales order
+            api.beginTrans();
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             int rc = this.api.closeSalesOrderForPayment(soDtoList, xactDto);
 

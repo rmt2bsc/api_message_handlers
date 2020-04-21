@@ -110,6 +110,7 @@ public class UpdateSalesOrderApiHandler extends SalesOrderApiHandler {
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
 
             // Create sales order
+            api.beginTrans();
             int updateReturnCode = SalesOrderRequestUtil.updateSalesOrder(this.api, salesOrderDto, itemsDtoList, reqSalesOrder);
 
             // Update the request with current sales order status information

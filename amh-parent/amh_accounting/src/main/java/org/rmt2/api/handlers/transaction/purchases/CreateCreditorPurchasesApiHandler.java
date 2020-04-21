@@ -113,6 +113,7 @@ public class CreateCreditorPurchasesApiHandler extends XactApiHandler {
             List<XactTypeItemActivityDto> itemsDtoList = TransactionJaxbDtoFactory
                     .createXactItemDtoInstance(reqXact.getLineitems().getLineitem());
             
+            api.beginTrans();
             int newXactId = this.api.update(xactDto, itemsDtoList);
             reqXact.setXactId(BigInteger.valueOf(newXactId));
 

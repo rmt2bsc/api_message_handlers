@@ -118,6 +118,7 @@ public class UpdateSalesOrderAutoInvoiceCashReceiptApiHandler extends SalesOrder
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
 
+            api.beginTrans();
             // Create sales order
             SalesOrderRequestUtil.updateSalesOrder(this.api, salesOrderDto, itemsDtoList, reqSalesOrder);
             salesOrderId = salesOrderDto.getSalesOrderId();
