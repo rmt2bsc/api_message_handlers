@@ -22,7 +22,6 @@ import org.dto.SalesOrderDto;
 import org.dto.XactCodeDto;
 import org.dto.XactDto;
 import org.dto.adapter.orm.Rmt2AddressBookDtoFactory;
-import org.dto.adapter.orm.account.subsidiary.CustomerExt;
 import org.dto.adapter.orm.account.subsidiary.Rmt2SubsidiaryDtoFactory;
 import org.dto.adapter.orm.transaction.Rmt2XactDtoFactory;
 import org.dto.adapter.orm.transaction.sales.Rmt2SalesOrderDtoFactory;
@@ -61,6 +60,8 @@ import com.api.xml.jaxb.JaxbUtil;
  */
 public class CashReceiptsRequestUtil extends RMT2Base {
     private static final Logger logger = Logger.getLogger(CashReceiptsRequestUtil.class);
+
+    private double bal;
 
     /**
      * Default constructor
@@ -119,29 +120,6 @@ public class CashReceiptsRequestUtil extends RMT2Base {
         }
 
         String xmlData = this.buildPaymentConfirmation(customerId, salesOrderId, xactId);
-        ;
-        // try {
-        // xmlData = this.buildPaymentConfirmation(customerId, salesOrderId,
-        // xactId);
-        // } catch (CashReceiptApiException e) {
-        // this.msg =
-        // "Unable to retreive customer payment email confirmation body";
-        // logger.error(this.msg);
-        // throw new PaymentEmailConfirmationException(this.msg, e);
-        // }
-
-        // String appRoot = "c:/tmp/";
-        // StringBuffer xmlBuf = new StringBuffer();
-        // xmlBuf.append(MessageManager.MSG_OPEN_TAG);
-        // xmlBuf.append(MessageManager.MSG_OPEN_APPROOT_TAG);
-        // xmlBuf.append(appRoot);
-        // xmlBuf.append(MessageManager.MSG_CLOSE_APPROOT_TAG);
-        // xmlBuf.append("<pageTitle>");
-        // xmlBuf.append("Customer Payment Confirmation");
-        // xmlBuf.append("</pageTitle>");
-        // xmlBuf.append(custData);
-        // xmlBuf.append(MessageManager.MSG_CLOSE_TAG);
-        // String xml = xmlBuf.toString();
 
         // Transform XML to HTML document
         String appFilePath = "reports/";
@@ -170,7 +148,7 @@ public class CashReceiptsRequestUtil extends RMT2Base {
         EmailMessageBean emailBean = new EmailMessageBean();
         emailBean.setFromAddress(System.getProperty("CompContactEmail"));
 
-        BusinessContactDto bus = this.getBusinessContact(salesOrderId);
+        BusinessContactDto bus = this.getBusinessContact(customerId);
         emailBean.setToAddress(bus.getContactEmail());
 
         // For last minute quick testing
@@ -240,7 +218,7 @@ public class CashReceiptsRequestUtil extends RMT2Base {
         }
 
         // Get Customer data
-        CustomerExt cust = null;
+        CustomerDto cust = null;
         cust = this.getCustomer(customerId);
 
         // Get Sales Order data
@@ -255,11 +233,10 @@ public class CashReceiptsRequestUtil extends RMT2Base {
 
         // Construct JAXB objects
         CustomerData cd = PayConfirmCustomerBuilder.Builder.create()
-                .withBalance(cust.getBalance())
-                .withBusinessId(cust.getBusinessId())
+                .withBalance(this.bal)
+                .withBusinessId(cust.getContactId())
                 .withContactEmail(cust.getContactEmail())
                 .withCustomerId(cust.getCustomerId())
-                .withGlAccountId(cust.getGlAccountId())
                 .withAccoutNo(cust.getAccountNo())
                 .build();
 
@@ -293,20 +270,19 @@ public class CashReceiptsRequestUtil extends RMT2Base {
         return xml;
     }
 
-    private BusinessContactDto getBusinessContact(int salesOrderId) throws PaymentEmailConfirmationException {
-        SalesOrder so = this.getSalesOrder(salesOrderId);
-        CustomerExt customer = this.getCustomer(so.getCustomerId());
+    private BusinessContactDto getBusinessContact(int customerId) throws PaymentEmailConfirmationException {
+        CustomerDto cust = this.getCustomer(customerId);
         ContactsApi contactsApi = ContactsApiFactory.createApi();
         BusinessContactDto criteria = Rmt2AddressBookDtoFactory.getBusinessInstance(null);
-        criteria.setContactId(customer.getBusinessId());
+        criteria.setContactId(cust.getContactId());
         try {
             List<ContactDto> contacts = contactsApi.getContact(criteria);
             if (contacts != null && contacts.size() == 1 && contacts.get(0) instanceof BusinessContactDto) {
                 return (BusinessContactDto) contacts.get(0);
             }
             else {
-                this.msg = "Unable to fetch customer business contact details to perform cash receipts confirmation due to customer business contact data was not found for sales order, "
-                        + salesOrderId;
+                this.msg = "Unable to send payment confirmation email due to customer's business contact details could not be found for ccustomer id: "
+                        + customerId;
                 throw new PaymentEmailConfirmationException(this.msg);
             }
         } catch (ContactsApiException e) {
@@ -333,19 +309,15 @@ public class CashReceiptsRequestUtil extends RMT2Base {
         }
     }
 
-    private CustomerExt getCustomer(int customerId) throws PaymentEmailConfirmationException {
-        SubsidiaryDaoFactory subDaoFact = new SubsidiaryDaoFactory();
-        CustomerDao custDao = subDaoFact.createRmt2OrmCustomerDao(CommonAccountingConst.APP_NAME);
+    private CustomerDto getCustomer(int customerId) throws PaymentEmailConfirmationException {
+        CustomerDao custDao = SubsidiaryDaoFactory.createRmt2OrmCustomerDao(CommonAccountingConst.APP_NAME);
         CustomerDto custCriteria = Rmt2SubsidiaryDtoFactory.createCustomerInstance(null, null);
         custCriteria.setCustomerId(customerId);
-        CustomerExt cust = null;
         try {
             List<CustomerDto> custList = custDao.fetch(custCriteria);
             if (custList != null && custList.size() == 1) {
-                cust = SubsidiaryDaoFactory.createCustomerExtBean(custList.get(0));
-                double bal = custDao.calculateBalance(cust.getCustomerId());
-                cust.setBalance(bal);
-                return cust;
+                this.bal = custDao.calculateBalance(customerId);
+                return custList.get(0);
             }
             else {
                 this.msg = "Unable to fetch customer details to perform cash receipts confirmation due to customer, "
