@@ -101,6 +101,12 @@
 			<xsl:value-of select="reason"/>
 		</td>
 	</tr>
+	<tr>
+		<th class="clsTableListHeader" vAlign="top" width="20%" style="text-align: right">Payment Method:</th>
+		<td align="left" width="80%">
+			<xsl:value-of select="tenderId"/>
+		</td>
+	</tr>
 </xsl:template>
    
 </xsl:stylesheet>
