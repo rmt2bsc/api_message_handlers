@@ -18,6 +18,8 @@ import org.rmt2.jaxb.AccountingTransactionRequest;
 import org.rmt2.jaxb.SalesInvoiceType;
 import org.rmt2.jaxb.SalesOrderStatusType;
 import org.rmt2.jaxb.SalesOrderType;
+import org.rmt2.jaxb.XactType;
+import org.rmt2.util.accounting.transaction.XactTypeBuilder;
 import org.rmt2.util.accounting.transaction.sales.SalesInvoiceTypeBuilder;
 
 import com.InvalidDataException;
@@ -115,7 +117,7 @@ public class UpdateSalesOrderAutoInvoiceApiHandler extends SalesOrderApiHandler 
             SalesOrderRequestUtil.updateSalesOrder(this.api, salesOrderDto, itemsDtoList, reqSalesOrder);
 
             // Invoice sales order which should produce a new transaction
-            SalesOrderRequestUtil.invoiceSalesOrder(api, salesOrderDto, itemsDtoList, false, reqSalesOrder);
+            int xactId = SalesOrderRequestUtil.invoiceSalesOrder(api, salesOrderDto, itemsDtoList, false, reqSalesOrder);
 
             // Verify transaction
             SalesInvoiceDto soiDto = this.api.getInvoice(salesOrderDto.getSalesOrderId());
@@ -125,8 +127,12 @@ public class UpdateSalesOrderAutoInvoiceApiHandler extends SalesOrderApiHandler 
                 respSalesOrder.setSalesOrderId(BigInteger.valueOf(soiDto.getSalesOrderId()));
                 respSalesOrder.setOrderTotal(BigDecimal.valueOf(soiDto.getOrderTotal()));
                 respSalesOrder.setInvoiced(soiDto.isInvoiced());
+                XactType xt = XactTypeBuilder.Builder.create()
+                        .withXactId(xactId)
+                        .build();
                 SalesInvoiceType sit = SalesInvoiceTypeBuilder.Builder.create()
                         .withInvoiceNo(soiDto.getInvoiceNo())
+                        .withTransaction(xt)
                         .build();
                 respSalesOrder.setInvoiceDetails(sit);
                 respSOST.setDescription(statusDto.getSoStatusDescription());

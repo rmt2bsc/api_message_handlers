@@ -20,6 +20,8 @@ import org.rmt2.jaxb.AccountingTransactionRequest;
 import org.rmt2.jaxb.SalesInvoiceType;
 import org.rmt2.jaxb.SalesOrderStatusType;
 import org.rmt2.jaxb.SalesOrderType;
+import org.rmt2.jaxb.XactType;
+import org.rmt2.util.accounting.transaction.XactTypeBuilder;
 import org.rmt2.util.accounting.transaction.sales.SalesInvoiceTypeBuilder;
 
 import com.InvalidDataException;
@@ -132,8 +134,12 @@ public class UpdateSalesOrderAutoInvoiceCashReceiptApiHandler extends SalesOrder
                 respSalesOrder.setSalesOrderId(BigInteger.valueOf(soiDto.getSalesOrderId()));
                 respSalesOrder.setOrderTotal(BigDecimal.valueOf(soiDto.getOrderTotal()));
                 respSalesOrder.setInvoiced(soiDto.isInvoiced());
+                XactType xt = XactTypeBuilder.Builder.create()
+                        .withXactId(xactId)
+                        .build();
                 SalesInvoiceType sit = SalesInvoiceTypeBuilder.Builder.create()
                         .withInvoiceNo(soiDto.getInvoiceNo())
+                        .withTransaction(xt)
                         .build();
                 respSalesOrder.setInvoiceDetails(sit);
                 respSOST.setDescription(statusDto.getSoStatusDescription());
@@ -150,6 +156,14 @@ public class UpdateSalesOrderAutoInvoiceCashReceiptApiHandler extends SalesOrder
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.responseObj.setHeader(req.getHeader());
             this.api.commitTrans();
+
+            // Send Email Confirmation
+            try {
+                CashReceiptsRequestUtil util = new CashReceiptsRequestUtil();
+                util.emailPaymentConfirmation(customerId, salesOrderId, xactId);
+            } catch (PaymentEmailConfirmationException e) {
+                logger.error(e);
+            }
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
@@ -169,15 +183,6 @@ public class UpdateSalesOrderAutoInvoiceCashReceiptApiHandler extends SalesOrder
 
         String xml = this.buildResponse(tranRresults, rs);
         results.setPayload(xml);
-
-        // Send Email Confirmation
-        try {
-            CashReceiptsRequestUtil util = new CashReceiptsRequestUtil();
-            util.emailPaymentConfirmation(customerId, salesOrderId, xactId);
-        } catch (PaymentEmailConfirmationException e) {
-            logger.error(e);
-        }
-
         return results;
     }
 

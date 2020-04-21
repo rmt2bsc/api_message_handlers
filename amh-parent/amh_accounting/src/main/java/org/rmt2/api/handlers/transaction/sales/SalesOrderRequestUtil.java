@@ -117,7 +117,9 @@ public class SalesOrderRequestUtil {
      *            transaction once invoiced.
      * @param reqSalesOrder
      *            an instance of {@link SalesOrderType}
-     * @return new transaction id
+     * @return int. If the operation is invoice only, then the transaction id of
+     *         the sales order invoice is returned. If a payment is applied, the
+     *         transaction id of the payment is returned.
      * @throws SalesApiException
      *             for sales order API error
      */

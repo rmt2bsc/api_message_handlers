@@ -104,6 +104,8 @@ public class CreateCashReceiptsApiHandler extends XactApiHandler {
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         XactType reqXact = req.getProfile().getTransactions().getTransaction().get(0);
         List<XactType> tranRresults = new ArrayList<>();
+        int newXactId = 0;
+        int customerId = 0;
 
         try {
             // Set reply status
@@ -116,8 +118,9 @@ public class CreateCashReceiptsApiHandler extends XactApiHandler {
             // Get customer data
             CustomerDto criteriaDto = SubsidiaryJaxbDtoFactory.createCustomerDtoInstance(reqXact.getCustomer());
 
-            int newXactId = this.api.receivePayment(xactDto, criteriaDto.getCustomerId());
+            newXactId = this.api.receivePayment(xactDto, criteriaDto.getCustomerId());
             xactDto.setXactId(newXactId);
+            customerId = criteriaDto.getCustomerId();
 
             // Verify new transaction
             XactDto newXactDto = this.api.getXactById(newXactId);
@@ -129,8 +132,6 @@ public class CreateCashReceiptsApiHandler extends XactApiHandler {
                 tranRresults = TransactionJaxbDtoFactory.buildJaxbCustomerTransaction(newXactDto, criteriaDto.getCustomerId());
             }
 
-            // reqXact.getCustomer().setCustomerId(BigInteger.valueOf(criteriaDto.getCustomerId()));
-            // reqXact.setXactId(BigInteger.valueOf(newXactId));
             String msg = RMT2String.replace(MSG_CREATE_SUCCESS, String.valueOf(newXactId), "%s");
             rs.setMessage(msg);
             rs.setRecordCount(1);
@@ -138,6 +139,14 @@ public class CreateCashReceiptsApiHandler extends XactApiHandler {
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.responseObj.setHeader(req.getHeader());
             this.api.commitTrans();
+
+            // Send Email Confirmation
+            try {
+                CashReceiptsRequestUtil util = new CashReceiptsRequestUtil();
+                util.emailPaymentConfirmation(customerId, null, newXactId);
+            } catch (PaymentEmailConfirmationException e) {
+                logger.error(e);
+            }
         } catch (Exception e) {
             logger.error("Error occurred during Cash Receipts API Message Handler operation, " + this.command, e);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
