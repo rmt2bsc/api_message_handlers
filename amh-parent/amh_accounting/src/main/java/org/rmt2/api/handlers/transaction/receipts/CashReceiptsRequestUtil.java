@@ -74,7 +74,7 @@ public class CashReceiptsRequestUtil extends RMT2Base {
         super();
     }
 
-    private void validate(Integer customerId, Integer xactId) {
+    private void validateEmailParms(Integer customerId, Integer xactId) {
         // Customer id cannot be null
         try {
             Verifier.verifyNotNull(customerId);
@@ -126,7 +126,7 @@ public class CashReceiptsRequestUtil extends RMT2Base {
     public int emailPaymentConfirmation(Integer customerId, Integer salesOrderId, Integer xactId)
             throws PaymentEmailConfirmationException {
 
-        this.validate(customerId, xactId);
+        this.validateEmailParms(customerId, xactId);
         String xmlData = this.buildPaymentConfirmation(customerId, salesOrderId, xactId);
 
         // Transform XML to HTML document
