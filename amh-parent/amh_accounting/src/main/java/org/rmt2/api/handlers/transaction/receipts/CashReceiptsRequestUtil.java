@@ -60,6 +60,10 @@ import com.api.xml.jaxb.JaxbUtil;
  */
 public class CashReceiptsRequestUtil extends RMT2Base {
     private static final Logger logger = Logger.getLogger(CashReceiptsRequestUtil.class);
+    public static final String ERROR_MSG_XACTID_REQUIRED = "Transaction Id is required";
+    public static final String ERROR_MSG_XACTID_GREATER_ZERO = "Transaction Id must be a value greater than zero";
+    public static final String ERROR_MSG_CUSTOMERID_REQUIRED = "Customer Id is required";
+    public static final String ERROR_MSG_CUSTOMERID_GREATER_ZERO = "Customer Id must be a value greater than zero";
 
     private double bal;
 
@@ -68,6 +72,40 @@ public class CashReceiptsRequestUtil extends RMT2Base {
      */
     public CashReceiptsRequestUtil() {
         super();
+    }
+
+    private void validate(Integer customerId, Integer xactId) {
+        // Customer id cannot be null
+        try {
+            Verifier.verifyNotNull(customerId);
+        } catch (VerifyException e) {
+            this.msg = ERROR_MSG_CUSTOMERID_REQUIRED;
+            throw new InvalidDataException(this.msg, e);
+        }
+
+        // Customer id must be greater than zero
+        try {
+            Verifier.verifyPositive(customerId);
+        } catch (VerifyException e) {
+            this.msg = ERROR_MSG_CUSTOMERID_GREATER_ZERO;
+            throw new InvalidDataException(this.msg, e);
+        }
+
+        // Transaction id cannot be null
+        try {
+            Verifier.verifyNotNull(xactId);
+        } catch (VerifyException e) {
+            this.msg = ERROR_MSG_XACTID_REQUIRED;
+            throw new InvalidDataException(this.msg, e);
+        }
+
+        // Transaction id must be greater than zero
+        try {
+            Verifier.verifyPositive(xactId);
+        } catch (VerifyException e) {
+            this.msg = ERROR_MSG_XACTID_GREATER_ZERO;
+            throw new InvalidDataException(this.msg, e);
+        }
     }
 
     /**
@@ -87,38 +125,8 @@ public class CashReceiptsRequestUtil extends RMT2Base {
      */
     public int emailPaymentConfirmation(Integer customerId, Integer salesOrderId, Integer xactId)
             throws PaymentEmailConfirmationException {
-        // Customer id cannot be null
-        try {
-            Verifier.verifyNotNull(customerId);
-        } catch (VerifyException e) {
-            this.msg = "Customer Id is required";
-            throw new InvalidDataException(this.msg, e);
-        }
 
-        // Customer id must be greater than zero
-        try {
-            Verifier.verifyPositive(customerId);
-        } catch (VerifyException e) {
-            this.msg = "Customer Id must be a value greater than zero";
-            throw new InvalidDataException(this.msg, e);
-        }
-
-        // Transaction id cannot be null
-        try {
-            Verifier.verifyNotNull(xactId);
-        } catch (VerifyException e) {
-            this.msg = "Transaction Id is required";
-            throw new InvalidDataException(this.msg, e);
-        }
-
-        // Transaction id must be greater than zero
-        try {
-            Verifier.verifyPositive(xactId);
-        } catch (VerifyException e) {
-            this.msg = "Transaction Id must be a value greater than zero";
-            throw new InvalidDataException(this.msg, e);
-        }
-
+        this.validate(customerId, xactId);
         String xmlData = this.buildPaymentConfirmation(customerId, salesOrderId, xactId);
 
         // Transform XML to HTML document
@@ -172,7 +180,8 @@ public class CashReceiptsRequestUtil extends RMT2Base {
             return rc;
         } catch (MessageException e) {
             this.msg = "Customer payment confirmation error.  " + e.getMessage();
-            throw new PaymentEmailConfirmationException(this.msg, e);
+            logger.error(this.msg);
+            throw new PaymentEmailConfirmationException(e);
         }
     }
 
