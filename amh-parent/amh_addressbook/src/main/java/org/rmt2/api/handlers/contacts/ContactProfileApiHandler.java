@@ -1,6 +1,7 @@
 package org.rmt2.api.handlers.contacts;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import org.rmt2.jaxb.CommonContactCriteria;
 import org.rmt2.jaxb.CommonContactType;
 import org.rmt2.jaxb.ContactCriteriaGroup;
 import org.rmt2.jaxb.ContactDetailGroup;
+import org.rmt2.jaxb.ContacttypeType;
 import org.rmt2.jaxb.ObjectFactory;
 import org.rmt2.jaxb.PersonContactCriteria;
 import org.rmt2.jaxb.PersonType;
@@ -52,6 +54,7 @@ public class ContactProfileApiHandler extends
                   AbstractJaxbMessageHandler<AddressBookRequest, AddressBookResponse, ContactDetailGroup> {
     
     private static final Logger logger = Logger.getLogger(ContactProfileApiHandler.class);
+    public static final String DELETE_RC_NOTE = ".  NOTE: The return code should be \"2\" for each contact deleted - one delete for the contact and another delete for the contact's address";
     private ObjectFactory jaxbObjFactory;
     protected ContactsApi api;
 
@@ -83,10 +86,10 @@ public class ContactProfileApiHandler extends
         }
         switch (command) {
             case ApiTransactionCodes.CONTACTS_UPDATE:
-                 r = this.update(this.requestObj);
+                r = this.update(this.requestObj);
                 break;
             case ApiTransactionCodes.CONTACTS_DELETE:
-                 r = this.delete(this.requestObj);
+                r = this.delete(this.requestObj);
                 break;
             case ApiTransactionCodes.CONTACTS_GET:
                 r = this.fetch(this.requestObj);
@@ -100,14 +103,15 @@ public class ContactProfileApiHandler extends
     }
 
     /**
-     * Handler for invoking the appropriate API in order to fetch one or more contacts.
+     * Handler for invoking the appropriate API in order to fetch one or more
+     * contacts.
      * <p>
      * This method is capable of processing personal, business, or generic
      * contact types.
      * 
      * @param req
      *            The request used to build the ContactDto selection criteria
-     * @return an instance of {@link MessageHandlerResults}           
+     * @return an instance of {@link MessageHandlerResults}
      */
     protected MessageHandlerResults fetch(AddressBookRequest req) {
         MessageHandlerResults results = new MessageHandlerResults();
@@ -119,23 +123,24 @@ public class ContactProfileApiHandler extends
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.validateRequest(req);
             ContactDto criteriaDto = this.extractSelectionCriteria(req.getCriteria());
-            
+
             List<ContactDto> dtoList = api.getContact(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage("Contact data not found!");
-                rs.setReturnCode(0);
+                rs.setRecordCount(0);
             }
             else {
-                cdg = this.buildContactDetailGroup(dtoList);
+                cdg = this.buildQueryResults(dtoList);
                 rs.setMessage("Contact record(s) found");
-                rs.setReturnCode(dtoList.size());
+                rs.setRecordCount(dtoList.size());
             }
             this.responseObj.setHeader(req.getHeader());
 
         } catch (Exception e) {
-            logger.error("Error occurred during API Message Handler operation, " + this.command, e );
+            logger.error("Error occurred during API Message Handler operation, " + this.command, e);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to retrieve contact(s)");
             rs.setExtMessage(e.getMessage());
@@ -162,40 +167,54 @@ public class ContactProfileApiHandler extends
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         ContactDetailGroup cdg = null;
-        
+
         boolean newContact = false;
         ContactsApi api = ContactsApiFactory.createApi();
         int rc = 0;
         try {
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
-            this.validateRequest(req); 
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+            this.validateRequest(req);
             ContactDto contactDto = this.extractContactObject(req.getProfile());
             newContact = (contactDto.getContactId() == 0);
-            
+
             // call api
             api.beginTrans();
             rc = api.updateContact(contactDto);
-            
-            // // prepare response with updated contact data
-            cdg = req.getProfile();
 
-            // Return code is either the total number of rows updated or the business id of the contact created
-            rs.setReturnCode(rc);
-            if (newContact) {
-                rs.setMessage("Contact was created successfully");
-                rs.setExtMessage("The new contact id is " + rc);
+            // prepare response with updated contact data
+            cdg = this.buildUpdateResults(contactDto);
+
+            // Return code is either the total number of rows updated or the
+            // business id of the contact created
+            if (rc > 0) {
+                if (newContact) {
+                    rs.setMessage("Contact was created successfully");
+                    rs.setExtMessage("The new contact id is " + rc);
+                    rs.setRecordCount(1);
+                }
+                else {
+                    rs.setMessage("Contact was modified successfully");
+                    rs.setExtMessage("Total number of contacts modified: " + rc);
+                    rs.setRecordCount(rc);
+                }
             }
             else {
-                rs.setMessage("Contact was modified successfully");
-                rs.setExtMessage("Total number of rows modified: " + rc);
+                if (newContact) {
+                    rs.setMessage("Unable to create contact");
+                }
+                else {
+                    rs.setMessage("Unable to update existing contact");
+                }
+                rs.setRecordCount(0);
             }
+
             api.commitTrans();
         } catch (Exception e) {
-            logger.error("Error occurred during API Message Handler operation, " + this.command, e );
+            logger.error("Error occurred during API Message Handler operation, " + this.command, e);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setMessage("Failure to update " + (newContact ? "new" : "existing")  + " contact");
+            rs.setMessage("Failure to update " + (newContact ? "new" : "existing") + " contact");
             rs.setExtMessage(e.getMessage());
-            cdg = req.getProfile();
             api.rollbackTrans();
         } finally {
             api.close();
@@ -220,25 +239,34 @@ public class ContactProfileApiHandler extends
     protected MessageHandlerResults delete(AddressBookRequest req) {
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
-        
+
         ContactsApi api = ContactsApiFactory.createApi();
         int rc = 0;
         try {
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
-            this.validateRequest(req); 
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+            this.validateRequest(req);
             ContactDto criteriaDto = this.extractSelectionCriteria(req.getCriteria());
-            
+
             // call api
             api.beginTrans();
             rc = api.deleteContact(criteriaDto);
-            
+
             // Return code is either the total number of rows deleted
-            rs.setReturnCode(rc);
-            rs.setMessage("Contact was deleted successfully");
-            rs.setExtMessage("Contact Id deleted was " + criteriaDto.getContactId());
+            if (rc > 0) {
+                rs.setMessage("Contact was deleted successfully");
+                rs.setExtMessage("Contact Id deleted was " + criteriaDto.getContactId() + DELETE_RC_NOTE);
+                rs.setRecordCount(rc);
+            }
+            else {
+                rs.setMessage("Unable to delete contact");
+                rs.setExtMessage("Contact Id targeted was " + criteriaDto.getContactId());
+                rs.setRecordCount(0);
+            }
+
             api.commitTrans();
         } catch (Exception e) {
-            logger.error("Error occurred during API Message Handler operation, " + this.command, e );
+            logger.error("Error occurred during API Message Handler operation, " + this.command, e);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to delelte contact");
             rs.setExtMessage(e.getMessage());
@@ -251,30 +279,46 @@ public class ContactProfileApiHandler extends
         return results;
     }
     
-    private ContactDetailGroup buildContactDetailGroup(List<ContactDto> results) {
+    private ContactDetailGroup buildQueryResults(List<ContactDto> results) {
         ContactDetailGroup cdg = jaxbObjFactory.createContactDetailGroup();
         ContactsJaxbFactory cjf = new ContactsJaxbFactory();
-        
+
         for (ContactDto contact : results) {
             if (contact instanceof BusinessContactDto) {
                 BusinessType jaxbObj = cjf.createBusinessTypeInstance(contact);
                 cdg.getBusinessContacts().add(jaxbObj);
-            } else if (contact instanceof PersonalContactDto) {
+            }
+            else if (contact instanceof PersonalContactDto) {
                 PersonType jaxbObj = cjf.createPersonalTypeInstance(contact);
                 cdg.getPersonContacts().add(jaxbObj);
-            } else {
+            }
+            else {
                 CommonContactType jaxbObj = cjf.createCommonContactTypeInstance(contact);
                 cdg.getCommonContacts().add(jaxbObj);
             }
         }
         return cdg;
     }
+
+    private ContactDetailGroup buildUpdateResults(ContactDto contact) {
+        ContactDetailGroup cdg = jaxbObjFactory.createContactDetailGroup();
+        ObjectFactory f = new ObjectFactory();
+        CommonContactType o = f.createCommonContactType();
+        o.setContactId(BigInteger.valueOf(contact.getContactId()));
+        o.setContactType(ContacttypeType.BUS.name().equalsIgnoreCase(contact.getContactType()) ? ContacttypeType.BUS
+                : ContacttypeType.PER);
+        o.setContactName(contact.getContactName());
+
+        cdg.getCommonContacts().add(o);
+        return cdg;
+    }
+
    /**
     * 
     * @param criteriaObj
     * @return
     */
-   private ContactDto extractSelectionCriteria(ContactCriteriaGroup criteriaGroup) {
+    private ContactDto extractSelectionCriteria(ContactCriteriaGroup criteriaGroup) {
        Object criteriaObj = this.validateSelectionCriteria(criteriaGroup);
        ContactDto dto = null;
        if (criteriaObj instanceof BusinessContactCriteria) {
@@ -293,7 +337,7 @@ public class ContactProfileApiHandler extends
        return dto;
    }
    
-   private ContactDto extractContactObject(ContactDetailGroup cdg) {
+    private ContactDto extractContactObject(ContactDetailGroup cdg) {
        Object contactObj = this.validateContactDetailGroup(cdg);
        ContactDto dto = null;
        if (contactObj instanceof BusinessType) {
@@ -314,7 +358,7 @@ public class ContactProfileApiHandler extends
        return dto;
    }
    
-   private Object validateSelectionCriteria(ContactCriteriaGroup criteriaGroup) {
+    private Object validateSelectionCriteria(ContactCriteriaGroup criteriaGroup) {
         try {
             Verifier.verifyNotNull(criteriaGroup);
         } catch (VerifyException e) {
