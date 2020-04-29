@@ -7,10 +7,9 @@ package org.rmt2.api.handlers.employee;
  *
  */
 public class EmployeeMessageHandlerConst {
-    public static final String MSG_MISSING_TRANSACTION_SECTION = "Transaction section is missing from the profile data section";
-    public static final String MESSAGE_EMPLOYEE_FOUND = "Employee record(s) found";
-    public static final String MESSAGE_EMPLOYEE_NOT_FOUND = "Employee data not found!";
-    public static final String MESSAGE_EMPLOYEE_ERROR = "Failure to retrieve Employee(s)";
+    public static final String MESSAGE_FOUND = "Employee record(s) found";
+    public static final String MESSAGE_NOT_FOUND = "Employee data not found!";
+    public static final String MESSAGE_FETCH_ERROR = "Failure to retrieve Employee(s)";
     /**
      * 
      */
