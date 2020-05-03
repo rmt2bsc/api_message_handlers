@@ -64,17 +64,6 @@ public class EmployeeQueryMessageHandlerTest extends BaseProjectTrackerMessageHa
     @Override
     public void setUp() throws Exception {
         super.setUp();
-
-        // This code fragment is only needed when the factory is not using
-        // static method calls and need to instantiated.
-        // mockApiFactory = Mockito.mock(EmployeeApiFactory.class);
-        // try {
-        // PowerMockito.whenNew(GeneralLedgerApiFactory.class)
-        // .withNoArguments().thenReturn(this.mockApiFactory);
-        // } catch (Exception e) {
-        // e.printStackTrace();
-        // }
-
         mockApi = Mockito.mock(EmployeeApi.class);
         PowerMockito.mockStatic(EmployeeApiFactory.class);
         when(EmployeeApiFactory.createApi(isA(String.class))).thenReturn(mockApi);
@@ -195,19 +184,6 @@ public class EmployeeQueryMessageHandlerTest extends BaseProjectTrackerMessageHa
 
     @Test
     /**
-     * Moving forward, it does not make sense to unit test
-     * "invalid transaction code" within this project. It is more applicable to
-     * test in the internal business server project where the client sends a
-     * message and the framework tests the transaction action code that is
-     * gathered from the message against the list of valid transaction codes. 
-     */
-    public void testError_Incorrect_Trans_Code() {
-
-    }
-    
-
-    @Test
-    /**
      * To date, there are no validations to test.  Leaving stub in case this changes.
      */
     public void testValidation_() {
@@ -224,16 +200,5 @@ public class EmployeeQueryMessageHandlerTest extends BaseProjectTrackerMessageHa
         }
         Assert.assertNotNull(results);
         Assert.assertNotNull(results.getPayload());
-
-        // ProjectProfileResponse actualRepsonse = (ProjectProfileResponse) jaxb
-        // .unMarshalMessage(results.getPayload().toString());
-        // Assert.assertNull(actualRepsonse.getProfile());
-        // Assert.assertEquals(-1,
-        // actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        // Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST,
-        // actualRepsonse.getReplyStatus()
-        // .getReturnStatus());
-        // Assert.assertEquals("A valid account id is required when deleting a GL Account from the database",
-        // actualRepsonse.getReplyStatus().getMessage());
     }
 }
