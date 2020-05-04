@@ -15,6 +15,7 @@ import org.dao.mapping.orm.rmt2.ProjTimesheet;
 import org.dao.mapping.orm.rmt2.ProjTimesheetHist;
 import org.dao.mapping.orm.rmt2.VwEmployeeExt;
 import org.dao.mapping.orm.rmt2.VwEmployeeProjects;
+import org.dao.mapping.orm.rmt2.VwProjectClient;
 import org.dao.mapping.orm.rmt2.VwTimesheetEventList;
 import org.dao.mapping.orm.rmt2.VwTimesheetHours;
 import org.dao.mapping.orm.rmt2.VwTimesheetList;
@@ -99,6 +100,30 @@ public class ProjectTrackerOrmDataFactory {
         return o;
     }
     
+    /**
+     * 
+     * @param projId
+     * @param clientId
+     * @param projName
+     * @param effectiveDate
+     * @param endDate
+     * @param clientName
+     * @param clientBusinessId
+     * @return
+     */
+    public static final VwProjectClient createMockOrmVwProjectClient(int projId, int clientId, String projName,
+            String effectiveDate, String endDate, String clientName, int clientBusinessId) {
+        VwProjectClient o = new VwProjectClient();
+        o.setProjId(projId);
+        o.setClientId(clientId);
+        o.setDescription(projName);
+        o.setEffectiveDate(RMT2Date.stringToDate(effectiveDate));
+        o.setEndDate(RMT2Date.stringToDate(endDate));
+        o.setName(clientName);
+        o.setBusinessId(clientBusinessId);
+        return o;
+    }
+
     /**
      * 
      * @param empId

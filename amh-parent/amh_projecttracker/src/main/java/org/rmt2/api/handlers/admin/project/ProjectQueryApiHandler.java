@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.dto.ProjectClientDto;
-import org.rmt2.api.handlers.admin.client.ClientMessageHandlerConst;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.ProjectProfileRequest;
@@ -96,7 +95,7 @@ public class ProjectQueryApiHandler extends ProjectApiHandler {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setRecordCount(0);
-            rs.setMessage(ClientMessageHandlerConst.MESSAGE_FETCH_ERROR);
+            rs.setMessage(ProjectMessageHandlerConst.MESSAGE_FETCH_ERROR);
             rs.setExtMessage(e.getMessage());
         } finally {
             this.api.close();

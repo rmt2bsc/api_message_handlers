@@ -12,8 +12,11 @@ import org.dao.mapping.orm.rmt2.ProjProject;
 import org.dao.mapping.orm.rmt2.ProjTask;
 import org.dao.mapping.orm.rmt2.VwEmployeeExt;
 import org.dao.mapping.orm.rmt2.VwEmployeeProjects;
+import org.dao.mapping.orm.rmt2.VwProjectClient;
 import org.dto.EmployeeDto;
+import org.dto.ProjectClientDto;
 import org.dto.adapter.orm.EmployeeObjectFactory;
+import org.dto.adapter.orm.ProjectObjectFactory;
 
 /**
  * Project Tracker Administration testing facility that is mainly responsible for
@@ -97,6 +100,39 @@ public class ProjectTrackerMockData {
         return list;
     }
     
+    /**
+     * 
+     * @return
+     */
+    public static final List<ProjectClientDto> createMockProjectClientDto() {
+        List<ProjectClientDto> list = new ArrayList<>();
+        VwProjectClient o = ProjectTrackerOrmDataFactory.createMockOrmVwProjectClient(
+                2220, 1110, "Project 2220", "2018-01-01", "2018-02-01", "Client 1110", 1440);
+        ProjectClientDto dto = ProjectObjectFactory.createProjectClientDtoInstance(o);
+        list.add(dto);
+
+        o = ProjectTrackerOrmDataFactory.createMockOrmVwProjectClient(2221, 1110,
+                "Project 2221", "2018-02-01", "2018-03-01", "Client 1110", 1440);
+        dto = ProjectObjectFactory.createProjectClientDtoInstance(o);
+        list.add(dto);
+
+        o = ProjectTrackerOrmDataFactory.createMockOrmVwProjectClient(2222, 1110,
+                "Project 2222", "2018-03-01", "2018-04-01", "Client 1110", 1440);
+        dto = ProjectObjectFactory.createProjectClientDtoInstance(o);
+        list.add(dto);
+
+        o = ProjectTrackerOrmDataFactory.createMockOrmVwProjectClient(2223, 1110,
+                "Project 2223", "2018-04-01", "2018-05-01", "Client 1110", 1440);
+        dto = ProjectObjectFactory.createProjectClientDtoInstance(o);
+        list.add(dto);
+
+        o = ProjectTrackerOrmDataFactory.createMockOrmVwProjectClient(2224, 1110,
+                "Project 2224", "2018-05-01", "2018-06-01", "Client 1110", 1440);
+        dto = ProjectObjectFactory.createProjectClientDtoInstance(o);
+        list.add(dto);
+        return list;
+    }
+
     public static final List<ProjEmployeeTitle> createMockSingleEmployeeTitle() {
         List<ProjEmployeeTitle> list = new ArrayList<ProjEmployeeTitle>();
         ProjEmployeeTitle o = ProjectTrackerOrmDataFactory.createMockOrmProjEmployeeTitle(101, "Employee Title 1");
