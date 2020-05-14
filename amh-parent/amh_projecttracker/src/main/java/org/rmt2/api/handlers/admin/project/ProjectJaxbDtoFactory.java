@@ -1,7 +1,7 @@
 package org.rmt2.api.handlers.admin.project;
 
+import org.dto.Project2Dto;
 import org.dto.ProjectClientDto;
-import org.dto.ProjectDto;
 import org.dto.adapter.orm.ProjectObjectFactory;
 import org.rmt2.jaxb.ProjectCriteriaType;
 import org.rmt2.jaxb.ProjectType;
@@ -57,17 +57,17 @@ public class ProjectJaxbDtoFactory extends RMT2Base {
     }
     
     /**
-     * Created an instance of ProjectDto from an ProjectType object
+     * Created an instance of Project2Dto from an ProjectType object
      * 
      * @param jaxbObj
      *            an instance of {@link ProjectType}
-     * @return an instance of {@link ProjectDto}
+     * @return an instance of {@link Project2Dto}
      */
-    public static final ProjectDto createClientDtoInstance(ProjectType jaxbObj) {
+    public static final Project2Dto createProjetDtoInstance(ProjectType jaxbObj) {
         if (jaxbObj == null) {
             return null;
         }
-        ProjectDto dto = ProjectObjectFactory.createProjectDtoInstance(null);
+        Project2Dto dto = ProjectObjectFactory.createProjectDtoInstance(null);
         if (jaxbObj.getClient() != null) {
             if (jaxbObj.getClient().getClientId() != null) {
                 dto.setClientId(jaxbObj.getClient().getClientId().intValue());
@@ -75,6 +75,9 @@ public class ProjectJaxbDtoFactory extends RMT2Base {
         }
         if (jaxbObj.getProjectId() != null) {
             dto.setProjId(jaxbObj.getProjectId().intValue());
+        }
+        else {
+            dto.setProjId(0);
         }
         dto.setProjectDescription(jaxbObj.getDescription());
         if (jaxbObj.getEffectiveDate() != null) {
@@ -120,4 +123,32 @@ public class ProjectJaxbDtoFactory extends RMT2Base {
         return client;
     }
 
+    /**
+     * Created an instance of ProjectType from an Project2Dto object
+     * 
+     * @param dto
+     *            an instance of {@link Project2Dto}
+     * @return an instance of {@link ProjectType}
+     */
+    public static final ProjectType createProjectJaxbInstance(Project2Dto dto) {
+        if (dto == null) {
+            return null;
+        }
+        RecordTrackingType tracking = RecordTrackingTypeBuilder.Builder.create()
+                .withDateCreated(dto.getDateCreated())
+                .withDateUpdate(dto.getDateUpdated())
+                .withUserId(dto.getUpdateUserId())
+                .build();
+
+        ProjectType client = ProjectTypeBuilder.Builder.create()
+                .withClientId(dto.getClientId())
+                .withProjectId(dto.getProjId())
+                .withProjectName(dto.getProjectDescription())
+                .withEffectiveDate(dto.getProjectEffectiveDate())
+                .withEndDate(dto.getProjectEndDate())
+                .withRecordTracking(tracking)
+                .build();
+
+        return client;
+    }
 }

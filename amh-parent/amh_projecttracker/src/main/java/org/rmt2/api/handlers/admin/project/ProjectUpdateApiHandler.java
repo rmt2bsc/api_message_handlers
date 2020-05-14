@@ -1,14 +1,16 @@
 package org.rmt2.api.handlers.admin.project;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.dto.ProjectClientDto;
+import org.dto.Project2Dto;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.ProjectProfileRequest;
 import org.rmt2.jaxb.ProjectType;
+import org.rmt2.util.projecttracker.admin.ProjectTypeBuilder;
 
 import com.InvalidDataException;
 import com.api.messaging.handler.MessageHandlerCommandException;
@@ -16,20 +18,20 @@ import com.api.messaging.handler.MessageHandlerCommonReplyStatus;
 import com.api.messaging.handler.MessageHandlerResults;
 
 /**
- * Handles and routes project query related messages to the ProjectTracker API.
+ * Handles and routes project update related messages to the ProjectTracker API.
  * 
  * @author roy.terrell
  *
  */
-public class ProjectQueryApiHandler extends ProjectApiHandler {
+public class ProjectUpdateApiHandler extends ProjectApiHandler {
     
-    private static final Logger logger = Logger.getLogger(ProjectQueryApiHandler.class);
+    private static final Logger logger = Logger.getLogger(ProjectUpdateApiHandler.class);
     /**
      * @param payload
      */
-    public ProjectQueryApiHandler() {
+    public ProjectUpdateApiHandler() {
         super();
-        logger.info(ProjectQueryApiHandler.class.getName() + " was instantiated successfully");
+        logger.info(ProjectUpdateApiHandler.class.getName() + " was instantiated successfully");
     }
 
     /*
@@ -48,7 +50,7 @@ public class ProjectQueryApiHandler extends ProjectApiHandler {
             return r;
         }
         switch (command) {
-            case ApiTransactionCodes.PROJTRACK_PROJECT_GET:
+            case ApiTransactionCodes.PROJTRACK_PROJECT_UPDATE:
                 r = this.doOperation(this.requestObj);
                 break;
             default:
@@ -60,8 +62,8 @@ public class ProjectQueryApiHandler extends ProjectApiHandler {
     }
 
     /**
-     * Handler for invoking the appropriate API in order to fetch one or more
-     * project objects for the Project Tracker Admin moudule.
+     * Handler for invoking the appropriate API in order to update a project
+     * object for the Project Tracker Admin moudule.
      * 
      * @param req
      *            an instance of {@link AccountingGeneralLedgerRequest}
@@ -70,45 +72,58 @@ public class ProjectQueryApiHandler extends ProjectApiHandler {
     protected MessageHandlerResults doOperation(ProjectProfileRequest req) {
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
-        List<ProjectType> queryDtoResults = null;
-
+        Project2Dto project2Dto = null;
+        boolean newProject = false;
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             rs.setRecordCount(0);
-            ProjectClientDto criteriaDto = ProjectJaxbDtoFactory.createProjectClientDtoCriteriaInstance(req.getCriteria()
-                    .getProjectCriteria());
+            project2Dto = ProjectJaxbDtoFactory.createProjetDtoInstance(req.getProfile().getProject().get(0));
             
-            List<ProjectClientDto> dtoList = this.api.getProjectExt(criteriaDto);
-            if (dtoList == null) {
-                rs.setMessage(ProjectMessageHandlerConst.MESSAGE_NOT_FOUND);
+            newProject = project2Dto.getProjId() == 0;
+            int rc = this.api.updateProject(project2Dto);
+            if (newProject) {
+                rs.setMessage(ProjectMessageHandlerConst.MESSAGE_NEW_PROJECT_UPDATE_SUCCESS);
+                rs.setRecordCount(1);
+                // Make sure project id is populated in the DTO
+                project2Dto.setProjId(rc);
             }
             else {
-                queryDtoResults = this.buildJaxbQueryResults(dtoList);
-                rs.setMessage(ProjectMessageHandlerConst.MESSAGE_FOUND);
-                rs.setRecordCount(dtoList.size());
+                rs.setMessage(ProjectMessageHandlerConst.MESSAGE_EXISTING_PROJECT_UPDATE_SUCCESS);
+                rs.setRecordCount(rc);
             }
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setRecordCount(0);
-            rs.setMessage(ProjectMessageHandlerConst.MESSAGE_FETCH_ERROR);
+            if (newProject) {
+                rs.setMessage(ProjectMessageHandlerConst.MESSAGE_NEW_PROJECT_UPDATE_FAILED);
+            }
+            else {
+                rs.setMessage(ProjectMessageHandlerConst.MESSAGE_EXISTING_PROJECT_UPDATE_FAILED);
+            }
             rs.setExtMessage(e.getMessage());
         } finally {
             this.api.close();
         }
 
-        String xml = this.buildResponse(queryDtoResults, rs);
+        // Add Project Type type data to the project profile element
+        List<ProjectType> updateDtoResults = this.buildJaxbUpdateResults(project2Dto);
+
+        String xml = this.buildResponse(updateDtoResults, rs);
         results.setPayload(xml);
         return results;
     }
+    
+   
     
     
     @Override
     protected void validateRequest(ProjectProfileRequest req) throws InvalidDataException {
         super.validateRequest(req);
+        super.validateUpdateRequest(req);
     }
 
 }
