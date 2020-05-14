@@ -1,7 +1,6 @@
 package org.rmt2.api.handlers.admin.project;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -10,7 +9,6 @@ import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.ProjectProfileRequest;
 import org.rmt2.jaxb.ProjectType;
-import org.rmt2.util.projecttracker.admin.ProjectTypeBuilder;
 
 import com.InvalidDataException;
 import com.api.messaging.handler.MessageHandlerCommandException;
@@ -74,14 +72,16 @@ public class ProjectUpdateApiHandler extends ProjectApiHandler {
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         Project2Dto project2Dto = null;
         boolean newProject = false;
+
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             rs.setRecordCount(0);
             project2Dto = ProjectJaxbDtoFactory.createProjetDtoInstance(req.getProfile().getProject().get(0));
-            
             newProject = project2Dto.getProjId() == 0;
+            
+            this.api.beginTrans();
             int rc = this.api.updateProject(project2Dto);
             if (newProject) {
                 rs.setMessage(ProjectMessageHandlerConst.MESSAGE_NEW_PROJECT_UPDATE_SUCCESS);
@@ -94,6 +94,7 @@ public class ProjectUpdateApiHandler extends ProjectApiHandler {
                 rs.setRecordCount(rc);
             }
             this.responseObj.setHeader(req.getHeader());
+            this.api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
@@ -105,6 +106,7 @@ public class ProjectUpdateApiHandler extends ProjectApiHandler {
                 rs.setMessage(ProjectMessageHandlerConst.MESSAGE_EXISTING_PROJECT_UPDATE_FAILED);
             }
             rs.setExtMessage(e.getMessage());
+            this.api.rollbackTrans();
         } finally {
             this.api.close();
         }
