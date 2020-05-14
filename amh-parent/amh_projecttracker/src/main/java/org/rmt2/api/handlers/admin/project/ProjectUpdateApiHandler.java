@@ -16,7 +16,8 @@ import com.api.messaging.handler.MessageHandlerCommonReplyStatus;
 import com.api.messaging.handler.MessageHandlerResults;
 
 /**
- * Handles and routes project update related messages to the ProjectTracker API.
+ * Handles and routes project create/modify related messages to the
+ * ProjectTracker API.
  * 
  * @author roy.terrell
  *
