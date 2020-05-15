@@ -42,9 +42,9 @@ import com.api.util.RMT2File;
         ProjectUpdateApiHandler.class, ProjectAdminApiFactory.class, SystemConfigurator.class })
 public class ProjectUpdateMessageHandlerTest extends BaseProjectTrackerMessageHandlerTest {
     public static final int PROJECT_COUNT = 28;
-    public static final int PROJECT_ID_NEW = 4444;
+    public static final int PROJECT_ID = 39;
     public static final String PROJECT_NAME = "Test Project for Business Server";
-    public static final String PROJECT_INSERT_API_ERROR = "API ERROR: Project creataion failed";
+    public static final String PROJECT_API_ERROR = "API ERROR: Project creataion failed";
     private ProjectAdminApi mockApi;
 
 
@@ -85,12 +85,12 @@ public class ProjectUpdateMessageHandlerTest extends BaseProjectTrackerMessageHa
 
     
     @Test
-    public void testSuccess_Insert() {
-        String request = RMT2File.getFileContentsAsString("xml/admin/project/ProjectInsertRequest.xml");
+    public void testSuccess_Update() {
+        String request = RMT2File.getFileContentsAsString("xml/admin/project/ProjectUpdateRequest.xml");
         try {
-            when(this.mockApi.updateProject(isA(Project2Dto.class))).thenReturn(PROJECT_ID_NEW);
+            when(this.mockApi.updateProject(isA(Project2Dto.class))).thenReturn(1);
         } catch (ProjectAdminApiException e) {
-            Assert.fail("Unable to setup mock stub for inserting project record");
+            Assert.fail("Unable to setup mock stub for updating project record");
         }
         
         MessageHandlerResults results = null;
@@ -110,23 +110,23 @@ public class ProjectUpdateMessageHandlerTest extends BaseProjectTrackerMessageHa
         Assert.assertEquals(1, actualRepsonse.getReplyStatus().getRecordCount().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(ProjectMessageHandlerConst.MESSAGE_NEW_PROJECT_UPDATE_SUCCESS, actualRepsonse.getReplyStatus()
+        Assert.assertEquals(ProjectMessageHandlerConst.MESSAGE_EXISTING_PROJECT_UPDATE_SUCCESS, actualRepsonse.getReplyStatus()
                 .getMessage());
         
         for (int ndx = 0; ndx < actualRepsonse.getProfile().getProject().size(); ndx++) {
             ProjectType a = actualRepsonse.getProfile().getProject().get(ndx);
             Assert.assertNotNull(a.getProjectId());
-            Assert.assertEquals(PROJECT_ID_NEW, a.getProjectId().intValue());
+            Assert.assertEquals(PROJECT_ID, a.getProjectId().intValue());
             Assert.assertEquals(PROJECT_NAME, a.getDescription());
         }
     }
     
     @Test
-    public void testError_Insert_API_Error() {
-        String request = RMT2File.getFileContentsAsString("xml/admin/project/ProjectInsertRequest.xml");
+    public void testError_API_Error() {
+        String request = RMT2File.getFileContentsAsString("xml/admin/project/ProjectUpdateRequest.xml");
         try {
             when(this.mockApi.updateProject(isA(Project2Dto.class))).thenThrow(
-                    new ProjectAdminApiException(PROJECT_INSERT_API_ERROR));
+                    new ProjectAdminApiException(PROJECT_API_ERROR));
         } catch (ProjectAdminApiException e) {
             Assert.fail("Unable to setup mock stub for inserting project record");
         }
@@ -145,9 +145,9 @@ public class ProjectUpdateMessageHandlerTest extends BaseProjectTrackerMessageHa
         Assert.assertNotNull(actualRepsonse.getProfile());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(ProjectMessageHandlerConst.MESSAGE_NEW_PROJECT_UPDATE_FAILED, actualRepsonse.getReplyStatus()
+        Assert.assertEquals(ProjectMessageHandlerConst.MESSAGE_EXISTING_PROJECT_UPDATE_FAILED, actualRepsonse.getReplyStatus()
                 .getMessage());
-        Assert.assertEquals(PROJECT_INSERT_API_ERROR, actualRepsonse.getReplyStatus().getExtMessage());
+        Assert.assertEquals(PROJECT_API_ERROR, actualRepsonse.getReplyStatus().getExtMessage());
     }
     
 
