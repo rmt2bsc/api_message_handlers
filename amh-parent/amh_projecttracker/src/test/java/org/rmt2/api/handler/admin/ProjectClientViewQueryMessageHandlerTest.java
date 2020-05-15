@@ -88,7 +88,7 @@ public class ProjectClientViewQueryMessageHandlerTest extends BaseProjectTracker
     
     @Test
     public void testSuccess_Fetch() {
-        String request = RMT2File.getFileContentsAsString("xml/admin/ProjectQueryRequest.xml");
+        String request = RMT2File.getFileContentsAsString("xml/admin/project/ProjectQueryRequest.xml");
         List<ProjectClientDto> mockListData = ProjectTrackerMockData.createMockProjectClientDto();
 
         try {
@@ -136,7 +136,7 @@ public class ProjectClientViewQueryMessageHandlerTest extends BaseProjectTracker
     
     @Test
     public void test_Fetch_NoDataFound() {
-        String request = RMT2File.getFileContentsAsString("xml/admin/ProjectQueryRequest.xml");
+        String request = RMT2File.getFileContentsAsString("xml/admin/project/ProjectQueryRequest.xml");
         try {
             when(this.mockApi.getProjectExt(isA(ProjectClientDto.class))).thenReturn(null);
         } catch (ProjectAdminApiException e) {
@@ -164,7 +164,7 @@ public class ProjectClientViewQueryMessageHandlerTest extends BaseProjectTracker
     
     @Test
     public void testError_Fetch_API_Error() {
-        String request = RMT2File.getFileContentsAsString("xml/admin/ProjectQueryRequest.xml");
+        String request = RMT2File.getFileContentsAsString("xml/admin/project/ProjectQueryRequest.xml");
         try {
             when(this.mockApi.getProjectExt(isA(ProjectClientDto.class)))
                     .thenThrow(new ProjectAdminApiException("Test validation error: selection criteria is required"));
@@ -198,7 +198,7 @@ public class ProjectClientViewQueryMessageHandlerTest extends BaseProjectTracker
      * To date, there are no validations to test.  Leaving stub in case this changes.
      */
     public void testValidation_() {
-        String request = RMT2File.getFileContentsAsString("xml/admin/ProjectQueryRequest.xml");
+        String request = RMT2File.getFileContentsAsString("xml/admin/project/ProjectQueryRequest.xml");
 
         MessageHandlerResults results = null;
         ProjectQueryApiHandler handler = new ProjectQueryApiHandler();

@@ -86,7 +86,7 @@ public class ProjectUpdateMessageHandlerTest extends BaseProjectTrackerMessageHa
     
     @Test
     public void testSuccess_Insert() {
-        String request = RMT2File.getFileContentsAsString("xml/admin/ProjectInsertRequest.xml");
+        String request = RMT2File.getFileContentsAsString("xml/admin/project/ProjectInsertRequest.xml");
         try {
             when(this.mockApi.updateProject(isA(Project2Dto.class))).thenReturn(PROJECT_ID_NEW);
         } catch (ProjectAdminApiException e) {
@@ -123,7 +123,7 @@ public class ProjectUpdateMessageHandlerTest extends BaseProjectTrackerMessageHa
     
     @Test
     public void testError_Insert_API_Error() {
-        String request = RMT2File.getFileContentsAsString("xml/admin/ProjectInsertRequest.xml");
+        String request = RMT2File.getFileContentsAsString("xml/admin/project/ProjectInsertRequest.xml");
         try {
             when(this.mockApi.updateProject(isA(Project2Dto.class))).thenThrow(
                     new ProjectAdminApiException(PROJECT_INSERT_API_ERROR));
@@ -156,7 +156,7 @@ public class ProjectUpdateMessageHandlerTest extends BaseProjectTrackerMessageHa
      * To date, there are no validations to test.  Leaving stub in case this changes.
      */
     public void testValidation_Profile_Not_Exists() {
-        String request = RMT2File.getFileContentsAsString("xml/admin/ProjectUpdateMissingProfileRequest.xml");
+        String request = RMT2File.getFileContentsAsString("xml/admin/project/ProjectUpdateMissingProfileRequest.xml");
 
         MessageHandlerResults results = null;
         ProjectUpdateApiHandler handler = new ProjectUpdateApiHandler();
