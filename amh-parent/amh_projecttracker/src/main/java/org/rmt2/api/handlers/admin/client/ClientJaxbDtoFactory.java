@@ -6,6 +6,7 @@ import org.rmt2.jaxb.BusinessType;
 import org.rmt2.jaxb.ClientCriteriaType;
 import org.rmt2.jaxb.ClientType;
 import org.rmt2.jaxb.CustomerType;
+import org.rmt2.jaxb.ProjectCriteriaGroup;
 import org.rmt2.jaxb.RecordTrackingType;
 import org.rmt2.util.RecordTrackingTypeBuilder;
 import org.rmt2.util.accounting.subsidiary.CustomerTypeBuilder;
@@ -31,10 +32,12 @@ public class ClientJaxbDtoFactory extends RMT2Base {
      *            an instance of {@link ClientCriteriaType}
      * @return an instance of {@link ClientDto}
      */
-    public static final ClientDto createClientDtoCriteriaInstance(ClientCriteriaType jaxbObj) {
-        if (jaxbObj == null) {
+    public static final ClientDto createClientDtoCriteriaInstance(ProjectCriteriaGroup criteria) {
+
+        if (criteria == null || criteria.getClientCriteria() == null) {
             return null;
         }
+        ClientCriteriaType jaxbObj = criteria.getClientCriteria();
         ClientDto dto = ProjectObjectFactory.createClientDtoInstance(null);
         if (jaxbObj.getClientId() != null) {
             dto.setClientId(jaxbObj.getClientId().intValue());
@@ -100,6 +103,9 @@ public class ClientJaxbDtoFactory extends RMT2Base {
         }
         BusinessType bt = BusinessTypeBuilder.Builder.create()
                 .withBusinessId(dto.getBusinessId())
+                .withContactFirstname(dto.getClientContactFirstname())
+                .withContactLastname(dto.getClientContactLastname())
+                .withContactEmail(dto.getClientContactEmail())
                 .build();
 
         CustomerType customer = CustomerTypeBuilder.Builder.create()

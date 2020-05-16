@@ -78,8 +78,7 @@ public class ClientQueryApiHandler extends ClientApiHandler {
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             rs.setRecordCount(0);
-            ClientDto criteriaDto = ClientJaxbDtoFactory
-                    .createClientDtoCriteriaInstance(req.getCriteria().getClientCriteria());
+            ClientDto criteriaDto = ClientJaxbDtoFactory.createClientDtoCriteriaInstance(req.getCriteria());
             
             List<ClientDto> dtoList = this.api.getClient(criteriaDto);
             if (dtoList == null) {
