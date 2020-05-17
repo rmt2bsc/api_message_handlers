@@ -16,6 +16,7 @@ import org.dao.mapping.orm.rmt2.VwProjectClient;
 import org.dto.ClientDto;
 import org.dto.EmployeeDto;
 import org.dto.ProjectClientDto;
+import org.dto.TaskDto;
 import org.dto.adapter.orm.EmployeeObjectFactory;
 import org.dto.adapter.orm.ProjectObjectFactory;
 
@@ -359,29 +360,35 @@ public class ProjectTrackerMockData {
         return list;
     }
     
-    public static final List<ProjTask> createMockSingleTask() {
-        List<ProjTask> list = new ArrayList<ProjTask>();
+    public static final List<TaskDto> createMockSingleTask() {
+        List<TaskDto> list = new ArrayList<>();
         ProjTask o = ProjectTrackerOrmDataFactory.createMockOrmProjTask(1112220, "Design and Analysis", true);
-        list.add(o);
+        TaskDto dto = ProjectObjectFactory.createTaskDtoInstance(o);
+        list.add(dto);
         return list;
     }
     
-    public static final List<ProjTask> createMockMultipleTask() {
-        List<ProjTask> list = new ArrayList<ProjTask>();
-        ProjTask o = ProjectTrackerOrmDataFactory.createMockOrmProjTask(1112220, "Design and Analysis", true);
-        list.add(o);
+    public static final List<TaskDto> createMockMultipleTask() {
+        List<TaskDto> list = new ArrayList<>();
+        ProjTask o = ProjectTrackerOrmDataFactory.createMockOrmProjTask(1112220, "Task Description 1", true);
+        TaskDto dto = ProjectObjectFactory.createTaskDtoInstance(o);
+        list.add(dto);
         
-        o = ProjectTrackerOrmDataFactory.createMockOrmProjTask(1112221, "Development", true);
-        list.add(o);
+        o = ProjectTrackerOrmDataFactory.createMockOrmProjTask(1112221, "Task Description 2", true);
+        dto = ProjectObjectFactory.createTaskDtoInstance(o);
+        list.add(dto);
         
-        o = ProjectTrackerOrmDataFactory.createMockOrmProjTask(1112222, "Meetings", true);
-        list.add(o);
+        o = ProjectTrackerOrmDataFactory.createMockOrmProjTask(1112222, "Task Description 3", true);
+        dto = ProjectObjectFactory.createTaskDtoInstance(o);
+        list.add(dto);
         
-        o = ProjectTrackerOrmDataFactory.createMockOrmProjTask(1112223, "Testing", true);
-        list.add(o);
+        o = ProjectTrackerOrmDataFactory.createMockOrmProjTask(1112223, "Task Description 4", true);
+        dto = ProjectObjectFactory.createTaskDtoInstance(o);
+        list.add(dto);
         
-        o = ProjectTrackerOrmDataFactory.createMockOrmProjTask(1112224, "Holiday", false);
-        list.add(o);
+        o = ProjectTrackerOrmDataFactory.createMockOrmProjTask(1112224, "Task Description 5", true);
+        dto = ProjectObjectFactory.createTaskDtoInstance(o);
+        list.add(dto);
         return list;
     }
 }
