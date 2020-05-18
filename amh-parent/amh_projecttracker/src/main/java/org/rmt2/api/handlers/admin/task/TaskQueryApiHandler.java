@@ -17,7 +17,7 @@ import com.api.messaging.handler.MessageHandlerCommonReplyStatus;
 import com.api.messaging.handler.MessageHandlerResults;
 
 /**
- * Handles and routes client query related messages to the ProjectTracker API.
+ * Handles and routes task query related messages to the ProjectTracker API.
  * 
  * @author roy.terrell
  *
@@ -62,7 +62,7 @@ public class TaskQueryApiHandler extends TaskApiHandler {
 
     /**
      * Handler for invoking the appropriate API in order to fetch one or more
-     * project tracker client objects.
+     * project tracker task objects.
      * 
      * @param req
      *            an instance of {@link AccountingGeneralLedgerRequest}
