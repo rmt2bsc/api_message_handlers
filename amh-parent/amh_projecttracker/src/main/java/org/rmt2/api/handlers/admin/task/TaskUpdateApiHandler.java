@@ -63,8 +63,8 @@ public class TaskUpdateApiHandler extends TaskApiHandler {
     }
 
     /**
-     * Handler for invoking the appropriate API in order to create/modify
-     * project tracker task objects.
+     * Handler for invoking the appropriate API in order to create/modify task
+     * tracker task objects.
      * 
      * @param req
      *            an instance of {@link AccountingGeneralLedgerRequest}
