@@ -14,7 +14,8 @@ public class TaskMessageHandlerConst {
     public static final String MESSAGE_EXISTING_TASK_UPDATE_SUCCESS = "Task was modified successfully";
     public static final String MESSAGE_NEW_TASK_UPDATE_FAILED = "Error occurred creating new Task";
     public static final String MESSAGE_EXISTING_TASK_UPDATE_FAILED = "Error occurred modifying Task";
-
+    public static final String MESSAGE_DELETE_TASK_SUCCESS = "Task was deleted successfully";
+    public static final String MESSAGE_DELETE_TASK_FAILED = "Error occurred deleting Task";
     public static final String VALIDATION_TASK_MISSING = "Update/Delete operations require one and only one task";
 
     /**
