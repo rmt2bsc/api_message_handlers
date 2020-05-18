@@ -63,6 +63,9 @@ public class TaskJaxbDtoFactory extends RMT2Base {
         if (jaxbObj.getTaskId() != null) {
             dto.setTaskId(jaxbObj.getTaskId().intValue());
         }
+        else {
+            dto.setTaskId(0);
+        }
         if (jaxbObj.getBillable() != null) {
             dto.setTaskBillable(jaxbObj.getBillable().intValue());
         }
