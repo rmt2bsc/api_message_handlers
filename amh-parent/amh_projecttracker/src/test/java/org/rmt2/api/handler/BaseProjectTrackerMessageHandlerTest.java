@@ -27,6 +27,7 @@ public class BaseProjectTrackerMessageHandlerTest {
     private static String LOGGER_CONFIG_PATH;
     public static String API_ERROR_MESSAGE;
     public static String VALIDATION_ERROR_MESSAGE;
+    public static final String BAD_REQUEST_STATUS = "400";
     protected JaxbUtil jaxb;
     protected PersistenceClient mockPersistenceClient;
     

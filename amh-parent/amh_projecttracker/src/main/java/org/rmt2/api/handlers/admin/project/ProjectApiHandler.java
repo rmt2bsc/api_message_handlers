@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.dto.ProjectClientDto;
 import org.dto.Project2Dto;
+import org.dto.ProjectClientDto;
 import org.modules.ProjectTrackerApiConst;
 import org.modules.admin.ProjectAdminApi;
 import org.modules.admin.ProjectAdminApiFactory;
@@ -77,14 +77,7 @@ public class ProjectApiHandler extends
         // Project profile is required
         try {
             Verifier.verifyNotNull(req.getProfile());
-        } catch (VerifyException e) {
-            throw new InvalidDataException(ApiMessageHandlerConst.MSG_MISSING_PROFILE_DATA, e);
-        }
-
-        // One or more projects must exists
-        try {
             Verifier.verifyNotNull(req.getProfile().getProject());
-            Verifier.verifyNotEmpty(req.getProfile().getProject());
         } catch (VerifyException e) {
             throw new InvalidDataException(ApiMessageHandlerConst.MSG_MISSING_PROFILE_DATA, e);
         }

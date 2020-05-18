@@ -14,6 +14,8 @@ import com.InvalidDataException;
 import com.api.messaging.handler.MessageHandlerCommandException;
 import com.api.messaging.handler.MessageHandlerCommonReplyStatus;
 import com.api.messaging.handler.MessageHandlerResults;
+import com.api.util.assistants.Verifier;
+import com.api.util.assistants.VerifyException;
 
 /**
  * Handles and routes project create/modify related messages to the
@@ -127,6 +129,14 @@ public class ProjectUpdateApiHandler extends ProjectApiHandler {
     protected void validateRequest(ProjectProfileRequest req) throws InvalidDataException {
         super.validateRequest(req);
         super.validateUpdateRequest(req);
+
+        // One or more projects must exists
+        try {
+            Verifier.verifyNotEmpty(req.getProfile().getProject());
+            Verifier.verifyTrue(req.getProfile().getProject().size() == 1);
+        } catch (VerifyException e) {
+            throw new InvalidDataException(ProjectMessageHandlerConst.VALIDATION_PROJECT_MISSING, e);
+        }
     }
 
 }

@@ -152,11 +152,8 @@ public class ProjectUpdateMessageHandlerTest extends BaseProjectTrackerMessageHa
     
 
     @Test
-    /**
-     * To date, there are no validations to test.  Leaving stub in case this changes.
-     */
-    public void testValidation_Profile_Not_Exists() {
-        String request = RMT2File.getFileContentsAsString("xml/admin/project/ProjectUpdateMissingProfileRequest.xml");
+    public void testValidation_Project_Data_Not_Exists() {
+        String request = RMT2File.getFileContentsAsString("xml/admin/project/ProjectUpdateMissingProjectDataRequest.xml");
 
         MessageHandlerResults results = null;
         ProjectUpdateApiHandler handler = new ProjectUpdateApiHandler();
@@ -168,5 +165,12 @@ public class ProjectUpdateMessageHandlerTest extends BaseProjectTrackerMessageHa
         }
         Assert.assertNotNull(results);
         Assert.assertNotNull(results.getPayload());
+        ProjectProfileResponse actualRepsonse = (ProjectProfileResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertEquals(BaseProjectTrackerMessageHandlerTest.BAD_REQUEST_STATUS, actualRepsonse.getReplyStatus()
+                .getReturnStatus());
+        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(ProjectMessageHandlerConst.VALIDATION_PROJECT_MISSING, actualRepsonse.getReplyStatus()
+                .getMessage());
     }
 }
