@@ -50,7 +50,7 @@ public class TaskQueryApiHandler extends TaskApiHandler {
         }
         switch (command) {
             case ApiTransactionCodes.PROJTRACK_TASK_GET:
-                r = this.fetch(this.requestObj);
+                r = this.doOperation(this.requestObj);
                 break;
             default:
                 r = this.createErrorReply(MessagingConstants.RETURN_CODE_FAILURE,
@@ -68,7 +68,7 @@ public class TaskQueryApiHandler extends TaskApiHandler {
      *            an instance of {@link AccountingGeneralLedgerRequest}
      * @return an instance of {@link MessageHandlerResults}
      */
-    protected MessageHandlerResults fetch(ProjectProfileRequest req) {
+    protected MessageHandlerResults doOperation(ProjectProfileRequest req) {
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         List<TaskType> queryDtoResults = null;
