@@ -1,0 +1,18 @@
+<ProjectProfileRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>projecttracker</application>
+        <module>admin</module>
+        <transaction>UPDATE_PROJECT</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>05/13/2020 00:34:10</delivery_date>
+    </header>
+    <profile>
+        <project>
+            <client/>
+            <description>Test Project for Business Server</description>
+            <effective_date>2020-05-10</effective_date>
+        </project>
+    </profile>
+</ProjectProfileRequest>
