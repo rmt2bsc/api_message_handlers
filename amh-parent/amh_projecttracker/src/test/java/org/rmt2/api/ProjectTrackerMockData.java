@@ -3,6 +3,7 @@ package org.rmt2.api;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.dao.mapping.orm.rmt2.Customer;
 import org.dao.mapping.orm.rmt2.ProjClient;
 import org.dao.mapping.orm.rmt2.ProjEmployee;
 import org.dao.mapping.orm.rmt2.ProjEmployeeTitle;
@@ -10,15 +11,21 @@ import org.dao.mapping.orm.rmt2.ProjEmployeeType;
 import org.dao.mapping.orm.rmt2.ProjEvent;
 import org.dao.mapping.orm.rmt2.ProjProject;
 import org.dao.mapping.orm.rmt2.ProjTask;
+import org.dao.mapping.orm.rmt2.VwBusinessAddress;
 import org.dao.mapping.orm.rmt2.VwEmployeeExt;
 import org.dao.mapping.orm.rmt2.VwEmployeeProjects;
 import org.dao.mapping.orm.rmt2.VwProjectClient;
+import org.dto.BusinessContactDto;
 import org.dto.ClientDto;
+import org.dto.ContactDto;
+import org.dto.CustomerDto;
 import org.dto.EmployeeDto;
 import org.dto.ProjectClientDto;
 import org.dto.TaskDto;
 import org.dto.adapter.orm.EmployeeObjectFactory;
 import org.dto.adapter.orm.ProjectObjectFactory;
+import org.dto.adapter.orm.Rmt2AddressBookDtoFactory;
+import org.dto.adapter.orm.account.subsidiary.Rmt2SubsidiaryDtoFactory;
 
 /**
  * Project Tracker Administration testing facility that is mainly responsible for
@@ -389,6 +396,51 @@ public class ProjectTrackerMockData {
         o = ProjectTrackerOrmDataFactory.createMockOrmProjTask(1112224, "Task Description 5", true);
         dto = ProjectObjectFactory.createTaskDtoInstance(o);
         list.add(dto);
+        return list;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public static final List<ContactDto> createMockSingleContact() {
+        List<ContactDto> list = new ArrayList<ContactDto>();
+        VwBusinessAddress bus = new VwBusinessAddress();
+        bus.setBusinessId(1456);
+        bus.setBusLongname("BusinessName_1");
+        bus.setBusContactFirstname("firstname_1");
+        bus.setBusContactLastname("lastname_1");
+        bus.setContactEmail(bus.getBusContactFirstname() + "." + bus.getBusContactLastname() + "@gte.net");
+        bus.setBusContactPhone("9999999991");
+        bus.setAddrId(2001);
+        bus.setBusinessId(1351);
+        bus.setAddr1("address_line1_1");
+        bus.setAddr2("address_line2_1");
+        bus.setAddr3("address_line3_1");
+        bus.setAddr4("address_line4_1");
+        bus.setZipCity("Dallas");
+        bus.setZipState("Tx");
+        bus.setAddrZip(75232);
+        bus.setAddrPhoneMain("2143738001");
+        bus.setBusTaxId("750000001");
+        bus.setBusWebsite("www.BusinessName_1.com");
+        bus.setBusShortname("shortname");
+        BusinessContactDto busDto = Rmt2AddressBookDtoFactory.getBusinessInstance(bus);
+        list.add(busDto);
+        return list;
+    }
+
+
+    /**
+     * 
+     * @return
+     */
+    public static final List<CustomerDto> createMockCustomer() {
+        List<CustomerDto> list = new ArrayList<>();
+        Customer o = ProjectTrackerOrmDataFactory.createMockOrmCustomer(100, 1456, 0, 333, "C1234580", "Customer 1");
+        CustomerDto d = Rmt2SubsidiaryDtoFactory.createCustomerInstance(o, null);
+        list.add(d);
+
         return list;
     }
 }

@@ -210,17 +210,23 @@ public class ProjectUpdateApiHandler extends ProjectApiHandler {
             throw new InvalidDataException(ProjectMessageHandlerConst.VALIDATION_PROJECT_MISSING, e);
         }
         
+        try {
+            Verifier.verifyNotNull(req.getProfile().getProject().get(0).getClient());
+        } catch (VerifyException e) {
+            throw new InvalidDataException(ProjectMessageHandlerConst.VALIDATION_PROJECT_CLIENT_MISSING, e);
+        }
+
         // If this is a new project and user did not provide the client id, then
         // enforce user to include customer's business id so that we can derive
         // the client id to be sent to the API
         if ((req.getProfile().getProject().get(0).getProjectId() == null ||
                 req.getProfile().getProject().get(0).getProjectId().intValue() == 0)
-                && (req.getProfile().getProject().get(0).getClient() == null || req.getProfile().getProject().get(0).getClient()
-                        .getClientId() == null)) {
+                && req.getProfile().getProject().get(0).getClient().getClientId() == null) {
             try {
                 // Verifier.verifyNotNull(req.getProfile().getClient());
                 // Verifier.verifyNotEmpty(req.getProfile().getClient());
-                Verifier.verifyTrue(req.getProfile().getProject().size() == 1);
+                // Verifier.verifyTrue(req.getProfile().getProject().size() ==
+                // 1);
                 Verifier.verifyNotNull(req.getProfile().getProject().get(0).getClient().getCustomer());
                 Verifier.verifyNotNull(req.getProfile().getProject().get(0).getClient().getCustomer().getBusinessContactDetails());
                 Verifier.verifyNotNull(req.getProfile().getProject().get(0).getClient().getCustomer().getBusinessContactDetails()

@@ -3,6 +3,7 @@ package org.rmt2.api;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.dao.mapping.orm.rmt2.Customer;
 import org.dao.mapping.orm.rmt2.ProjClient;
 import org.dao.mapping.orm.rmt2.ProjEmployee;
 import org.dao.mapping.orm.rmt2.ProjEmployeeTitle;
@@ -567,6 +568,35 @@ public class ProjectTrackerOrmDataFactory {
         o.setIpCreated("1.2.3.4");
         o.setIpUpdated("1.2.3.4");
         o.setUserId("testuser");
+        return o;
+    }
+
+    /**
+     * 
+     * @param id
+     * @param businessId
+     * @param personId
+     * @param acctId
+     * @param acctNo
+     * @param description
+     * @return
+     */
+    public static final Customer createMockOrmCustomer(int id, int businessId,
+            int personId, int acctId, String acctNo, String description) {
+        Customer o = new Customer();
+        o.setCustomerId(id);
+        o.setBusinessId(businessId);
+        o.setPersonId(personId);
+        o.setAcctId(acctId);
+        o.setAccountNo(acctNo);
+        o.setDescription(description);
+        o.setCreditLimit(10000);
+        o.setActive(1);
+        o.setDateCreated(new Date());
+        o.setDateUpdated(o.getDateCreated());
+        o.setUserId("testuser");
+        o.setIpCreated("111.222.101.100");
+        o.setIpUpdated(o.getIpCreated());
         return o;
     }
 }
