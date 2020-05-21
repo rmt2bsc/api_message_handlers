@@ -160,7 +160,7 @@ public class EmployeeJaxbDtoFactory extends RMT2Base {
         jaxbObj.setEmployeeId(BigInteger.valueOf(dto.getEmployeeId()));
 
         EmployeetypeType ett = EmployeetypeTypeBuilder.Builder.create()
-                .withEmployeeId(dto.getEmployeeTypeId())
+                .withEmployeeTypeId(dto.getEmployeeTypeId())
                 .withDescription(dto.getEmployeeType())
                 .build();
         jaxbObj.setEmployeeType(ett);
@@ -175,6 +175,7 @@ public class EmployeeJaxbDtoFactory extends RMT2Base {
         jaxbObj.setManagerId(BigInteger.valueOf(dto.getManagerId()));
 
         PersonType pt = PersonTypeBuilder.Builder.create()
+                .withPersonId(dto.getPersonId())
                 .withFirstName(dto.getEmployeeFirstname())
                 .withLastName(dto.getEmployeeLastname())
                 .withEmail(dto.getEmployeeEmail())
