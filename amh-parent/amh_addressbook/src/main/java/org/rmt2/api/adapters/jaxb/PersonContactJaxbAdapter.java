@@ -125,7 +125,10 @@ class PersonContactJaxbAdapter extends DefaultAddressAdapter implements Personal
 
     @Override
     public String getGeneration() {
-        return this.person.getGeneration().value();
+        if (this.person.getGeneration() != null) {
+            return this.person.getGeneration().value();
+        }
+        return null;
     }
 
     @Override

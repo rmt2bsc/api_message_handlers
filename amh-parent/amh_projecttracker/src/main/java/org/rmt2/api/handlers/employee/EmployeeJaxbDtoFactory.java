@@ -3,7 +3,9 @@ package org.rmt2.api.handlers.employee;
 import java.math.BigInteger;
 
 import org.dto.EmployeeDto;
+import org.dto.PersonalContactDto;
 import org.dto.adapter.orm.EmployeeObjectFactory;
+import org.rmt2.api.adapters.jaxb.JaxbAddressBookFactory;
 import org.rmt2.jaxb.EmployeeCriteriaType;
 import org.rmt2.jaxb.EmployeeTitleType;
 import org.rmt2.jaxb.EmployeeType;
@@ -83,11 +85,14 @@ public class EmployeeJaxbDtoFactory extends RMT2Base {
         if (jaxbObj.getEmployeeId() != null) {
             dto.setEmployeeId(jaxbObj.getEmployeeId().intValue());
         }
+        else {
+            dto.setEmployeeId(0);
+        }
+
         if (jaxbObj.getEmployeeType() != null) {
             if (jaxbObj.getEmployeeType().getEmployeeTypeId() != null) {
                 dto.setEmployeeTypeId(jaxbObj.getEmployeeType().getEmployeeTypeId().intValue());
             }
-            dto.setEmployeeType(jaxbObj.getEmployeeType().getDescription());
         }
 
         if (jaxbObj.getEmployeeTitle() != null) {
@@ -103,14 +108,17 @@ public class EmployeeJaxbDtoFactory extends RMT2Base {
         if (jaxbObj.getEmployeeTitle() != null && jaxbObj.getEmployeeTitle().getEmployeeTitleId() != null) {
             dto.setEmployeeTitleId(jaxbObj.getEmployeeTitle().getEmployeeTitleId().intValue());
         }
+
         if (jaxbObj.getContactDetails() != null) {
+            if (jaxbObj.getContactDetails().getPersonId() != null) {
+                dto.setPersonId(jaxbObj.getContactDetails().getPersonId().intValue());
+            }
+            else {
+                dto.setPersonId(0);
+            }
             dto.setEmployeeFirstname(jaxbObj.getContactDetails().getFirstName());
             dto.setEmployeeLastname(jaxbObj.getContactDetails().getLastName());
             dto.setEmployeeEmail(jaxbObj.getContactDetails().getEmail());
-            if (jaxbObj.getContactDetails().getFirstName() != null && jaxbObj.getContactDetails().getLastName() != null) {
-                dto.setEmployeeFullname(jaxbObj.getContactDetails().getFirstName() + " "
-                        + jaxbObj.getContactDetails().getLastName());
-            }
             dto.setSsn(jaxbObj.getContactDetails().getSsn());
         }
         if (jaxbObj.getLoginId() != null) {
@@ -143,6 +151,66 @@ public class EmployeeJaxbDtoFactory extends RMT2Base {
         return dto;
     }
     
+    /**
+     * Retrieves the personal contact data pertaining to the employee's profile
+     * 
+     * @param jaxbObj
+     * @return
+     */
+    public static final PersonalContactDto createContactDtoInstance(PersonType jaxbObj) {
+        if (jaxbObj == null) {
+            return null;
+        }
+        PersonalContactDto dto = JaxbAddressBookFactory.createPersonContactDtoInstance(jaxbObj);
+        if (jaxbObj.getPersonId() != null) {
+            dto.setContactId(jaxbObj.getPersonId().intValue());
+        }
+        else {
+            dto.setContactId(0);
+        }
+        dto.setFirstname(jaxbObj.getFirstName());
+        dto.setLastname(jaxbObj.getLastName());
+        dto.setMaidenname(jaxbObj.getMaidenName());
+        dto.setBirthDate(RMT2Date.stringToDate(jaxbObj.getBirthDate()));
+        if (jaxbObj.getTitle() != null && jaxbObj.getTitle().getCodeId() != null) {
+            dto.setTitle(jaxbObj.getTitle().getCodeId().intValue());
+        }
+        if (jaxbObj.getGender() != null && jaxbObj.getGender().getCodeId() != null) {
+            dto.setGenderId(jaxbObj.getGender().getCodeId().intValue());
+        }
+        if (jaxbObj.getMaritalStatus() != null && jaxbObj.getMaritalStatus().getCodeId() != null) {
+            dto.setMaritalStatusId(jaxbObj.getMaritalStatus().getCodeId().intValue());
+        }
+        if (jaxbObj.getRace() != null && jaxbObj.getRace().getCodeId() != null) {
+            dto.setRaceId(jaxbObj.getRace().getCodeId().intValue());
+        }
+        if (jaxbObj.getCategory() != null && jaxbObj.getCategory().getCodeId() != null) {
+            dto.setCategoryId(jaxbObj.getCategory().getCodeId().intValue());
+        }
+        dto.setContactEmail(jaxbObj.getEmail());
+        dto.setSsn(jaxbObj.getSsn());
+
+        if (jaxbObj.getAddress() != null) {
+            dto.setAddr1(jaxbObj.getAddress().getAddr1());
+            dto.setAddr2(jaxbObj.getAddress().getAddr2());
+            dto.setAddr3(jaxbObj.getAddress().getAddr3());
+            dto.setAddr4(jaxbObj.getAddress().getAddr4());
+
+            if (jaxbObj.getAddress().getZip() != null) {
+                dto.setCity(jaxbObj.getAddress().getZip().getCity());
+                dto.setState(jaxbObj.getAddress().getZip().getState());
+                if (jaxbObj.getAddress().getZip().getZipcode() != null) {
+                    dto.setZip(jaxbObj.getAddress().getZip().getZipcode().intValue());
+                }
+            }
+            dto.setPhoneCell(jaxbObj.getAddress().getPhoneCell());
+            dto.setPhoneHome(jaxbObj.getAddress().getPhoneHome());
+            dto.setPhoneWork(jaxbObj.getAddress().getPhoneWork());
+        }
+
+        return dto;
+    }
+
     /**
      * Created an instance of EmployeeType from an EmployeeDto object
      * 
