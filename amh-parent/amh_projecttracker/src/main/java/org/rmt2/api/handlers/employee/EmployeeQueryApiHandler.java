@@ -65,7 +65,7 @@ public class EmployeeQueryApiHandler extends EmployeeApiHandler {
         }
         switch (command) {
             case ApiTransactionCodes.PROJTRACK_EMPLOYEE_GET:
-                r = this.fetch(this.requestObj);
+                r = this.doOperation(this.requestObj);
                 break;
             default:
                 r = this.createErrorReply(MessagingConstants.RETURN_CODE_FAILURE,
@@ -83,7 +83,7 @@ public class EmployeeQueryApiHandler extends EmployeeApiHandler {
      *            an instance of {@link AccountingGeneralLedgerRequest}
      * @return an instance of {@link MessageHandlerResults}
      */
-    protected MessageHandlerResults fetch(ProjectProfileRequest req) {
+    protected MessageHandlerResults doOperation(ProjectProfileRequest req) {
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         List<EmployeeType> queryDtoResults = null;
