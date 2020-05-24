@@ -49,8 +49,8 @@ public class AddressJaxbAdapter extends TransactionDtoImpl implements AddressDto
     }
 
     protected void init(AddressType contact) {
+        f = new ObjectFactory();
         if (contact == null) {
-            f = new ObjectFactory();
             contact = f.createAddressType();
         }
         this.src = contact;

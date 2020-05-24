@@ -4,7 +4,6 @@ import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 
-import org.dto.DefaultAddressAdapter;
 import org.dto.PersonalContactDto;
 import org.rmt2.jaxb.CodeDetailType;
 import org.rmt2.jaxb.GenerationType;
@@ -20,7 +19,7 @@ import com.api.util.RMT2Date;
  * @author Roy Terrell
  * 
  */
-class PersonContactJaxbAdapter extends DefaultAddressAdapter implements PersonalContactDto {
+class PersonContactJaxbAdapter extends AddressJaxbAdapter implements PersonalContactDto {
 
     private PersonType person;
     private List<Integer> personIdList;
@@ -36,11 +35,7 @@ class PersonContactJaxbAdapter extends DefaultAddressAdapter implements Personal
      *            purpose of creating a new PersonType object
      */
     protected PersonContactJaxbAdapter(PersonType obj) {
-        super();
-        f = new ObjectFactory();
-        if (obj == null) {
-            obj = f.createPersonType();
-        }
+        super(obj.getAddress());
         this.person = obj;
         return;
     }
