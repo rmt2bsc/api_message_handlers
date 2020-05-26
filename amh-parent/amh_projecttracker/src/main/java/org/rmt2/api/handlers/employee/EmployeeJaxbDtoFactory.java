@@ -52,6 +52,9 @@ public class EmployeeJaxbDtoFactory extends RMT2Base {
         if (jaxbObj.getManagerId() != null) {
             dto.setManagerId(jaxbObj.getManagerId().intValue());
         }
+        if (jaxbObj.isIsManager() != null) {
+            dto.setIsManager(jaxbObj.isIsManager() ? 1 : 0);
+        }
         if (jaxbObj.getEmployeeTitleId() != null) {
             dto.setEmployeeTitleId(jaxbObj.getEmployeeTitleId().intValue());
         }
