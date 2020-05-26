@@ -14,7 +14,7 @@ public class EmployeeMessageHandlerConst {
     public static final String MESSAGE_UPDATE_EXISTING_SUCCESS = "Employee was updated successfully";
     public static final String MESSAGE_UPDATE_NEW_ERROR = "Error creating new employee";
     public static final String MESSAGE_UPDATE_EXISTING_ERROR = "Error updating existing employee";
-    public static final String MESSAGE_CONTACT_UPDATE_ERROR = "Error creating/updating employee contact information";
+    public static final String MESSAGE_CONTACT_UPDATE_ERROR = "A problem occurred applying updates to the employee's contact information in the address book API";
 
     /**
      * 

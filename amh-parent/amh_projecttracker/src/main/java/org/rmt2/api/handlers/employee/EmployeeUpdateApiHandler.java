@@ -118,6 +118,7 @@ public class EmployeeUpdateApiHandler extends EmployeeApiHandler {
             if (newEmployee) {
                 rs.setMessage(EmployeeMessageHandlerConst.MESSAGE_UPDATE_NEW_SUCCESS);
                 rs.setRecordCount(1);
+                employeeDto.setEmployeeId(empRc);
             }
             else {
                 rs.setMessage(EmployeeMessageHandlerConst.MESSAGE_UPDATE_EXISTING_SUCCESS);

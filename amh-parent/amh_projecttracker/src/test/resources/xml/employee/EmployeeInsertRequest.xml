@@ -10,19 +10,19 @@
     </header>
     <profile>
         <employee>
-            <employee_id>2000</employee_id>
             <employee_type>
                 <employee_type_id>3</employee_type_id>
+                <description>EMployee Type Name</description>
             </employee_type>
             <is_manager>false</is_manager>
-            <manager_id>111</manager_id>
+            <manager_id>2001</manager_id>
             <employee_title>
                 <employee_title_id>44</employee_title_id>
+                <description>Employee Title Name</description>
             </employee_title>
             <login_id>1234</login_id>
             <login_name>rterrell</login_name>
             <contact_details>
-                <person_id>900</person_id>
                 <first_name>John</first_name>
                 <last_name>Doe</last_name>
                 <ssn>222334444</ssn>
