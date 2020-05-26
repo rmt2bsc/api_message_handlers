@@ -21,6 +21,7 @@ import org.dto.ContactDto;
 import org.dto.CustomerDto;
 import org.dto.EmployeeDto;
 import org.dto.ProjectClientDto;
+import org.dto.ProjectEmployeeDto;
 import org.dto.TaskDto;
 import org.dto.adapter.orm.EmployeeObjectFactory;
 import org.dto.adapter.orm.ProjectObjectFactory;
@@ -306,37 +307,46 @@ public class ProjectTrackerMockData {
         return list;
     }
     
-    public static final List<VwEmployeeProjects> createMockMultipleVwEmployeeProjects() {
-        List<VwEmployeeProjects> list = new ArrayList<VwEmployeeProjects>();
+    /**
+     * 
+     * @return
+     */
+    public static final List<ProjectEmployeeDto> createMockVwEmployeeProjects() {
+        List<ProjectEmployeeDto> list = new ArrayList<>();
         VwEmployeeProjects o = ProjectTrackerOrmDataFactory.createMockOrmVwEmployeeProjects(55551, 4440, "Project 2220",
                         1110, "1110 Company", 1350, "000-111", 2220,
                         "2018-01-01", "2018-02-01", "2018-01-01", "2018-02-01",
                         50.00, 55.00, 0.00, 70.00, 80.00);
-        list.add(o);
+        ProjectEmployeeDto dto = ProjectObjectFactory.createEmployeeProjectDtoInstance(o);
+        list.add(dto);
         
         o = ProjectTrackerOrmDataFactory.createMockOrmVwEmployeeProjects(55552,
                 4441, "Project 2221", 1111, "1111 Company", 1350, "000-111",
                 2220, "2018-01-01", "2018-02-01", "2018-01-01", "2018-02-01",
                 50.00, 55.00, 0.00, 70.00, 80.00);
-        list.add(o);
+        dto = ProjectObjectFactory.createEmployeeProjectDtoInstance(o);
+        list.add(dto);
         
         o = ProjectTrackerOrmDataFactory.createMockOrmVwEmployeeProjects(55553,
                 4442, "Project 2222", 1112, "1112 Company", 1350, "000-111",
                 2220, "2018-01-01", "2018-02-01", "2018-01-01", "2018-02-01",
                 50.00, 55.00, 0.00, 70.00, 80.00);
-        list.add(o);
+        dto = ProjectObjectFactory.createEmployeeProjectDtoInstance(o);
+        list.add(dto);
         
         o = ProjectTrackerOrmDataFactory.createMockOrmVwEmployeeProjects(55554,
                 4443, "Project 2223", 1113, "1113 Company", 1350, "000-111",
                 2220, "2018-01-01", "2018-02-01", "2018-01-01", "2018-02-01",
                 50.00, 55.00, 0.00, 70.00, 80.00);
-        list.add(o);
+        dto = ProjectObjectFactory.createEmployeeProjectDtoInstance(o);
+        list.add(dto);
         
         o = ProjectTrackerOrmDataFactory.createMockOrmVwEmployeeProjects(55555,
                 4444, "Project 2224", 1114, "1114 Company", 1350, "000-111",
                 2220, "2018-01-01", "2018-02-01", "2018-01-01", "2018-02-01",
                 50.00, 55.00, 0.00, 70.00, 80.00);
-        list.add(o);
+        dto = ProjectObjectFactory.createEmployeeProjectDtoInstance(o);
+        list.add(dto);
         
         return list;
     }

@@ -35,6 +35,10 @@ public class EmployeeProjectJaxbDtoFactory extends RMT2Base {
         if (jaxbObj.getEmpProjId() != null) {
             dto.setEmpProjId(jaxbObj.getEmpProjId().intValue());
         }
+        else {
+            dto.setEmpProjId(0);
+        }
+
         if (jaxbObj.getEmpId() != null) {
             dto.setEmpId(jaxbObj.getEmpId().intValue());
         }
