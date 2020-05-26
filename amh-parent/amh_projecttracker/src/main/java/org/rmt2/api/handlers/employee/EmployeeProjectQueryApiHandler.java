@@ -15,8 +15,6 @@ import com.InvalidDataException;
 import com.api.messaging.handler.MessageHandlerCommandException;
 import com.api.messaging.handler.MessageHandlerCommonReplyStatus;
 import com.api.messaging.handler.MessageHandlerResults;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
 
 /**
  * Handles and routes employee project query related messages to the
