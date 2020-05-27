@@ -14,6 +14,8 @@ public class EmployeeProjectMessageHandlerConst {
     public static final String MESSAGE_UPDATE_EXISTING_SUCCESS = "Employee/Project was updated successfully";
     public static final String MESSAGE_UPDATE_NEW_ERROR = "Error creating new employee/Project";
     public static final String MESSAGE_UPDATE_EXISTING_ERROR = "Error updating existing employee/Project";
+    public static final String VALIDATION_EMPLOYEE_PROJECT_MISSING = "Update operation requires the existence of the Employee Project profile";
+    public static final String VALIDATION_EMPLOYEE_PROJECT_TOO_MANY = "Update operation requires one profile record only";
 
     /**
      * 

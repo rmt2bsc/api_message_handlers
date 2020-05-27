@@ -76,6 +76,7 @@ public class EmployeeProjectUpdateApiHandler extends EmployeeProjectApiHandler {
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         ProjectEmployeeDto profileDto = null;
+        List<EmployeeProjectType> updateDtoResults = null;
         boolean newRec = false;
 
         try {
@@ -96,18 +97,23 @@ public class EmployeeProjectUpdateApiHandler extends EmployeeProjectApiHandler {
                 rs.setMessage(EmployeeProjectMessageHandlerConst.MESSAGE_UPDATE_EXISTING_SUCCESS);
                 rs.setRecordCount(rc);
             }
+            updateDtoResults = this.buildJaxbResults(profileDto);
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setRecordCount(0);
-            rs.setMessage(EmployeeProjectMessageHandlerConst.MESSAGE_FETCH_ERROR);
+            if (newRec) {
+                rs.setMessage(EmployeeProjectMessageHandlerConst.MESSAGE_UPDATE_NEW_ERROR);
+            }
+            else {
+                rs.setMessage(EmployeeProjectMessageHandlerConst.MESSAGE_UPDATE_EXISTING_ERROR);
+            }
             rs.setExtMessage(e.getMessage());
         } finally {
             this.api.close();
         }
 
-        List<EmployeeProjectType> updateDtoResults = this.buildJaxbResults(profileDto);
         String xml = this.buildResponse(updateDtoResults, rs);
         results.setPayload(xml);
         return results;
@@ -137,13 +143,13 @@ public class EmployeeProjectUpdateApiHandler extends EmployeeProjectApiHandler {
             Verifier.verifyNotNull(req.getProfile().getEmployeeProject());
             Verifier.verifyNotEmpty(req.getProfile().getEmployeeProject());
         } catch (VerifyException e) {
-            throw new InvalidDataException("Update operation requires the existence of the Employee Project profile", e);
+            throw new InvalidDataException(EmployeeProjectMessageHandlerConst.VALIDATION_EMPLOYEE_PROJECT_MISSING, e);
         }
 
         try {
             Verifier.verify(req.getProfile().getEmployeeProject().size() == 1);
         } catch (VerifyException e) {
-            throw new InvalidDataException("Update operation is limited to one Employee Project profile", e);
+            throw new InvalidDataException(EmployeeProjectMessageHandlerConst.VALIDATION_EMPLOYEE_PROJECT_TOO_MANY, e);
         }
     }
 }
