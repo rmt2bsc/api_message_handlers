@@ -223,10 +223,6 @@ public class ProjectUpdateApiHandler extends ProjectApiHandler {
                 req.getProfile().getProject().get(0).getProjectId().intValue() == 0)
                 && req.getProfile().getProject().get(0).getClient().getClientId() == null) {
             try {
-                // Verifier.verifyNotNull(req.getProfile().getClient());
-                // Verifier.verifyNotEmpty(req.getProfile().getClient());
-                // Verifier.verifyTrue(req.getProfile().getProject().size() ==
-                // 1);
                 Verifier.verifyNotNull(req.getProfile().getProject().get(0).getClient().getCustomer());
                 Verifier.verifyNotNull(req.getProfile().getProject().get(0).getClient().getCustomer().getBusinessContactDetails());
                 Verifier.verifyNotNull(req.getProfile().getProject().get(0).getClient().getCustomer().getBusinessContactDetails()
