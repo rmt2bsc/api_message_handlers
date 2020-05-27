@@ -1,5 +1,6 @@
 package org.rmt2.api.handlers.employee;
 
+import org.dao.mapping.orm.rmt2.VwEmployeeProjects;
 import org.dto.ProjectEmployeeDto;
 import org.dto.adapter.orm.ProjectObjectFactory;
 import org.rmt2.jaxb.EmployeeProjectCriteriaType;
@@ -31,7 +32,9 @@ public class EmployeeProjectJaxbDtoFactory extends RMT2Base {
         if (jaxbObj == null) {
             return null;
         }
-        ProjectEmployeeDto dto = ProjectObjectFactory.createEmployeeProjectDtoInstance(null);
+
+        VwEmployeeProjects vep = new VwEmployeeProjects();
+        ProjectEmployeeDto dto = ProjectObjectFactory.createEmployeeProjectDtoInstance(vep);
         if (jaxbObj.getEmpProjId() != null) {
             dto.setEmpProjId(jaxbObj.getEmpProjId().intValue());
         }
@@ -73,7 +76,8 @@ public class EmployeeProjectJaxbDtoFactory extends RMT2Base {
             return null;
         }
 
-        ProjectEmployeeDto dto = ProjectObjectFactory.createEmployeeProjectDtoInstance(null);
+        VwEmployeeProjects vep = new VwEmployeeProjects();
+        ProjectEmployeeDto dto = ProjectObjectFactory.createEmployeeProjectDtoInstance(vep);
         if (jaxbObj.getEmployeeProjectId() != null) {
             dto.setEmpProjId(jaxbObj.getEmployeeProjectId().intValue());
         }
