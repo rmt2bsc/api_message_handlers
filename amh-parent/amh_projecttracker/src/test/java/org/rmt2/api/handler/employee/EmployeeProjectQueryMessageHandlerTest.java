@@ -88,7 +88,7 @@ public class EmployeeProjectQueryMessageHandlerTest extends BaseProjectTrackerMe
     
     @Test
     public void testSuccess_Fetch() {
-        String request = RMT2File.getFileContentsAsString("xml/employee/EmployeeProjectRequest.xml");
+        String request = RMT2File.getFileContentsAsString("xml/employee/EmployeeProjectQueryRequest.xml");
         List<ProjectEmployeeDto> mockListData = ProjectTrackerMockData.createMockVwEmployeeProjects();
 
         try {
@@ -132,7 +132,7 @@ public class EmployeeProjectQueryMessageHandlerTest extends BaseProjectTrackerMe
     
     @Test
     public void test_Fetch_NoDataFound() {
-        String request = RMT2File.getFileContentsAsString("xml/employee/EmployeeProjectRequest.xml");
+        String request = RMT2File.getFileContentsAsString("xml/employee/EmployeeProjectQueryRequest.xml");
 
         try {
             when(this.mockApi.getProjectEmployee(isA(ProjectEmployeeDto.class))).thenReturn(null);
@@ -162,7 +162,7 @@ public class EmployeeProjectQueryMessageHandlerTest extends BaseProjectTrackerMe
     
     @Test
     public void testError_Fetch_API_Error() {
-        String request = RMT2File.getFileContentsAsString("xml/employee/EmployeeProjectRequest.xml");
+        String request = RMT2File.getFileContentsAsString("xml/employee/EmployeeProjectQueryRequest.xml");
         try {
             when(this.mockApi.getProjectEmployee(isA(ProjectEmployeeDto.class)))
                     .thenThrow(new EmployeeApiException(API_ERROR));
