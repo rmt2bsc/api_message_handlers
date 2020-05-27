@@ -1,0 +1,12 @@
+<ProjectProfileRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>projecttracker</application>
+        <module>employee</module>
+        <transaction>GET_EMPLOYEE_TITLE</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>05/27/2020 17:45:31</delivery_date>
+    </header>
+    <criteria/>
+</ProjectProfileRequest>
