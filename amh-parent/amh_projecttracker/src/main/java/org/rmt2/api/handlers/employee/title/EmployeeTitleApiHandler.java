@@ -83,7 +83,7 @@ public class EmployeeTitleApiHandler extends
 
     /**
      * Handler for invoking the appropriate API in order to fetch one or more
-     * project tracker employee/project objects.
+     * project tracker employee title objects.
      * 
      * @param req
      *            an instance of {@link AccountingGeneralLedgerRequest}
