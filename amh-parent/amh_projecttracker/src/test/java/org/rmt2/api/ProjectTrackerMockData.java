@@ -21,6 +21,7 @@ import org.dto.ContactDto;
 import org.dto.CustomerDto;
 import org.dto.EmployeeDto;
 import org.dto.EmployeeTitleDto;
+import org.dto.EmployeeTypeDto;
 import org.dto.ProjectClientDto;
 import org.dto.ProjectEmployeeDto;
 import org.dto.TaskDto;
@@ -190,23 +191,35 @@ public class ProjectTrackerMockData {
         return list;
     }
     
-    public static final List<ProjEmployeeType> createMockSingleEmployeeType() {
-        List<ProjEmployeeType> list = new ArrayList<ProjEmployeeType>();
+    public static final List<EmployeeTypeDto> createMockSingleEmployeeType() {
+        List<EmployeeTypeDto> list = new ArrayList<>();
         ProjEmployeeType o = ProjectTrackerOrmDataFactory.createMockOrmProjEmployeeType(201, "Employee Type 1");
-        list.add(o);
+        EmployeeTypeDto dto = EmployeeObjectFactory.createEmployeeTypeDtoInstance(o);
+        list.add(dto);
         return list;
     }
     
-    public static final List<ProjEmployeeType> createMockMultipleEmployeeType() {
-        List<ProjEmployeeType> list = new ArrayList<ProjEmployeeType>();
+    public static final List<EmployeeTypeDto> createMockMultipleEmployeeType() {
+        List<EmployeeTypeDto> list = new ArrayList<>();
         ProjEmployeeType o = ProjectTrackerOrmDataFactory.createMockOrmProjEmployeeType(201, "Employee Type 1");
-        list.add(o);
+        EmployeeTypeDto dto = EmployeeObjectFactory.createEmployeeTypeDtoInstance(o);
+        list.add(dto);
         
         o = ProjectTrackerOrmDataFactory.createMockOrmProjEmployeeType(202, "Employee Type 2");
-        list.add(o);
+        dto = EmployeeObjectFactory.createEmployeeTypeDtoInstance(o);
+        list.add(dto);
         
         o = ProjectTrackerOrmDataFactory.createMockOrmProjEmployeeType(203, "Employee Type 3");
-        list.add(o);
+        dto = EmployeeObjectFactory.createEmployeeTypeDtoInstance(o);
+        list.add(dto);
+
+        o = ProjectTrackerOrmDataFactory.createMockOrmProjEmployeeType(204, "Employee Type 4");
+        dto = EmployeeObjectFactory.createEmployeeTypeDtoInstance(o);
+        list.add(dto);
+
+        o = ProjectTrackerOrmDataFactory.createMockOrmProjEmployeeType(205, "Employee Type 5");
+        dto = EmployeeObjectFactory.createEmployeeTypeDtoInstance(o);
+        list.add(dto);
         
         return list;
     }
