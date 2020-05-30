@@ -16,7 +16,9 @@
             <client_id>20</client_id>
             <project_id>30</project_id>
             <period_begin>2020-05-23-05:00</period_begin>
+            <period_begin2>2020-05-23-05:00</period_begin2>
             <period_end>2021-06-23-05:00</period_end>
+            <period_end2>2021-06-23-05:00</period_end2>
         </timesheet_criteria>
     </criteria>
 </ProjectProfileRequest>
