@@ -1,0 +1,11 @@
+<ProjectProfileRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>projecttracker</application>
+        <module>timesheet</module>
+        <transaction>GET_TIMESHEET_STATUS</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>05/28/2020 06:09:59</delivery_date>
+    </header>
+</ProjectProfileRequest>
