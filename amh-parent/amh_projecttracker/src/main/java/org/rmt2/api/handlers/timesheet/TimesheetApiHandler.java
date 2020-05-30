@@ -42,7 +42,8 @@ public class TimesheetApiHandler extends
      */
     public TimesheetApiHandler() {
         super();
-        this.api = TimesheetApiFactory.createApi(ProjectTrackerApiConst.APP_NAME);
+        TimesheetApiFactory f = new TimesheetApiFactory();
+        this.api = f.createApi(ProjectTrackerApiConst.APP_NAME);
         this.jaxbObjFactory = new ObjectFactory();
         this.responseObj = jaxbObjFactory.createProjectProfileResponse();
         logger.info(TimesheetApiHandler.class.getName() + " was instantiated successfully");
