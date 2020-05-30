@@ -21,6 +21,7 @@ import org.rmt2.util.projecttracker.timesheet.TimesheetStatusTypeBuilder;
 import org.rmt2.util.projecttracker.timesheet.TimesheetTypeBuilder;
 
 import com.RMT2Base;
+import com.api.util.RMT2Date;
 
 /**
  * A factory for converting Employee project tracker administration related JAXB
@@ -63,7 +64,19 @@ public class TimesheetJaxbDtoFactory extends RMT2Base {
             dto.setBeginPeriod(jaxbObj.getPeriodBegin().toGregorianCalendar().getTime());
         }
         if (jaxbObj.getPeriodEnd() != null) {
-            dto.setEndPeriod(jaxbObj.getPeriodEnd().toGregorianCalendar().getTime());
+            if (jaxbObj.getPeriodEnd2() != null) {
+                StringBuilder buf = new StringBuilder();
+                buf.append("end_period between \'");
+                buf.append(RMT2Date.formatDate(jaxbObj.getPeriodEnd().toGregorianCalendar().getTime(), "yyyy-MM-dd"));
+                buf.append("\' and \'");
+                buf.append(RMT2Date.formatDate(jaxbObj.getPeriodEnd2().toGregorianCalendar().getTime(), "yyyy-MM-dd"));
+                buf.append("\'");
+                String predicate = buf.toString();
+                dto.setCriteria(predicate);
+            }
+            else {
+                dto.setEndPeriod(jaxbObj.getPeriodEnd().toGregorianCalendar().getTime());
+            }
         }
         return dto;
     }
