@@ -132,6 +132,12 @@ public class TimesheetJaxbDtoFactory extends RMT2Base {
         if (jaxbObj.getNonBillableHours() != null) {
             dto.setNonBillHrs(jaxbObj.getNonBillableHours().doubleValue());
         }
+        if (jaxbObj.getHourlyRate() != null) {
+            dto.setEmployeeHourlyRate(jaxbObj.getHourlyRate().doubleValue());
+        }
+        if (jaxbObj.getOvertimeHourlyRate() != null) {
+            dto.setEmployeeHourlyOverRate(jaxbObj.getOvertimeHourlyRate().doubleValue());
+        }
 
         // Get client info
         if (jaxbObj.getClient() != null) {
@@ -244,6 +250,8 @@ public class TimesheetJaxbDtoFactory extends RMT2Base {
                 .withStatusEndDate(dto.getStatusEndDate())
                 .withEmployeeBillableHours(dto.getBillHrs())
                 .withEmployeeNonBillableHours(dto.getNonBillHrs())
+                .withHourlyRate(dto.getEmployeeHourlyRate())
+                .withHourlyOvertimeRate(dto.getEmployeeHourlyOverRate())
                 .withClient(ct)
                 .withEmployee(et)
                 .withStatus(tst)
