@@ -233,31 +233,31 @@ public class TimesheetMockData {
     public static final List<TimesheetDto> createMockExtTimesheetList() {
         List<TimesheetDto> list = new ArrayList<>();
         VwTimesheetList o = ProjectTrackerOrmDataFactory.createMockOrmVwTimesheetList(111, 1110, 1234, 2220,
-                "INVREF1230", "2018-01-01", "2018-01-07", "ExtReNo1000",
+                "INVREF1230", "2018-01-01", "2018-01-01", "ExtReNo1000",
                 3330, "DRAFT", "ACCT-111", 40, 0, 70.00, 80.00);
         TimesheetDto dto = TimesheetObjectFactory.createTimesheetExtendedDtoInstance(o);
         list.add(dto);
 
         o = ProjectTrackerOrmDataFactory.createMockOrmVwTimesheetList(112, 1110, 1234, 2220,
-                "INVREF1231", "2018-01-08", "2018-01-14", "ExtReNo1001",
+                "INVREF1231", "2018-01-02", "2018-01-02", "ExtReNo1001",
                 3330, "DRAFT", "ACCT-111", 40, 0, 70.00, 80.00);
         dto = TimesheetObjectFactory.createTimesheetExtendedDtoInstance(o);
         list.add(dto);
 
         o = ProjectTrackerOrmDataFactory.createMockOrmVwTimesheetList(113, 1110, 1234, 2220,
-                "INVREF1232", "2018-01-15", "2018-01-21", "ExtReNo1002",
+                "INVREF1232", "2018-01-03", "2018-01-03", "ExtReNo1002",
                 3330, "DRAFT", "ACCT-111", 40, 0, 70.00, 80.00);
         dto = TimesheetObjectFactory.createTimesheetExtendedDtoInstance(o);
         list.add(dto);
 
         o = ProjectTrackerOrmDataFactory.createMockOrmVwTimesheetList(114, 1110, 1234, 2220,
-                "INVREF1233", "2018-01-22", "2018-01-28", "ExtReNo1003",
+                "INVREF1233", "2018-01-04", "2018-01-04", "ExtReNo1003",
                 3330, "DRAFT", "ACCT-111", 40, 0, 70.00, 80.00);
         dto = TimesheetObjectFactory.createTimesheetExtendedDtoInstance(o);
         list.add(dto);
 
         o = ProjectTrackerOrmDataFactory.createMockOrmVwTimesheetList(115, 1110, 1234, 2220,
-                "INVREF1234", "2018-01-29", "2018-02-04", "ExtReNo1004",
+                "INVREF1234", "2018-01-05", "2018-01-05", "ExtReNo1004",
                 3330, "DRAFT", "ACCT-111", 40, 0, 70.00, 80.00);
         dto = TimesheetObjectFactory.createTimesheetExtendedDtoInstance(o);
         list.add(dto);

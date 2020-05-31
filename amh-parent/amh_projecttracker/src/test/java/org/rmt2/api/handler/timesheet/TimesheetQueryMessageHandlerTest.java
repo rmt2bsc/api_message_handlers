@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
+import org.dao.timesheet.TimesheetConst;
 import org.dto.TimesheetDto;
 import org.junit.After;
 import org.junit.Assert;
@@ -32,7 +33,9 @@ import com.api.messaging.handler.MessageHandlerCommandException;
 import com.api.messaging.handler.MessageHandlerResults;
 import com.api.persistence.AbstractDaoClientImpl;
 import com.api.persistence.db.orm.Rmt2OrmClientFactory;
+import com.api.util.RMT2Date;
 import com.api.util.RMT2File;
+import com.api.util.RMT2String;
 
 /**
  * 
@@ -44,6 +47,27 @@ import com.api.util.RMT2File;
         TimesheetQueryApiHandler.class, TimesheetApiFactory.class, SystemConfigurator.class })
 public class TimesheetQueryMessageHandlerTest extends BaseProjectTrackerMessageHandlerTest {
     public static final int TIMESHEET_ID_SEED = 111;
+    public static final int CLIENT_ID = 1110;
+    public static final int PROJ_ID = 1234;
+    public static final int EMP_ID = 2220;
+    public static final int MGR_ID = 3330;
+    public static final int STATUS_HIST_ID = 5555;
+
+    public static final int BILLABLE_HOURS = 40;
+    public static final int NONBILLABLE_HOURS = 0;
+    public static final double HOURLY_PAY_RATE = 70;
+    public static final double HOURLY_OVERTIME_PAY_RATE = 80;
+
+    public static final String INVOICE_REF_NO_SEED = "INVREF123";
+    public static final String PERIOD_SEED = "2018-01-0";
+    public static final String EXT_REF_SEED = "ExtReNo100";
+    public static final String STATUS_NAME = "DRAFT";
+    public static final String ACCT_NO = "ACCT-111";
+    public static final String COMMENTS_SEED = "Comments";
+    public static final String CLIENT_NAME_SEED = "ClientName";
+    public static final String FIRST_NAME_SEED = "FirstName";
+    public static final String LAST_NAME_SEED = "LastName";
+
     public static final String API_ERROR = "Test validation error: selection criteria is required";
     private TimesheetApi mockApi;
     private TimesheetApiFactory mockApiFactory;
@@ -119,6 +143,69 @@ public class TimesheetQueryMessageHandlerTest extends BaseProjectTrackerMessageH
             TimesheetType a = actualRepsonse.getProfile().getTimesheet().get(ndx);
             Assert.assertNotNull(a.getTimesheetId());
             Assert.assertEquals(TIMESHEET_ID_SEED + ndx, a.getTimesheetId().intValue());
+
+            Assert.assertNotNull(a.getClient());
+            Assert.assertNotNull(a.getClient().getClientId());
+            Assert.assertEquals(CLIENT_ID, a.getClient().getClientId().intValue());
+            Assert.assertNotNull(a.getClient().getCustomer());
+            Assert.assertEquals(ACCT_NO, a.getClient().getCustomer().getAccountNo());
+            Assert.assertEquals(CLIENT_NAME_SEED + CLIENT_ID, a.getClient().getName());
+
+            Assert.assertNotNull(a.getProjId());
+            Assert.assertEquals(PROJ_ID, a.getProjId().intValue());
+
+            Assert.assertNotNull(a.getEmployee());
+            Assert.assertNotNull(a.getEmployee().getEmployeeId());
+            Assert.assertEquals(EMP_ID, a.getEmployee().getEmployeeId().intValue());
+
+            Assert.assertNotNull(a.getEmployee().getContactDetails());
+            Assert.assertEquals(FIRST_NAME_SEED + (TIMESHEET_ID_SEED + ndx), a.getEmployee().getContactDetails().getFirstName());
+            Assert.assertEquals(LAST_NAME_SEED + (TIMESHEET_ID_SEED + ndx), a.getEmployee().getContactDetails().getLastName());
+
+            Assert.assertNotNull(a.getEmployee().getManagerId());
+            Assert.assertEquals(MGR_ID, a.getEmployee().getManagerId().intValue());
+
+            Assert.assertEquals(INVOICE_REF_NO_SEED + ndx, a.getInvoiceRefNo());
+
+            Assert.assertNotNull(a.getPeriodBegin());
+            Assert.assertEquals(RMT2Date.stringToDate(PERIOD_SEED + (ndx + 1)), a.getPeriodBegin().toGregorianCalendar()
+                    .getTime());
+            Assert.assertNotNull(a.getPeriodEnd());
+            Assert.assertEquals(RMT2Date.stringToDate(PERIOD_SEED + (ndx + 1)), a.getPeriodEnd().toGregorianCalendar()
+                    .getTime());
+
+            Assert.assertEquals(EXT_REF_SEED + ndx, a.getExternalRefNo());
+
+            Assert.assertNotNull(a.getStatus());
+            Assert.assertEquals(STATUS_NAME, a.getStatus().getName());
+            Assert.assertEquals(STATUS_NAME + "Description", a.getStatus().getDescription());
+            Assert.assertNotNull(a.getStatusHistoryId());
+            Assert.assertEquals(STATUS_HIST_ID, a.getStatusHistoryId().intValue());
+
+            Assert.assertNotNull(a.getStatus().getTimesheetStatusId());
+            Assert.assertEquals(TimesheetConst.STATUS_DRAFT, a.getStatus().getTimesheetStatusId().intValue());
+            Assert.assertEquals(RMT2Date.stringToDate(PERIOD_SEED + (ndx + 1)), a.getStatusEffectiveDate().toGregorianCalendar()
+                    .getTime());
+            Assert.assertNotNull(a.getPeriodEnd());
+            Assert.assertEquals(RMT2Date.stringToDate(PERIOD_SEED + (ndx + 1)), a.getStatusEndDate().toGregorianCalendar()
+                    .getTime());
+
+            Assert.assertEquals(COMMENTS_SEED + (TIMESHEET_ID_SEED + ndx), a.getComments());
+
+            Assert.assertNotNull(a.getDocumentId());
+            Assert.assertEquals(TIMESHEET_ID_SEED + ndx, a.getDocumentId().intValue());
+
+            Assert.assertEquals(RMT2String.padInt(TIMESHEET_ID_SEED + ndx, 10, RMT2String.PAD_LEADING), a.getDisplayValue());
+
+            Assert.assertNotNull(a.getBillableHours());
+            Assert.assertEquals(BILLABLE_HOURS, a.getBillableHours().doubleValue(), 0);
+            Assert.assertNotNull(a.getNonBillableHours());
+            Assert.assertEquals(NONBILLABLE_HOURS, a.getNonBillableHours().doubleValue(), 0);
+
+            Assert.assertNotNull(a.getHourlyRate());
+            Assert.assertEquals(HOURLY_PAY_RATE, a.getHourlyRate().doubleValue(), 0);
+            Assert.assertNotNull(a.getOvertimeHourlyRate());
+            Assert.assertEquals(HOURLY_OVERTIME_PAY_RATE, a.getOvertimeHourlyRate().doubleValue(), 0);
         }
     }
     
