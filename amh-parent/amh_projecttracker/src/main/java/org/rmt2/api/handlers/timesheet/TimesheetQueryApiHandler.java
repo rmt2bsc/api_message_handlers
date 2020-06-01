@@ -78,7 +78,7 @@ public class TimesheetQueryApiHandler extends TimesheetApiHandler {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             TimesheetDto criteriaDto = TimesheetJaxbDtoFactory
-                    .createDtoCriteriaInstance(req.getCriteria().getTimesheetCriteria());
+                    .createTimesheetDtoCriteriaInstance(req.getCriteria().getTimesheetCriteria());
             
             List<TimesheetDto> dtoList = this.api.getExt(criteriaDto);
             if (dtoList == null) {
@@ -110,7 +110,7 @@ public class TimesheetQueryApiHandler extends TimesheetApiHandler {
     private List<TimesheetType> buildJaxbResults(List<TimesheetDto> dto) {
         List<TimesheetType> list = new ArrayList<>();
         for (TimesheetDto item : dto) {
-            TimesheetType jaxbObj = TimesheetJaxbDtoFactory.createJaxbInstance(item);
+            TimesheetType jaxbObj = TimesheetJaxbDtoFactory.createTimesheetJaxbInstance(item);
             list.add(jaxbObj);
         }
         return list;
