@@ -1,12 +1,22 @@
 package org.rmt2.api.handlers.timesheet;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.dto.EventDto;
+import org.dto.ProjectTaskDto;
 import org.dto.TimesheetDto;
+import org.dto.adapter.orm.ProjectObjectFactory;
 import org.dto.adapter.orm.TimesheetObjectFactory;
 import org.rmt2.jaxb.ClientType;
 import org.rmt2.jaxb.CustomerType;
 import org.rmt2.jaxb.EmployeeType;
 import org.rmt2.jaxb.EmployeetypeType;
+import org.rmt2.jaxb.EventType;
 import org.rmt2.jaxb.PersonType;
+import org.rmt2.jaxb.ProjectTaskType;
 import org.rmt2.jaxb.RecordTrackingType;
 import org.rmt2.jaxb.TimesheetCriteriaType;
 import org.rmt2.jaxb.TimesheetStatusType;
@@ -182,6 +192,63 @@ public class TimesheetJaxbDtoFactory extends RMT2Base {
         return dto;
     }
     
+    /**
+     * Builds a Map representing the timesheet work log which is is keyed by
+     * ProjectTaskDto.
+     * <p>
+     * The map values are a list of EventDto ojects representing the daily time
+     * sheet hours for the project task.
+     * 
+     * @param jaxbObj
+     *            an instance of {@link TimesheetType}
+     * @return Map<ProjectTaskDto, List<EventDto>>
+     */
+    public static final Map<ProjectTaskDto, List<EventDto>> createTimesheetWorkLogDtoInstance(TimesheetType jaxbObj) {
+        Map<ProjectTaskDto, List<EventDto>> hours = new HashMap<>();
+        for (ProjectTaskType ptt : jaxbObj.getWorkLog()) {
+            ProjectTaskDto key = TimesheetJaxbDtoFactory.createProjectTaskDtoInstance(ptt);
+            if (jaxbObj.getTimesheetId() != null) {
+                key.setTimesheetId(jaxbObj.getTimesheetId().intValue());
+            }
+            else {
+                key.setTimesheetId(0);
+            }
+            List<EventDto> events = TimesheetJaxbDtoFactory.createEventDtoInstance(ptt, key.getProjectTaskId());
+            hours.put(key, events);
+        }
+        return hours;
+    }
+
+    private static final ProjectTaskDto createProjectTaskDtoInstance(ProjectTaskType jaxbObj) {
+        ProjectTaskDto dto = ProjectObjectFactory.createProjectTaskDtoInstance(null);
+        if (jaxbObj.getProjectTaskId() != null) {
+            dto.setProjectTaskId(jaxbObj.getProjectTaskId().intValue());
+        }
+        else {
+            dto.setProjectTaskId(0);
+        }
+        dto.setTaskId(jaxbObj.getTaskId().intValue());
+        dto.setProjId(jaxbObj.getProjectId().intValue());
+        return dto;
+    }
+
+    private static final List<EventDto> createEventDtoInstance(ProjectTaskType jaxbObj, int projectTaskId) {
+        List<EventDto> list = new ArrayList<>();
+        for (EventType et : jaxbObj.getDailyHours()) {
+            EventDto dto = ProjectObjectFactory.createEventDtoInstance(null);
+            if (et.getEventId() != null) {
+                dto.setEventId(et.getEventId().intValue());
+            }
+            else {
+                dto.setEventId(0);
+            }
+            dto.setProjectTaskId(projectTaskId);
+            dto.setEventDate(et.getEventDate().toGregorianCalendar().getTime());
+            dto.setEventHours(et.getHours().doubleValue());
+            list.add(dto);
+        }
+        return list;
+    }
 
     /**
      * Create an instance of TimesheetType from an TimesheetDto object

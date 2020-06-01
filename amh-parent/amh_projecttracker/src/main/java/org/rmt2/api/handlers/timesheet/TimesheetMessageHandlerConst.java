@@ -14,6 +14,8 @@ public class TimesheetMessageHandlerConst {
     public static final String MESSAGE_UPDATE_EXISTING_SUCCESS = "Timesheet was updated successfully";
     public static final String MESSAGE_UPDATE_NEW_ERROR = "Error creating new Timesheet";
     public static final String MESSAGE_UPDATE_EXISTING_ERROR = "Error updating existing Timesheet";
+    public static final String VALIDATION_TIMESHEET_MISSING = "Update operation requires the existence of the Timesheet profile";
+    public static final String VALIDATION_TIMESHEET_TOO_MANY = "Update operation requires one timesheet record only";
 
     /**
      * 
