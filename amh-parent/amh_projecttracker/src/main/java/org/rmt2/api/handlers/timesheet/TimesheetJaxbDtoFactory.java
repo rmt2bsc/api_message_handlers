@@ -40,7 +40,7 @@ public class TimesheetJaxbDtoFactory extends RMT2Base {
      *            an instance of {@link TimesheetCriteriaType}
      * @return an instance of {@link TimesheetDto}
      */
-    public static final TimesheetDto createDtoCriteriaInstance(TimesheetCriteriaType jaxbObj) {
+    public static final TimesheetDto createTimesheetDtoCriteriaInstance(TimesheetCriteriaType jaxbObj) {
         if (jaxbObj == null) {
             return null;
         }
@@ -88,7 +88,7 @@ public class TimesheetJaxbDtoFactory extends RMT2Base {
      *            an instance of {@link TimesheetType}
      * @return an instance of {@link TimesheetDto}
      */
-    public static final TimesheetDto createDtoInstance(TimesheetType jaxbObj) {
+    public static final TimesheetDto createTimesheetDtoInstance(TimesheetType jaxbObj) {
         if (jaxbObj == null) {
             return null;
         }
@@ -190,7 +190,7 @@ public class TimesheetJaxbDtoFactory extends RMT2Base {
      *            an instance of {@link TimesheetDto}
      * @return an instance of {@link TimesheetType}
      */
-    public static final TimesheetType createJaxbInstance(TimesheetDto dto) {
+    public static final TimesheetType createTimesheetJaxbInstance(TimesheetDto dto) {
         if (dto == null) {
             return null;
         }
@@ -269,7 +269,7 @@ public class TimesheetJaxbDtoFactory extends RMT2Base {
      *            an instance of {@link TimesheetDto}
      * @return an instance of {@link TimesheetType}
      */
-    public static final TimesheetType createJaxbAbbreviatedInstance(TimesheetDto dto) {
+    public static final TimesheetType createTimesheetJaxbAbbreviatedInstance(TimesheetDto dto) {
         if (dto == null) {
             return null;
         }
@@ -299,6 +299,8 @@ public class TimesheetJaxbDtoFactory extends RMT2Base {
                 .withTimesheetId(dto.getTimesheetId())
                 .withDisplayTimesheetId(dto.getDisplayValue())
                 .withEndPeriod(dto.getEndPeriod())
+                .withEmployeeBillableHours(dto.getBillHrs())
+                .withEmployeeNonBillableHours(dto.getNonBillHrs())
                 .withClient(ct)
                 .withEmployee(et)
                 .withStatus(tst)
