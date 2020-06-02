@@ -229,6 +229,7 @@ public class TimesheetJaxbDtoFactory extends RMT2Base {
         }
         dto.setTaskId(jaxbObj.getTaskId().intValue());
         dto.setProjId(jaxbObj.getProjectId().intValue());
+        dto.setDeleteFlag(jaxbObj.isDeleteProjectTask());
         return dto;
     }
 

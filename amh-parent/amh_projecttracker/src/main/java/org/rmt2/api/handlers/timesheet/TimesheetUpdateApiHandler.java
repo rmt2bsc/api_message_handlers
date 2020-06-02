@@ -93,7 +93,7 @@ public class TimesheetUpdateApiHandler extends TimesheetApiHandler {
             
             newTimesheet = timesheetDto.getTimesheetId() > 0 ? false : true;
 
-            // TODO: put it DB transaction management logic
+            this.api.beginTrans();
             int rc = this.api.updateTimesheet(timesheetDto, workLogDto);
             if (newTimesheet) {
                 rs.setMessage(TimesheetMessageHandlerConst.MESSAGE_UPDATE_NEW_SUCCESS);
@@ -108,6 +108,7 @@ public class TimesheetUpdateApiHandler extends TimesheetApiHandler {
 
             updateDtoResults = this.buildJaxbResults(timesheetDto);
             this.responseObj.setHeader(req.getHeader());
+            this.api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
@@ -120,6 +121,7 @@ public class TimesheetUpdateApiHandler extends TimesheetApiHandler {
             }
             rs.setMessage(TimesheetMessageHandlerConst.MESSAGE_FETCH_ERROR);
             rs.setExtMessage(e.getMessage());
+            this.api.rollbackTrans();
         } finally {
             this.api.close();
         }
