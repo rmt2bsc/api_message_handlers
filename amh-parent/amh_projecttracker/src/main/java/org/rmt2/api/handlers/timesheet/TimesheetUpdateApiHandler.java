@@ -119,7 +119,6 @@ public class TimesheetUpdateApiHandler extends TimesheetApiHandler {
             else {
                 rs.setMessage(TimesheetMessageHandlerConst.MESSAGE_UPDATE_EXISTING_ERROR);
             }
-            rs.setMessage(TimesheetMessageHandlerConst.MESSAGE_FETCH_ERROR);
             rs.setExtMessage(e.getMessage());
             this.api.rollbackTrans();
         } finally {

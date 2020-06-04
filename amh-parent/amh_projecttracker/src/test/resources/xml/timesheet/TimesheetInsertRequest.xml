@@ -10,7 +10,6 @@
     </header>
     <profile>
         <timesheet>
-            <timesheet_id>900</timesheet_id>
             <proj_id>30</proj_id>
             <client>
                 <client_id>200</client_id>
