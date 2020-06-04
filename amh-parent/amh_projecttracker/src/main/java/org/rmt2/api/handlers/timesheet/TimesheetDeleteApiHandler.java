@@ -1,6 +1,7 @@
 package org.rmt2.api.handlers.timesheet;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -9,6 +10,7 @@ import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.ProjectProfileRequest;
 import org.rmt2.jaxb.TimesheetType;
+import org.rmt2.util.projecttracker.timesheet.TimesheetTypeBuilder;
 
 import com.InvalidDataException;
 import com.api.messaging.handler.MessageHandlerCommandException;
@@ -115,6 +117,21 @@ public class TimesheetDeleteApiHandler extends TimesheetApiHandler {
         return results;
     }
     
+    /**
+     * 
+     * @param dto
+     * @return
+     */
+    @Override
+    protected List<TimesheetType> buildJaxbUpdateResults(TimesheetDto dto) {
+        List<TimesheetType> list = new ArrayList<>();
+        TimesheetType jaxbObj = TimesheetTypeBuilder.Builder.create()
+                .withTimesheetId(dto.getTimesheetId())
+                .build();
+
+        list.add(jaxbObj);
+        return list;
+    }
     
     @Override
     protected void validateRequest(ProjectProfileRequest req) throws InvalidDataException {
