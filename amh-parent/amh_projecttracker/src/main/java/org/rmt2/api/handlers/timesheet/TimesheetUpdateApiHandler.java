@@ -1,7 +1,6 @@
 package org.rmt2.api.handlers.timesheet;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -106,7 +105,7 @@ public class TimesheetUpdateApiHandler extends TimesheetApiHandler {
             // Ensure timeshet id has a value in the event the timesheet is new
             timesheetDto.setTimesheetId(rc);
 
-            updateDtoResults = this.buildJaxbResults(timesheetDto);
+            updateDtoResults = this.buildJaxbUpdateResults(timesheetDto);
             this.responseObj.setHeader(req.getHeader());
             this.api.commitTrans();
         } catch (Exception e) {
@@ -128,13 +127,6 @@ public class TimesheetUpdateApiHandler extends TimesheetApiHandler {
         String xml = this.buildResponse(updateDtoResults, rs);
         results.setPayload(xml);
         return results;
-    }
-    
-    private List<TimesheetType> buildJaxbResults(TimesheetDto dto) {
-        List<TimesheetType> list = new ArrayList<>();
-        TimesheetType jaxbObj = TimesheetJaxbDtoFactory.createTimesheetJaxbAbbreviatedInstance(dto);
-        list.add(jaxbObj);
-        return list;
     }
     
     

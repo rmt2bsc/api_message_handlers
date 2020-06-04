@@ -1,8 +1,10 @@
 package org.rmt2.api.handlers.timesheet;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.dto.TimesheetDto;
 import org.modules.ProjectTrackerApiConst;
 import org.modules.timesheet.TimesheetApi;
 import org.modules.timesheet.TimesheetApiFactory;
@@ -59,6 +61,32 @@ public class TimesheetApiHandler extends
         catch (VerifyException e) {
             throw new InvalidRequestException("Employee message request element is invalid");
         }
+    }
+
+    /**
+     * 
+     * @param dto
+     * @return
+     */
+    protected List<TimesheetType> buildJaxbQueryResults(List<TimesheetDto> dto) {
+        List<TimesheetType> list = new ArrayList<>();
+        for (TimesheetDto item : dto) {
+            TimesheetType jaxbObj = TimesheetJaxbDtoFactory.createTimesheetJaxbInstance(item);
+            list.add(jaxbObj);
+        }
+        return list;
+    }
+
+    /**
+     * 
+     * @param dto
+     * @return
+     */
+    protected List<TimesheetType> buildJaxbUpdateResults(TimesheetDto dto) {
+        List<TimesheetType> list = new ArrayList<>();
+        TimesheetType jaxbObj = TimesheetJaxbDtoFactory.createTimesheetJaxbAbbreviatedInstance(dto);
+        list.add(jaxbObj);
+        return list;
     }
 
     @Override

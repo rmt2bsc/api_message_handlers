@@ -14,23 +14,26 @@ import com.InvalidDataException;
 import com.api.messaging.handler.MessageHandlerCommandException;
 import com.api.messaging.handler.MessageHandlerCommonReplyStatus;
 import com.api.messaging.handler.MessageHandlerResults;
+import com.api.util.RMT2String;
+import com.api.util.assistants.Verifier;
+import com.api.util.assistants.VerifyException;
 
 /**
- * Handles and routes timesheet query related messages to the ProjectTracker
+ * Handles and routes timesheet delete related messages to the ProjectTracker
  * API.
  * 
  * @author roy.terrell
  *
  */
-public class TimesheetQueryApiHandler extends TimesheetApiHandler {
+public class TimesheetDeleteApiHandler extends TimesheetApiHandler {
     
-    private static final Logger logger = Logger.getLogger(TimesheetQueryApiHandler.class);
+    private static final Logger logger = Logger.getLogger(TimesheetDeleteApiHandler.class);
     /**
      * @param payload
      */
-    public TimesheetQueryApiHandler() {
+    public TimesheetDeleteApiHandler() {
         super();
-        logger.info(TimesheetQueryApiHandler.class.getName() + " was instantiated successfully");
+        logger.info(TimesheetDeleteApiHandler.class.getName() + " was instantiated successfully");
     }
 
     /*
@@ -49,7 +52,7 @@ public class TimesheetQueryApiHandler extends TimesheetApiHandler {
             return r;
         }
         switch (command) {
-            case ApiTransactionCodes.PROJTRACK_TIMESHEET_GET:
+            case ApiTransactionCodes.PROJTRACK_TIMESHEET_DELETE:
                 r = this.doOperation(this.requestObj);
                 break;
             default:
@@ -61,8 +64,8 @@ public class TimesheetQueryApiHandler extends TimesheetApiHandler {
     }
 
     /**
-     * Handler for invoking the appropriate API in order to fetch one or more
-     * project tracker timesheet objects.
+     * Handler for invoking the appropriate API in order to delete project
+     * tracker timesheet objects.
      * 
      * @param req
      *            an instance of {@link AccountingGeneralLedgerRequest}
@@ -71,37 +74,43 @@ public class TimesheetQueryApiHandler extends TimesheetApiHandler {
     protected MessageHandlerResults doOperation(ProjectProfileRequest req) {
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
-        List<TimesheetType> queryDtoResults = null;
+        TimesheetDto timesheetDto = null;
+        List<TimesheetType> updateDtoResults = null;
 
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
-            TimesheetDto criteriaDto = TimesheetJaxbDtoFactory
-                    .createTimesheetDtoCriteriaInstance(req.getCriteria().getTimesheetCriteria());
-            
-            List<TimesheetDto> dtoList = this.api.getExt(criteriaDto);
-            if (dtoList == null) {
-                rs.setMessage(TimesheetMessageHandlerConst.MESSAGE_NOT_FOUND);
-                rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+            timesheetDto = TimesheetJaxbDtoFactory
+                    .createTimesheetDtoInstance(req.getProfile().getTimesheet().get(0));
+
+            this.api.beginTrans();
+            int rc = this.api.deleteTimesheet(timesheetDto.getTimesheetId());
+            if (rc > 0) {
+                rs.setMessage(TimesheetMessageHandlerConst.MESSAGE_DELETE_SUCCESS);
             }
             else {
-                queryDtoResults = this.buildJaxbQueryResults(dtoList);
-                rs.setMessage(TimesheetMessageHandlerConst.MESSAGE_FOUND);
-                rs.setRecordCount(dtoList.size());
-                rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+                String errMsg = RMT2String.replace(TimesheetMessageHandlerConst.MESSAGE_DELETE_RECORD_NOT_FOUND,
+                        String.valueOf(timesheetDto.getTimesheetId()), "%s");
+                rs.setMessage(errMsg);
             }
+            rs.setRecordCount(rc);
+
+            updateDtoResults = this.buildJaxbUpdateResults(timesheetDto);
             this.responseObj.setHeader(req.getHeader());
+            this.api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setRecordCount(0);
-            rs.setMessage(TimesheetMessageHandlerConst.MESSAGE_FETCH_ERROR);
+            rs.setMessage(TimesheetMessageHandlerConst.MESSAGE_DELETE_ERROR);
             rs.setExtMessage(e.getMessage());
+            this.api.rollbackTrans();
         } finally {
             this.api.close();
         }
 
-        String xml = this.buildResponse(queryDtoResults, rs);
+        String xml = this.buildResponse(updateDtoResults, rs);
         results.setPayload(xml);
         return results;
     }
@@ -110,5 +119,19 @@ public class TimesheetQueryApiHandler extends TimesheetApiHandler {
     @Override
     protected void validateRequest(ProjectProfileRequest req) throws InvalidDataException {
         super.validateRequest(req);
+
+        try {
+            Verifier.verifyNotNull(req.getProfile());
+            Verifier.verifyNotNull(req.getProfile().getTimesheet());
+            Verifier.verifyNotEmpty(req.getProfile().getTimesheet());
+        } catch (VerifyException e) {
+            throw new InvalidDataException(TimesheetMessageHandlerConst.VALIDATION_TIMESHEET_MISSING, e);
+        }
+
+        try {
+            Verifier.verify(req.getProfile().getTimesheet().size() == 1);
+        } catch (VerifyException e) {
+            throw new InvalidDataException(TimesheetMessageHandlerConst.VALIDATION_TIMESHEET_TOO_MANY, e);
+        }
     }
 }
