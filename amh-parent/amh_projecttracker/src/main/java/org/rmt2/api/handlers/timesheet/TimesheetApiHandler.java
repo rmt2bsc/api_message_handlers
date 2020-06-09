@@ -8,6 +8,7 @@ import org.dto.TimesheetDto;
 import org.modules.ProjectTrackerApiConst;
 import org.modules.timesheet.TimesheetApi;
 import org.modules.timesheet.TimesheetApiFactory;
+import org.modules.timesheet.TimesheetTransmissionException;
 import org.rmt2.api.handler.util.MessageHandlerUtility;
 import org.rmt2.jaxb.ObjectFactory;
 import org.rmt2.jaxb.ProjectDetailGroup;
@@ -20,6 +21,9 @@ import org.rmt2.jaxb.TimesheetType;
 
 import com.InvalidDataException;
 import com.api.messaging.InvalidRequestException;
+import com.api.messaging.email.EmailMessageBean;
+import com.api.messaging.email.smtp.SmtpApi;
+import com.api.messaging.email.smtp.SmtpFactory;
 import com.api.messaging.handler.AbstractJaxbMessageHandler;
 import com.api.messaging.handler.MessageHandlerCommonReplyStatus;
 import com.api.util.assistants.Verifier;
@@ -104,5 +108,35 @@ public class TimesheetApiHandler extends
         
         String xml = this.jaxb.marshalMessage(this.responseObj);
         return xml;
+    }
+
+    /**
+     * Emails a copy of an employee's timesheet to the employee's manager using
+     * <i>timesheet</i>, <i>employee</i>, <i>client</i>, and <i>hours</i>.
+     * 
+     * @param email
+     *            An instance of {@link EmailMessageBean}
+     * @return The SMTP return code.
+     * @throws TimesheetTransmissionException
+     *             Error occurs sending timesheet data to its designated
+     *             recipient via the SMTP protocol.
+     */
+    protected Object send(EmailMessageBean email) throws TimesheetTransmissionException {
+
+        if (email == null) {
+            return null;
+        }
+        SmtpApi emailApi = null;
+        try {
+            // Send the timesheet over the SMTP protocol.
+            emailApi = SmtpFactory.getSmtpInstance();
+            Object rc = emailApi.sendMessage(email);
+            return rc;
+        } catch (Exception e) {
+            this.msg = "Error occurred sending email message to " + email.getRecipients();
+            throw new TimesheetTransmissionException(this.msg, e);
+        } finally {
+            emailApi.close();
+        }
     }
 }

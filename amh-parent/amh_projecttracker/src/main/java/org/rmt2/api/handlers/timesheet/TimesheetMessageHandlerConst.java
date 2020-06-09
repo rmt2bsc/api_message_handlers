@@ -17,6 +17,10 @@ public class TimesheetMessageHandlerConst {
     public static final String MESSAGE_DELETE_SUCCESS = "Timesheet deleted successfully";
     public static final String MESSAGE_DELETE_RECORD_NOT_FOUND = "Delete operation did not find any records for timesheet id, %s";
     public static final String MESSAGE_DELETE_ERROR = "Error deleting Timesheet";
+    public static final String MESSAGE_SUBMIT_SUCCESS = "Timesheet submitted successfully";
+    public static final String MESSAGE_SUBMIT_ERROR = "Error submitting Timesheet";
+    public static final String MESSAGE_SUBMIT_RECORD_NOT_FOUND = "Submit operation did not find any records for timesheet id, %s";
+
     public static final String VALIDATION_TIMESHEET_MISSING = "Update operation requires the existence of the Timesheet profile";
     public static final String VALIDATION_TIMESHEET_TOO_MANY = "Update operation requires one timesheet record only";
 

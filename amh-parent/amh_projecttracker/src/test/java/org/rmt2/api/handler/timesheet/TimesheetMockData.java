@@ -3,6 +3,7 @@ package org.rmt2.api.handler.timesheet;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.dao.mapping.orm.rmt2.ProjClient;
 import org.dao.mapping.orm.rmt2.ProjEvent;
 import org.dao.mapping.orm.rmt2.ProjProjectTask;
 import org.dao.mapping.orm.rmt2.ProjTimesheet;
@@ -42,8 +43,36 @@ public class TimesheetMockData {
     protected List<VwTimesheetHours> mockTimesheetHours;
 
     
+    private List<ProjClient> createMockMultipleClient() {
+        List<ProjClient> list = new ArrayList<ProjClient>();
+        ProjClient o = ProjectTrackerOrmDataFactory.createMockOrmProjClient(
+                1110, 1350, "1110 Company", 70.00, 80.00, "000-111", "firstname0",
+                "lastname0", "0000000000", "firstname0lastname0@gte.net");
+        list.add(o);
 
-    private List<ProjTimesheetHist> createMockTimesheetCurrentStatus() {
+        o = ProjectTrackerOrmDataFactory.createMockOrmProjClient(1111, 1351,
+                "1111 Company", 80.00, 90.00, "111-111", "firstname1", "lastname1",
+                "1111111111", "firstname1lastname1@gte.net");
+        list.add(o);
+
+        o = ProjectTrackerOrmDataFactory.createMockOrmProjClient(1112, 1352,
+                "1112 Company", 90.00, 100.00, "222-111", "firstname2", "lastname2",
+                "2222222222", "firstname2lastname2@gte.net");
+        list.add(o);
+
+        o = ProjectTrackerOrmDataFactory.createMockOrmProjClient(1113, 1353,
+                "1113 Company", 100.00, 110.00, "333-111", "firstname3", "lastname3",
+                "3333333333", "firstname3lastname3@gte.net");
+        list.add(o);
+
+        o = ProjectTrackerOrmDataFactory.createMockOrmProjClient(1114, 1354,
+                "1114 Company", 110.00, 120.00, "444-111", "firstname4", "lastname4",
+                "4444444444", "firstname4lastname4@gte.net");
+        list.add(o);
+        return list;
+    }
+
+    public static final List<ProjTimesheetHist> createMockTimesheetCurrentStatus() {
         List<ProjTimesheetHist> list = new ArrayList<ProjTimesheetHist>();
         ProjTimesheetHist o = ProjectTrackerOrmDataFactory.createMockOrmProjTimesheetHist(
                 ProjectTrackerOrmDataFactory.TEST_TIMESHEET_HIST_ID,
@@ -54,7 +83,7 @@ public class TimesheetMockData {
         return list;
     }
     
-    private List<ProjTimesheetHist> createMockTimesheetStatusHistory() {
+    public static final List<ProjTimesheetHist> createMockTimesheetStatusHistory() {
         List<ProjTimesheetHist> list = new ArrayList<ProjTimesheetHist>();
         ProjTimesheetHist o = ProjectTrackerOrmDataFactory.createMockOrmProjTimesheetHist(
                 ProjectTrackerOrmDataFactory.TEST_TIMESHEET_HIST_ID,
@@ -128,7 +157,7 @@ public class TimesheetMockData {
         return list;
     }
     
-    private List<VwTimesheetProjectTask> createMockMultipleVwTimesheetProjectTask() {
+    public static final List<VwTimesheetProjectTask> createMockMultipleVwTimesheetProjectTask() {
         List<VwTimesheetProjectTask> list = new ArrayList<VwTimesheetProjectTask>();
         VwTimesheetProjectTask o = ProjectTrackerOrmDataFactory.createMockOrmVwTimesheetProjectTask(444441, 111, 4440,
                         1112220, 1110, "Project 2220", "2018-01-01",
@@ -205,7 +234,7 @@ public class TimesheetMockData {
         return list;
     }
     
-    private List<ProjTimesheet> createMockMultipleTimesheetSameClientList() {
+    public static final List<ProjTimesheet> createMockMultipleTimesheetSameClientList() {
         List<ProjTimesheet> list = new ArrayList<ProjTimesheet>();
         ProjTimesheet o = ProjectTrackerOrmDataFactory.createMockOrmProjTimesheet(111, 1110, 4440, 2220, "INVREF1230",
                 "2018-01-01", "2018-01-07", "ExtReNo1000");

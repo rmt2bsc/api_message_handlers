@@ -94,6 +94,7 @@ public class ProjectTrackerMockData {
         return list;
     }
 
+
     public static final List<ProjProject> createMockSingleProject() {
         List<ProjProject> list = new ArrayList<ProjProject>();
         ProjProject o = ProjectTrackerOrmDataFactory.createMockOrmProjProject(
