@@ -2,7 +2,6 @@ package org.rmt2.api.handlers.timesheet;
 
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +26,6 @@ import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.ProjectProfileRequest;
 import org.rmt2.jaxb.TimesheetType;
-import org.rmt2.util.projecttracker.timesheet.TimesheetTypeBuilder;
 
 import com.InvalidDataException;
 import com.SystemException;
@@ -123,7 +121,7 @@ public class TimesheetSubmitApiHandler extends TimesheetApiHandler {
             }
             rs.setRecordCount(rc);
 
-            updateDtoResults = this.buildJaxbUpdateResults(timesheetDto);
+            updateDtoResults = this.buildJaxbStatusChangeResults(timesheetDto);
             this.responseObj.setHeader(req.getHeader());
             this.api.commitTrans();
         } catch (Exception e) {
@@ -153,21 +151,6 @@ public class TimesheetSubmitApiHandler extends TimesheetApiHandler {
         return results;
     }
     
-    /**
-     * 
-     * @param dto
-     * @return
-     */
-    @Override
-    protected List<TimesheetType> buildJaxbUpdateResults(TimesheetDto dto) {
-        List<TimesheetType> list = new ArrayList<>();
-        TimesheetType jaxbObj = TimesheetTypeBuilder.Builder.create()
-                .withTimesheetId(dto.getTimesheetId())
-                .build();
-
-        list.add(jaxbObj);
-        return list;
-    }
     
     private Object sendEmailConfirmation() throws TimesheetTransmissionException {
         TimesheetDto ts = this.api.getTimesheet();

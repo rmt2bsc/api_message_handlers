@@ -15,9 +15,12 @@ import org.rmt2.jaxb.ProjectDetailGroup;
 import org.rmt2.jaxb.ProjectProfileRequest;
 import org.rmt2.jaxb.ProjectProfileResponse;
 import org.rmt2.jaxb.ReplyStatusType;
+import org.rmt2.jaxb.TimesheetStatusType;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 import org.rmt2.jaxb.TimesheetType;
+import org.rmt2.util.projecttracker.timesheet.TimesheetStatusTypeBuilder;
+import org.rmt2.util.projecttracker.timesheet.TimesheetTypeBuilder;
 
 import com.InvalidDataException;
 import com.api.messaging.InvalidRequestException;
@@ -89,6 +92,27 @@ public class TimesheetApiHandler extends
     protected List<TimesheetType> buildJaxbUpdateResults(TimesheetDto dto) {
         List<TimesheetType> list = new ArrayList<>();
         TimesheetType jaxbObj = TimesheetJaxbDtoFactory.createTimesheetJaxbAbbreviatedInstance(dto);
+        list.add(jaxbObj);
+        return list;
+    }
+
+    /**
+     * 
+     * @param dto
+     * @return
+     */
+    protected List<TimesheetType> buildJaxbStatusChangeResults(TimesheetDto dto) {
+        List<TimesheetType> list = new ArrayList<>();
+
+        TimesheetStatusType tst = TimesheetStatusTypeBuilder.Builder.create()
+                .withDescription(dto.getStatusName())
+                .build();
+
+        TimesheetType jaxbObj = TimesheetTypeBuilder.Builder.create()
+                .withTimesheetId(dto.getTimesheetId())
+                .withStatus(tst)
+                .build();
+
         list.add(jaxbObj);
         return list;
     }
