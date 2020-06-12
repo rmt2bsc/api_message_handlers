@@ -97,7 +97,7 @@ public class TimesheetPostSubmitApiHandler extends TimesheetApiHandler {
         List<TimesheetType> updateDtoResults = null;
         boolean okToSendEmail = false;
         String transCode = req.getHeader().getTransaction();
-        int rc = 0;
+
 
         try {
             // Set reply status
@@ -107,6 +107,7 @@ public class TimesheetPostSubmitApiHandler extends TimesheetApiHandler {
 
             this.api.beginTrans();
             // Approve or decline timesheet
+            int rc = 0;
             if (transCode.equalsIgnoreCase(ApiTransactionCodes.PROJTRACK_TIMESHEET_APPROVE)) {
                 rc = this.api.approve(timesheetDto.getTimesheetId());
             }
