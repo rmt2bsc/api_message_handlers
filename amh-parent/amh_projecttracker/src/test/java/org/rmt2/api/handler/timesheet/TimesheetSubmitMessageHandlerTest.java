@@ -440,15 +440,13 @@ public class TimesheetSubmitMessageHandlerTest extends BaseProjectTrackerMessage
 
         ProjectProfileResponse actualRepsonse =
                 (ProjectProfileResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-        Assert.assertNotNull(actualRepsonse.getProfile());
-        Assert.assertNotNull(actualRepsonse.getProfile().getTimesheet());
-        Assert.assertEquals(1, actualRepsonse.getProfile().getTimesheet().size());
+        Assert.assertNull(actualRepsonse.getProfile());
         Assert.assertEquals(0, actualRepsonse.getReplyStatus().getRecordCount().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
 
         String msg = RMT2String.replace(TimesheetMessageHandlerConst.MESSAGE_SUBMIT_RECORD_NOT_FOUND,
-                String.valueOf(actualRepsonse.getProfile().getTimesheet().get(0).getTimesheetId().intValue()), "%s");
+                String.valueOf(TIMESHEET_ID), "%s");
 
         Assert.assertEquals(msg, actualRepsonse.getReplyStatus().getMessage());
     }
