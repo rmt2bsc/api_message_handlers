@@ -112,6 +112,7 @@ public class TimesheetSubmitApiHandler extends TimesheetApiHandler {
             int rc = this.api.submit(timesheetDto.getTimesheetId());
             if (rc > 0) {
                 rs.setMessage(TimesheetMessageHandlerConst.MESSAGE_SUBMIT_SUCCESS);
+                updateDtoResults = this.buildJaxbStatusChangeResults(this.api.getTimesheet());
                 okToSendEmail = true;
             }
             else {
@@ -120,8 +121,6 @@ public class TimesheetSubmitApiHandler extends TimesheetApiHandler {
                 rs.setMessage(errMsg);
             }
             rs.setRecordCount(rc);
-
-            updateDtoResults = this.buildJaxbStatusChangeResults(this.api.getTimesheet());
             this.responseObj.setHeader(req.getHeader());
 
             // Send email confirmation
