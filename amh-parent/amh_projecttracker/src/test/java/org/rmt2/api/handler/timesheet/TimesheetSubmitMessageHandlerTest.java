@@ -12,6 +12,7 @@ import java.util.Map;
 
 import org.dao.mapping.orm.rmt2.ProjEvent;
 import org.dao.mapping.orm.rmt2.VwTimesheetProjectTask;
+import org.dao.timesheet.TimesheetConst;
 import org.dto.ClientDto;
 import org.dto.EmployeeDto;
 import org.dto.EventDto;
@@ -150,6 +151,8 @@ public class TimesheetSubmitMessageHandlerTest extends BaseProjectTrackerMessage
         this.timesheet = TimesheetObjectFactory.createTimesheetDtoInstance(TimesheetMockData
                 .createMockMultipleTimesheetSameClientList().get(0));
         this.timesheetExt = TimesheetMockData.createMockExtTimesheetList().get(0);
+        this.timesheetExt.setStatusId(TimesheetConst.STATUS_SUBMITTED);
+        this.timesheetExt.setStatusName("Submitted");
         this.currentStatus = TimesheetObjectFactory.createTimesheetHistoryDtoInstance(TimesheetMockData
                 .createMockTimesheetStatusHistory().get(2));
         this.hours = this.buildTimesheetHoursDtoMap();
@@ -239,6 +242,10 @@ public class TimesheetSubmitMessageHandlerTest extends BaseProjectTrackerMessage
         for (TimesheetType ts : actualRepsonse.getProfile().getTimesheet()) {
             Assert.assertNotNull(ts.getTimesheetId());
             Assert.assertEquals(TIMESHEET_ID, ts.getTimesheetId().intValue());
+            Assert.assertNotNull(ts.getStatus());
+            Assert.assertEquals("Submitted", ts.getStatus().getName());
+            Assert.assertNotNull(ts.getBillableHours());
+            Assert.assertEquals(40, ts.getBillableHours().doubleValue(), 0);
         }
     }
 
