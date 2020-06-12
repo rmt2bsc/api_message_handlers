@@ -105,7 +105,7 @@ public class TimesheetPostSubmitApiHandler extends TimesheetApiHandler {
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             timesheetDto = TimesheetJaxbDtoFactory.createTimesheetDtoInstance(req.getProfile().getTimesheet().get(0));
 
-            // this.api.beginTrans();
+            this.api.beginTrans();
             // Approve or decline timesheet
             if (transCode.equalsIgnoreCase(ApiTransactionCodes.PROJTRACK_TIMESHEET_APPROVE)) {
                 rc = this.api.approve(timesheetDto.getTimesheetId());
@@ -150,7 +150,7 @@ public class TimesheetPostSubmitApiHandler extends TimesheetApiHandler {
             updateDtoResults = this.buildJaxbStatusChangeResults(this.api.getTimesheet());
             this.responseObj.setHeader(req.getHeader());
 
-            // this.api.commitTrans();
+            this.api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
@@ -160,7 +160,7 @@ public class TimesheetPostSubmitApiHandler extends TimesheetApiHandler {
 
             // Build timesheet response data with requrest data
             updateDtoResults = this.buildJaxbStatusChangeResults(timesheetDto);
-            // this.api.rollbackTrans();
+            this.api.rollbackTrans();
         } finally {
             this.api.close();
         }
