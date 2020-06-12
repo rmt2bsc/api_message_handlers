@@ -108,7 +108,7 @@ public class TimesheetSubmitApiHandler extends TimesheetApiHandler {
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             timesheetDto = TimesheetJaxbDtoFactory.createTimesheetDtoInstance(req.getProfile().getTimesheet().get(0));
 
-            this.api.beginTrans();
+            // this.api.beginTrans();
             int rc = this.api.submit(timesheetDto.getTimesheetId());
             if (rc > 0) {
                 rs.setMessage(TimesheetMessageHandlerConst.MESSAGE_SUBMIT_SUCCESS);
@@ -121,31 +121,33 @@ public class TimesheetSubmitApiHandler extends TimesheetApiHandler {
             }
             rs.setRecordCount(rc);
 
-            updateDtoResults = this.buildJaxbStatusChangeResults(timesheetDto);
+            updateDtoResults = this.buildJaxbStatusChangeResults(this.api.getTimesheet());
             this.responseObj.setHeader(req.getHeader());
-            this.api.commitTrans();
+
+            // Send email confirmation
+            try {
+                if (okToSendEmail) {
+                    this.sendEmailConfirmation();
+                    logger.info("Timesheet submittal confirmation email was sent to manager for timesheet: "
+                            + timesheetDto.getDisplayValue());
+                }
+            } catch (TimesheetTransmissionException e) {
+                logger.error("Error sending timesheet submittal confirmation email to manager: ", e);
+                rs.setExtMessage(e.getMessage());
+            }
+
+            // this.api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setRecordCount(0);
             rs.setMessage(TimesheetMessageHandlerConst.MESSAGE_SUBMIT_ERROR);
             rs.setExtMessage(e.getMessage());
-            this.api.rollbackTrans();
+            // this.api.rollbackTrans();
         } finally {
             this.api.close();
         }
 
-        // Send email confirmation
-        try {
-            if (okToSendEmail) {
-                this.sendEmailConfirmation();
-                logger.info("Timesheet submittal confirmation email was sent to manager for timesheet: "
-                        + timesheetDto.getDisplayValue());
-            }
-        } catch (TimesheetTransmissionException e) {
-            logger.error("Error sending timesheet submittal confirmation email to manager: ", e);
-            rs.setExtMessage(e.getMessage());
-        }
         String xml = this.buildResponse(updateDtoResults, rs);
         results.setPayload(xml);
         return results;

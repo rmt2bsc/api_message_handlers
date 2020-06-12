@@ -105,11 +105,12 @@ public class TimesheetApiHandler extends
         List<TimesheetType> list = new ArrayList<>();
 
         TimesheetStatusType tst = TimesheetStatusTypeBuilder.Builder.create()
-                .withDescription(dto.getStatusName())
+                .withName(dto.getStatusName())
                 .build();
 
         TimesheetType jaxbObj = TimesheetTypeBuilder.Builder.create()
                 .withTimesheetId(dto.getTimesheetId())
+                .withEmployeeBillableHours(dto.getBillHrs())
                 .withStatus(tst)
                 .build();
 
