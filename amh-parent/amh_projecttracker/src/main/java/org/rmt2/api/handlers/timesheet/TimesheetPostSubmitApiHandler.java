@@ -42,9 +42,7 @@ import com.api.util.assistants.VerifyException;
 public class TimesheetPostSubmitApiHandler extends TimesheetApiHandler {
     
     private static final Logger logger = Logger.getLogger(TimesheetPostSubmitApiHandler.class);
-    private static final String SUBJECT_TRANSMISSION_PREFIX = "Time Sheet Submission for ";
     private static final String SUBJECT_CONFIRM_PREFIX = "Time Sheet $confirmStatus$ (Period ending $endingPeriod$)";
-    private double totalHours;
 
     /**
      * @param payload
@@ -125,10 +123,16 @@ public class TimesheetPostSubmitApiHandler extends TimesheetApiHandler {
                     msg = RMT2String.replace(TimesheetMessageHandlerConst.MESSAGE_POST_SUBMIT_SUCCESS, "declined", "%s");
                 }
                 rs.setMessage(msg);
+                // Build timesheet response data with updated timesheet data
+                // from API
+                updateDtoResults = this.buildJaxbStatusChangeResults(this.api.getTimesheet());
                 okToSendEmail = true;
             }
             else {
                 rs.setMessage(TimesheetMessageHandlerConst.MESSAGE_POST_SUBMIT_RECORD_NOT_FOUND);
+                // Build timesheet response data with initial request timesheet
+                // data from API
+                updateDtoResults = this.buildJaxbStatusChangeResults(timesheetDto);
             }
 
             // Always return "1" record count
@@ -145,10 +149,6 @@ public class TimesheetPostSubmitApiHandler extends TimesheetApiHandler {
                 logger.error("Error sending timesheet approval/declination confirmation email to employee: ", e);
                 rs.setExtMessage(e.getMessage());
             }
-
-            // Build timesheet response data with updated timesheet data from
-            // API
-            updateDtoResults = this.buildJaxbStatusChangeResults(this.api.getTimesheet());
             this.responseObj.setHeader(req.getHeader());
 
             this.api.commitTrans();
@@ -156,7 +156,14 @@ public class TimesheetPostSubmitApiHandler extends TimesheetApiHandler {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setRecordCount(0);
-            rs.setMessage(TimesheetMessageHandlerConst.MESSAGE_POST_SUBMIT_ERROR);
+            String msg = null;
+            if (transCode.equalsIgnoreCase(ApiTransactionCodes.PROJTRACK_TIMESHEET_APPROVE)) {
+                msg = RMT2String.replace(TimesheetMessageHandlerConst.MESSAGE_POST_SUBMIT_ERROR, "approving", "%s");
+            }
+            else {
+                msg = RMT2String.replace(TimesheetMessageHandlerConst.MESSAGE_POST_SUBMIT_ERROR, "declining", "%s");
+            }
+            rs.setMessage(msg);
             rs.setExtMessage(e.getMessage());
 
             // Build timesheet response data with requrest data
