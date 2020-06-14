@@ -1,0 +1,78 @@
+<ProjectProfileResponse>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>projecttracker</application>
+        <module>timesheet</module>
+        <transaction>GET_TIMESHEET</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>06/14/2020 02:42:24</delivery_date>
+    </header>
+    <reply_status>
+        <return_status>200</return_status>
+        <message>timesheet data found</message>
+        <return_code>1</return_code>
+        <record_count>1</record_count>
+    </reply_status>
+    <profile>
+        <timesheet>
+            <timesheet_id>169</timesheet_id>
+            <proj_id>30</proj_id>
+            <client>
+                <client_id>200</client_id>
+                <name>Client Name</name>
+                <customer>
+                    <account_no>111-222-333</account_no>
+                </customer>
+            </client>
+            <employee>
+                <employee_id>200</employee_id>
+                <employee_type>
+                    <employee_type_id>3</employee_type_id>
+                </employee_type>
+                <manager_id>0</manager_id>
+                <contact_details>
+                    <person_id>0</person_id>
+                    <first_name>roy</first_name>
+                    <last_name>terrell</last_name>
+                    <short_name>roy terrell</short_name>
+                </contact_details>
+            </employee>
+            <hourly_rate>100.0</hourly_rate>
+            <overtime_hourly_rate>120.0</overtime_hourly_rate>
+            <display_value>0000000169</display_value>
+            <period_begin>2020-01-01-06:00</period_begin>
+            <period_end>2020-02-01-06:00</period_end>
+            <status>
+                <timesheet_status_id>6</timesheet_status_id>
+                <name>Invoice</name>
+                <description>A sales order has been created and invoiced for the
+                    timesheet.</description>
+            </status>
+            <status_history_id>333</status_history_id>
+            <status_effective_date>2020-01-01-06:00</status_effective_date>
+            <status_end_date>2020-06-14-05:00</status_end_date>
+            <invoice_ref_no>943294393</invoice_ref_no>
+            <external_ref_no>432-3923-43022</external_ref_no>
+            <document_id>65948</document_id>
+            <comments>Monday: Test comment</comments>
+            <billable_hours>40.0</billable_hours>
+            <non_billable_hours>0.0</non_billable_hours>
+            <work_log_summary>
+                <day1_hrs>0.0</day1_hrs>
+                <day2_hrs>8.0</day2_hrs>
+                <day3_hrs>8.0</day3_hrs>
+                <day4_hrs>8.0</day4_hrs>
+                <day5_hrs>8.0</day5_hrs>
+                <day6_hrs>8.0</day6_hrs>
+                <day7_hrs>0.0</day7_hrs>
+                <hours_total>40.0</hours_total>
+            </work_log_summary>
+            <tracking>
+                <date_created>2020-05-01T00:00:00.000-05:00</date_created>
+                <date_updated>2020-05-01T00:00:00.000-05:00</date_updated>
+                <user_id>testuser</user_id>
+            </tracking>
+        </timesheet>
+    </profile>
+</ProjectProfileResponse>

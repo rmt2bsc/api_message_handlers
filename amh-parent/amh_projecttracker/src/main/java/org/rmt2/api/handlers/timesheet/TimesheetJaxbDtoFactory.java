@@ -2,14 +2,20 @@ package org.rmt2.api.handlers.timesheet;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.dto.BusinessContactDto;
 import org.dto.EventDto;
 import org.dto.ProjectTaskDto;
 import org.dto.TimesheetDto;
+import org.dto.TimesheetHoursSummaryDto;
 import org.dto.adapter.orm.ProjectObjectFactory;
 import org.dto.adapter.orm.TimesheetObjectFactory;
+import org.rmt2.jaxb.AddressType;
+import org.rmt2.jaxb.BusinessType;
 import org.rmt2.jaxb.ClientType;
 import org.rmt2.jaxb.CustomerType;
 import org.rmt2.jaxb.EmployeeType;
@@ -19,14 +25,22 @@ import org.rmt2.jaxb.PersonType;
 import org.rmt2.jaxb.ProjectTaskType;
 import org.rmt2.jaxb.RecordTrackingType;
 import org.rmt2.jaxb.TimesheetCriteriaType;
+import org.rmt2.jaxb.TimesheetHoursSummaryType;
 import org.rmt2.jaxb.TimesheetStatusType;
 import org.rmt2.jaxb.TimesheetType;
+import org.rmt2.jaxb.ZipcodeType;
 import org.rmt2.util.RecordTrackingTypeBuilder;
 import org.rmt2.util.accounting.subsidiary.CustomerTypeBuilder;
+import org.rmt2.util.addressbook.AddressTypeBuilder;
+import org.rmt2.util.addressbook.BusinessTypeBuilder;
 import org.rmt2.util.addressbook.PersonTypeBuilder;
+import org.rmt2.util.addressbook.ZipcodeTypeBuilder;
 import org.rmt2.util.projecttracker.admin.ClientTypeBuilder;
 import org.rmt2.util.projecttracker.employee.EmployeeTypeBuilder;
 import org.rmt2.util.projecttracker.employee.EmployeetypeTypeBuilder;
+import org.rmt2.util.projecttracker.timesheet.EventTypeBuilder;
+import org.rmt2.util.projecttracker.timesheet.ProjectTaskTypeBuilder;
+import org.rmt2.util.projecttracker.timesheet.TimesheetHoursSummaryTypeBuilder;
 import org.rmt2.util.projecttracker.timesheet.TimesheetStatusTypeBuilder;
 import org.rmt2.util.projecttracker.timesheet.TimesheetTypeBuilder;
 
@@ -252,7 +266,261 @@ public class TimesheetJaxbDtoFactory extends RMT2Base {
     }
 
     /**
-     * Create an instance of TimesheetType from an TimesheetDto object
+     * Creats full TimesheetType object which includes base timesheet data and a
+     * summary of work log hours
+     * 
+     * @param dto
+     *            instance of {@link TimesheetDto}
+     * @param workLogSummary
+     *            an instance of {@link TimesheetHoursSummaryDto}
+     * @param serviceProvider
+     *            an instance of {@link BusinessContactDto} representing the
+     *            company providing services to the client
+     * @return {@link TimesheetType}
+     */
+    public static final TimesheetType createTimesheetJaxbInstance(TimesheetDto dto, TimesheetHoursSummaryDto workLogSummary,
+            BusinessContactDto serviceProvider) {
+        if (dto == null) {
+            return null;
+        }
+
+        BusinessType bt = null;
+        if (serviceProvider != null) {
+            ZipcodeType zt = ZipcodeTypeBuilder.Builder.create()
+                    .withCity(serviceProvider.getCity())
+                    .withState(serviceProvider.getState())
+                    .withZipcode(serviceProvider.getZip())
+                    .build();
+
+            AddressType at = AddressTypeBuilder.Builder.create()
+                    .withAddrId(serviceProvider.getAddrId())
+                    .withAddressLine1(serviceProvider.getAddr1())
+                    .withAddressLine2(serviceProvider.getAddr2())
+                    .withAddressLine3(serviceProvider.getAddr3())
+                    .withAddressLine4(serviceProvider.getAddr4())
+                    .withPhoneMain(serviceProvider.getPhoneCompany())
+                    .withPhoneFax(serviceProvider.getPhoneFax())
+                    .withZipcode(zt)
+                    .build();
+
+            bt = BusinessTypeBuilder.Builder.create()
+                    .withBusinessId(serviceProvider.getContactId())
+                    .withContactFirstname(serviceProvider.getContactFirstname())
+                    .withContactLastname(serviceProvider.getContactLastname())
+                    .withContactPhone(serviceProvider.getContactPhone())
+                    .withLongname(serviceProvider.getContactName())
+                    .withTaxId(serviceProvider.getTaxId())
+                    .withWebsite(serviceProvider.getWebsite())
+                    .withContactEmail(serviceProvider.getContactEmail())
+                    .withAddress(at)
+                    .build();
+        }
+
+        EmployeetypeType ett = EmployeetypeTypeBuilder.Builder.create()
+                .withEmployeeTypeId(dto.getEmployeeTypeId())
+                .build();
+
+        PersonType pt = PersonTypeBuilder.Builder.create()
+                .withFirstName(dto.getEmployeeFirstname())
+                .withLastName(dto.getEmployeeLastname())
+                .withShortName(dto.getEmployeeFullName())
+                .build();
+
+        EmployeeType et = EmployeeTypeBuilder.Builder.create()
+                .withEmployeeId(dto.getEmpId())
+                .withManagerId(dto.getEmployeeManagerId())
+                .withEmployeeType(ett)
+                .withContactDetails(pt)
+                .build();
+
+        CustomerType customer = CustomerTypeBuilder.Builder.create()
+                .withAccountNo(dto.getClientAccountNo())
+                .build();
+
+        ClientType ct = ClientTypeBuilder.Builder.create()
+                .withClientId(dto.getClientId())
+                .withClientName(dto.getClientName())
+                .withCustomerData(customer)
+                .build();
+
+        TimesheetStatusType tst = TimesheetStatusTypeBuilder.Builder.create()
+                .withStatusId(dto.getStatusId())
+                .withName(dto.getStatusName())
+                .withDescription(dto.getStatusDescription())
+                .build();
+
+        RecordTrackingType rtt = RecordTrackingTypeBuilder.Builder.create()
+                .withDateCreated(dto.getDateCreated())
+                .withDateUpdate(dto.getDateUpdated())
+                .withIpCreated(dto.getIpCreated())
+                .withIpUpdate(dto.getIpUpdated())
+                .withUserId(dto.getUpdateUserId())
+                .build();
+
+        TimesheetHoursSummaryType thst = TimesheetHoursSummaryTypeBuilder.Builder.create()
+                .withDay1Hours(workLogSummary.getHours1())
+                .withDay2Hours(workLogSummary.getHours2())
+                .withDay3Hours(workLogSummary.getHours3())
+                .withDay4Hours(workLogSummary.getHours4())
+                .withDay5Hours(workLogSummary.getHours5())
+                .withDay6Hours(workLogSummary.getHours6())
+                .withDay7Hours(workLogSummary.getHours7())
+                .withTotalHours(workLogSummary.getTotalHours())
+                .build();
+
+        TimesheetType jaxbObj = TimesheetTypeBuilder.Builder.create()
+                .withTimesheetId(dto.getTimesheetId())
+                .withProjectId(dto.getProjId())
+                .withDisplayTimesheetId(dto.getDisplayValue())
+                .withBeginPeriod(dto.getBeginPeriod())
+                .withEndPeriod(dto.getEndPeriod())
+                .withInvoiceRefNo(dto.getInvoiceRefNo())
+                .withExternalRefNo(dto.getExtRef())
+                .withComments(dto.getComments())
+                .withDocumentId(dto.getDocumentId())
+                .withStatusHistoryId(dto.getStatusHistId())
+                .withStatusEffectiveDate(dto.getStatusEffectiveDate())
+                .withStatusEndDate(dto.getStatusEndDate())
+                .withEmployeeBillableHours(dto.getBillHrs())
+                .withEmployeeNonBillableHours(dto.getNonBillHrs())
+                .withHourlyRate(dto.getEmployeeHourlyRate())
+                .withHourlyOvertimeRate(dto.getEmployeeHourlyOverRate())
+                .withServiceProvider(bt)
+                .withClient(ct)
+                .withEmployee(et)
+                .withStatus(tst)
+                .withWorkLogSummary(thst)
+                .withRecordTracking(rtt)
+                .build();
+
+        return jaxbObj;
+    }
+
+    /**
+     * Creats full TimesheetType object which includes base timesheet data and
+     * its complete work log of hours
+     * 
+     * @param dto
+     *            instance of {@link TimesheetDto}
+     * @param workLog
+     *            an instance of {@link Map&lt;&lt;ProjectTaskDto&gt;,
+     *            List&lt;EventDto&gt;&gt;}
+     * @param serviceProvider
+     *            an instance of {@link BusinessContactDto} representing the
+     *            company providing services to the client
+     * @return {@link TimesheetType}
+     */
+    public static final TimesheetType createTimesheetJaxbInstance(TimesheetDto dto, Map<ProjectTaskDto, List<EventDto>> workLog,
+            BusinessContactDto serviceProvider) {
+        if (dto == null) {
+            return null;
+        }
+
+        BusinessType bt = null;
+        if (serviceProvider != null) {
+            ZipcodeType zt = ZipcodeTypeBuilder.Builder.create()
+                    .withCity(serviceProvider.getCity())
+                    .withState(serviceProvider.getState())
+                    .withZipcode(serviceProvider.getZip())
+                    .build();
+
+            AddressType at = AddressTypeBuilder.Builder.create()
+                    .withAddrId(serviceProvider.getAddrId())
+                    .withAddressLine1(serviceProvider.getAddr1())
+                    .withAddressLine2(serviceProvider.getAddr2())
+                    .withAddressLine3(serviceProvider.getAddr3())
+                    .withAddressLine4(serviceProvider.getAddr4())
+                    .withPhoneMain(serviceProvider.getPhoneCompany())
+                    .withPhoneFax(serviceProvider.getPhoneFax())
+                    .withZipcode(zt)
+                    .build();
+
+            bt = BusinessTypeBuilder.Builder.create()
+                    .withBusinessId(serviceProvider.getContactId())
+                    .withContactFirstname(serviceProvider.getContactFirstname())
+                    .withContactLastname(serviceProvider.getContactLastname())
+                    .withContactPhone(serviceProvider.getContactPhone())
+                    .withLongname(serviceProvider.getContactName())
+                    .withTaxId(serviceProvider.getTaxId())
+                    .withWebsite(serviceProvider.getWebsite())
+                    .withContactEmail(serviceProvider.getContactEmail())
+                    .withAddress(at)
+                    .build();
+        }
+
+        EmployeetypeType ett = EmployeetypeTypeBuilder.Builder.create()
+                .withEmployeeTypeId(dto.getEmployeeTypeId())
+                .build();
+
+        PersonType pt = PersonTypeBuilder.Builder.create()
+                .withFirstName(dto.getEmployeeFirstname())
+                .withLastName(dto.getEmployeeLastname())
+                .withShortName(dto.getEmployeeFullName())
+                .build();
+
+        EmployeeType et = EmployeeTypeBuilder.Builder.create()
+                .withEmployeeId(dto.getEmpId())
+                .withManagerId(dto.getEmployeeManagerId())
+                .withEmployeeType(ett)
+                .withContactDetails(pt)
+                .build();
+
+        CustomerType customer = CustomerTypeBuilder.Builder.create()
+                .withAccountNo(dto.getClientAccountNo())
+                .build();
+
+        ClientType ct = ClientTypeBuilder.Builder.create()
+                .withClientId(dto.getClientId())
+                .withClientName(dto.getClientName())
+                .withCustomerData(customer)
+                .build();
+
+        TimesheetStatusType tst = TimesheetStatusTypeBuilder.Builder.create()
+                .withStatusId(dto.getStatusId())
+                .withName(dto.getStatusName())
+                .withDescription(dto.getStatusDescription())
+                .build();
+
+        RecordTrackingType rtt = RecordTrackingTypeBuilder.Builder.create()
+                .withDateCreated(dto.getDateCreated())
+                .withDateUpdate(dto.getDateUpdated())
+                .withIpCreated(dto.getIpCreated())
+                .withIpUpdate(dto.getIpUpdated())
+                .withUserId(dto.getUpdateUserId())
+                .build();
+
+        List<ProjectTaskType> hours = TimesheetJaxbDtoFactory.createTimesheetWorkLogJaxbInstance(workLog);
+
+        TimesheetType jaxbObj = TimesheetTypeBuilder.Builder.create()
+                .withTimesheetId(dto.getTimesheetId())
+                .withProjectId(dto.getProjId())
+                .withDisplayTimesheetId(dto.getDisplayValue())
+                .withBeginPeriod(dto.getBeginPeriod())
+                .withEndPeriod(dto.getEndPeriod())
+                .withInvoiceRefNo(dto.getInvoiceRefNo())
+                .withExternalRefNo(dto.getExtRef())
+                .withComments(dto.getComments())
+                .withDocumentId(dto.getDocumentId())
+                .withStatusHistoryId(dto.getStatusHistId())
+                .withStatusEffectiveDate(dto.getStatusEffectiveDate())
+                .withStatusEndDate(dto.getStatusEndDate())
+                .withEmployeeBillableHours(dto.getBillHrs())
+                .withEmployeeNonBillableHours(dto.getNonBillHrs())
+                .withHourlyRate(dto.getEmployeeHourlyRate())
+                .withHourlyOvertimeRate(dto.getEmployeeHourlyOverRate())
+                .withServiceProvider(bt)
+                .withClient(ct)
+                .withEmployee(et)
+                .withStatus(tst)
+                .addWorkLog(hours)
+                .withRecordTracking(rtt)
+                .build();
+
+        return jaxbObj;
+    }
+
+    /**
+     * Create an instance of TimesheetType from an Timesheet DTO object
      * 
      * @param dto
      *            an instance of {@link TimesheetDto}
@@ -331,7 +599,7 @@ public class TimesheetJaxbDtoFactory extends RMT2Base {
 
     /**
      * Create an abbreviated instance of TimesheetType from an TimesheetDto
-     * object
+     * object with limited data.
      * 
      * @param dto
      *            an instance of {@link TimesheetDto}
@@ -376,4 +644,71 @@ public class TimesheetJaxbDtoFactory extends RMT2Base {
 
         return jaxbObj;
     }
+
+    /**
+     * Create a list of ProjectTaskType from the timesheet work log
+     * 
+     * @param workLog
+     *            an instance of {@link Map&lt;&lt;ProjectTaskDto&gt;,
+     *            List&lt;EventDto&gt;&gt;}
+     * @return List of {@link ProjectTaskType}
+     */
+    public static final List<ProjectTaskType> createTimesheetWorkLogJaxbInstance(Map<ProjectTaskDto, List<EventDto>> workLog) {
+        if (workLog == null) {
+            return null;
+        }
+
+        List<ProjectTaskType> jaxbObj = new ArrayList<>();
+
+        Set<ProjectTaskDto> keys = workLog.keySet();
+        Iterator<ProjectTaskDto> iter = keys.iterator();
+        while (iter.hasNext()) {
+            ProjectTaskDto item = iter.next();
+            List<EventDto> events = workLog.get(item);
+            ProjectTaskType obj = TimesheetJaxbDtoFactory.createTimesheetProjectTaskJaxbInstance(item, events);
+            jaxbObj.add(obj);
+        }
+
+        return jaxbObj;
+    }
+
+    private static final ProjectTaskType createTimesheetProjectTaskJaxbInstance(ProjectTaskDto projTaskDto, List<EventDto> projTaskHours) {
+        List<EventType> events = new ArrayList<>();
+        for (EventDto event : projTaskHours) {
+            events.add(TimesheetJaxbDtoFactory.createTimesheetEventJaxbInstance(event));
+        }
+
+        ProjectTaskType jaxbObj = ProjectTaskTypeBuilder.Builder.create()
+                .withProjectTaskId(projTaskDto.getProjectTaskId())
+                .withProjectId(projTaskDto.getProjId())
+                .withProjectName(projTaskDto.getProjectDescription())
+                .withTaskId(projTaskDto.getTaskId())
+                .withTaskName(projTaskDto.getTaskDescription())
+                .addHours(events)
+                .build();
+
+        return jaxbObj;
+    }
+
+    private static final EventType createTimesheetEventJaxbInstance(EventDto evt) {
+
+        RecordTrackingType rtt = RecordTrackingTypeBuilder.Builder.create()
+                .withDateCreated(evt.getDateCreated())
+                .withDateUpdate(evt.getDateUpdated())
+                .withIpCreated(evt.getIpCreated())
+                .withIpUpdate(evt.getIpUpdated())
+                .withUserId(evt.getUpdateUserId())
+                .build();
+
+        EventType jaxbObj = EventTypeBuilder.Builder.create()
+                .withEventId(evt.getEventId())
+                .withEventDate(evt.getEventDate())
+                .withHours(evt.getEventHours())
+                .withRecordTracking(rtt)
+                .build();
+
+        return jaxbObj;
+
+    }
+
 }

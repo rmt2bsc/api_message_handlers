@@ -66,7 +66,7 @@ public class TimesheetApiHandler extends
             Verifier.verifyNotNull(req);
         }
         catch (VerifyException e) {
-            throw new InvalidRequestException("Employee message request element is invalid");
+            throw new InvalidRequestException("Timesheet message request element is invalid");
         }
     }
 
