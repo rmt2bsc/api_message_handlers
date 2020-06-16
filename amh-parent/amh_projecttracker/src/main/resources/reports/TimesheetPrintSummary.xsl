@@ -1,14 +1,16 @@
-<?xml version='1.0'?>
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-	xmlns:fo="http://www.w3.org/1999/XSL/Format">
+<?xml version="1.0"?>
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+	                          xmlns:fo="http://www.w3.org/1999/XSL/Format">
 	<xsl:output method="xml" version="1.0" omit-xml-declaration="no" indent="yes"/>
 	<xsl:variable name="hrTableBorder" select="'solid'"/>
 	<xsl:variable name="signatureBorder" select="'solid'"/>
 	<xsl:variable name="imagePath" select="'$IMAGES_DIRECTORY$'"/>
 	<xsl:variable name="lightGray">#CCCCCC</xsl:variable>
+	<xsl:variable name="dateFormat" select="'[Y0001]-[M01]-[D01]'"/>
 
-	<xsl:template match="/ProjectProfileResponse/profile">
+	<xsl:template match="/">
 		<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format">
+			
 			<fo:layout-master-set>
 				<fo:simple-page-master master-name="main-page" page-height="11in" page-width="8.5in"
 					margin-left="0.25in" margin-right="0.25in" margin-bottom="0.25in"
@@ -18,20 +20,29 @@
 					<fo:region-before extent="4in"/>
 				</fo:simple-page-master>
 			</fo:layout-master-set>
+			
 			<fo:page-sequence master-reference="main-page">
 
 				<fo:static-content flow-name="xsl-region-before">
 					<fo:table width="100%" table-layout="fixed">
-						<fo:table-column column-width="20%"/>
-						<fo:table-column column-width="60%"/>
+						<fo:table-column column-width="25%"/>
+						<fo:table-column column-width="55%"/>
 						<fo:table-column column-width="10%"/>
 						<fo:table-column column-width="10%"/>
 						<fo:table-body>
 							<fo:table-row>
+								<fo:table-cell number-columns-spanned="4">
+									<fo:block text-align="left">
+										<fo:external-graphic src="url('\source\Api_Message_Handlers\amh-parent\amh_core\src\main\resources\images\RMT2_logo2.jpg')"/>
+									</fo:block>
+								</fo:table-cell>
+							</fo:table-row>
+							
+							<fo:table-row>
 								<fo:table-cell>
 									<fo:block text-align="left">
-										<fo:external-graphic src="url('{$imagePath}RMT2_logo.gif')"
-										/>
+										<xsl:text>Timesheet Id: </xsl:text>
+										<xsl:value-of select="ProjectProfileResponse/profile/timesheet/display_value"/>
 									</fo:block>
 								</fo:table-cell>
 								<fo:table-cell>
@@ -50,15 +61,6 @@
 									</fo:block>
 								</fo:table-cell>
 							</fo:table-row>
-
-							<fo:table-row>
-								<fo:table-cell number-columns-spanned="4">
-									<fo:block text-align="left">
-										<xsl:text>Document Id: </xsl:text>
-										<xsl:value-of select="timesheet/display_value"/>
-									</fo:block>
-								</fo:table-cell>
-							</fo:table-row>
 						</fo:table-body>
 					</fo:table>
 				</fo:static-content>
@@ -72,26 +74,18 @@
 							<fo:table-row>
 								<fo:table-cell>
 									<fo:block>
-										<fo:table width="100%" table-layout="fixed"
-											border-style="solid" border-width=".5pt"
-											border-top-color="black" border-bottom-color="black"
-											border-left-color="black" border-right-color="black">
+										<fo:table width="100%" table-layout="fixed"	border-style="solid" border-width=".5pt" border-top-color="black" border-bottom-color="black" border-left-color="black" border-right-color="black">
 											<fo:table-column column-width="100%"/>
-											<fo:table-body>
-												<fo:table-row>
-												<fo:table-cell border-color="black"
-												border-width=".5pt"
-												background-color="{$lightGray}"
-												border-style="solid">
-												<fo:block text-align="left" font-size="11pt"
-												font-weight="bold">
-												<xsl:text>Service Provider</xsl:text>
-												</fo:block>
-												</fo:table-cell>
-												</fo:table-row>
-												<xsl:apply-templates
-												select="timesheet/service_provider"/>
-											</fo:table-body>
+												<fo:table-body>
+													<fo:table-row>
+														<fo:table-cell border-color="black"	border-width=".5pt" background-color="{$lightGray}"	border-style="solid">
+															<fo:block text-align="left" font-size="11pt" font-weight="bold">
+															    <xsl:text>Service Provider</xsl:text>
+															</fo:block>
+														</fo:table-cell>
+													</fo:table-row>
+													<xsl:apply-templates select="ProjectProfileResponse/profile/timesheet/service_provider"/>
+												</fo:table-body>
 										</fo:table>
 									</fo:block>
 								</fo:table-cell>
@@ -102,30 +96,23 @@
 
 								<fo:table-cell>
 									<fo:block>
-										<fo:table width="100%" table-layout="fixed"
-											border-style="solid" border-width=".5pt"
-											border-top-color="black" border-bottom-color="black"
-											border-left-color="black" border-right-color="black">
+										<fo:table width="100%" table-layout="fixed"	border-style="solid" border-width=".5pt" border-top-color="black" border-bottom-color="black" border-left-color="black" border-right-color="black">
 											<fo:table-column column-width="35%"/>
 											<fo:table-column column-width="65%"/>
 											<fo:table-body>
 												<fo:table-row>
-												<fo:table-cell number-columns-spanned="2"
-												border-color="black" border-width=".5pt"
-												background-color="{$lightGray}"
-												border-style="solid">
-												<fo:block text-align="left" font-size="11pt"
-												font-weight="bold">
-												<xsl:text>Client</xsl:text>
-												</fo:block>
-												</fo:table-cell>
+													<fo:table-cell number-columns-spanned="2" border-color="black" border-width=".5pt" background-color="{$lightGray}"	border-style="solid">
+														<fo:block text-align="left" font-size="11pt" font-weight="bold">
+														    <xsl:text>Client</xsl:text>
+														</fo:block>
+													</fo:table-cell>
 												</fo:table-row>
-												<xsl:apply-templates
-													select="timesheet/client"/>
+												<xsl:apply-templates select="ProjectProfileResponse/profile/timesheet/client"/>
 											</fo:table-body>
 										</fo:table>
 									</fo:block>
 								</fo:table-cell>
+								
 							</fo:table-row>
 						</fo:table-body>
 					</fo:table>
@@ -140,8 +127,7 @@
 						<fo:table-column column-width="20%"/>
 						<fo:table-column column-width="80%"/>
 						<fo:table-body>
-							<xsl:apply-templates
-								select="timesheet"/>
+							<xsl:apply-templates select="ProjectProfileResponse/profile/timesheet"/>
 						</fo:table-body>
 					</fo:table>
 
@@ -259,6 +245,8 @@
 							</fo:table-row>
 						</fo:table-body>
 					</fo:table>
+				
+				
 				</fo:flow>
 			</fo:page-sequence>
 		</fo:root>
@@ -268,7 +256,7 @@
 	<!--                                      -->
 	<!-- Company Template -->
 	<!--                                      -->
-	<xsl:template match="timesheet/service_provider">
+	<xsl:template match="service_provider">
 		<fo:table-row>
 			<fo:table-cell>
 				<fo:block>
@@ -358,7 +346,7 @@
 	<!--                                       -->
 	<!-- Client Template         -->
 	<!--                                       -->
-	<xsl:template match="timesheet/client">
+	<xsl:template match="client">
 		<fo:table-row>
 			<fo:table-cell>
 				<fo:block text-align="left" font-weight="bold">
@@ -406,7 +394,7 @@
 			</fo:table-cell>
 			<fo:table-cell>
 				<fo:block text-align="left">
-					<xsl:value-of select="period_end"/>
+					<xsl:value-of select="format-date(period_end, $dateFormat)"/>
 				</fo:block>
 			</fo:table-cell>
 		</fo:table-row>
