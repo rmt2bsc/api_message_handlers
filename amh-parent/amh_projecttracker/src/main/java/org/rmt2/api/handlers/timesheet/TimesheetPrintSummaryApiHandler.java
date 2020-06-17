@@ -6,6 +6,9 @@ import org.apache.log4j.Logger;
 import org.dto.BusinessContactDto;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
+import org.rmt2.jaxb.ObjectFactory;
+import org.rmt2.jaxb.ProjectDetailGroup;
+import org.rmt2.jaxb.ProjectProfileResponse;
 import org.rmt2.jaxb.TimesheetType;
 
 import com.api.messaging.handler.MessageHandlerCommandException;
@@ -63,7 +66,14 @@ public class TimesheetPrintSummaryApiHandler extends AbstractTimesheetPrintApiHa
         this.setReportName("TimesheetPrintSummary.xsl");
         TimesheetType timesheet = TimesheetJaxbDtoFactory.createTimesheetJaxbInstance(this.api.getTimesheet(),
                 this.api.getTimesheetSummary(), serviceProvider);
-        String xml = this.jaxb.marshalMessage(timesheet);
+
+        ObjectFactory fact = new ObjectFactory();
+        ProjectProfileResponse resp = fact.createProjectProfileResponse();
+        ProjectDetailGroup profile = fact.createProjectDetailGroup();
+        profile.getTimesheet().add(timesheet);
+        resp.setProfile(profile);
+
+        String xml = this.jaxb.marshalMessage(resp);
         return xml;
 
     }

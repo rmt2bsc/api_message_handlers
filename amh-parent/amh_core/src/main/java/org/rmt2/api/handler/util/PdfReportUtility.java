@@ -107,13 +107,10 @@ public class PdfReportUtility extends RMT2Base {
         super.init();
         // Get path to user's work area to store report output
         this.userWorkArea = System.getProperty("SerialPath");
-        // if (OS.startsWith("Windows")) {
-        // this.userWorkArea = System.getProperty("SerialDrive") +
-        // this.userWorkArea;
-        // }
 
         // Get image directory
-        this.imageDirPath += "..\\images\\"; // might need to reference "images"
+        this.imageDirPath = RMT2File.resolveRelativeFilePath("images/RMT2_logo2.jpg");
+        this.imageDirPath = RMT2File.removeWindowsDriveFromFilename(this.imageDirPath);
         
         // Get path to xslt files.   The results should be the path that is on the classpath
         this.xslPath = System.getProperty("RptXsltPath");
@@ -161,7 +158,7 @@ public class PdfReportUtility extends RMT2Base {
             }
             // Substitute place holders in the report layout
             fileData = RMT2File.getStreamStringData(is);
-            fileData = RMT2String.replaceAll2(fileData, this.imageDirPath, PdfReportUtility.IMAGE_PATH_PLACEHOLDER);
+            fileData = RMT2String.replace(fileData, this.imageDirPath, PdfReportUtility.IMAGE_PATH_PLACEHOLDER);
             // Copy report layout to the user's work area.
             RMT2File.outputFile(fileData, this.xslFileName);
             return userRptPath;

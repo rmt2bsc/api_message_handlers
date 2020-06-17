@@ -2,7 +2,6 @@ package org.rmt2.api.handlers.timesheet;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -25,7 +24,6 @@ import org.rmt2.jaxb.ProjectProfileRequest;
 import org.rmt2.jaxb.ProjectProfileResponse;
 import org.rmt2.jaxb.ReplyStatusType;
 import org.rmt2.jaxb.ReportAttachmentType;
-import org.rmt2.jaxb.TimesheetType;
 import org.rmt2.util.ReportAttachmentTypeBuilder;
 
 import com.InvalidDataException;
@@ -55,6 +53,7 @@ public abstract class AbstractTimesheetPrintApiHandler extends
     protected TimesheetApi api;
     private String reportName;
 
+
     /**
      * @param payload
      */
@@ -81,8 +80,7 @@ public abstract class AbstractTimesheetPrintApiHandler extends
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         TimesheetDto timesheetDto = null;
-        List<TimesheetType> updateDtoResults = null;
-        ReportAttachmentType pdf = null;
+        ReportAttachmentType pdfReport = null;
 
 
         try {
@@ -114,18 +112,12 @@ public abstract class AbstractTimesheetPrintApiHandler extends
 
             // Build report
             String reportXml = this.buildTimesheetData(servProvider);
-            pdf = this.generatePdf(reportXml);
-
-            // Determine which type of work log to include in the timesheet.
-            TimesheetType timesheet = null;
-                timesheet = TimesheetJaxbDtoFactory.createTimesheetJaxbInstance(this.api.getTimesheet(),
-                        this.api.getTimesheetHours(), servProvider);
-            updateDtoResults = new ArrayList<>();
-            updateDtoResults.add(timesheet);
+            pdfReport = this.generatePdf(reportXml);
 
             rs.setMessage(TimesheetMessageHandlerConst.MESSAGE_PRINT_SUMMARY);
-             // Always return "1" record count
-             rs.setRecordCount(1);
+
+            // Always return "1" record count
+            rs.setRecordCount(1);
             
              this.responseObj.setHeader(req.getHeader());
 
@@ -142,7 +134,7 @@ public abstract class AbstractTimesheetPrintApiHandler extends
             this.api.close();
         }
 
-        String xml = this.buildResponse(pdf, rs);
+        String xml = this.buildResponse(pdfReport, rs);
         results.setPayload(xml);
         return results;
     }
