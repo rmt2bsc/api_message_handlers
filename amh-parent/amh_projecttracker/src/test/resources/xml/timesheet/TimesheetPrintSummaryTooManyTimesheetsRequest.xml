@@ -1,0 +1,19 @@
+<ProjectProfileRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>projecttracker</application>
+        <module>timesheet</module>
+        <transaction>PRINT_TIMESHEET_SUMMARY</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>06/01/2020 01:17:24</delivery_date>
+    </header>
+    <profile>
+        <timesheet>
+            <timesheet_id>111</timesheet_id>
+        </timesheet>
+        <timesheet>
+            <timesheet_id>112</timesheet_id>
+        </timesheet>
+    </profile>
+</ProjectProfileRequest>
