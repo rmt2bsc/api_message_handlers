@@ -27,6 +27,7 @@ import org.rmt2.jaxb.ReportAttachmentType;
 import org.rmt2.util.ReportAttachmentTypeBuilder;
 
 import com.InvalidDataException;
+import com.NotFoundException;
 import com.RMT2Exception;
 import com.SystemException;
 import com.api.messaging.InvalidRequestException;
@@ -92,6 +93,10 @@ public abstract class AbstractTimesheetPrintApiHandler extends
             // Load base timesheet, timesheet summary, and detail hours
             this.api.load(timesheetDto.getTimesheetId());
 
+            if (this.api.getTimesheet() == null) {
+                throw new NotFoundException(TimesheetMessageHandlerConst.MESSAGE_PRINT_TIMESHEET_NOTFOUND);
+            }
+
             // Get service provider data
             BusinessContactDto servProvider = null;
             try {
@@ -126,8 +131,8 @@ public abstract class AbstractTimesheetPrintApiHandler extends
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setRecordCount(0);
 
-            String msg = RMT2String.replace(TimesheetMessageHandlerConst.MESSAGE_PRINT_ERROR, timesheetDto.getDisplayValue(),
-                    "%s");
+            String msg = RMT2String.replace(TimesheetMessageHandlerConst.MESSAGE_PRINT_ERROR,
+                    String.valueOf(timesheetDto.getTimesheetId()), "%s");
             rs.setMessage(msg);
             rs.setExtMessage(e.getMessage());
         } finally {

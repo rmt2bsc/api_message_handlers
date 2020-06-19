@@ -42,6 +42,8 @@ import com.api.util.RMT2File;
 import com.api.util.RMT2String;
 
 /**
+ * Test the idenity and invocation of the timesheet summary print handler for
+ * the Project Tracker API Message Handler.
  * 
  * @author roy.terrell
  *

@@ -28,6 +28,7 @@ public class TimesheetMessageHandlerConst {
     public static final String MESSAGE_PRINT_SUMMARY = "Summary timesheet was printed successfully";
     public static final String MESSAGE_PRINT_DETAIL = "Detail timesheet was printed successfully";
     public static final String MESSAGE_PRINT_ERROR = "Error printing Timesheet %s";
+    public static final String MESSAGE_PRINT_TIMESHEET_NOTFOUND = "Print Failure: Timesheet does not exists";
 
     public static final String VALIDATION_TIMESHEET_MISSING = "Update operation requires the existence of the Timesheet profile";
     public static final String VALIDATION_TIMESHEET_TOO_MANY = "Update operation requires one timesheet record only";

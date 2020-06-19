@@ -21,6 +21,7 @@ import org.dao.mapping.orm.rmt2.VwTimesheetEventList;
 import org.dao.mapping.orm.rmt2.VwTimesheetHours;
 import org.dao.mapping.orm.rmt2.VwTimesheetList;
 import org.dao.mapping.orm.rmt2.VwTimesheetProjectTask;
+import org.dao.mapping.orm.rmt2.VwTimesheetSummary;
 import org.dao.timesheet.TimesheetConst;
 
 import com.api.util.RMT2Date;
@@ -597,6 +598,34 @@ public class ProjectTrackerOrmDataFactory {
         o.setUserId("testuser");
         o.setIpCreated("111.222.101.100");
         o.setIpUpdated(o.getIpCreated());
+        return o;
+    }
+
+    /**
+     * 
+     * @param timesheetId
+     * @param firstName
+     * @param lastName
+     * @param endDate
+     * @param dailyHours
+     * @return
+     */
+    public static final VwTimesheetSummary createMockOrmVwTimesheetSummary(int timesheetId, String firstName, String lastName,
+            String endDate, double dailyHours) {
+        VwTimesheetSummary o = new VwTimesheetSummary();
+        o.setTimesheetId(timesheetId);
+        o.setEndPeriod(RMT2Date.stringToDate(endDate));
+        o.setDocumentId(1234567);
+        String displayValue = RMT2String.padInt(timesheetId, 12, RMT2String.PAD_LEADING);
+        o.setDisplayValue(displayValue);
+        o.setShortname(firstName + " " + lastName);
+        o.setDay1Hrs(0);
+        o.setDay2Hrs(dailyHours);
+        o.setDay3Hrs(dailyHours);
+        o.setDay4Hrs(dailyHours);
+        o.setDay5Hrs(dailyHours);
+        o.setDay6Hrs(dailyHours);
+        o.setDay7Hrs(0);
         return o;
     }
 }
