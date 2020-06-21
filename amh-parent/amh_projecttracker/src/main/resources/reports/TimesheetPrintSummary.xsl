@@ -34,7 +34,7 @@
 									<fo:block text-align="left">
 									<fo:external-graphic src="url('$IMAGES_DIRECTORY$')"/>
 										<!-- Use for testing outside normal runtime environment 
-										<fo:external-graphic src="url('\source\Api_Message_Handlers\amh-parent\amh_core\src\main\resources\images\RMT2_logo2.jpg')"/> 
+										<fo:external-graphic src="url('\source\Internal_Business_Server\src\main\resources\images\RMT2_logo2.jpg')"/> 
 										-->
 									</fo:block>
 								</fo:table-cell>
