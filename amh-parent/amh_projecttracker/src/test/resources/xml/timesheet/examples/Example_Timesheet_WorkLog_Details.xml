@@ -88,7 +88,7 @@
                 <daily_hours>
                     <event_id>11160</event_id>
                     <event_date>2018-08-20T00:00:00.000-05:00</event_date>
-                    <hours>8.0</hours>
+                    <hours>4.0</hours>
                     <tracking>
                         <date_created>2018-08-20T08:07:24.000-05:00</date_created>
                         <date_updated>2018-08-24T11:44:22.000-05:00</date_updated>
@@ -98,7 +98,7 @@
                 <daily_hours>
                     <event_id>11161</event_id>
                     <event_date>2018-08-21T00:00:00.000-05:00</event_date>
-                    <hours>6.0</hours>
+                    <hours>3.0</hours>
                     <tracking>
                         <date_created>2018-08-20T08:07:24.000-05:00</date_created>
                         <date_updated>2018-08-24T11:44:22.000-05:00</date_updated>
@@ -108,7 +108,7 @@
                 <daily_hours>
                     <event_id>11162</event_id>
                     <event_date>2018-08-22T00:00:00.000-05:00</event_date>
-                    <hours>10.0</hours>
+                    <hours>5.0</hours>
                     <tracking>
                         <date_created>2018-08-20T08:07:24.000-05:00</date_created>
                         <date_updated>2018-08-24T11:44:22.000-05:00</date_updated>
@@ -118,7 +118,7 @@
                 <daily_hours>
                     <event_id>11163</event_id>
                     <event_date>2018-08-23T00:00:00.000-05:00</event_date>
-                    <hours>8.0</hours>
+                    <hours>4.0</hours>
                     <tracking>
                         <date_created>2018-08-20T08:07:24.000-05:00</date_created>
                         <date_updated>2018-08-24T11:44:22.000-05:00</date_updated>
@@ -128,7 +128,86 @@
                 <daily_hours>
                     <event_id>11164</event_id>
                     <event_date>2018-08-24T00:00:00.000-05:00</event_date>
-                    <hours>8.0</hours>
+                    <hours>4.0</hours>
+                    <tracking>
+                        <date_created>2018-08-20T08:07:24.000-05:00</date_created>
+                        <date_updated>2018-08-24T11:44:22.000-05:00</date_updated>
+                        <user_id>admin</user_id>
+                    </tracking>
+                </daily_hours>
+                <daily_hours>
+                    <event_id>11165</event_id>
+                    <event_date>2018-08-25T00:00:00.000-05:00</event_date>
+                    <hours>0.0</hours>
+                    <tracking>
+                        <date_created>2018-08-20T08:07:24.000-05:00</date_created>
+                        <date_updated>2018-08-24T11:44:22.000-05:00</date_updated>
+                        <user_id>admin</user_id>
+                    </tracking>
+                </daily_hours>
+            </work_log>
+            
+            <work_log>
+                <project_task_id>1595</project_task_id>
+                <project_id>36</project_id>
+                <project_name>DHISCO (New Contract)</project_name>
+                <task_id>14</task_id>
+                <task_name>Development</task_name>
+                <delete_project_task>false</delete_project_task>
+                <daily_hours>
+                    <event_id>11159</event_id>
+                    <event_date>2018-08-19T00:00:00.000-05:00</event_date>
+                    <hours>0.0</hours>
+                    <tracking>
+                        <date_created>2018-08-20T08:07:24.000-05:00</date_created>
+                        <date_updated>2018-08-24T11:44:22.000-05:00</date_updated>
+                        <user_id>admin</user_id>
+                    </tracking>
+                </daily_hours>
+                <daily_hours>
+                    <event_id>11160</event_id>
+                    <event_date>2018-08-20T00:00:00.000-05:00</event_date>
+                    <hours>4.0</hours>
+                    <tracking>
+                        <date_created>2018-08-20T08:07:24.000-05:00</date_created>
+                        <date_updated>2018-08-24T11:44:22.000-05:00</date_updated>
+                        <user_id>admin</user_id>
+                    </tracking>
+                </daily_hours>
+                <daily_hours>
+                    <event_id>11161</event_id>
+                    <event_date>2018-08-21T00:00:00.000-05:00</event_date>
+                    <hours>3.0</hours>
+                    <tracking>
+                        <date_created>2018-08-20T08:07:24.000-05:00</date_created>
+                        <date_updated>2018-08-24T11:44:22.000-05:00</date_updated>
+                        <user_id>admin</user_id>
+                    </tracking>
+                </daily_hours>
+                <daily_hours>
+                    <event_id>11162</event_id>
+                    <event_date>2018-08-22T00:00:00.000-05:00</event_date>
+                    <hours>5.0</hours>
+                    <tracking>
+                        <date_created>2018-08-20T08:07:24.000-05:00</date_created>
+                        <date_updated>2018-08-24T11:44:22.000-05:00</date_updated>
+                        <user_id>admin</user_id>
+                    </tracking>
+                </daily_hours>
+                <daily_hours>
+                    <event_id>11163</event_id>
+                    <event_date>2018-08-23T00:00:00.000-05:00</event_date>
+                    <hours>4.0</hours>
+                    <tracking>
+                        <date_created>2018-08-20T08:07:24.000-05:00</date_created>
+                        <date_updated>2018-08-24T11:44:22.000-05:00</date_updated>
+                        <user_id>admin</user_id>
+                    </tracking>
+                </daily_hours>
+                <daily_hours>
+                    <event_id>11164</event_id>
+                    <event_date>2018-08-24T00:00:00.000-05:00</event_date>
+                    <hours>4.0</hours>
                     <tracking>
                         <date_created>2018-08-20T08:07:24.000-05:00</date_created>
                         <date_updated>2018-08-24T11:44:22.000-05:00</date_updated>
