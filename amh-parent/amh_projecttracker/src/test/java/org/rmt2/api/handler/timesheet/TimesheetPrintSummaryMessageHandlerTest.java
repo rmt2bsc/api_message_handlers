@@ -164,7 +164,7 @@ public class TimesheetPrintSummaryMessageHandlerTest extends BaseProjectTrackerM
         Assert.assertEquals(1, actualRepsonse.getReplyStatus().getRecordCount().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(TimesheetMessageHandlerConst.MESSAGE_PRINT_SUMMARY, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(TimesheetMessageHandlerConst.MESSAGE_PRINT_SUCCESS, actualRepsonse.getReplyStatus().getMessage());
 
         ReportAttachmentType att = actualRepsonse.getProfile().getAttachment();
         Assert.assertNotNull(att.getFilePath());
