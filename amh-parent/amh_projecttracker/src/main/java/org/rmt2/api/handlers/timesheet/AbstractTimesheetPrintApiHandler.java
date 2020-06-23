@@ -119,7 +119,7 @@ public abstract class AbstractTimesheetPrintApiHandler extends
             String reportXml = this.buildTimesheetData(servProvider);
             pdfReport = this.generatePdf(reportXml);
 
-            rs.setMessage(TimesheetMessageHandlerConst.MESSAGE_PRINT_SUMMARY);
+            rs.setMessage(TimesheetMessageHandlerConst.MESSAGE_PRINT_SUCCESS);
 
             // Always return "1" record count
             rs.setRecordCount(1);
