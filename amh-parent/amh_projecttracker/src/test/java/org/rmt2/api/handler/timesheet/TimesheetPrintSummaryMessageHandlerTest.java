@@ -56,7 +56,7 @@ public class TimesheetPrintSummaryMessageHandlerTest extends BaseProjectTrackerM
     public static final int BUSINESS_ID = 1351;
     public static final String PROP_SERIAL_PATH = "\\temp\\";
     public static final String PROP_RPT_XSLT_PATH = "reports";
-    public static final String API_ERROR = "Test API Error";
+    public static final String API_ERROR = "Test API Error for print timesheet summary";
 
     private TimesheetApi mockApi;
     private TimesheetApiFactory mockApiFactory;
