@@ -25,8 +25,7 @@ public class TimesheetMessageHandlerConst {
     public static final String MESSAGE_POST_SUBMIT_ERROR = "Error %s Timesheet";
     public static final String MESSAGE_POST_SUBMIT_RECORD_NOT_FOUND = "Approve/Decline operation did not find any records for timesheet id, %s";
 
-    public static final String MESSAGE_PRINT_SUMMARY = "Summary timesheet was printed successfully";
-    public static final String MESSAGE_PRINT_DETAIL = "Detail timesheet was printed successfully";
+    public static final String MESSAGE_PRINT_SUCCESS = "Summary timesheet was printed successfully";
     public static final String MESSAGE_PRINT_ERROR = "Error printing Timesheet %s";
     public static final String MESSAGE_PRINT_TIMESHEET_NOTFOUND = "Print Failure: Timesheet does not exists";
 
