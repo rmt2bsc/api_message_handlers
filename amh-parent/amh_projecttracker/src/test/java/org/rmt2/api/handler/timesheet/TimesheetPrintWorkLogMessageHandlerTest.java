@@ -71,6 +71,7 @@ public class TimesheetPrintWorkLogMessageHandlerTest extends BaseProjectTrackerM
     private TimesheetDto mockTimesheetExt;
     private Map<ProjectTaskDto, List<EventDto>> mockWorkLog;
     private List<ContactDto> mockBusinessContactDtoList;
+    private String path;
 
 
     /**
@@ -105,10 +106,13 @@ public class TimesheetPrintWorkLogMessageHandlerTest extends BaseProjectTrackerM
         System.setProperty("SerialPath", PROP_SERIAL_PATH);
         System.setProperty("RptXsltPath", PROP_RPT_XSLT_PATH);
 
-        File f = new File(PROP_SERIAL_PATH);
+        String homeDir = System.getProperty("user.home");
+        homeDir = RMT2File.convertToUnixStyle(homeDir);
+        String pathExt = RMT2File.convertToUnixStyle(PROP_SERIAL_PATH);
+        path = homeDir + pathExt;
+        File f = new File(path);
         if (RMT2File.verifyDirectory(f) == RMT2File.FILE_IO_NOTEXIST) {
-            RMT2File.createDirectory("\\temp\\");
-            RMT2File.createDirectory(PROP_SERIAL_PATH);
+            RMT2File.createDirectory(path);
         }
 
         this.createInputData();
@@ -122,7 +126,7 @@ public class TimesheetPrintWorkLogMessageHandlerTest extends BaseProjectTrackerM
      */
     @After
     public void tearDown() throws Exception {
-        File f = new File(PROP_SERIAL_PATH);
+        File f = new File(path);
         RMT2File.deleteFile(f);
         return;
     }
@@ -151,6 +155,12 @@ public class TimesheetPrintWorkLogMessageHandlerTest extends BaseProjectTrackerM
             eventsDto.add(evtDto);
         }
         return eventsDto;
+    }
+
+    @Test
+    public void testReportLogoExistence() {
+        String path = RMT2File.resolveRelativeFilePath("images/RMT2_logo2.jpg");
+        Assert.assertNotNull(path);
     }
 
     @Test
