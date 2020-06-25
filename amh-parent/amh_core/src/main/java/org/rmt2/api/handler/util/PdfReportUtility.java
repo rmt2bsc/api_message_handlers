@@ -105,8 +105,15 @@ public class PdfReportUtility extends RMT2Base {
      */
     public void init() throws SystemException {
         super.init();
-        // Get path to user's work area to store report output
-        this.userWorkArea = System.getProperty("SerialPath");
+        // Get path to user's work area to store report output. Prefix with
+        // user.home property to make compatible with UNIX and Windows based
+        // systems. This logic will force all filenames to UNIX style regardless
+        // what is set in the configuration.
+        String homeDir = System.getProperty("user.home");
+        homeDir = RMT2File.convertToUnixStyle(homeDir);
+        String pathExt = System.getProperty("SerialPath");
+        pathExt = RMT2File.convertToUnixStyle(pathExt);
+        this.userWorkArea = homeDir + pathExt;
 
         // Get image directory
         this.imageDirPath = RMT2File.resolveRelativeFilePath("images/RMT2_logo2.jpg");
