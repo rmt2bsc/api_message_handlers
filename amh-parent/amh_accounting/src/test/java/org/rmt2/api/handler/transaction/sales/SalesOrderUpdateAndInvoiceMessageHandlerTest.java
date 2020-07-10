@@ -55,6 +55,7 @@ import com.api.util.RMT2File;
 public class SalesOrderUpdateAndInvoiceMessageHandlerTest extends BaseAccountingMessageHandlerTest {
 
     protected static final double TEST_ORDER_TOTAL = 755.94;
+    protected static final double TEST_INVOICE_ID = 7000;
 
     private SalesApi mockApi;
 
@@ -172,6 +173,9 @@ public class SalesOrderUpdateAndInvoiceMessageHandlerTest extends BaseAccounting
             Assert.assertEquals(TEST_ORDER_TOTAL, a.getOrderTotal().doubleValue(), 0);
             Assert.assertEquals("Invoice", a.getStatus().getDescription());
             Assert.assertEquals(TEST_ORDER_TOTAL, a.getOrderTotal().doubleValue(), 0);
+            Assert.assertNotNull(a.getInvoiceDetails());
+            Assert.assertNotNull(a.getInvoiceDetails().getInvoiceId());
+            Assert.assertEquals(SalesOrderMockData.NEW_INVOICE_ID, a.getInvoiceDetails().getInvoiceId().intValue(), 0);
         }
     }
 

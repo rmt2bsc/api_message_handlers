@@ -139,6 +139,7 @@ public class UpdateSalesOrderAutoInvoiceCashReceiptApiHandler extends SalesOrder
                         .withXactId(xactId)
                         .build();
                 SalesInvoiceType sit = SalesInvoiceTypeBuilder.Builder.create()
+                        .withInvoiceId(soiDto.getInvoiceId())
                         .withInvoiceNo(soiDto.getInvoiceNo())
                         .withTransaction(xt)
                         .build();

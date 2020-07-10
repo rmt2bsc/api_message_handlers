@@ -179,6 +179,9 @@ public class SalesOrderUpdateAndInvoiceAndCashReceiptMessageHandlerTest extends 
             Assert.assertEquals(TEST_ORDER_TOTAL, a.getOrderTotal().doubleValue(), 0);
             Assert.assertEquals("Invoice", a.getStatus().getDescription());
             Assert.assertEquals(TEST_ORDER_TOTAL, a.getOrderTotal().doubleValue(), 0);
+            Assert.assertNotNull(a.getInvoiceDetails());
+            Assert.assertNotNull(a.getInvoiceDetails().getInvoiceId());
+            Assert.assertEquals(SalesOrderMockData.NEW_INVOICE_ID, a.getInvoiceDetails().getInvoiceId().intValue(), 0);
         }
     }
 
