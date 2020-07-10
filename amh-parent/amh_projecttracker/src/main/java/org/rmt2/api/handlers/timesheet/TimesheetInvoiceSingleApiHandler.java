@@ -82,7 +82,7 @@ public class TimesheetInvoiceSingleApiHandler extends TimesheetInvoiceApiHandler
             TimesheetDto criteriaDto = TimesheetJaxbDtoFactory
                     .createTimesheetDtoCriteriaInstance(req.getCriteria().getTimesheetCriteria());
 
-            // this.api.beginTrans();
+            this.api.beginTrans();
             int rc = this.api.invoice(criteriaDto.getTimesheetId());
             if (rc > 0) {
                 rs.setMessage(TimesheetMessageHandlerConst.MESSAGE_INVOICE_SUCCESS);
@@ -95,14 +95,14 @@ public class TimesheetInvoiceSingleApiHandler extends TimesheetInvoiceApiHandler
             }
             rs.setRecordCount(rc);
             this.responseObj.setHeader(req.getHeader());
-            // this.api.commitTrans();
+            this.api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setRecordCount(0);
             rs.setMessage(TimesheetMessageHandlerConst.MESSAGE_INVOICE_ERROR);
             rs.setExtMessage(e.getMessage());
-            // this.api.rollbackTrans();
+            this.api.rollbackTrans();
         } finally {
             this.api.close();
         }
