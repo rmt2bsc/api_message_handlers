@@ -366,7 +366,8 @@ public class ContactProfileApiHandler extends
                     "AddressBook contact query request is rquired to have a criteria group element");
         }
 
-        // Use a hashtable to assist in ContactCriteriaGroup validations since
+        // Use a hashtable to assist in determioning the type of contact
+        // crtieria we are to use from ContactCriteriaGroup since a
         // hashtable only allows non-null keys and values.
         Map<Object, Object> criteriaHash = new Hashtable<>();
         this.addToValidationHashTable(criteriaHash, criteriaGroup.getBusinessCriteria());

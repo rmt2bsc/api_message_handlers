@@ -74,33 +74,38 @@ public class TimesheetInvoiceSingleApiHandler extends TimesheetInvoiceApiHandler
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         List<TimesheetType> updateDtoResults = null;
+        TimesheetDto criteriaDto = null;
 
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
-            TimesheetDto criteriaDto = TimesheetJaxbDtoFactory
+            criteriaDto = TimesheetJaxbDtoFactory
                     .createTimesheetDtoCriteriaInstance(req.getCriteria().getTimesheetCriteria());
 
             this.api.beginTrans();
             int rc = this.api.invoice(criteriaDto.getTimesheetId());
             if (rc > 0) {
                 rs.setMessage(TimesheetMessageHandlerConst.MESSAGE_INVOICE_SUCCESS);
+                criteriaDto.setInvoiceRefNo(String.valueOf(rc));
                 updateDtoResults = this.buildJaxbInvoiceResults(criteriaDto);
+                rs.setRecordCount(1);
             }
             else {
                 String errMsg = RMT2String.replace(TimesheetMessageHandlerConst.MESSAGE_INVOICE_RECORD_NOT_FOUND,
                         String.valueOf(criteriaDto.getTimesheetId()), "%s");
                 rs.setMessage(errMsg);
+                rs.setRecordCount(0);
             }
-            rs.setRecordCount(rc);
+
             this.responseObj.setHeader(req.getHeader());
             this.api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setRecordCount(0);
-            rs.setMessage(TimesheetMessageHandlerConst.MESSAGE_INVOICE_ERROR);
+            rs.setMessage(RMT2String.replace(TimesheetMessageHandlerConst.MESSAGE_INVOICE_ERROR,
+                    String.valueOf(criteriaDto.getTimesheetId()), "%s"));
             rs.setExtMessage(e.getMessage());
             this.api.rollbackTrans();
         } finally {

@@ -81,8 +81,8 @@ public class CloseSalesOrderWithPaymentApiHandler extends SalesOrderApiHandler {
     }
 
     /**
-     * Handler for invoking the appropriate API in order to create a sales order
-     * accounting transaction object.
+     * Handler for invoking the appropriate API in order to close a sales order
+     * accompanied with a payment.
      * 
      * @param req
      *            an instance of {@link AccountingTransactionRequest}

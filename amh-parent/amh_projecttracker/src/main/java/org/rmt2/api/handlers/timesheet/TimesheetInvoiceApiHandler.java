@@ -128,6 +128,7 @@ public class TimesheetInvoiceApiHandler extends
         List<TimesheetType> list = new ArrayList<>();
         TimesheetType jaxbObj = TimesheetTypeBuilder.Builder.create()
                 .withTimesheetId(dto.getTimesheetId())
+                .withInvoiceRefNo(dto.getInvoiceRefNo())
                 .build();
 
         list.add(jaxbObj);

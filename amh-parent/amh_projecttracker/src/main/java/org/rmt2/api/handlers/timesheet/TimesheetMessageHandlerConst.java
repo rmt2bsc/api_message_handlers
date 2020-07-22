@@ -22,7 +22,7 @@ public class TimesheetMessageHandlerConst {
     public static final String MESSAGE_SUBMIT_RECORD_NOT_FOUND = "Submit operation did not find any records for timesheet id, %s";
 
     public static final String MESSAGE_INVOICE_SUCCESS = "Timesheet invoiced successfully";
-    public static final String MESSAGE_INVOICE_ERROR = "Error invoice Timesheet";
+    public static final String MESSAGE_INVOICE_ERROR = "Error invoicing Timesheet, %s";
     public static final String MESSAGE_INVOICE_RECORD_NOT_FOUND = "Invoice operation did not find any records for timesheet id, %s";
 
     public static final String MESSAGE_POST_SUBMIT_SUCCESS = "Timesheet was %s";
