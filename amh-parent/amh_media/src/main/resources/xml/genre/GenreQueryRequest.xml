@@ -1,0 +1,17 @@
+<MultimediaRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>media</application>
+        <module>genre</module>
+        <transaction>GET_GENRE</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>08/13/2020 15:14:33</delivery_date>
+    </header>
+    <criteria>
+        <audio_visual_criteria>
+            <genre_id>120</genre_id>
+            <genre_name>Jazz</genre_name>
+        </audio_visual_criteria>
+    </criteria>
+</MultimediaRequest>
