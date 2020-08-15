@@ -88,7 +88,7 @@ public class GenreQueryMessageHandlerTest extends BaseMediaMessageHandlerTest {
     
     @Test
     public void testSuccess_Fetch_All() {
-        String request = RMT2File.getFileContentsAsString("xml/genre/GenreQueryRequest.xml");
+        String request = RMT2File.getFileContentsAsString("xml/lookup/GenreQueryRequest.xml");
         List<GenreDto> mockListData = MediaMockDtoFactory.createGenreMockData();
 
         try {
@@ -125,7 +125,7 @@ public class GenreQueryMessageHandlerTest extends BaseMediaMessageHandlerTest {
     
     @Test
     public void testSuccess_Fetch_Single() {
-        String request = RMT2File.getFileContentsAsString("xml/genre/GenreQueryRequest.xml");
+        String request = RMT2File.getFileContentsAsString("xml/lookup/GenreQueryRequest.xml");
         List<GenreDto> mockListData = MediaMockDtoFactory.createGenreSingleMockData();
 
         try {
@@ -162,7 +162,7 @@ public class GenreQueryMessageHandlerTest extends BaseMediaMessageHandlerTest {
 
     @Test
     public void testSuccess_Fetch_NotFound() {
-        String request = RMT2File.getFileContentsAsString("xml/genre/GenreQueryRequest.xml");
+        String request = RMT2File.getFileContentsAsString("xml/lookup/GenreQueryRequest.xml");
 
         try {
             when(this.mockApi.getGenre(isA(GenreDto.class))).thenReturn(null);
@@ -192,7 +192,7 @@ public class GenreQueryMessageHandlerTest extends BaseMediaMessageHandlerTest {
     
     @Test
     public void testError_Fetch_API_Error() {
-        String request = RMT2File.getFileContentsAsString("xml/genre/GenreQueryRequest.xml");
+        String request = RMT2File.getFileContentsAsString("xml/lookup/GenreQueryRequest.xml");
         try {
             when(this.mockApi.getGenre(isA(GenreDto.class))).thenThrow(new AudioVideoApiException(API_ERROR));
         } catch (AudioVideoApiException e) {
