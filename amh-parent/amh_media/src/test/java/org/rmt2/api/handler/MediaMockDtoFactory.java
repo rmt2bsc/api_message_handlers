@@ -89,6 +89,15 @@ public class MediaMockDtoFactory {
         return list;
     }
     
+    public static final List<MediaTypeDto> createMediaTypeSingleMockData() {
+        List<MediaTypeDto> list = new ArrayList<>();
+        int ndx = MediaMockOrmFactory.TEST_MEDIA_TYPE_ID;
+        AvMediaType o = MediaMockOrmFactory.createOrmAvMediaType(ndx, "MediaType" + ndx);
+        MediaTypeDto d = Rmt2MediaDtoFactory.getAvMediaTypeInstance(o);
+        list.add(d);
+        return list;
+    }
+
     public static final List<MediaTypeDto> createMediaTypeMockData() {
         List<MediaTypeDto> list = new ArrayList<>();
         int ndx = MediaMockOrmFactory.TEST_MEDIA_TYPE_ID;

@@ -8,7 +8,6 @@ import org.dto.MediaTypeDto;
 import org.modules.audiovideo.AudioVideoApi;
 import org.modules.audiovideo.AudioVideoFactory;
 import org.rmt2.api.handler.util.MessageHandlerUtility;
-import org.rmt2.api.handlers.lookup.genre.GenreApiHandlerConst;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.MediatypeType;
@@ -100,12 +99,12 @@ public class MediaTypeApiHandler extends
             AudioVideoApi api = AudioVideoFactory.createApi();
             List<MediaTypeDto> dtoList = api.getMediaType(criteriaDto);
             if (dtoList == null) {
-                rs.setMessage(GenreApiHandlerConst.MESSAGE_NOT_FOUND);
+                rs.setMessage(MediaTypeApiHandlerConst.MESSAGE_NOT_FOUND);
                 rs.setRecordCount(0);
             }
             else {
                 cdtList = MediaTypeJaxbDtoFactory.createMediaTypeJaxbInstance(dtoList);
-                rs.setMessage(GenreApiHandlerConst.MESSAGE_FOUND);
+                rs.setMessage(MediaTypeApiHandlerConst.MESSAGE_FOUND);
                 rs.setRecordCount(dtoList.size());
             }
             this.responseObj.setHeader(req.getHeader());
@@ -113,7 +112,7 @@ public class MediaTypeApiHandler extends
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setMessage(GenreApiHandlerConst.MESSAGE_FETCH_ERROR);
+            rs.setMessage(MediaTypeApiHandlerConst.MESSAGE_FETCH_ERROR);
             rs.setExtMessage(e.getMessage());
         }
         String xml = this.buildResponse(cdtList, rs);
