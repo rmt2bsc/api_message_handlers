@@ -45,9 +45,6 @@ import com.api.util.RMT2File;
 @PrepareForTest({ AbstractDaoClientImpl.class, Rmt2OrmClientFactory.class, GenreApiHandler.class, AudioVideoFactory.class,
         SystemConfigurator.class })
 public class GenreQueryMessageHandlerTest extends BaseMediaMessageHandlerTest {
-    public static final int PROJECT_COUNT = 28;
-    public static final int TASK_ID_SEED = 1112220;
-    public static final String TASK_DESCRIPTION_SEED = "Task Description ";
     public static final String API_ERROR = "Test validation error: API Error occurred";
 
     private AudioVideoApi mockApi;
