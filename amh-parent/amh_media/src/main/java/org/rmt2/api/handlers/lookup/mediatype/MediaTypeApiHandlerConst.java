@@ -1,4 +1,4 @@
-package org.rmt2.api.handlers.media.mediatype;
+package org.rmt2.api.handlers.lookup.mediatype;
 
 /**
  * Media Type specific constants.

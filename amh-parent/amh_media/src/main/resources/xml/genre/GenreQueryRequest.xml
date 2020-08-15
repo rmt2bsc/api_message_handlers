@@ -2,7 +2,7 @@
     <header>
         <routing>XXXXXXX</routing>
         <application>media</application>
-        <module>genre</module>
+        <module>lookup</module>
         <transaction>GET_GENRE</transaction>
         <delivery_mode>XXXXXXX</delivery_mode>
         <message_mode>REQUEST</message_mode>

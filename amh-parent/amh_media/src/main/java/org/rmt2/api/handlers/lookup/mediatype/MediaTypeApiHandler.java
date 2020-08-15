@@ -1,16 +1,17 @@
-package org.rmt2.api.handlers.media.genre;
+package org.rmt2.api.handlers.lookup.mediatype;
 
 import java.io.Serializable;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.dto.GenreDto;
+import org.dto.MediaTypeDto;
 import org.modules.audiovideo.AudioVideoApi;
 import org.modules.audiovideo.AudioVideoFactory;
 import org.rmt2.api.handler.util.MessageHandlerUtility;
+import org.rmt2.api.handlers.lookup.genre.GenreApiHandlerConst;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
-import org.rmt2.jaxb.GenreType;
+import org.rmt2.jaxb.MediatypeType;
 import org.rmt2.jaxb.MultimediaRequest;
 import org.rmt2.jaxb.MultimediaResponse;
 import org.rmt2.jaxb.ObjectFactory;
@@ -27,26 +28,26 @@ import com.api.util.assistants.Verifier;
 import com.api.util.assistants.VerifyException;
 
 /**
- * Handles and routes Genre codes related messages for the Media API.
+ * Handles and routes Media-Type codes related messages for the Media API.
  * 
  * @author roy.terrell
  *
  */
-public class GenreApiHandler extends 
-        AbstractJaxbMessageHandler<MultimediaRequest, MultimediaResponse, List<GenreType>> {
+public class MediaTypeApiHandler extends 
+        AbstractJaxbMessageHandler<MultimediaRequest, MultimediaResponse, List<MediatypeType>> {
     
-    private static final Logger logger = Logger.getLogger(GenreApiHandler.class);
+    private static final Logger logger = Logger.getLogger(MediaTypeApiHandler.class);
 
     private ObjectFactory jaxbObjFactory;
 
     /**
      * @param payload
      */
-    public GenreApiHandler() {
+    public MediaTypeApiHandler() {
         super();
         this.jaxbObjFactory = new ObjectFactory();
         this.responseObj = jaxbObjFactory.createMultimediaResponse();
-        logger.info(GenreApiHandler.class.getName() + " was instantiated successfully");
+        logger.info(MediaTypeApiHandler.class.getName() + " was instantiated successfully");
     }
 
     /*
@@ -65,7 +66,7 @@ public class GenreApiHandler extends
             return r;
         }
         switch (command) {
-            case ApiTransactionCodes.MEDIA_GENRE_GET:
+            case ApiTransactionCodes.MEDIA_MEDIATYPE_GET:
                 r = this.fetch(this.requestObj);
                 break;
             default:
@@ -78,7 +79,7 @@ public class GenreApiHandler extends
 
     /**
      * Handler for invoking the appropriate API in order to fetch one or more
-     * Genere objects.
+     * Media-Type objects.
      * 
      * @param req
      *            an instance of {@link MultimediaRequest}
@@ -87,22 +88,23 @@ public class GenreApiHandler extends
     protected MessageHandlerResults fetch(MultimediaRequest req) {
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
-        List<GenreType> cdtList = null;
+        List<MediatypeType> cdtList = null;
 
         try {
             // Set reply status
             rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_SUCCESS);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
-            GenreDto criteriaDto = GenreJaxbDtoFactory.createGenreDtoInstance(req.getCriteria().getAudioVisualCriteria());
+            MediaTypeDto criteriaDto = MediaTypeJaxbDtoFactory.createMediaTypeDtoInstance(req.getCriteria()
+                    .getAudioVisualCriteria());
             
             AudioVideoApi api = AudioVideoFactory.createApi();
-            List<GenreDto> dtoList = api.getGenre(criteriaDto);
+            List<MediaTypeDto> dtoList = api.getMediaType(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage(GenreApiHandlerConst.MESSAGE_NOT_FOUND);
                 rs.setRecordCount(0);
             }
             else {
-                cdtList = GenreJaxbDtoFactory.createGenreJaxbInstance(dtoList);
+                cdtList = MediaTypeJaxbDtoFactory.createMediaTypeJaxbInstance(dtoList);
                 rs.setMessage(GenreApiHandlerConst.MESSAGE_FOUND);
                 rs.setRecordCount(dtoList.size());
             }
@@ -127,12 +129,12 @@ public class GenreApiHandler extends
             Verifier.verifyNotNull(req);
         }
         catch (VerifyException e) {
-            throw new InvalidRequestException("Genre message request element is invalid");
+            throw new InvalidRequestException("Media Type message request element is invalid");
         }
     }
 
     @Override
-    protected String buildResponse(List<GenreType> payload, MessageHandlerCommonReplyStatus replyStatus) {
+    protected String buildResponse(List<MediatypeType> payload, MessageHandlerCommonReplyStatus replyStatus) {
         if (replyStatus != null) {
             ReplyStatusType rs = MessageHandlerUtility.createReplyStatus(replyStatus);
             this.responseObj.setReplyStatus(rs);    
@@ -140,8 +142,8 @@ public class GenreApiHandler extends
         
         if (payload != null) {
             this.responseObj.setProfile(this.jaxbObjFactory.createMimeDetailGroup());
-            this.responseObj.getProfile().setGenres(this.jaxbObjFactory.createGenresType());
-            this.responseObj.getProfile().getGenres().getGenre().addAll(payload);
+            this.responseObj.getProfile().setMediatypes(this.jaxbObjFactory.createMediaTypes());
+            this.responseObj.getProfile().getMediatypes().getMediaType().addAll(payload);
         }
         
         String xml = this.jaxb.marshalMessage(this.responseObj);

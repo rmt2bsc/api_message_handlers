@@ -1,4 +1,4 @@
-package org.rmt2.api.handlers.media.genre;
+package org.rmt2.api.handlers.lookup.genre;
 
 import java.util.ArrayList;
 import java.util.List;
