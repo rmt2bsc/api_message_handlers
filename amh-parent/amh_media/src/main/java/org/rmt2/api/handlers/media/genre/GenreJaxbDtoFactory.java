@@ -12,8 +12,8 @@ import org.rmt2.util.media.GenreTypeBuilder;
 import com.RMT2Base;
 
 /**
- * A factory for creating DTO and JAXB instances for the Media message handler
- * project.
+ * A factory for creating DTO and JAXB instances for the Genre Media message
+ * handler project.
  * 
  * @author Roy Terrell.
  * 

@@ -1,0 +1,17 @@
+<MultimediaRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>media</application>
+        <module>lookup</module>
+        <transaction>GET_MEDIA_TYPE</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>08/14/2020 23:48:36</delivery_date>
+    </header>
+    <criteria>
+        <audio_visual_criteria>
+            <media_type_id>200</media_type_id>
+            <media_type_name>Media Type Description Test</media_type_name>
+        </audio_visual_criteria>
+    </criteria>
+</MultimediaRequest>
