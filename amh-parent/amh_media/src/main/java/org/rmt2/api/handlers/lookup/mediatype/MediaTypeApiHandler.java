@@ -66,7 +66,7 @@ public class MediaTypeApiHandler extends
         }
         switch (command) {
             case ApiTransactionCodes.MEDIA_MEDIATYPE_GET:
-                r = this.fetch(this.requestObj);
+                r = this.doOperation(this.requestObj);
                 break;
             default:
                 r = this.createErrorReply(MessagingConstants.RETURN_CODE_FAILURE,
@@ -84,7 +84,7 @@ public class MediaTypeApiHandler extends
      *            an instance of {@link MultimediaRequest}
      * @return an instance of {@link MessageHandlerResults}
      */
-    protected MessageHandlerResults fetch(MultimediaRequest req) {
+    protected MessageHandlerResults doOperation(MultimediaRequest req) {
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         List<MediatypeType> cdtList = null;
