@@ -1,22 +1,23 @@
 package org.rmt2.api.handlers.batch;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.dto.GenreDto;
-import org.modules.audiovideo.AudioVideoApi;
-import org.modules.audiovideo.AudioVideoFactory;
+import org.modules.audiovideo.batch.AvBatchFileFactory;
+import org.modules.audiovideo.batch.AvBatchFileProcessorApi;
 import org.rmt2.api.handler.util.MessageHandlerUtility;
 import org.rmt2.api.handlers.lookup.genre.GenreApiHandlerConst;
-import org.rmt2.api.handlers.lookup.genre.GenreJaxbDtoFactory;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
+import org.rmt2.jaxb.BatchImportType;
 import org.rmt2.jaxb.GenreType;
 import org.rmt2.jaxb.MultimediaRequest;
 import org.rmt2.jaxb.MultimediaResponse;
 import org.rmt2.jaxb.ObjectFactory;
 import org.rmt2.jaxb.ReplyStatusType;
+import org.rmt2.util.media.BatchImportTypeBuilder;
 
 import com.InvalidDataException;
 import com.api.messaging.InvalidRequestException;
@@ -29,26 +30,27 @@ import com.api.util.assistants.Verifier;
 import com.api.util.assistants.VerifyException;
 
 /**
- * Handles and routes Genre codes related messages for the Media API.
+ * Handles and routes audio metadata import batch related messages for the Media
+ * API.
  * 
  * @author roy.terrell
  *
  */
-public class AudioBatchImportApiHandler extends 
-        AbstractJaxbMessageHandler<MultimediaRequest, MultimediaResponse, List<GenreType>> {
+public class AudioMetadataBatchImportApiHandler extends 
+        AbstractJaxbMessageHandler<MultimediaRequest, MultimediaResponse, List<BatchImportType>> {
     
-    private static final Logger logger = Logger.getLogger(AudioBatchImportApiHandler.class);
+    private static final Logger logger = Logger.getLogger(AudioMetadataBatchImportApiHandler.class);
 
     private ObjectFactory jaxbObjFactory;
 
     /**
      * @param payload
      */
-    public AudioBatchImportApiHandler() {
+    public AudioMetadataBatchImportApiHandler() {
         super();
         this.jaxbObjFactory = new ObjectFactory();
         this.responseObj = jaxbObjFactory.createMultimediaResponse();
-        logger.info(AudioBatchImportApiHandler.class.getName() + " was instantiated successfully");
+        logger.info(AudioMetadataBatchImportApiHandler.class.getName() + " was instantiated successfully");
     }
 
     /*
@@ -67,8 +69,8 @@ public class AudioBatchImportApiHandler extends
             return r;
         }
         switch (command) {
-            case ApiTransactionCodes.MEDIA_GENRE_GET:
-                r = this.fetch(this.requestObj);
+            case ApiTransactionCodes.MEDIA_AUDIO_METADATA_IMPORT_BATCH:
+                r = this.doOperation(this.requestObj);
                 break;
             default:
                 r = this.createErrorReply(MessagingConstants.RETURN_CODE_FAILURE,
@@ -86,29 +88,26 @@ public class AudioBatchImportApiHandler extends
      *            an instance of {@link MultimediaRequest}
      * @return an instance of {@link MessageHandlerResults}
      */
-    protected MessageHandlerResults fetch(MultimediaRequest req) {
+    protected MessageHandlerResults doOperation(MultimediaRequest req) {
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         List<GenreType> cdtList = null;
+        List<BatchImportType> b = null;
 
         try {
+            rs.setRecordCount(0);
+            this.responseObj.setHeader(req.getHeader());
             // Set reply status
             rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_SUCCESS);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
-            GenreDto criteriaDto = GenreJaxbDtoFactory.createGenreDtoInstance(req.getCriteria().getAudioVisualCriteria());
+            String audioDirPath = req.getCriteria().getAudioBatchImportCriteria().getLocation();
             
-            AudioVideoApi api = AudioVideoFactory.createApi();
-            List<GenreDto> dtoList = api.getGenre(criteriaDto);
-            if (dtoList == null) {
-                rs.setMessage(GenreApiHandlerConst.MESSAGE_NOT_FOUND);
-                rs.setRecordCount(0);
-            }
-            else {
-                cdtList = GenreJaxbDtoFactory.createGenreJaxbInstance(dtoList);
-                rs.setMessage(GenreApiHandlerConst.MESSAGE_FOUND);
-                rs.setRecordCount(dtoList.size());
-            }
-            this.responseObj.setHeader(req.getHeader());
+            int rc = 0;
+            AvBatchFileProcessorApi api = AvBatchFileFactory.createApiInstance(audioDirPath);
+            rc = api.processBatch();
+            b = this.buildBatchResults(api);
+            rs.setMessage(BatchImportConst.MESSAGE_SUCCESS);
+            rs.setRecordCount(rc);
             
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
@@ -116,7 +115,7 @@ public class AudioBatchImportApiHandler extends
             rs.setMessage(GenreApiHandlerConst.MESSAGE_FETCH_ERROR);
             rs.setExtMessage(e.getMessage());
         }
-        String xml = this.buildResponse(cdtList, rs);
+        String xml = this.buildResponse(b, rs);
         results.setPayload(xml);
         return results;
     }
@@ -133,8 +132,23 @@ public class AudioBatchImportApiHandler extends
         }
     }
 
+    private List<BatchImportType> buildBatchResults(AvBatchFileProcessorApi api) {
+        BatchImportType bit = BatchImportTypeBuilder.Builder.create()
+                .withStartTime(api.getStartTime())
+                .withEndTime(api.getEndTime())
+                .withSuccessTotal(api.getSuccessCount())
+                .withFailureTotal(api.getErrorCount())
+                .withProcessTotal(api.getTotCnt())
+                .withNonAudioFilesEncountered(api.getNonAvFileCnt())
+                .build();
+
+        List<BatchImportType> list = new ArrayList<>();
+        list.add(bit);
+        return list;
+    }
+
     @Override
-    protected String buildResponse(List<GenreType> payload, MessageHandlerCommonReplyStatus replyStatus) {
+    protected String buildResponse(List<BatchImportType> payload, MessageHandlerCommonReplyStatus replyStatus) {
         if (replyStatus != null) {
             ReplyStatusType rs = MessageHandlerUtility.createReplyStatus(replyStatus);
             this.responseObj.setReplyStatus(rs);    
@@ -142,8 +156,7 @@ public class AudioBatchImportApiHandler extends
         
         if (payload != null) {
             this.responseObj.setProfile(this.jaxbObjFactory.createMimeDetailGroup());
-            this.responseObj.getProfile().setGenres(this.jaxbObjFactory.createGenresType());
-            this.responseObj.getProfile().getGenres().getGenre().addAll(payload);
+            this.responseObj.getProfile().setBatchImportResults(payload.get(0));
         }
         
         String xml = this.jaxb.marshalMessage(this.responseObj);
