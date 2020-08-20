@@ -12,7 +12,6 @@ import org.rmt2.api.handlers.lookup.genre.GenreApiHandlerConst;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.BatchImportType;
-import org.rmt2.jaxb.GenreType;
 import org.rmt2.jaxb.MultimediaRequest;
 import org.rmt2.jaxb.MultimediaResponse;
 import org.rmt2.jaxb.ObjectFactory;
@@ -91,7 +90,6 @@ public class AudioMetadataBatchImportApiHandler extends
     protected MessageHandlerResults doOperation(MultimediaRequest req) {
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
-        List<GenreType> cdtList = null;
         List<BatchImportType> b = null;
 
         try {
