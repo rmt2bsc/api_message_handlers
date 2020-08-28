@@ -106,7 +106,6 @@ public class AudioMetadataBatchImportApiHandler extends
             b = this.buildBatchResults(api);
             rs.setMessage(BatchImportConst.MESSAGE_SUCCESS);
             rs.setRecordCount(rc);
-            
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
