@@ -101,7 +101,7 @@ public class AudioMetadataBatchImportApiHandler extends
             String audioDirPath = req.getCriteria().getAudioBatchImportCriteria().getLocation();
             
             int rc = 0;
-            AvBatchFileProcessorApi api = AvBatchFileFactory.createApiInstance(audioDirPath);
+            AvBatchFileProcessorApi api = AvBatchFileFactory.createMediaFileBatchImportApiInstance(audioDirPath);
             rc = api.processBatch();
             b = this.buildBatchResults(api);
             rs.setMessage(BatchImportConst.MESSAGE_SUCCESS);
