@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.dto.MediaTypeDto;
 import org.dto.adapter.orm.Rmt2MediaDtoFactory;
-import org.rmt2.jaxb.AudioVisualCriteriaType;
+import org.rmt2.jaxb.AudioVideoCriteriaType;
 import org.rmt2.jaxb.MediatypeType;
 import org.rmt2.util.media.MediatypeTypeBuilder;
 
@@ -28,7 +28,7 @@ public class MediaTypeJaxbDtoFactory extends RMT2Base {
      *            an instance of {@link AudioVisualCriteriaType}
      * @return an instance of {@link MediaTypeDto}
      */
-    public static final MediaTypeDto createMediaTypeDtoInstance(AudioVisualCriteriaType jaxbObj) {
+    public static final MediaTypeDto createMediaTypeDtoInstance(AudioVideoCriteriaType jaxbObj) {
         if (jaxbObj == null) {
             return null;
         }

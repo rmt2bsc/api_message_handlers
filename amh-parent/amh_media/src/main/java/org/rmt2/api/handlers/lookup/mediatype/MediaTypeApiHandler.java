@@ -94,7 +94,7 @@ public class MediaTypeApiHandler extends
             rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_SUCCESS);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             MediaTypeDto criteriaDto = MediaTypeJaxbDtoFactory.createMediaTypeDtoInstance(req.getCriteria()
-                    .getAudioVisualCriteria());
+                    .getAudioVideoCriteria());
             
             AudioVideoApi api = AudioVideoFactory.createApi();
             List<MediaTypeDto> dtoList = api.getMediaType(criteriaDto);

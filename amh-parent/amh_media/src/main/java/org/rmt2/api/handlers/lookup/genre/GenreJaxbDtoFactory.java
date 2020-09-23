@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.dto.GenreDto;
 import org.dto.adapter.orm.Rmt2MediaDtoFactory;
-import org.rmt2.jaxb.AudioVisualCriteriaType;
+import org.rmt2.jaxb.AudioVideoCriteriaType;
 import org.rmt2.jaxb.GenreType;
 import org.rmt2.util.media.GenreTypeBuilder;
 
@@ -28,7 +28,7 @@ public class GenreJaxbDtoFactory extends RMT2Base {
      *            an instance of {@link AudioVisualCriteriaType}
      * @return an instance of {@link GenreDto}
      */
-    public static final GenreDto createGenreDtoInstance(AudioVisualCriteriaType jaxbObj) {
+    public static final GenreDto createGenreDtoInstance(AudioVideoCriteriaType jaxbObj) {
         if (jaxbObj == null) {
             return null;
         }

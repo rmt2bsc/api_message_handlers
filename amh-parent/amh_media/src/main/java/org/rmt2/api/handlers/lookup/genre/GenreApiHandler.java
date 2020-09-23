@@ -93,7 +93,7 @@ public class GenreApiHandler extends
             // Set reply status
             rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_SUCCESS);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
-            GenreDto criteriaDto = GenreJaxbDtoFactory.createGenreDtoInstance(req.getCriteria().getAudioVisualCriteria());
+            GenreDto criteriaDto = GenreJaxbDtoFactory.createGenreDtoInstance(req.getCriteria().getAudioVideoCriteria());
             
             AudioVideoApi api = AudioVideoFactory.createApi();
             List<GenreDto> dtoList = api.getGenre(criteriaDto);
