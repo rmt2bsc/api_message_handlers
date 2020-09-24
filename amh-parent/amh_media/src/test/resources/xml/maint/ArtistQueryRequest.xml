@@ -1,0 +1,17 @@
+<MultimediaRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>media</application>
+        <module>maint</module>
+        <transaction>GET_ARTIST</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>08/13/2020 15:14:33</delivery_date>
+    </header>
+    <criteria>
+        <audio_video_criteria>
+            <artist_id>10</artist_id>
+            <artist_name>Artist Name Test</artist_name>
+        </audio_video_criteria>
+    </criteria>
+</MultimediaRequest>
