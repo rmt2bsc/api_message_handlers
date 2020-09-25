@@ -9,9 +9,9 @@
         <delivery_date>08/13/2020 15:14:33</delivery_date>
     </header>
     <criteria>
-        <audio_visual_criteria>
+        <audio_video_criteria>
             <genre_id>120</genre_id>
             <genre_name>Jazz</genre_name>
-        </audio_visual_criteria>
+        </audio_video_criteria>
     </criteria>
 </MultimediaRequest>

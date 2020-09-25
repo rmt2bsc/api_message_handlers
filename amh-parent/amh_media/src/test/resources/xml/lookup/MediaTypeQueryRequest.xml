@@ -9,9 +9,9 @@
         <delivery_date>08/14/2020 23:48:36</delivery_date>
     </header>
     <criteria>
-        <audio_visual_criteria>
+        <audio_video_criteria>
             <media_type_id>200</media_type_id>
             <media_type_name>Media Type Description Test</media_type_name>
-        </audio_visual_criteria>
+        </audio_video_criteria>
     </criteria>
 </MultimediaRequest>
