@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.modules.audiovideo.batch.AvBatchFileFactory;
 import org.modules.audiovideo.batch.AvBatchFileProcessorApi;
+import org.modules.audiovideo.batch.AvBatchImportParameters;
 import org.rmt2.api.handler.util.MessageHandlerUtility;
 import org.rmt2.api.handlers.lookup.genre.GenreApiHandlerConst;
 import org.rmt2.constants.ApiTransactionCodes;
@@ -98,10 +99,15 @@ public class VideoMetadataBatchImportApiHandler extends
             // Set reply status
             rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_SUCCESS);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
-            String videoDirPath = req.getCriteria().getAudioBatchImportCriteria().getLocation();
             
+            AvBatchImportParameters parms = new AvBatchImportParameters();
+            parms.setServerName(req.getCriteria().getAudioBatchImportCriteria().getServerName());
+            parms.setShareName(req.getCriteria().getAudioBatchImportCriteria().getShareName());
+            parms.setRootPath(req.getCriteria().getAudioBatchImportCriteria().getRootPath());
+            parms.setPath(req.getCriteria().getAudioBatchImportCriteria().getLocation());
+
             int rc = 0;
-            AvBatchFileProcessorApi api = AvBatchFileFactory.createCsvBatchImportApiInstance(videoDirPath);
+            AvBatchFileProcessorApi api = AvBatchFileFactory.createCsvBatchImportApiInstance(parms);
             rc = api.processBatch();
             b = this.buildBatchResults(api);
             rs.setMessage(BatchImportConst.MESSAGE_SUCCESS);
