@@ -142,7 +142,7 @@ public abstract class AudioVideoApiHandler extends
         // Attach the projects and tracks of each artist
         for (ArtistType item : jaxbArtists) {
             List<AvProjectType> projects = this.buildArtistProjects(item.getArtistId());
-            item.getProject().addAll(projects);
+            item.getProjects().getProject().addAll(projects);
         }
         return avt;
     }
@@ -156,7 +156,7 @@ public abstract class AudioVideoApiHandler extends
         // Attach the tracks to each project
         for (AvProjectType item : list) {
             List<TrackType> tracks = this.buildProjectTracks(item.getProjectId());
-            item.getTrack().addAll(tracks);
+            item.getTracks().getTrack().addAll(tracks);
         }
         return list;
     }
