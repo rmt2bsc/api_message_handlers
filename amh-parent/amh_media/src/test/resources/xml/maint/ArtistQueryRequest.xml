@@ -10,6 +10,7 @@
     </header>
     <criteria>
         <audio_video_criteria>
+            <fetch_full>FULL</fetch_full>
             <artist_id>10</artist_id>
             <artist_name>Artist Name Test</artist_name>
         </audio_video_criteria>
