@@ -12,8 +12,8 @@ import org.rmt2.util.media.ArtistTypeBuilder;
 import com.RMT2Base;
 
 /**
- * A factory for creating DTO and JAXB instances for the artist related message
- * handlers.
+ * A factory for creating DTO and JAXB instances for the audio/video artist
+ * related message handlers.
  * 
  * @author Roy Terrell.
  * 

@@ -9,7 +9,6 @@ import org.modules.audiovideo.AudioVideoApi;
 import org.modules.audiovideo.AudioVideoFactory;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
-import org.rmt2.jaxb.ArtistType;
 import org.rmt2.jaxb.AudioVideoType;
 import org.rmt2.jaxb.MultimediaRequest;
 
@@ -87,9 +86,7 @@ public class ArtistFetchApiHandler extends AudioVideoApiHandler {
             }
             else {
                 // Package API results into JAXB objects
-                List<ArtistType> jaxbArtists = ArtistJaxbDtoFactory.createArtistJaxbInstance(dtoList);
-                AudioVideoType avt = this.jaxbObjFactory.createAudioVideoType();
-                avt.getArtist().addAll(jaxbArtists);
+                AudioVideoType avt = this.buildAudioVideoType(dtoList);
                 this.jaxbResults.add(avt);
                 this.rs.setMessage(ArtistApiHandlerConst.MESSAGE_FOUND);
                 this.rs.setRecordCount(dtoList.size());

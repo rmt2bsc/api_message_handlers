@@ -5,15 +5,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.dto.ArtistDto;
+import org.dto.ProjectDto;
+import org.dto.TracksDto;
+import org.dto.adapter.orm.Rmt2MediaDtoFactory;
 import org.modules.audiovideo.AudioVideoApi;
+import org.modules.audiovideo.AudioVideoApiException;
 import org.modules.audiovideo.AudioVideoFactory;
 import org.rmt2.api.handler.util.MessageHandlerUtility;
 import org.rmt2.constants.MessagingConstants;
+import org.rmt2.jaxb.ArtistType;
 import org.rmt2.jaxb.AudioVideoType;
+import org.rmt2.jaxb.AvProjectType;
 import org.rmt2.jaxb.MultimediaRequest;
 import org.rmt2.jaxb.MultimediaResponse;
 import org.rmt2.jaxb.ObjectFactory;
 import org.rmt2.jaxb.ReplyStatusType;
+import org.rmt2.jaxb.TrackType;
 
 import com.InvalidDataException;
 import com.api.messaging.InvalidRequestException;
@@ -124,5 +132,41 @@ public abstract class AudioVideoApiHandler extends
         
         String xml = this.jaxb.marshalMessage(this.responseObj);
         return xml;
+    }
+
+    protected AudioVideoType buildAudioVideoType(List<ArtistDto> artistDtoList) throws AudioVideoApiException {
+        List<ArtistType> jaxbArtists = ArtistJaxbDtoFactory.createArtistJaxbInstance(artistDtoList);
+        AudioVideoType avt = this.jaxbObjFactory.createAudioVideoType();
+        avt.getArtist().addAll(jaxbArtists);
+
+        // Attach the projects and tracks of each artist
+        for (ArtistType item : jaxbArtists) {
+            List<AvProjectType> projects = this.buildArtistProjects(item.getArtistId());
+            item.getProject().addAll(projects);
+        }
+        return avt;
+    }
+
+    private List<AvProjectType> buildArtistProjects(int artistId) throws AudioVideoApiException {
+        ProjectDto criteria = Rmt2MediaDtoFactory.getAvProjectInstance(null);
+        criteria.setArtistId(artistId);
+        List<ProjectDto> projects = this.api.getProject(criteria);
+        List<AvProjectType> list = ProjectJaxbDtoFactory.createProjectJaxbInstance(projects);
+        
+        // Attach the tracks to each project
+        for (AvProjectType item : list) {
+            List<TrackType> tracks = this.buildProjectTracks(item.getProjectId());
+            item.getTrack().addAll(tracks);
+        }
+        return list;
+    }
+
+    private List<TrackType> buildProjectTracks(int projectId) throws AudioVideoApiException {
+        TracksDto criteria = Rmt2MediaDtoFactory.getAvTrackInstance(null);
+        criteria.setProjectId(projectId);
+        List<TracksDto> tracks = this.api.getTracks(criteria);
+        List<TrackType> list = TrackJaxbDtoFactory.createTrackJaxbInstance(tracks);
+
+        return list;
     }
 }
