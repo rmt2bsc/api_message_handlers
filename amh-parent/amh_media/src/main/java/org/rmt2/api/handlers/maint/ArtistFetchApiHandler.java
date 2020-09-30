@@ -20,7 +20,7 @@ import com.api.util.assistants.Verifier;
 import com.api.util.assistants.VerifyException;
 
 /**
- * Message handler for processing artist related messages for the Media API.
+ * Message handler for fetching artist related messages for the Media API.
  * 
  * @author roy.terrell
  *
