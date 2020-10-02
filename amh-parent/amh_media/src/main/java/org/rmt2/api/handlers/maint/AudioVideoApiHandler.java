@@ -108,6 +108,12 @@ public abstract class AudioVideoApiHandler extends
      */
     protected abstract void processTransactionCode(MultimediaRequest req);
     
+    /**
+     * Verifies the multimedia request payload exists.
+     * 
+     * @param req
+     *            instance of {@link MultimediaRequest}
+     */
     @Override
     protected void validateRequest(MultimediaRequest req) throws InvalidDataException {
         try {
@@ -117,6 +123,7 @@ public abstract class AudioVideoApiHandler extends
             throw new InvalidRequestException("Genre message request element is invalid");
         }
     }
+
 
     @Override
     protected String buildResponse(List<AudioVideoType> payload, MessageHandlerCommonReplyStatus replyStatus) {
