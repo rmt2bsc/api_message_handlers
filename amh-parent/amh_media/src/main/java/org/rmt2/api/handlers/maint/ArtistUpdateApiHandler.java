@@ -87,7 +87,7 @@ public class ArtistUpdateApiHandler extends AudioVideoApiHandler {
             String msg = null;
             if (rc > 0) {
                 if (isNew) {
-                    msg = RMT2String.replace(ArtistApiHandlerConst.MESSAGE_UPDATE_NEW_SUCCESS, String.valueOf(artistDto.getId()),
+                    msg = RMT2String.replace(ArtistApiHandlerConst.MESSAGE_UPDATE_NEW_SUCCESS, String.valueOf(rc),
                             ApiMessageHandlerConst.MSG_PLACEHOLDER);
                     this.rs.setMessage(msg);
                 }

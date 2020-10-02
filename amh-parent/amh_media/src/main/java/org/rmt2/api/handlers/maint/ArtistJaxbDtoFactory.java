@@ -56,6 +56,9 @@ public class ArtistJaxbDtoFactory extends RMT2Base {
         if (jaxbObj.getArtistId() != null) {
             dto.setId(jaxbObj.getArtistId());
         }
+        else {
+            dto.setId(0);
+        }
         dto.setName(jaxbObj.getArtistName());
         return dto;
     }

@@ -43,6 +43,7 @@ import com.api.util.RMT2String;
         SystemConfigurator.class })
 public class ArtistUpdateMessageHandlerTest extends BaseMediaMessageHandlerTest {
     public static final String API_ERROR = "Test validation error: API Error occurred";
+    private static final int NEW_ARTIST_ID = 12345;
 
     private AudioVideoApi mockApi;
 
@@ -116,6 +117,38 @@ public class ArtistUpdateMessageHandlerTest extends BaseMediaMessageHandlerTest 
         Assert.assertEquals(msg, actualRepsonse.getReplyStatus().getMessage());
     }
     
+    @Test
+    public void testSuccess_Insert() {
+        String request = RMT2File.getFileContentsAsString("xml/maint/ArtistInsertRequest.xml");
+
+        try {
+            when(this.mockApi.updateArtist(isA(ArtistDto.class))).thenReturn(NEW_ARTIST_ID);
+        } catch (AudioVideoApiException e) {
+            Assert.fail("Unable to setup mock stub for updating artist records");
+        }
+
+        MessageHandlerResults results = null;
+        ArtistUpdateApiHandler handler = new ArtistUpdateApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.MEDIA_ARTIST_UPDATE, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        MultimediaResponse actualRepsonse = (MultimediaResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertNotNull(actualRepsonse.getProfile());
+        Assert.assertNull(actualRepsonse.getProfile().getAudioVideoDetails());
+        Assert.assertEquals(1, actualRepsonse.getReplyStatus().getRecordCount().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
+
+        String msg = RMT2String.replace(ArtistApiHandlerConst.MESSAGE_UPDATE_NEW_SUCCESS, String.valueOf(NEW_ARTIST_ID),
+                ApiMessageHandlerConst.MSG_PLACEHOLDER);
+        Assert.assertEquals(msg, actualRepsonse.getReplyStatus().getMessage());
+    }
 
     @Test
     public void testError_Fetch_API_Error() {
