@@ -154,6 +154,9 @@ public class TrackJaxbDtoFactory extends RMT2Base {
      */
     public static final List<TrackType> createTrackJaxbInstance(List<TracksDto> results) {
         List<TrackType> list = new ArrayList<>();
+        if (results == null) {
+            return list;
+        }
         for (TracksDto item : results) {
             list.add(TrackJaxbDtoFactory.createTrackJaxbInstance(item));
         }
