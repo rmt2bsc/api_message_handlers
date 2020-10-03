@@ -105,6 +105,7 @@ public class VideoMetadataBatchImportApiHandler extends
             parms.setShareName(req.getCriteria().getAudioBatchImportCriteria().getShareName());
             parms.setRootPath(req.getCriteria().getAudioBatchImportCriteria().getRootPath());
             parms.setPath(req.getCriteria().getAudioBatchImportCriteria().getLocation());
+            parms.setImportFilePath(req.getCriteria().getAudioBatchImportCriteria().getImportFilePath());
 
             int rc = 0;
             AvBatchFileProcessorApi api = AvBatchFileFactory.createCsvBatchImportApiInstance(parms);
