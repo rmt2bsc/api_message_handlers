@@ -163,6 +163,9 @@ public class ProjectJaxbDtoFactory extends RMT2Base {
      */
     public static final List<AvProjectType> createProjectJaxbInstance(List<ProjectDto> results) {
         List<AvProjectType> list = new ArrayList<>();
+        if (results == null) {
+            return list;
+        }
         for (ProjectDto item : results) {
             list.add(ProjectJaxbDtoFactory.createProjectJaxbInstance(item));
         }
