@@ -148,29 +148,29 @@ public abstract class AudioVideoApiHandler extends
 
         // Attach the projects and tracks of each artist
         for (ArtistType item : jaxbArtists) {
-            List<AvProjectType> projects = this.buildArtistProjects(item.getArtistId());
+            List<AvProjectType> projects = this.buildArtistProjects(item);
             item.getProjects().getProject().addAll(projects);
         }
         return avt;
     }
 
-    private List<AvProjectType> buildArtistProjects(int artistId) throws AudioVideoApiException {
+    private List<AvProjectType> buildArtistProjects(ArtistType artist) throws AudioVideoApiException {
         ProjectDto criteria = Rmt2MediaDtoFactory.getAvProjectInstance(null);
-        criteria.setArtistId(artistId);
+        criteria.setArtistId(artist.getArtistId());
         List<ProjectDto> projects = this.api.getProject(criteria);
         List<AvProjectType> list = ProjectJaxbDtoFactory.createProjectJaxbInstance(projects);
         
         // Attach the tracks to each project
         for (AvProjectType item : list) {
-            List<TrackType> tracks = this.buildProjectTracks(item.getProjectId());
+            List<TrackType> tracks = this.buildProjectTracks(item);
             item.getTracks().getTrack().addAll(tracks);
         }
         return list;
     }
 
-    private List<TrackType> buildProjectTracks(int projectId) throws AudioVideoApiException {
+    private List<TrackType> buildProjectTracks(AvProjectType proj) throws AudioVideoApiException {
         TracksDto criteria = Rmt2MediaDtoFactory.getAvTrackInstance(null);
-        criteria.setProjectId(projectId);
+        criteria.setProjectId(proj.getProjectId());
         List<TracksDto> tracks = this.api.getTracks(criteria);
         List<TrackType> list = TrackJaxbDtoFactory.createTrackJaxbInstance(tracks);
 
