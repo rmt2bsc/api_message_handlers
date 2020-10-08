@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.dto.ArtistDto;
+import org.dto.VwArtistDto;
 import org.dto.adapter.orm.Rmt2MediaDtoFactory;
 import org.rmt2.jaxb.ArtistType;
 import org.rmt2.jaxb.AudioVideoCriteriaType;
@@ -37,6 +38,38 @@ public class ArtistJaxbDtoFactory extends RMT2Base {
             dto.setId(jaxbObj.getArtistId());
         }
         dto.setName(jaxbObj.getArtistName());
+        return dto;
+    }
+
+    /**
+     * Creates an instance of <i>VwArtistDto</i> using a valid
+     * <i>AudioVideoCriteriaType</i> JAXB object.
+     * 
+     * @param jaxbObj
+     *            an instance of {@link AudioVideoCriteriaType}
+     * @return an instance of {@link VwArtistDto}
+     */
+    public static final VwArtistDto createConsolidatedArtistDtoInstance(AudioVideoCriteriaType jaxbObj) {
+        if (jaxbObj == null) {
+            return null;
+        }
+        VwArtistDto dto = Rmt2MediaDtoFactory.getVwAudioVideoArtistsInstance(null);
+        if (jaxbObj.getArtistId() != null) {
+            dto.setArtistId(jaxbObj.getArtistId());
+        }
+        dto.setArtistName(jaxbObj.getArtistName());
+        if (jaxbObj.getProjectId() != null) {
+            dto.setProjectId(jaxbObj.getProjectId());
+        }
+        dto.setProjectName(jaxbObj.getProjectTitle());
+        if (jaxbObj.getTrackId() != null) {
+            dto.setTrackId(jaxbObj.getTrackId());
+        }
+        dto.setTrackName(jaxbObj.getTrackTitle());
+        if (jaxbObj.getProjectTypeId() != null) {
+            dto.setProjectTypeId(jaxbObj.getProjectTypeId());
+        }
+        dto.setProjectTypeName(jaxbObj.getProjectTypeName());
         return dto;
     }
 
