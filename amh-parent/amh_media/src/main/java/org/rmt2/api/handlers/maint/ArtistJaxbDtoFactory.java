@@ -55,21 +55,26 @@ public class ArtistJaxbDtoFactory extends RMT2Base {
         }
         VwArtistDto dto = Rmt2MediaDtoFactory.getVwAudioVideoArtistsInstance(null);
         if (jaxbObj.getArtistId() != null) {
+            // Get specific artist by id
             dto.setArtistId(jaxbObj.getArtistId());
         }
-        dto.setArtistName(jaxbObj.getArtistName());
-        if (jaxbObj.getProjectId() != null) {
-            dto.setProjectId(jaxbObj.getProjectId());
+        if (!jaxbObj.getArtistName().isEmpty()) {
+            dto.setArtistName(jaxbObj.getArtistName());
         }
-        dto.setProjectName(jaxbObj.getProjectTitle());
-        if (jaxbObj.getTrackId() != null) {
-            dto.setTrackId(jaxbObj.getTrackId());
-        }
-        dto.setTrackName(jaxbObj.getTrackTitle());
-        if (jaxbObj.getProjectTypeId() != null) {
-            dto.setProjectTypeId(jaxbObj.getProjectTypeId());
-        }
-        dto.setProjectTypeName(jaxbObj.getProjectTypeName());
+
+        // if (jaxbObj.getProjectId() != null) {
+        // dto.setProjectId(jaxbObj.getProjectId());
+        // }
+        // dto.setProjectName(jaxbObj.getProjectTitle());
+        // if (jaxbObj.getTrackId() != null) {
+        // dto.setTrackId(jaxbObj.getTrackId());
+        // }
+        // dto.setTrackName(jaxbObj.getTrackTitle());
+        // if (jaxbObj.getProjectTypeId() != null) {
+        // dto.setProjectTypeId(jaxbObj.getProjectTypeId());
+        // }
+        // dto.setProjectTypeName(jaxbObj.getProjectTypeName());
+
         return dto;
     }
 

@@ -141,6 +141,31 @@ public abstract class AudioVideoApiHandler extends
         return xml;
     }
 
+    /**
+     * Builds an AudioVideoType object graph of artist objects excluding project
+     * and track details
+     * 
+     * @param artistDtoList
+     *            a List of {@link ArtistDto} instances
+     * @return {@link AudioVideoType}
+     * @throws AudioVideoApiException
+     */
+    protected AudioVideoType buildArtistOnly(List<ArtistDto> artistDtoList) throws AudioVideoApiException {
+        List<ArtistType> jaxbArtists = ArtistJaxbDtoFactory.createArtistJaxbInstance(artistDtoList);
+        AudioVideoType avt = this.jaxbObjFactory.createAudioVideoType();
+        avt.getArtist().addAll(jaxbArtists);
+        return avt;
+    }
+
+    /**
+     * Builds a full AudioVideoType object graph beggining with a list of artist
+     * objects.
+     * 
+     * @param artistDtoList
+     *            a List of {@link ArtistDto} instances
+     * @return {@link AudioVideoType}
+     * @throws AudioVideoApiException
+     */
     protected AudioVideoType buildAudioVideoType(List<ArtistDto> artistDtoList) throws AudioVideoApiException {
         List<ArtistType> jaxbArtists = ArtistJaxbDtoFactory.createArtistJaxbInstance(artistDtoList);
         AudioVideoType avt = this.jaxbObjFactory.createAudioVideoType();

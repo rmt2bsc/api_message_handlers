@@ -86,7 +86,7 @@ public class ArtistFetchApiHandler extends AudioVideoApiHandler {
             }
             else {
                 // Package API results into JAXB objects
-                AudioVideoType avt = this.buildAudioVideoType(dtoList);
+                AudioVideoType avt = this.buildArtistOnly(dtoList);
                 this.jaxbResults.add(avt);
                 this.rs.setMessage(ArtistApiHandlerConst.MESSAGE_FOUND);
                 this.rs.setRecordCount(dtoList.size());
