@@ -25,6 +25,9 @@ public class ArtistApiHandlerConst {
     public static final String MESSAGE_UPDATE_MISSING_PROFILE_ARTIST = "Artist update request requires an artist section";
     public static final String MESSAGE_UPDATE_TOO_MANY_ARTIST = "Artist update request can only update one artist at a time";
 
+    public static final String MESSAGE_DELETE_SUCCESS = "Delete was successful.  Total number of artists deleted: "
+            + ApiMessageHandlerConst.MSG_PLACEHOLDER;
+    public static final String MESSAGE_DELETE_ERROR = "An API error occurred dor the delete artist operation";
 
     public ArtistApiHandlerConst() {
 
