@@ -11,7 +11,7 @@
     <criteria>
         <audio_batch_import_criteria>
             <server_name>rmtdalmedia01</server_name>
-            <share_name>MyBook1</share_name>
+            <share_name>MyBook1$</share_name>
             <root_path>k:</root_path>
             <location>multimedia/audio</location>
         </audio_batch_import_criteria>
