@@ -30,8 +30,25 @@ import com.api.util.assistants.Verifier;
 import com.api.util.assistants.VerifyException;
 
 /**
- * Handles and routes audio metadata import batch related messages for the Media
- * API.
+ * A message handler for importing data into the MIME database system using
+ * metadata imbedded in the individual audio files by invoking the Media API.
+ * <p>
+ * The following input parameters are expected to be retrieved from the request
+ * and passed to the media API operation for processing:
+ * <ol>
+ * <li>Server Name: The name of the server where the audio files reside.</li>
+ * <li>Share Name: Serves as the base directory to server name for locating
+ * media files. For Windows systems, the share name should be suffixed with a
+ * "$".</li>
+ * <li>Root Path: Can be used as the context part of the path. If the share name
+ * is not used, then this will typically be a drive letter (including the colon)
+ * for Windows systems. Otherwise, it is an additional segment of the path.</li>
+ * <li>Path/Location: The relative path where the media files live on the
+ * server. Alternatively, this parameter could serve as the full path to where
+ * the media files live and ignores server_name, share_name, and root_path
+ * parameters. This parameter is required by the Media API</li>
+ * <li>Import File Path: Not used with this handler</li>
+ * </ol>
  * 
  * @author roy.terrell
  *
@@ -104,6 +121,9 @@ public class AudioMetadataBatchImportApiHandler extends
             parms.setServerName(req.getCriteria().getAudioBatchImportCriteria().getServerName());
             parms.setShareName(req.getCriteria().getAudioBatchImportCriteria().getShareName());
             parms.setRootPath(req.getCriteria().getAudioBatchImportCriteria().getRootPath());
+
+            // Required. Path can be full (ignore the previous parms, or can be
+            // relative to the previous parms
             parms.setPath(req.getCriteria().getAudioBatchImportCriteria().getLocation());
             
             int rc = 0;
