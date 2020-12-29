@@ -6,6 +6,7 @@
         <transaction>BATCH_AUDIO_METADATA_IMPORT</transaction>
         <delivery_mode>XXXXXXX</delivery_mode>
         <message_mode>REQUEST</message_mode>
+        <session_id>ABCDEFGHIJKLMNOPQRSTUVWXYZ</session_id>
         <delivery_date>08/19/2020 20:28:44</delivery_date>
     </header>
     <criteria>

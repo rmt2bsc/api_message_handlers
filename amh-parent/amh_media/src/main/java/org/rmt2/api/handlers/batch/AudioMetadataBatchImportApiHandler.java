@@ -118,6 +118,7 @@ public class AudioMetadataBatchImportApiHandler extends
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             AvBatchImportParameters parms = new AvBatchImportParameters();
 
+            parms.setSessionId(req.getHeader().getSessionId());
             parms.setServerName(req.getCriteria().getAudioBatchImportCriteria().getServerName());
             parms.setShareName(req.getCriteria().getAudioBatchImportCriteria().getShareName());
             parms.setRootPath(req.getCriteria().getAudioBatchImportCriteria().getRootPath());
@@ -127,7 +128,7 @@ public class AudioMetadataBatchImportApiHandler extends
             parms.setPath(req.getCriteria().getAudioBatchImportCriteria().getLocation());
             
             int rc = 0;
-            AvBatchFileProcessorApi api = AvBatchFileFactory.createMediaFileBatchImportApiInstance(parms);
+            AvBatchFileProcessorApi api = AvBatchFileFactory.createRemoteAudioBatchImportApiInstance(parms);
             rc = api.processBatch();
             b = this.buildBatchResults(api);
             rs.setMessage(BatchImportConst.MESSAGE_SUCCESS);
