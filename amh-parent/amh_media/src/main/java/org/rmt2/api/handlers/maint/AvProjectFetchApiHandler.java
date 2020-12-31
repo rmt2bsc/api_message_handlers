@@ -20,22 +20,22 @@ import com.api.util.assistants.Verifier;
 import com.api.util.assistants.VerifyException;
 
 /**
- * Message handler for fetching and consolidating audio/video media information
- * into one payload for the Media API.
+ * Message handler for fetching audio/video project related messages for the
+ * Media API.
  * 
  * @author roy.terrell
  *
  */
-public class ConsolidatedMediaFetchApiHandler extends AudioVideoApiHandler {
+public class AvProjectFetchApiHandler extends AudioVideoApiHandler {
     
-    private static final Logger logger = Logger.getLogger(ConsolidatedMediaFetchApiHandler.class);
+    private static final Logger logger = Logger.getLogger(AvProjectFetchApiHandler.class);
 
     /**
      * @param payload
      */
-    public ConsolidatedMediaFetchApiHandler() {
+    public AvProjectFetchApiHandler() {
         super();
-        logger.info(ConsolidatedMediaFetchApiHandler.class.getName() + " was instantiated successfully");
+        logger.info(AvProjectFetchApiHandler.class.getName() + " was instantiated successfully");
     }
 
     /*
@@ -54,9 +54,7 @@ public class ConsolidatedMediaFetchApiHandler extends AudioVideoApiHandler {
             return r;
         }
         switch (command) {
-        // TODO: Change transaction code to MEDIA_CONSOLIDATED_GET. May have to
-        // add in the message dto model project
-            case ApiTransactionCodes.MEDIA_ARTIST_GET:
+            case ApiTransactionCodes.MEDIA_ARTIST_PROJECT_GET:
                 r = this.doOperation(this.requestObj);
                 break;
             default:
@@ -78,25 +76,19 @@ public class ConsolidatedMediaFetchApiHandler extends AudioVideoApiHandler {
     protected void processTransactionCode(MultimediaRequest req) {
         try {
             // Get criteria data
-            // ArtistDto criteriaDto =
-            // ArtistJaxbDtoFactory.createArtistDtoInstance(req.getCriteria().getAudioVideoCriteria());
             VwArtistDto criteriaDto = ArtistJaxbDtoFactory.createVwArtistProjectDtoInstance(req.getCriteria()
                     .getAudioVideoCriteria());
 
             // Make API call
             AudioVideoApi api = AudioVideoFactory.createApi();
-            // List<ArtistDto> dtoList = api.getArtist(criteriaDto);
             List<VwArtistDto> dtoList = api.getConsolidatedArtist(criteriaDto);
             if (dtoList == null) {
-                this.rs.setMessage(ArtistApiHandlerConst.MESSAGE_NOT_FOUND);
+                this.rs.setMessage(ArtistProjectApiHandlerConst.MESSAGE_NOT_FOUND);
                 this.rs.setRecordCount(0);
             }
             else {
                 // Package API results into JAXB objects
-
-                // TODO: create member method to package consolidated media data
-                // AudioVideoType avt = this.buildAudioVideoType(dtoList);
-                AudioVideoType avt = null;
+                AudioVideoType avt = this.buildExtProjecttOnly(dtoList);
                 this.jaxbResults.add(avt);
                 this.rs.setMessage(ArtistApiHandlerConst.MESSAGE_FOUND);
                 this.rs.setRecordCount(dtoList.size());
@@ -115,7 +107,7 @@ public class ConsolidatedMediaFetchApiHandler extends AudioVideoApiHandler {
     protected void validateRequest(MultimediaRequest req) throws InvalidDataException {
         super.validateRequest(req);
         try {
-            Verifier.verify(req.getHeader().getTransaction().equalsIgnoreCase(ApiTransactionCodes.MEDIA_ARTIST_GET));
+            Verifier.verify(req.getHeader().getTransaction().equalsIgnoreCase(ApiTransactionCodes.MEDIA_ARTIST_PROJECT_GET));
         }
         catch (VerifyException e) {
             throw new InvalidRequestException("Invalid transaction code for this message handler: "

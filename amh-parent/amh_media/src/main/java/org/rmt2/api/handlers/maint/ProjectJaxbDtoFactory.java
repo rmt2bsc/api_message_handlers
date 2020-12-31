@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.dto.ProjectDto;
+import org.dto.VwArtistDto;
 import org.dto.adapter.orm.Rmt2MediaDtoFactory;
 import org.rmt2.jaxb.AudioVideoCriteriaType;
 import org.rmt2.jaxb.AvProjectType;
@@ -109,6 +110,25 @@ public class ProjectJaxbDtoFactory extends RMT2Base {
     }
 
     /**
+     * Creates a List instance of <i>AvProjectType</i> using a valid List of
+     * <i>ProjectDto</i> DTO objects.
+     * 
+     * @param results
+     *            List of {@link ProjectDto}
+     * @return List of {@link AvProjectType} objects
+     */
+    public static final List<AvProjectType> createProjectJaxbInstance(List<ProjectDto> results) {
+        List<AvProjectType> list = new ArrayList<>();
+        if (results == null) {
+            return list;
+        }
+        for (ProjectDto item : results) {
+            list.add(ProjectJaxbDtoFactory.createProjectJaxbInstance(item));
+        }
+        return list;
+    }
+
+    /**
      * Creates an instance of <i>AvProjectType</i> using a valid
      * <i>ProjectDto</i> JAXB object.
      * 
@@ -155,20 +175,57 @@ public class ProjectJaxbDtoFactory extends RMT2Base {
 
     /**
      * Creates a List instance of <i>AvProjectType</i> using a valid List of
-     * <i>ProjectDto</i> DTO objects.
+     * <i>VwArtistDto</i> DTO objects.
      * 
      * @param results
-     *            List of {@link ProjectDto}
+     *            List of {@link VwArtistDto}
      * @return List of {@link AvProjectType} objects
      */
-    public static final List<AvProjectType> createProjectJaxbInstance(List<ProjectDto> results) {
+    public static final List<AvProjectType> createExtProjectJaxbInstance(List<VwArtistDto> results) {
         List<AvProjectType> list = new ArrayList<>();
         if (results == null) {
             return list;
         }
-        for (ProjectDto item : results) {
-            list.add(ProjectJaxbDtoFactory.createProjectJaxbInstance(item));
+        for (VwArtistDto item : results) {
+            list.add(ProjectJaxbDtoFactory.createExtProjectJaxbInstance(item));
         }
         return list;
+    }
+
+    /**
+     * Creates an instance of <i>AvProjectType</i> using a valid
+     * <i>VwArtistDto</i> JAXB object.
+     * 
+     * @param dto
+     *            an instance of {@link VwArtistDto}
+     * @return an instance of {@link AvProjectType}
+     */
+    public static final AvProjectType createExtProjectJaxbInstance(VwArtistDto dto) {
+        if (dto == null) {
+            return null;
+        }
+
+        AvProjectType obj = AVProjectTypeBuilder.Builder.create()
+                .withProjectId(dto.getProjectId())
+                .withTitle(dto.getProjectName())
+                .withArtistId(dto.getArtistId())
+                .withMediaTypeId(dto.getMediaTypeId())
+                .withGenreTypeId(dto.getGenreId())
+                .withProjectTypeId(dto.getProjectTypeId())
+                .withYearId(dto.getYear())
+                .withContentId(dto.getContentId())
+                .withMasterDupId(dto.getMasterDupId())
+                .withRipped(dto.getRippedInd())
+                .withCost(dto.getCost())
+                .withContentPath(dto.getContentPath())
+                .withContentFilename(dto.getContentFilename())
+                .withArtWorkPath(dto.getArtWorkPath())
+                .withArtWorkFilename(dto.getArtWorkFilename())
+                .withComments(dto.getProjectComments())
+                .withTotalTime(dto.getTotalTime())
+                .withProducer(dto.getProducer())
+                .build();
+
+        return obj;
     }
 }

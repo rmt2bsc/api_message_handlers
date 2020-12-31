@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.dto.ArtistDto;
 import org.dto.ProjectDto;
 import org.dto.TracksDto;
+import org.dto.VwArtistDto;
 import org.dto.adapter.orm.Rmt2MediaDtoFactory;
 import org.modules.audiovideo.AudioVideoApi;
 import org.modules.audiovideo.AudioVideoApiException;
@@ -22,6 +23,7 @@ import org.rmt2.jaxb.MultimediaResponse;
 import org.rmt2.jaxb.ObjectFactory;
 import org.rmt2.jaxb.ReplyStatusType;
 import org.rmt2.jaxb.TrackType;
+import org.rmt2.util.media.ArtistTypeBuilder;
 
 import com.InvalidDataException;
 import com.api.messaging.InvalidRequestException;
@@ -158,15 +160,66 @@ public abstract class AudioVideoApiHandler extends
     }
 
     /**
-     * Builds a full AudioVideoType object graph beggining with a list of artist
-     * objects.
+     * Builds an AudioVideoType object graph of project objects excluding track
+     * details
      * 
      * @param artistDtoList
-     *            a List of {@link ArtistDto} instances
+     *            a List of {@link ProjectDto} instances
      * @return {@link AudioVideoType}
      * @throws AudioVideoApiException
      */
-    protected AudioVideoType buildAudioVideoType(List<ArtistDto> artistDtoList) throws AudioVideoApiException {
+    protected AudioVideoType buildProjecttOnly(List<ProjectDto> projectDtoList) throws AudioVideoApiException {
+        List<AvProjectType> jaxbProjects = ProjectJaxbDtoFactory.createProjectJaxbInstance(projectDtoList);
+        AudioVideoType avt = this.jaxbObjFactory.createAudioVideoType();
+
+        for (AvProjectType jaxbProject : jaxbProjects) {
+            ArtistType jaxbArtist = ArtistTypeBuilder.Builder.create()
+                    .withArtistId(jaxbProject.getArtistId())
+                    .withProject(jaxbProject)
+                    .build();
+            avt.getArtist().add(jaxbArtist);
+        }
+        return avt;
+    }
+
+    /**
+     * Builds an AudioVideoType object graph of project objects excluding track
+     * details
+     * 
+     * @param projectDtoList
+     *            a List of {@link VwArtistDto} instances
+     * @return {@link AudioVideoType}
+     * @throws AudioVideoApiException
+     */
+    protected AudioVideoType buildExtProjecttOnly(List<VwArtistDto> projectDtoList) throws AudioVideoApiException {
+        AudioVideoType avt = this.jaxbObjFactory.createAudioVideoType();
+
+        for (VwArtistDto item : projectDtoList) {
+            AvProjectType jaxbProject = ProjectJaxbDtoFactory.createExtProjectJaxbInstance(item);
+            ArtistType jaxbArtist = ArtistTypeBuilder.Builder.create()
+                    .withArtistId(item.getArtistId())
+                    .withArtistName(item.getArtistName())
+                    .withProject(jaxbProject)
+                    .build();
+            avt.getArtist().add(jaxbArtist);
+        }
+        return avt;
+    }
+
+    /**
+     * Dynamically builds a full AudioVideoType object graph beggining with a
+     * list of artist objects.
+     * <p>
+     * Using the artist id contained in each ArtistDto, it fetches all related
+     * projects and tracks from an underlying datasource via the AudioVideoApi.
+     * 
+     * @param artistDtoList
+     *            a List of {@link ArtistDto} instances. Each instance is
+     *            required to have an artist id.
+     * @return {@link AudioVideoType}
+     * @throws AudioVideoApiException
+     */
+    protected AudioVideoType buildDBAudioVideoType(List<ArtistDto> artistDtoList) throws AudioVideoApiException {
         List<ArtistType> jaxbArtists = ArtistJaxbDtoFactory.createArtistJaxbInstance(artistDtoList);
         AudioVideoType avt = this.jaxbObjFactory.createAudioVideoType();
         avt.getArtist().addAll(jaxbArtists);
