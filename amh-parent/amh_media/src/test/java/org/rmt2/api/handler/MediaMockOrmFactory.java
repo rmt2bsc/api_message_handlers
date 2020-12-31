@@ -6,6 +6,7 @@ import org.dao.mapping.orm.rmt2.AvMediaType;
 import org.dao.mapping.orm.rmt2.AvProject;
 import org.dao.mapping.orm.rmt2.AvProjectType;
 import org.dao.mapping.orm.rmt2.AvTracks;
+import org.dao.mapping.orm.rmt2.VwAudioVideoArtists;
 
 public class MediaMockOrmFactory {
     public static final int TEST_ARTIST_ID = 123450;
@@ -146,4 +147,47 @@ public class MediaMockOrmFactory {
         return o;
     }
     
+    /**
+     * 
+     * @param artistId
+     * @param artistName
+     * @param projId
+     * @param projName
+     * @param trackId
+     * @param trackName
+     * @param primary
+     * @param projTypeId
+     * @return
+     */
+    public static final VwAudioVideoArtists createOrmVwAudioVideoArtists(int artistId, String artistName, int projId,
+            String projName, int trackId, String trackName, boolean primary, int projTypeId) {
+        VwAudioVideoArtists o = new VwAudioVideoArtists();
+
+        o.setPrimaryArtist(primary ? 1 : 0);
+        o.setProjectTypeId(projTypeId);
+        o.setProjectTypeName(projTypeId == 1 ? "Audio" : "Video");
+        o.setArtistId(artistId);
+        o.setArtist(artistName);
+        o.setProjectId(projId);
+        o.setProjectTitle(projName);
+        o.setTrackId(trackId);
+        o.setTrackTitle(trackName);
+        o.setProjectComments("Project Comments");
+        o.setTrackComments("Track Comments");
+        o.setGenreId(100);
+        o.setContentId(200);
+        o.setMediaTypeId(3);
+        o.setYear(1999);
+        o.setMasterDupId(1);
+        o.setRipped(1);
+        o.setCost(9.99);
+        o.setContentPath("//servername/directory_path/");
+        o.setContentFilename("mediafile.mp3");
+        o.setArtWorkPath("//servername/directory_path/");
+        o.setArtWorkFilename("artworkfile.jpg");
+        o.setTotalTime(40);
+        o.setProducer("Producer Name");
+
+        return o;
+    }
 }

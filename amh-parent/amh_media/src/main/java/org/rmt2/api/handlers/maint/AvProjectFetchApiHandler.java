@@ -90,14 +90,14 @@ public class AvProjectFetchApiHandler extends AudioVideoApiHandler {
                 // Package API results into JAXB objects
                 AudioVideoType avt = this.buildExtProjecttOnly(dtoList);
                 this.jaxbResults.add(avt);
-                this.rs.setMessage(ArtistApiHandlerConst.MESSAGE_FOUND);
+                this.rs.setMessage(ArtistProjectApiHandlerConst.MESSAGE_FOUND);
                 this.rs.setRecordCount(dtoList.size());
             }
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setMessage(ArtistApiHandlerConst.MESSAGE_FETCH_ERROR);
+            rs.setMessage(ArtistProjectApiHandlerConst.MESSAGE_FETCH_ERROR);
             rs.setExtMessage(e.getMessage());
         }
     }
