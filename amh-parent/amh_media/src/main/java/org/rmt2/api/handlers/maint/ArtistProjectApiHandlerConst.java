@@ -10,7 +10,7 @@ import org.rmt2.api.ApiMessageHandlerConst;
  */
 public class ArtistProjectApiHandlerConst {
     public static final String MESSAGE_FOUND = "Artist project data found!";
-    public static final String MESSAGE_NOT_FOUND = "Artist projectdata not found!";
+    public static final String MESSAGE_NOT_FOUND = "Artist project data not found!";
     public static final String MESSAGE_FETCH_ERROR = "Failure to retrieve artist project data";
 
     public static final String MESSAGE_UPDATE_NEW_SUCCESS = "New artist project, " + ApiMessageHandlerConst.MSG_PLACEHOLDER
