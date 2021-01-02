@@ -77,23 +77,91 @@ public class ProjectJaxbDtoFactory extends RMT2Base {
             return null;
         }
         ProjectDto dto = Rmt2MediaDtoFactory.getAvProjectInstance(null);
-        dto.setProjectId(jaxbObj.getProjectId());
+
+        if (jaxbObj.getArtistId() == null) {
+            dto.setArtistId(0);
+        }
+        else {
+            dto.setArtistId(jaxbObj.getArtistId());
+        }
+
+        if (jaxbObj.getProjectId() == null) {
+            dto.setProjectId(0);
+        }
+        else {
+            dto.setProjectId(jaxbObj.getProjectId());
+        }
+
         dto.setTitle(jaxbObj.getTitle());
-        dto.setArtistId(jaxbObj.getArtistId());
-        dto.setProjectTypeId(jaxbObj.getProjectTypeId());
-        dto.setGenreId(jaxbObj.getGenreId());
-        dto.setMediaTypeId(jaxbObj.getMediaTypeId());
-        dto.setYear(jaxbObj.getYear());
-        dto.setRippedInd(jaxbObj.getRipped());
-        dto.setContentId(jaxbObj.getContentId());
-        dto.setMasterDupId(jaxbObj.getMasterDupId());
-        dto.setCost(jaxbObj.getCost());
+
+        if (jaxbObj.getProjectTypeId() == null) {
+            dto.setProjectTypeId(0);
+        }
+        else {
+            dto.setProjectTypeId(jaxbObj.getProjectTypeId());
+        }
+
+        if (jaxbObj.getGenreId() == null) {
+            dto.setGenreId(0);
+        }
+        else {
+            dto.setGenreId(jaxbObj.getGenreId());
+        }
+
+        if (jaxbObj.getMediaTypeId() == null) {
+            dto.setMediaTypeId(0);
+        }
+        else {
+            dto.setMediaTypeId(jaxbObj.getMediaTypeId());
+        }
+
+        if (jaxbObj.getYear() == null) {
+            dto.setYear(0);
+        }
+        else {
+            dto.setYear(jaxbObj.getYear());
+        }
+
+        if (jaxbObj.getRipped() == null) {
+            dto.setRippedInd(0);
+        }
+        else {
+            dto.setRippedInd(jaxbObj.getRipped());
+        }
+
+        if (jaxbObj.getContentId() == null) {
+            dto.setContentId(0);
+        }
+        else {
+            dto.setContentId(jaxbObj.getContentId());
+        }
+
+        if (jaxbObj.getMasterDupId() == null) {
+            dto.setMasterDupId(0);
+        }
+        else {
+            dto.setMasterDupId(jaxbObj.getMasterDupId());
+        }
+
+        if (jaxbObj.getCost() == null) {
+            dto.setCost(0);
+        }
+        else {
+            dto.setCost(jaxbObj.getCost());
+        }
+
+        if (jaxbObj.getTotalTime() == null) {
+            dto.setTotalTime(0);
+        }
+        else {
+            dto.setTotalTime(jaxbObj.getTotalTime());
+        }
+
         dto.setContentPath(jaxbObj.getContentPath());
         dto.setContentFilename(jaxbObj.getContentFilename());
         dto.setArtWorkPath(jaxbObj.getArtWorkPath());
         dto.setArtWorkFilename(jaxbObj.getArtWorkFilename());
         dto.setComments(jaxbObj.getComments());
-        dto.setTotalTime(jaxbObj.getTotalTime());
         dto.setProducer(jaxbObj.getProducer());
 
         if (jaxbObj.getTracking() != null) {
