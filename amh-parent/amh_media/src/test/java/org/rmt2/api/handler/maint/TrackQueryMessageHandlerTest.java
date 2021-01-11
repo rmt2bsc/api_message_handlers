@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
+import org.dto.TracksDto;
 import org.dto.VwArtistDto;
 import org.junit.After;
 import org.junit.Assert;
@@ -22,14 +23,14 @@ import org.powermock.modules.junit4.PowerMockRunner;
 //import org.rmt2.api.audiovideo.AvMediaMockDataFactory;
 import org.rmt2.api.handler.BaseMediaMessageHandlerTest;
 import org.rmt2.api.handler.MediaMockDtoFactory;
-import org.rmt2.api.handler.MediaMockOrmFactory;
 import org.rmt2.api.handlers.maint.ArtistProjectApiHandlerConst;
 import org.rmt2.api.handlers.maint.AvProjectFetchApiHandler;
+import org.rmt2.api.handlers.maint.TrackApiHandlerConst;
+import org.rmt2.api.handlers.maint.TrackFetchApiHandler;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
-import org.rmt2.jaxb.ArtistType;
-import org.rmt2.jaxb.AvProjectType;
 import org.rmt2.jaxb.MultimediaResponse;
+import org.rmt2.jaxb.TrackType;
 
 import com.api.config.SystemConfigurator;
 import com.api.messaging.handler.MessageHandlerCommandException;
@@ -44,7 +45,7 @@ import com.api.util.RMT2File;
  *
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ AbstractDaoClientImpl.class, Rmt2OrmClientFactory.class, AvProjectFetchApiHandler.class,
+@PrepareForTest({ AbstractDaoClientImpl.class, Rmt2OrmClientFactory.class, TrackFetchApiHandler.class,
         AudioVideoFactory.class,
         SystemConfigurator.class })
 public class TrackQueryMessageHandlerTest extends BaseMediaMessageHandlerTest {
@@ -91,19 +92,19 @@ public class TrackQueryMessageHandlerTest extends BaseMediaMessageHandlerTest {
     
     @Test
     public void testSuccess_Fetch_All() {
-        String request = RMT2File.getFileContentsAsString("xml/maint/ProjectQueryRequest.xml");
-        List<VwArtistDto> mockListData = MediaMockDtoFactory.createVwAudioVideoArtistsMockData();
+        String request = RMT2File.getFileContentsAsString("xml/maint/TrackQueryRequest.xml");
+        List<TracksDto> mockListData = MediaMockDtoFactory.createTrackMockData();
 
         try {
-            when(this.mockApi.getConsolidatedArtist(isA(VwArtistDto.class))).thenReturn(mockListData);
+            when(this.mockApi.getTracks(isA(TracksDto.class))).thenReturn(mockListData);
         } catch (AudioVideoApiException e) {
-            Assert.fail("Unable to setup mock stub for fetching vw_audio_video_artist records");
+            Assert.fail("Unable to setup mock stub for fetching track records");
         }
         
         MessageHandlerResults results = null;
-        AvProjectFetchApiHandler handler = new AvProjectFetchApiHandler();
+        TrackFetchApiHandler handler = new TrackFetchApiHandler();
         try {
-            results = handler.processMessage(ApiTransactionCodes.MEDIA_ARTIST_PROJECT_GET, request);
+            results = handler.processMessage(ApiTransactionCodes.MEDIA_TRACK_GET, request);
         } catch (MessageHandlerCommandException e) {
             e.printStackTrace();
             Assert.fail("An unexpected exception was thrown");
@@ -112,32 +113,39 @@ public class TrackQueryMessageHandlerTest extends BaseMediaMessageHandlerTest {
         Assert.assertNotNull(results.getPayload());
 
         MultimediaResponse actualRepsonse = (MultimediaResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertNotNull(actualRepsonse.getProfile().getAudioVideoDetails());
+        Assert.assertNotNull(actualRepsonse.getProfile().getAudioVideoDetails().getArtist());
         Assert.assertEquals(5, actualRepsonse.getProfile().getAudioVideoDetails().getArtist().size());
         Assert.assertEquals(5, actualRepsonse.getReplyStatus().getRecordCount().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(ArtistProjectApiHandlerConst.MESSAGE_FOUND, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(TrackApiHandlerConst.MESSAGE_FOUND, actualRepsonse.getReplyStatus().getMessage());
         
         for (int ndx = 0; ndx < actualRepsonse.getProfile().getAudioVideoDetails().getArtist().size(); ndx++) {
-            ArtistType a = actualRepsonse.getProfile().getAudioVideoDetails().getArtist().get(ndx);
-            Assert.assertNotNull(a.getArtistId());
-            Assert.assertEquals(MediaMockOrmFactory.TEST_ARTIST_ID + ndx, a.getArtistId().intValue());
-            Assert.assertEquals("Artist" + ndx, a.getArtistName());
-
-            Assert.assertNotNull(a.getProjects());
-            Assert.assertNotNull(a.getProjects().getProject());
-            Assert.assertEquals(1, a.getProjects().getProject().size());
-            for (AvProjectType item : a.getProjects().getProject()) {
-                Assert.assertEquals(MediaMockOrmFactory.TEST_PROJECT_ID + ndx, item.getProjectId(), 0);
-                Assert.assertEquals("Project Name" + ndx, item.getTitle());
-            }
+            Assert.assertNotNull(actualRepsonse.getProfile().getAudioVideoDetails().getArtist().get(ndx).getProjects());
+            for (int ndx2 = 0; ndx < actualRepsonse.getProfile().getAudioVideoDetails().getArtist().size(); ndx++) {
+            TrackType a = actualRepsonse.getProfile().getAudioVideoDetails().getArtist().get(0).getProjects().getProject().get(0).getTracks().getTrack().get(ndx);
+            Assert.assertNotNull(a.getTrackId());
+            Assert.assertEquals(a.getTrackId(), ndx, 0);
+            Assert.assertNotNull(a.getTrackName());
+            Assert.assertEquals("Track" + a.getTrackNumber(), a.getTrackName());
+            Assert.assertNotNull(a.getLocationPath());
+            Assert.assertEquals("/FilePath/" + ndx, a.getLocationPath());
+            Assert.assertNotNull(a.getLocationPath());
+            Assert.assertEquals("ProjectFileName" + ndx, a.getLocationFilename());
         }
+        
+        
+        Assert.assertEquals(1, actualRepsonse.getProfile().getAudioVideoDetails().getArtist().get(0).getProjects().getProject().size());
+        Assert.assertNotNull(actualRepsonse.getProfile().getAudioVideoDetails().getArtist().get(0).getProjects().getProject().get(0).getTracks());
+        Assert.assertEquals(5, actualRepsonse.getProfile().getAudioVideoDetails().getArtist().get(0).getProjects().getProject().get(0).getTracks().getTrack().size());
+
     }
     
 
     @Test
     public void testSuccess_Fetch_NotFound() {
-        String request = RMT2File.getFileContentsAsString("xml/maint/ProjectQueryRequest.xml");
+        String request = RMT2File.getFileContentsAsString("xml/maint/TrackQueryRequest.xml");
 
         try {
             when(this.mockApi.getConsolidatedArtist(isA(VwArtistDto.class))).thenReturn(null);
@@ -167,7 +175,7 @@ public class TrackQueryMessageHandlerTest extends BaseMediaMessageHandlerTest {
     
     @Test
     public void testError_Fetch_API_Error() {
-        String request = RMT2File.getFileContentsAsString("xml/maint/ProjectQueryRequest.xml");
+        String request = RMT2File.getFileContentsAsString("xml/maint/TrackQueryRequest.xml");
         try {
             when(this.mockApi.getConsolidatedArtist(isA(VwArtistDto.class))).thenThrow(new AudioVideoApiException(API_ERROR));
         } catch (AudioVideoApiException e) {

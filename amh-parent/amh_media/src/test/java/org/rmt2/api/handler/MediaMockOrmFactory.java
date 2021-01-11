@@ -127,6 +127,7 @@ public class MediaMockOrmFactory {
             String filePath, String fileName) {
 
         AvTracks o = new AvTracks();
+        o.setTrackArtist("ArtistName" + trackId);
         o.setTrackId(trackId);
         o.setProjectId(projectId);
         o.setTrackNumber(trackNumber);
