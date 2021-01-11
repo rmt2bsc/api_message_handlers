@@ -23,6 +23,7 @@ import org.rmt2.jaxb.MultimediaResponse;
 import org.rmt2.jaxb.ObjectFactory;
 import org.rmt2.jaxb.ReplyStatusType;
 import org.rmt2.jaxb.TrackType;
+import org.rmt2.util.media.AVProjectTypeBuilder;
 import org.rmt2.util.media.ArtistTypeBuilder;
 
 import com.InvalidDataException;
@@ -176,6 +177,34 @@ public abstract class AudioVideoApiHandler extends
             ArtistType jaxbArtist = ArtistTypeBuilder.Builder.create()
                     .withArtistId(jaxbProject.getArtistId())
                     .withProject(jaxbProject)
+                    .build();
+            avt.getArtist().add(jaxbArtist);
+        }
+        return avt;
+    }
+
+    /**
+     * Builds an AudioVideoType object graph of track objects.
+     * 
+     * @param trackDtoList
+     *            a List of {@link TracksDto} instances
+     * @return {@link AudioVideoType}
+     * @throws AudioVideoApiException
+     */
+    protected AudioVideoType buildTrackOnly(List<TracksDto> trackDtoList) throws AudioVideoApiException {
+        List<TrackType> jaxbList = TrackJaxbDtoFactory.createTrackJaxbInstance(trackDtoList);
+        AudioVideoType avt = this.jaxbObjFactory.createAudioVideoType();
+
+        for (TrackType jaxb : jaxbList) {
+            AvProjectType apt = AVProjectTypeBuilder.Builder.create()
+                    .withArtistId(0)
+                    .withProjectId(jaxb.getProjectId())
+                    .withTrack(jaxb)
+                    .build();
+            ArtistType jaxbArtist = ArtistTypeBuilder.Builder.create()
+                    .withArtistId(0)
+                    .withArtistName(jaxb.getArtist())
+                    .withProject(apt)
                     .build();
             avt.getArtist().add(jaxbArtist);
         }

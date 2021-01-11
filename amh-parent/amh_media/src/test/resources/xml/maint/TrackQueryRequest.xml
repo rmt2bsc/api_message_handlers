@@ -1,0 +1,21 @@
+<MultimediaRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>media</application>
+        <module>maint</module>
+        <transaction>GET_TRACK</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>01/11/2021 14:56:59</delivery_date>
+        <session_id>ABCDEFGHIJKLMNOPQRSTUVWXYZ</session_id>
+    </header>
+    <criteria>
+        <audio_video_criteria>
+            <artist_name>Artist Name Test</artist_name>
+            <project_id>200</project_id>
+            <track_id>300</track_id>
+            <track_title>Track Title Test</track_title>
+            <genre_id>126</genre_id>
+        </audio_video_criteria>
+    </criteria>
+</MultimediaRequest>

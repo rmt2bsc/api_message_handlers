@@ -42,8 +42,11 @@ public class TrackJaxbDtoFactory extends RMT2Base {
         if (jaxbObj.getProjectId() != null) {
             dto.setProjectId(jaxbObj.getProjectId());
         }
-        if (jaxbObj.getProjectTitle() != null) {
+        if (jaxbObj.getTrackTitle() != null) {
             dto.setTrackTitle(jaxbObj.getTrackTitle());
+        }
+        if (jaxbObj.getArtistName() != null) {
+            dto.setTrackArtist(jaxbObj.getArtistName());
         }
         if (jaxbObj.getGenreId() != null) {
             dto.setGenreId(jaxbObj.getGenreId());
