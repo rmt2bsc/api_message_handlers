@@ -76,7 +76,7 @@ public class ArtistProjectUpdateApiHandler extends AudioVideoApiHandler {
     protected void processTransactionCode(MultimediaRequest req) {
         try {
             // Get artist profile data
-            ProjectDto projectDto = ProjectJaxbDtoFactory.createProjectDtoInstance(req.getProfile().getAudioVideoDetails()
+            ProjectDto projectDto = ArtistProjectJaxbDtoFactory.createProjectDtoInstance(req.getProfile().getAudioVideoDetails()
                     .getArtist().get(0).getProjects().getProject().get(0));
 
             boolean isNew = projectDto.getProjectId() == 0;

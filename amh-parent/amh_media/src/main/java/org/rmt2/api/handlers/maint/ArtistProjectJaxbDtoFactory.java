@@ -21,7 +21,7 @@ import com.RMT2Base;
  * @author Roy Terrell.
  * 
  */
-public class ProjectJaxbDtoFactory extends RMT2Base {
+public class ArtistProjectJaxbDtoFactory extends RMT2Base {
 
     /**
      * Creates an instance of <i>ProjectDto</i> using a valid
@@ -191,7 +191,7 @@ public class ProjectJaxbDtoFactory extends RMT2Base {
             return list;
         }
         for (ProjectDto item : results) {
-            list.add(ProjectJaxbDtoFactory.createProjectJaxbInstance(item));
+            list.add(ArtistProjectJaxbDtoFactory.createProjectJaxbInstance(item));
         }
         return list;
     }
@@ -255,7 +255,7 @@ public class ProjectJaxbDtoFactory extends RMT2Base {
             return list;
         }
         for (VwArtistDto item : results) {
-            list.add(ProjectJaxbDtoFactory.createExtProjectJaxbInstance(item));
+            list.add(ArtistProjectJaxbDtoFactory.createExtProjectJaxbInstance(item));
         }
         return list;
     }
