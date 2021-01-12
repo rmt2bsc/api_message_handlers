@@ -81,14 +81,14 @@ public class TrackFetchApiHandler extends AudioVideoApiHandler {
             AudioVideoApi api = AudioVideoFactory.createApi();
             List<TracksDto> dtoList = api.getTracks(criteriaDto);
             if (dtoList == null) {
-                this.rs.setMessage(ArtistApiHandlerConst.MESSAGE_NOT_FOUND);
+                this.rs.setMessage(TrackApiHandlerConst.MESSAGE_NOT_FOUND);
                 this.rs.setRecordCount(0);
             }
             else {
                 // Package API results into JAXB objects
                 AudioVideoType avt = this.buildTrackOnly(dtoList);
                 this.jaxbResults.add(avt);
-                this.rs.setMessage(ArtistApiHandlerConst.MESSAGE_FOUND);
+                this.rs.setMessage(TrackApiHandlerConst.MESSAGE_FOUND);
                 this.rs.setRecordCount(dtoList.size());
             }
             this.responseObj.setHeader(req.getHeader());

@@ -7,7 +7,6 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 
 import org.dto.TracksDto;
-import org.dto.VwArtistDto;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -23,12 +22,13 @@ import org.powermock.modules.junit4.PowerMockRunner;
 //import org.rmt2.api.audiovideo.AvMediaMockDataFactory;
 import org.rmt2.api.handler.BaseMediaMessageHandlerTest;
 import org.rmt2.api.handler.MediaMockDtoFactory;
-import org.rmt2.api.handlers.maint.ArtistProjectApiHandlerConst;
-import org.rmt2.api.handlers.maint.AvProjectFetchApiHandler;
+import org.rmt2.api.handler.MediaMockOrmFactory;
 import org.rmt2.api.handlers.maint.TrackApiHandlerConst;
 import org.rmt2.api.handlers.maint.TrackFetchApiHandler;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
+import org.rmt2.jaxb.ArtistType;
+import org.rmt2.jaxb.AvProjectType;
 import org.rmt2.jaxb.MultimediaResponse;
 import org.rmt2.jaxb.TrackType;
 
@@ -122,24 +122,30 @@ public class TrackQueryMessageHandlerTest extends BaseMediaMessageHandlerTest {
         Assert.assertEquals(TrackApiHandlerConst.MESSAGE_FOUND, actualRepsonse.getReplyStatus().getMessage());
         
         for (int ndx = 0; ndx < actualRepsonse.getProfile().getAudioVideoDetails().getArtist().size(); ndx++) {
-            Assert.assertNotNull(actualRepsonse.getProfile().getAudioVideoDetails().getArtist().get(ndx).getProjects());
-            for (int ndx2 = 0; ndx < actualRepsonse.getProfile().getAudioVideoDetails().getArtist().size(); ndx++) {
-            TrackType a = actualRepsonse.getProfile().getAudioVideoDetails().getArtist().get(0).getProjects().getProject().get(0).getTracks().getTrack().get(ndx);
-            Assert.assertNotNull(a.getTrackId());
-            Assert.assertEquals(a.getTrackId(), ndx, 0);
-            Assert.assertNotNull(a.getTrackName());
-            Assert.assertEquals("Track" + a.getTrackNumber(), a.getTrackName());
-            Assert.assertNotNull(a.getLocationPath());
-            Assert.assertEquals("/FilePath/" + ndx, a.getLocationPath());
-            Assert.assertNotNull(a.getLocationPath());
-            Assert.assertEquals("ProjectFileName" + ndx, a.getLocationFilename());
+            ArtistType at = actualRepsonse.getProfile().getAudioVideoDetails().getArtist().get(ndx);
+            Assert.assertNotNull(at.getProjects());
+            Assert.assertEquals(1, at.getProjects().getProject().size());
+            for (int ndx2 = 0; ndx2 < at.getProjects().getProject().size(); ndx2++) {
+                AvProjectType apt = at.getProjects().getProject().get(ndx2);
+                Assert.assertNotNull(apt.getTracks());
+                Assert.assertEquals(1, apt.getTracks().getTrack().size());
+                for (int ndx3 = 0; ndx3 < apt.getTracks().getTrack().size(); ndx3++) {
+                    TrackType tt = apt.getTracks().getTrack().get(ndx3);
+                    Assert.assertNotNull(tt.getTrackId());
+                    // Since each artist has one project and each project has
+                    // one track, use the outer most index value to track each
+                    // artsit/project track
+                    int currentTrackId = MediaMockOrmFactory.TEST_TRACK_ID + ndx;
+                    Assert.assertEquals(currentTrackId, tt.getTrackId().intValue());
+                    Assert.assertNotNull(tt.getTrackName());
+                    Assert.assertEquals("Track" + tt.getTrackNumber(), tt.getTrackName());
+                    Assert.assertNotNull(tt.getLocationPath());
+                    Assert.assertEquals("/FilePath/" + currentTrackId, tt.getLocationPath());
+                    Assert.assertNotNull(tt.getLocationPath());
+                    Assert.assertEquals("ProjectFileName" + currentTrackId, tt.getLocationFilename());
+                }
+            }
         }
-        
-        
-        Assert.assertEquals(1, actualRepsonse.getProfile().getAudioVideoDetails().getArtist().get(0).getProjects().getProject().size());
-        Assert.assertNotNull(actualRepsonse.getProfile().getAudioVideoDetails().getArtist().get(0).getProjects().getProject().get(0).getTracks());
-        Assert.assertEquals(5, actualRepsonse.getProfile().getAudioVideoDetails().getArtist().get(0).getProjects().getProject().get(0).getTracks().getTrack().size());
-
     }
     
 
@@ -148,15 +154,15 @@ public class TrackQueryMessageHandlerTest extends BaseMediaMessageHandlerTest {
         String request = RMT2File.getFileContentsAsString("xml/maint/TrackQueryRequest.xml");
 
         try {
-            when(this.mockApi.getConsolidatedArtist(isA(VwArtistDto.class))).thenReturn(null);
+            when(this.mockApi.getTracks(isA(TracksDto.class))).thenReturn(null);
         } catch (AudioVideoApiException e) {
-            Assert.fail("Unable to setup mock stub for fetching vw_audio_video_artist records");
+            Assert.fail("Unable to setup mock stub for fetching track records");
         }
 
         MessageHandlerResults results = null;
-        AvProjectFetchApiHandler handler = new AvProjectFetchApiHandler();
+        TrackFetchApiHandler handler = new TrackFetchApiHandler();
         try {
-            results = handler.processMessage(ApiTransactionCodes.MEDIA_ARTIST_PROJECT_GET, request);
+            results = handler.processMessage(ApiTransactionCodes.MEDIA_TRACK_GET, request);
         } catch (MessageHandlerCommandException e) {
             e.printStackTrace();
             Assert.fail("An unexpected exception was thrown");
@@ -169,7 +175,7 @@ public class TrackQueryMessageHandlerTest extends BaseMediaMessageHandlerTest {
         Assert.assertEquals(0, actualRepsonse.getReplyStatus().getRecordCount().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(ArtistProjectApiHandlerConst.MESSAGE_NOT_FOUND, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(TrackApiHandlerConst.MESSAGE_NOT_FOUND, actualRepsonse.getReplyStatus().getMessage());
     }
 
     
@@ -177,15 +183,15 @@ public class TrackQueryMessageHandlerTest extends BaseMediaMessageHandlerTest {
     public void testError_Fetch_API_Error() {
         String request = RMT2File.getFileContentsAsString("xml/maint/TrackQueryRequest.xml");
         try {
-            when(this.mockApi.getConsolidatedArtist(isA(VwArtistDto.class))).thenThrow(new AudioVideoApiException(API_ERROR));
+            when(this.mockApi.getTracks(isA(TracksDto.class))).thenThrow(new AudioVideoApiException(API_ERROR));
         } catch (AudioVideoApiException e) {
-            Assert.fail("Unable to setup mock stub for fetching vw_audio_video_artist with an API Error");
+            Assert.fail("Unable to setup mock stub for fetching track with an API Error");
         }
         
         MessageHandlerResults results = null;
-        AvProjectFetchApiHandler handler = new AvProjectFetchApiHandler();
+        TrackFetchApiHandler handler = new TrackFetchApiHandler();
         try {
-            results = handler.processMessage(ApiTransactionCodes.MEDIA_ARTIST_PROJECT_GET, request);
+            results = handler.processMessage(ApiTransactionCodes.MEDIA_TRACK_GET, request);
         } catch (MessageHandlerCommandException e) {
             e.printStackTrace();
             Assert.fail("An unexpected exception was thrown");
@@ -197,7 +203,7 @@ public class TrackQueryMessageHandlerTest extends BaseMediaMessageHandlerTest {
         Assert.assertNull(actualRepsonse.getProfile());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(ArtistProjectApiHandlerConst.MESSAGE_FETCH_ERROR, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(TrackApiHandlerConst.MESSAGE_FETCH_ERROR, actualRepsonse.getReplyStatus().getMessage());
         Assert.assertEquals(API_ERROR, actualRepsonse.getReplyStatus().getExtMessage());
     }
 }
