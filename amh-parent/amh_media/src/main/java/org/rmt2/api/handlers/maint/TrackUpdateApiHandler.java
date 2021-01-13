@@ -153,7 +153,8 @@ public class TrackUpdateApiHandler extends AudioVideoApiHandler {
         try {
             Verifier.verifyTrue(req.getProfile().getAudioVideoDetails().getArtist().size() == 1);
             Verifier.verifyTrue(req.getProfile().getAudioVideoDetails().getArtist().get(0).getProjects().getProject().size() == 1);
-            Verifier.verifyNotNull(req.getProfile().getAudioVideoDetails().getArtist().get(0).getProjects().getProject().get(0).getTracks().getTrack().size() == 1);
+            Verifier.verifyTrue(req.getProfile().getAudioVideoDetails().getArtist().get(0).getProjects().getProject().get(0)
+                    .getTracks().getTrack().size() == 1);
         }
         catch (VerifyException e) {
             throw new InvalidRequestException(TrackApiHandlerConst.MESSAGE_UPDATE_TOO_MANY_TRACKS);

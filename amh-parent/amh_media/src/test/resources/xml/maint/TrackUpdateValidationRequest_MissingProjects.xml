@@ -1,0 +1,19 @@
+<MultimediaRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>media</application>
+        <module>maint</module>
+        <transaction>UPDATE_TRACK</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>01/01/2021 13:09:07</delivery_date>
+        <session_id>ABCDEFGHIJKLMNOPQRSTUVWXYZ</session_id>
+    </header>
+    <profile>
+        <audio_video_details>
+            <artist>
+                <artist_id>1</artist_id>
+            </artist>
+        </audio_video_details>
+    </profile>
+</MultimediaRequest>
