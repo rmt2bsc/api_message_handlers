@@ -68,8 +68,20 @@ public class TrackJaxbDtoFactory extends RMT2Base {
             return null;
         }
         TracksDto dto = Rmt2MediaDtoFactory.getAvTrackInstance(null);
-        dto.setTrackId(jaxbObj.getTrackId());
-        dto.setProjectId(jaxbObj.getProjectId());
+        if (jaxbObj.getTrackId() == null) {
+            dto.setTrackId(0);
+        }
+        else {
+            dto.setTrackId(jaxbObj.getTrackId());
+        }
+
+        if (jaxbObj.getProjectId() == null) {
+            dto.setProjectId(0);
+        }
+        else {
+            dto.setProjectId(jaxbObj.getProjectId());
+        }
+
         dto.setTrackTitle(jaxbObj.getTrackName());
         dto.setTrackNumber(jaxbObj.getTrackNumber());
         dto.setTrackHours(jaxbObj.getHours());

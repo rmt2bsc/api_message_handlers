@@ -1,26 +1,26 @@
 package org.rmt2.api.handlers.maint;
 
 import java.io.Serializable;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.dto.TracksDto;
 import org.modules.audiovideo.AudioVideoApi;
 import org.modules.audiovideo.AudioVideoFactory;
+import org.rmt2.api.ApiMessageHandlerConst;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
-import org.rmt2.jaxb.AudioVideoType;
 import org.rmt2.jaxb.MultimediaRequest;
 
 import com.InvalidDataException;
 import com.api.messaging.InvalidRequestException;
 import com.api.messaging.handler.MessageHandlerCommandException;
 import com.api.messaging.handler.MessageHandlerResults;
+import com.api.util.RMT2String;
 import com.api.util.assistants.Verifier;
 import com.api.util.assistants.VerifyException;
 
 /**
- * Message handler for fetching media track related messages for the Media API.
+ * Message handler for updating media track related messages for the Media API.
  * 
  * @author roy.terrell
  *
@@ -53,7 +53,7 @@ public class TrackUpdateApiHandler extends AudioVideoApiHandler {
             return r;
         }
         switch (command) {
-            case ApiTransactionCodes.MEDIA_TRACK_GET:
+            case ApiTransactionCodes.MEDIA_TRACK_UPDATE:
                 r = this.doOperation(this.requestObj);
                 break;
             default:
@@ -65,37 +65,50 @@ public class TrackUpdateApiHandler extends AudioVideoApiHandler {
     }
 
     /**
-     * Handler for invoking the appropriate API in order to fetch one or more
-     * track objects.
+     * Handler for invoking the appropriate API in order to update a media track
+     * object.
      * 
      * @param req
      *            an instance of {@link MultimediaRequest}
      */
     @Override
     protected void processTransactionCode(MultimediaRequest req) {
+        int rc = 0;
         try {
             // Get criteria data
-            TracksDto criteriaDto = TrackJaxbDtoFactory.createTracksDtoInstance(req.getCriteria().getAudioVideoCriteria());
+            TracksDto criteriaDto = TrackJaxbDtoFactory.createTracksDtoInstance(req.getProfile().getAudioVideoDetails()
+                    .getArtist().get(0).getProjects().getProject().get(0).getTracks().getTrack().get(0));
+
+            boolean isNew = criteriaDto.getTrackId() == 0;
 
             // Make API call
             AudioVideoApi api = AudioVideoFactory.createApi();
-            List<TracksDto> dtoList = api.getTracks(criteriaDto);
-            if (dtoList == null) {
-                this.rs.setMessage(ArtistApiHandlerConst.MESSAGE_NOT_FOUND);
-                this.rs.setRecordCount(0);
+            rc = api.updateTrack(criteriaDto);
+            String msg = null;
+            if (rc > 0) {
+                if (isNew) {
+                    msg = RMT2String.replace(TrackApiHandlerConst.MESSAGE_UPDATE_NEW_SUCCESS, String.valueOf(rc),
+                            ApiMessageHandlerConst.MSG_PLACEHOLDER);
+                    this.rs.setMessage(msg);
+                }
+                else {
+                    msg = RMT2String.replace(TrackApiHandlerConst.MESSAGE_UPDATE_EXISTING_SUCCESS,
+                            String.valueOf(criteriaDto.getTrackId()), ApiMessageHandlerConst.MSG_PLACEHOLDER);
+                    this.rs.setMessage(msg);
+                }
             }
             else {
-                // Package API results into JAXB objects
-                AudioVideoType avt = this.buildTrackOnly(dtoList);
-                this.jaxbResults.add(avt);
-                this.rs.setMessage(ArtistApiHandlerConst.MESSAGE_FOUND);
-                this.rs.setRecordCount(dtoList.size());
+                msg = RMT2String.replace(TrackApiHandlerConst.MESSAGE_UPDATE_NO_CHANGE, String.valueOf(criteriaDto.getTrackId()),
+                        ApiMessageHandlerConst.MSG_PLACEHOLDER);
+                this.rs.setMessage(msg);
             }
+            this.rs.setRecordCount(1);
+            this.jaxbResults.add(null);
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setMessage(TrackApiHandlerConst.MESSAGE_FETCH_ERROR);
+            rs.setMessage(TrackApiHandlerConst.MESSAGE_UPDATE_ERROR);
             rs.setExtMessage(e.getMessage());
         }
     }
@@ -105,7 +118,7 @@ public class TrackUpdateApiHandler extends AudioVideoApiHandler {
     protected void validateRequest(MultimediaRequest req) throws InvalidDataException {
         super.validateRequest(req);
         try {
-            Verifier.verify(req.getHeader().getTransaction().equalsIgnoreCase(ApiTransactionCodes.MEDIA_ARTIST_PROJECT_UPDATE));
+            Verifier.verify(req.getHeader().getTransaction().equalsIgnoreCase(ApiTransactionCodes.MEDIA_TRACK_UPDATE));
         }
         catch (VerifyException e) {
             throw new InvalidRequestException("Invalid transaction code for this message handler: "
