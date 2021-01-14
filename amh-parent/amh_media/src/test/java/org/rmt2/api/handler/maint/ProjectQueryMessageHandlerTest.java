@@ -6,7 +6,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
-import org.dto.VwArtistDto;
+import org.dto.ProjectDto;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -92,12 +92,12 @@ public class ProjectQueryMessageHandlerTest extends BaseMediaMessageHandlerTest 
     @Test
     public void testSuccess_Fetch_All() {
         String request = RMT2File.getFileContentsAsString("xml/maint/ProjectQueryRequest.xml");
-        List<VwArtistDto> mockListData = MediaMockDtoFactory.createVwAudioVideoArtistsMockData();
+        List<ProjectDto> mockListData = MediaMockDtoFactory.createProjectMockData();
 
         try {
-            when(this.mockApi.getConsolidatedArtist(isA(VwArtistDto.class))).thenReturn(mockListData);
+            when(this.mockApi.getProject(isA(ProjectDto.class))).thenReturn(mockListData);
         } catch (AudioVideoApiException e) {
-            Assert.fail("Unable to setup mock stub for fetching vw_audio_video_artist records");
+            Assert.fail("Unable to setup mock stub for fetching project records");
         }
         
         MessageHandlerResults results = null;
@@ -121,15 +121,15 @@ public class ProjectQueryMessageHandlerTest extends BaseMediaMessageHandlerTest 
         for (int ndx = 0; ndx < actualRepsonse.getProfile().getAudioVideoDetails().getArtist().size(); ndx++) {
             ArtistType a = actualRepsonse.getProfile().getAudioVideoDetails().getArtist().get(ndx);
             Assert.assertNotNull(a.getArtistId());
-            Assert.assertEquals(MediaMockOrmFactory.TEST_ARTIST_ID + ndx, a.getArtistId().intValue());
-            Assert.assertEquals("Artist" + ndx, a.getArtistName());
+            Assert.assertEquals(MediaMockOrmFactory.TEST_ARTIST_ID, a.getArtistId().intValue());
+            Assert.assertNull(a.getArtistName());
 
             Assert.assertNotNull(a.getProjects());
             Assert.assertNotNull(a.getProjects().getProject());
             Assert.assertEquals(1, a.getProjects().getProject().size());
             for (AvProjectType item : a.getProjects().getProject()) {
                 Assert.assertEquals(MediaMockOrmFactory.TEST_PROJECT_ID + ndx, item.getProjectId(), 0);
-                Assert.assertEquals("Project Name" + ndx, item.getTitle());
+                Assert.assertEquals("Title" + (MediaMockOrmFactory.TEST_PROJECT_ID + ndx), item.getTitle());
             }
         }
     }
@@ -140,9 +140,9 @@ public class ProjectQueryMessageHandlerTest extends BaseMediaMessageHandlerTest 
         String request = RMT2File.getFileContentsAsString("xml/maint/ProjectQueryRequest.xml");
 
         try {
-            when(this.mockApi.getConsolidatedArtist(isA(VwArtistDto.class))).thenReturn(null);
+            when(this.mockApi.getProject(isA(ProjectDto.class))).thenReturn(null);
         } catch (AudioVideoApiException e) {
-            Assert.fail("Unable to setup mock stub for fetching vw_audio_video_artist records");
+            Assert.fail("Unable to setup mock stub for fetching project records");
         }
 
         MessageHandlerResults results = null;
@@ -169,7 +169,7 @@ public class ProjectQueryMessageHandlerTest extends BaseMediaMessageHandlerTest 
     public void testError_Fetch_API_Error() {
         String request = RMT2File.getFileContentsAsString("xml/maint/ProjectQueryRequest.xml");
         try {
-            when(this.mockApi.getConsolidatedArtist(isA(VwArtistDto.class))).thenThrow(new AudioVideoApiException(API_ERROR));
+            when(this.mockApi.getProject(isA(ProjectDto.class))).thenThrow(new AudioVideoApiException(API_ERROR));
         } catch (AudioVideoApiException e) {
             Assert.fail("Unable to setup mock stub for fetching vw_audio_video_artist with an API Error");
         }

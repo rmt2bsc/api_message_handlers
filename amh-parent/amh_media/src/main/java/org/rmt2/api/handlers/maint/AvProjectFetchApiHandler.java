@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.dto.VwArtistDto;
+import org.dto.ProjectDto;
 import org.modules.audiovideo.AudioVideoApi;
 import org.modules.audiovideo.AudioVideoFactory;
 import org.rmt2.constants.ApiTransactionCodes;
@@ -76,19 +76,19 @@ public class AvProjectFetchApiHandler extends AudioVideoApiHandler {
     protected void processTransactionCode(MultimediaRequest req) {
         try {
             // Get criteria data
-            VwArtistDto criteriaDto = ArtistJaxbDtoFactory.createVwArtistProjectDtoInstance(req.getCriteria()
+            ProjectDto criteriaDto = ArtistProjectJaxbDtoFactory.createProjectDtoInstance(req.getCriteria()
                     .getAudioVideoCriteria());
 
             // Make API call
             AudioVideoApi api = AudioVideoFactory.createApi();
-            List<VwArtistDto> dtoList = api.getConsolidatedArtist(criteriaDto);
+            List<ProjectDto> dtoList = api.getProject(criteriaDto);
             if (dtoList == null) {
                 this.rs.setMessage(ArtistProjectApiHandlerConst.MESSAGE_NOT_FOUND);
                 this.rs.setRecordCount(0);
             }
             else {
                 // Package API results into JAXB objects
-                AudioVideoType avt = this.buildExtProjecttOnly(dtoList);
+                AudioVideoType avt = this.buildProjecttOnly(dtoList);
                 this.jaxbResults.add(avt);
                 this.rs.setMessage(ArtistProjectApiHandlerConst.MESSAGE_FOUND);
                 this.rs.setRecordCount(dtoList.size());
@@ -102,6 +102,37 @@ public class AvProjectFetchApiHandler extends AudioVideoApiHandler {
         }
     }
 
+    // @Override
+    // protected void processTransactionCode(MultimediaRequest req) {
+    // try {
+    // // Get criteria data
+    // VwArtistDto criteriaDto =
+    // ArtistJaxbDtoFactory.createVwArtistProjectDtoInstance(req.getCriteria()
+    // .getAudioVideoCriteria());
+    //
+    // // Make API call
+    // AudioVideoApi api = AudioVideoFactory.createApi();
+    // List<VwArtistDto> dtoList = api.getConsolidatedArtist(criteriaDto);
+    // if (dtoList == null) {
+    // this.rs.setMessage(ArtistProjectApiHandlerConst.MESSAGE_NOT_FOUND);
+    // this.rs.setRecordCount(0);
+    // }
+    // else {
+    // // Package API results into JAXB objects
+    // AudioVideoType avt = this.buildExtProjecttOnly(dtoList);
+    // this.jaxbResults.add(avt);
+    // this.rs.setMessage(ArtistProjectApiHandlerConst.MESSAGE_FOUND);
+    // this.rs.setRecordCount(dtoList.size());
+    // }
+    // this.responseObj.setHeader(req.getHeader());
+    // } catch (Exception e) {
+    // logger.error("Error occurred during API Message Handler operation, " +
+    // this.command, e);
+    // rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
+    // rs.setMessage(ArtistProjectApiHandlerConst.MESSAGE_FETCH_ERROR);
+    // rs.setExtMessage(e.getMessage());
+    // }
+    // }
     
     @Override
     protected void validateRequest(MultimediaRequest req) throws InvalidDataException {
