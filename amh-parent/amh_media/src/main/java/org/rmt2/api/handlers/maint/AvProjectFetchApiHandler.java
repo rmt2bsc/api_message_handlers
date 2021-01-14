@@ -101,38 +101,6 @@ public class AvProjectFetchApiHandler extends AudioVideoApiHandler {
             rs.setExtMessage(e.getMessage());
         }
     }
-
-    // @Override
-    // protected void processTransactionCode(MultimediaRequest req) {
-    // try {
-    // // Get criteria data
-    // VwArtistDto criteriaDto =
-    // ArtistJaxbDtoFactory.createVwArtistProjectDtoInstance(req.getCriteria()
-    // .getAudioVideoCriteria());
-    //
-    // // Make API call
-    // AudioVideoApi api = AudioVideoFactory.createApi();
-    // List<VwArtistDto> dtoList = api.getConsolidatedArtist(criteriaDto);
-    // if (dtoList == null) {
-    // this.rs.setMessage(ArtistProjectApiHandlerConst.MESSAGE_NOT_FOUND);
-    // this.rs.setRecordCount(0);
-    // }
-    // else {
-    // // Package API results into JAXB objects
-    // AudioVideoType avt = this.buildExtProjecttOnly(dtoList);
-    // this.jaxbResults.add(avt);
-    // this.rs.setMessage(ArtistProjectApiHandlerConst.MESSAGE_FOUND);
-    // this.rs.setRecordCount(dtoList.size());
-    // }
-    // this.responseObj.setHeader(req.getHeader());
-    // } catch (Exception e) {
-    // logger.error("Error occurred during API Message Handler operation, " +
-    // this.command, e);
-    // rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-    // rs.setMessage(ArtistProjectApiHandlerConst.MESSAGE_FETCH_ERROR);
-    // rs.setExtMessage(e.getMessage());
-    // }
-    // }
     
     @Override
     protected void validateRequest(MultimediaRequest req) throws InvalidDataException {
