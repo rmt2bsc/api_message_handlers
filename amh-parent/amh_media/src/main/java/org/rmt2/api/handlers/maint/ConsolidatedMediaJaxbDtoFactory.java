@@ -109,7 +109,7 @@ public class ConsolidatedMediaJaxbDtoFactory extends RMT2Base {
             }
 
             // Start comparing rows
-            if (prevArtist == item.getArtistName()) {
+            if (prevArtist.equalsIgnoreCase(item.getArtistName())) {
                 // Do not attempt to add track data for movies.
                 if (prevProjId == item.getProjectId() && item.getProjectTypeId() != 2) {
                     tracks.add(ConsolidatedMediaJaxbDtoFactory.createTrackTypeJaxbInstance(item));

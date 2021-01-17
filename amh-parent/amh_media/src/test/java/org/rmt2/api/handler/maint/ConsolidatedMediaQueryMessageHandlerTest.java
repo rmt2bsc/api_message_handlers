@@ -30,6 +30,7 @@ import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.ArtistType;
 import org.rmt2.jaxb.AvProjectType;
 import org.rmt2.jaxb.MultimediaResponse;
+import org.rmt2.jaxb.TrackType;
 
 import com.api.config.SystemConfigurator;
 import com.api.messaging.handler.MessageHandlerCommandException;
@@ -134,6 +135,61 @@ public class ConsolidatedMediaQueryMessageHandlerTest extends BaseMediaMessageHa
         }
     }
     
+    @Test
+    public void testSuccess_Fetch_Like_Media() {
+        String request = RMT2File.getFileContentsAsString("xml/maint/ConsolidateMediaQueryRequest.xml");
+        List<VwArtistDto> mockListData = MediaMockDtoFactory.createConsolidatedMediaLikeMockData();
+
+        try {
+            when(this.mockApi.getConsolidatedArtist(isA(VwArtistDto.class))).thenReturn(mockListData);
+        } catch (AudioVideoApiException e) {
+            Assert.fail("Unable to setup mock stub for fetching vw_audio_video_artist records");
+        }
+
+        MessageHandlerResults results = null;
+        ConsolidatedMediaFetchApiHandler handler = new ConsolidatedMediaFetchApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.MEDIA_CONSOLIDATED_SEARCH, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        MultimediaResponse actualRepsonse = (MultimediaResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertEquals(1, actualRepsonse.getProfile().getAudioVideoDetails().getArtist().size());
+        Assert.assertEquals(5, actualRepsonse.getReplyStatus().getRecordCount().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(ConsolidatedMediaApiHandlerConst.MESSAGE_FOUND, actualRepsonse.getReplyStatus().getMessage());
+
+        for (int ndx = 0; ndx < actualRepsonse.getProfile().getAudioVideoDetails().getArtist().size(); ndx++) {
+            ArtistType a = actualRepsonse.getProfile().getAudioVideoDetails().getArtist().get(ndx);
+            Assert.assertNotNull(a.getArtistId());
+            Assert.assertEquals(MediaMockOrmFactory.TEST_ARTIST_ID, a.getArtistId().intValue());
+            Assert.assertEquals("Artist", a.getArtistName());
+
+            Assert.assertNotNull(a.getProjects());
+            Assert.assertNotNull(a.getProjects().getProject());
+            Assert.assertEquals(1, a.getProjects().getProject().size());
+            for (AvProjectType item : a.getProjects().getProject()) {
+                Assert.assertEquals(MediaMockOrmFactory.TEST_PROJECT_ID, item.getProjectId(), 0);
+                Assert.assertEquals("Project Name", item.getTitle());
+                Assert.assertNotNull(a.getProjects().getProject().get(0).getTracks());
+                Assert.assertNotNull(a.getProjects().getProject().get(0).getTracks().getTrack());
+                Assert.assertEquals(5, a.getProjects().getProject().get(0).getTracks().getTrack().size());
+                int ndx3 = 0;
+                List<TrackType> tracks = a.getProjects().getProject().get(0).getTracks().getTrack();
+                for (TrackType track : tracks) {
+                    Assert.assertEquals(MediaMockOrmFactory.TEST_TRACK_ID + ndx3, track.getTrackId().intValue());
+                    Assert.assertEquals("Track Name" + ndx3, track.getTrackName());
+                    Assert.assertEquals(ndx3 + 1, track.getTrackNumber().intValue());
+                    ndx3++;
+                }
+            }
+        }
+    }
 
     @Test
     public void testSuccess_Fetch_NotFound() {
