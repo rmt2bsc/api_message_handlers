@@ -54,9 +54,7 @@ public class ConsolidatedMediaFetchApiHandler extends AudioVideoApiHandler {
             return r;
         }
         switch (command) {
-        // TODO: Change transaction code to MEDIA_CONSOLIDATED_GET. May have to
-        // add in the message dto model project
-            case ApiTransactionCodes.MEDIA_ARTIST_GET:
+            case ApiTransactionCodes.MEDIA_CONSOLIDATED_SEARCH:
                 r = this.doOperation(this.requestObj);
                 break;
             default:
@@ -80,7 +78,7 @@ public class ConsolidatedMediaFetchApiHandler extends AudioVideoApiHandler {
             // Get criteria data
             // ArtistDto criteriaDto =
             // ArtistJaxbDtoFactory.createArtistDtoInstance(req.getCriteria().getAudioVideoCriteria());
-            VwArtistDto criteriaDto = ArtistJaxbDtoFactory.createVwArtistProjectDtoInstance(req.getCriteria()
+            VwArtistDto criteriaDto = ConsolidatedMediaJaxbDtoFactory.createVwArtistProjectDtoInstance(req.getCriteria()
                     .getAudioVideoCriteria());
 
             // Make API call
@@ -88,24 +86,21 @@ public class ConsolidatedMediaFetchApiHandler extends AudioVideoApiHandler {
             // List<ArtistDto> dtoList = api.getArtist(criteriaDto);
             List<VwArtistDto> dtoList = api.getConsolidatedArtist(criteriaDto);
             if (dtoList == null) {
-                this.rs.setMessage(ArtistApiHandlerConst.MESSAGE_NOT_FOUND);
+                this.rs.setMessage(ConsolidatedMediaApiHandlerConst.MESSAGE_NOT_FOUND);
                 this.rs.setRecordCount(0);
             }
             else {
                 // Package API results into JAXB objects
-
-                // TODO: create member method to package consolidated media data
-                // AudioVideoType avt = this.buildAudioVideoType(dtoList);
-                AudioVideoType avt = null;
+                AudioVideoType avt = this.buildConsolidatedMedia(dtoList);
                 this.jaxbResults.add(avt);
-                this.rs.setMessage(ArtistApiHandlerConst.MESSAGE_FOUND);
+                this.rs.setMessage(ConsolidatedMediaApiHandlerConst.MESSAGE_FOUND);
                 this.rs.setRecordCount(dtoList.size());
             }
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setMessage(ArtistApiHandlerConst.MESSAGE_FETCH_ERROR);
+            rs.setMessage(ConsolidatedMediaApiHandlerConst.MESSAGE_FETCH_ERROR);
             rs.setExtMessage(e.getMessage());
         }
     }
@@ -115,7 +110,7 @@ public class ConsolidatedMediaFetchApiHandler extends AudioVideoApiHandler {
     protected void validateRequest(MultimediaRequest req) throws InvalidDataException {
         super.validateRequest(req);
         try {
-            Verifier.verify(req.getHeader().getTransaction().equalsIgnoreCase(ApiTransactionCodes.MEDIA_ARTIST_GET));
+            Verifier.verify(req.getHeader().getTransaction().equalsIgnoreCase(ApiTransactionCodes.MEDIA_CONSOLIDATED_SEARCH));
         }
         catch (VerifyException e) {
             throw new InvalidRequestException("Invalid transaction code for this message handler: "

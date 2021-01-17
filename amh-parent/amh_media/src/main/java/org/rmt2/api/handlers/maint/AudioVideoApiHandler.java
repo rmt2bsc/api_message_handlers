@@ -212,25 +212,19 @@ public abstract class AudioVideoApiHandler extends
     }
 
     /**
-     * Builds an AudioVideoType object graph of project objects excluding track
-     * details
+     * Builds an AudioVideoType object graph of list of VwArtistDto objects.
      * 
      * @param projectDtoList
      *            a List of {@link VwArtistDto} instances
      * @return {@link AudioVideoType}
      * @throws AudioVideoApiException
      */
-    protected AudioVideoType buildExtProjecttOnly(List<VwArtistDto> projectDtoList) throws AudioVideoApiException {
+    protected AudioVideoType buildConsolidatedMedia(List<VwArtistDto> mediaList) throws AudioVideoApiException {
         AudioVideoType avt = this.jaxbObjFactory.createAudioVideoType();
 
-        for (VwArtistDto item : projectDtoList) {
-            AvProjectType jaxbProject = ArtistProjectJaxbDtoFactory.createExtProjectJaxbInstance(item);
-            ArtistType jaxbArtist = ArtistTypeBuilder.Builder.create()
-                    .withArtistId(item.getArtistId())
-                    .withArtistName(item.getArtistName())
-                    .withProject(jaxbProject)
-                    .build();
-            avt.getArtist().add(jaxbArtist);
+        List<ArtistType> results = ConsolidatedMediaJaxbDtoFactory.createMediaJaxbInstance(mediaList);
+        if (results != null) {
+            avt.getArtist().addAll(results);
         }
         return avt;
     }

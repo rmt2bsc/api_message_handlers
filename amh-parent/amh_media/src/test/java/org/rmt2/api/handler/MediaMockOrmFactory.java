@@ -161,7 +161,7 @@ public class MediaMockOrmFactory {
      * @return
      */
     public static final VwAudioVideoArtists createOrmVwAudioVideoArtists(int artistId, String artistName, int projId,
-            String projName, int trackId, String trackName, boolean primary, int projTypeId) {
+            String projName, int trackId, String trackName, int trackNo, int discNo, boolean primary, int projTypeId) {
         VwAudioVideoArtists o = new VwAudioVideoArtists();
 
         o.setPrimaryArtist(primary ? 1 : 0);
@@ -173,6 +173,11 @@ public class MediaMockOrmFactory {
         o.setProjectTitle(projName);
         o.setTrackId(trackId);
         o.setTrackTitle(trackName);
+        o.setTrackNumber(trackNo);
+        o.setTrackDiscNumber(String.valueOf(discNo));
+        o.setTrackHours(0);
+        o.setTrackMinutes(5);
+        o.setTrackSeconds(45);
         o.setProjectComments("Project Comments");
         o.setTrackComments("Track Comments");
         o.setGenreId(100);
