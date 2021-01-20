@@ -18,6 +18,7 @@ import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.ArtistType;
 import org.rmt2.jaxb.AudioVideoType;
 import org.rmt2.jaxb.AvProjectType;
+import org.rmt2.jaxb.MimeContentType;
 import org.rmt2.jaxb.MultimediaRequest;
 import org.rmt2.jaxb.MultimediaResponse;
 import org.rmt2.jaxb.ObjectFactory;
@@ -140,6 +141,27 @@ public abstract class AudioVideoApiHandler extends
             this.responseObj.getProfile().setAudioVideoDetails(payload.get(0));
         }
         
+        String xml = this.jaxb.marshalMessage(this.responseObj);
+        return xml;
+    }
+
+    /**
+     * 
+     * @param payload
+     * @param replyStatus
+     * @return
+     */
+    protected String buildResponse(MimeContentType payload, MessageHandlerCommonReplyStatus replyStatus) {
+        if (replyStatus != null) {
+            ReplyStatusType rs = MessageHandlerUtility.createReplyStatus(replyStatus);
+            this.responseObj.setReplyStatus(rs);
+        }
+
+        if (payload != null) {
+            this.responseObj.setProfile(this.jaxbObjFactory.createMimeDetailGroup());
+            this.responseObj.getProfile().setAudioVideoContent(payload);
+        }
+
         String xml = this.jaxb.marshalMessage(this.responseObj);
         return xml;
     }
