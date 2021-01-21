@@ -80,7 +80,7 @@ public class DocumentManualUploadApiHandler extends MediaContentApiHandler {
             int rc = this.api.add(contentDto);
             String msg = null;
             if (rc > 0) {
-                msg = RMT2String.replace(DocumentManualUploadApiHandlerConst.MESSAGE_UPLOAD_SUCCESS, contentDto.getFilename(),
+                msg = RMT2String.replace(MediaContentApiHandlerConst.MESSAGE_UPLOAD_SUCCESS, contentDto.getFilename(),
                             ApiMessageHandlerConst.MSG_PLACEHOLDER);
                     this.rs.setMessage(msg);
             }
@@ -94,7 +94,7 @@ public class DocumentManualUploadApiHandler extends MediaContentApiHandler {
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setMessage(DocumentManualUploadApiHandlerConst.MESSAGE_UPLOAD_ERROR);
+            rs.setMessage(MediaContentApiHandlerConst.MESSAGE_UPLOAD_ERROR);
             rs.setExtMessage(e.getMessage());
             this.jaxbResults = null;
         }
@@ -127,7 +127,7 @@ public class DocumentManualUploadApiHandler extends MediaContentApiHandler {
             Verifier.verifyNotNull(req.getProfile());
         }
         catch (VerifyException e) {
-            throw new InvalidRequestException(DocumentManualUploadApiHandlerConst.MESSAGE_UPLOAD_MISSING_PROFILE_ERROR);
+            throw new InvalidRequestException(MediaContentApiHandlerConst.MESSAGE_UPLOAD_MISSING_PROFILE_ERROR);
         }
         
         try {
@@ -135,7 +135,7 @@ public class DocumentManualUploadApiHandler extends MediaContentApiHandler {
         }
         catch (VerifyException e) {
             throw new InvalidRequestException(
-                    DocumentManualUploadApiHandlerConst.MESSAGE_UPLOAD_MISSING_PROFILE_AUDIOVIDEOCONTENT);
+                    MediaContentApiHandlerConst.MESSAGE_UPLOAD_MISSING_PROFILE_AUDIOVIDEOCONTENT);
         }
     }
 

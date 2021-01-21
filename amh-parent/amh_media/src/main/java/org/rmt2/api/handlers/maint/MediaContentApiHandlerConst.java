@@ -8,7 +8,7 @@ import org.rmt2.api.ApiMessageHandlerConst;
  * @author appdev
  *
  */
-public class DocumentManualUploadApiHandlerConst {
+public class MediaContentApiHandlerConst {
     public static final String MESSAGE_FOUND = "Media content data found!";
     public static final String MESSAGE_NOT_FOUND = "Media content data not found!";
     public static final String MESSAGE_FETCH_ERROR = "Failure to retrieve Media content data";
@@ -19,7 +19,7 @@ public class DocumentManualUploadApiHandlerConst {
     public static final String MESSAGE_UPLOAD_MISSING_PROFILE_ERROR = "Media content upload operation requires a profile section";
     public static final String MESSAGE_UPLOAD_MISSING_PROFILE_AUDIOVIDEOCONTENT = "Media content upload operation requires a audio/video content section";
 
-    public DocumentManualUploadApiHandlerConst() {
+    public MediaContentApiHandlerConst() {
 
     }
 

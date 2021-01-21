@@ -21,7 +21,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.rmt2.api.ApiMessageHandlerConst;
 import org.rmt2.api.handler.BaseMediaMessageHandlerTest;
 import org.rmt2.api.handlers.maint.DocumentManualUploadApiHandler;
-import org.rmt2.api.handlers.maint.DocumentManualUploadApiHandlerConst;
+import org.rmt2.api.handlers.maint.MediaContentApiHandlerConst;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.MultimediaResponse;
@@ -113,7 +113,7 @@ public class DocumentManualUploadMessageHandlerTest extends BaseMediaMessageHand
         Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
 
-        String msg = RMT2String.replace(DocumentManualUploadApiHandlerConst.MESSAGE_UPLOAD_SUCCESS, "MSWord.docx",
+        String msg = RMT2String.replace(MediaContentApiHandlerConst.MESSAGE_UPLOAD_SUCCESS, "MSWord.docx",
                 ApiMessageHandlerConst.MSG_PLACEHOLDER);
         Assert.assertEquals(msg, actualRepsonse.getReplyStatus().getMessage());
     }
@@ -143,7 +143,7 @@ public class DocumentManualUploadMessageHandlerTest extends BaseMediaMessageHand
         Assert.assertNull(actualRepsonse.getProfile());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(DocumentManualUploadApiHandlerConst.MESSAGE_UPLOAD_ERROR, actualRepsonse.getReplyStatus()
+        Assert.assertEquals(MediaContentApiHandlerConst.MESSAGE_UPLOAD_ERROR, actualRepsonse.getReplyStatus()
                 .getMessage());
         Assert.assertEquals(API_ERROR, actualRepsonse.getReplyStatus().getExtMessage());
     }
@@ -169,7 +169,7 @@ public class DocumentManualUploadMessageHandlerTest extends BaseMediaMessageHand
         Assert.assertEquals(0, actualRepsonse.getReplyStatus().getRecordCount().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_CODE_FAILURE, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(DocumentManualUploadApiHandlerConst.MESSAGE_UPLOAD_MISSING_PROFILE_ERROR, actualRepsonse
+        Assert.assertEquals(MediaContentApiHandlerConst.MESSAGE_UPLOAD_MISSING_PROFILE_ERROR, actualRepsonse
                 .getReplyStatus()
                 .getMessage());
     }
@@ -195,7 +195,7 @@ public class DocumentManualUploadMessageHandlerTest extends BaseMediaMessageHand
         Assert.assertEquals(0, actualRepsonse.getReplyStatus().getRecordCount().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_CODE_FAILURE, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(DocumentManualUploadApiHandlerConst.MESSAGE_UPLOAD_MISSING_PROFILE_AUDIOVIDEOCONTENT, actualRepsonse
+        Assert.assertEquals(MediaContentApiHandlerConst.MESSAGE_UPLOAD_MISSING_PROFILE_AUDIOVIDEOCONTENT, actualRepsonse
                 .getReplyStatus()
                 .getMessage());
     }
