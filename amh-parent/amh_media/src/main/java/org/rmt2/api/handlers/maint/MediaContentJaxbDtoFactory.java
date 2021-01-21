@@ -18,7 +18,7 @@ import com.RMT2Base;
  * @author Roy Terrell.
  * 
  */
-public class DocumentManualUploadJaxbDtoFactory extends RMT2Base {
+public class MediaContentJaxbDtoFactory extends RMT2Base {
 
     /**
      * Creates an instance of <i>ContentDto</i> using a valid

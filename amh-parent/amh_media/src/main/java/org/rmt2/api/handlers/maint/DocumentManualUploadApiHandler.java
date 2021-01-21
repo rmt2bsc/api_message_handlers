@@ -73,7 +73,7 @@ public class DocumentManualUploadApiHandler extends MediaContentApiHandler {
     protected void processTransactionCode(MultimediaRequest req) {
         try {
             // Get artist profile data
-            ContentDto contentDto = DocumentManualUploadJaxbDtoFactory.createMediaContentDtoInstance(req.getProfile()
+            ContentDto contentDto = MediaContentJaxbDtoFactory.createMediaContentDtoInstance(req.getProfile()
                     .getAudioVideoContent());
 
             // Make API call
