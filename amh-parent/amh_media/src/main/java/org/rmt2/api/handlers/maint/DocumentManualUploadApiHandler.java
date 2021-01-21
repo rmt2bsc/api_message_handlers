@@ -102,7 +102,7 @@ public class DocumentManualUploadApiHandler extends MediaContentApiHandler {
 
     /**
      * Verifies the multimedia request payload exist and that it contains a
-     * valid artist profile for updating.
+     * valid media content profile for updating.
      * 
      * @param req
      *            instance of {@link MultimediaRequest}
