@@ -3,7 +3,7 @@ package org.rmt2.api.handlers.maint;
 import org.rmt2.api.ApiMessageHandlerConst;
 
 /**
- * Media content manual upload media specific constants.
+ * Media content specific constants.
  * 
  * @author appdev
  *
