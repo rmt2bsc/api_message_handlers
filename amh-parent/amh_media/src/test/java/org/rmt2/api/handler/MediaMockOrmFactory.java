@@ -6,7 +6,10 @@ import org.dao.mapping.orm.rmt2.AvMediaType;
 import org.dao.mapping.orm.rmt2.AvProject;
 import org.dao.mapping.orm.rmt2.AvProjectType;
 import org.dao.mapping.orm.rmt2.AvTracks;
+import org.dao.mapping.orm.rmt2.Content;
 import org.dao.mapping.orm.rmt2.VwAudioVideoArtists;
+
+import com.api.util.RMT2File;
 
 public class MediaMockOrmFactory {
     public static final int TEST_ARTIST_ID = 123450;
@@ -19,8 +22,11 @@ public class MediaMockOrmFactory {
     public static final int TEST_PROJECTTYPE_ID = 300;
     public static final int TEST_MEDIA_TYPE_ID = 400;
     public static final int TEST_UPDATE_RC = 1;
+    public static final int TEST_MIMETYPE_ID = 652;
     public static final String TEST_AUDIO_DIR = "media/audio";
+    public static final String TEST_BINARY_FILENAME = "MsWord.docx";
     
+
     /**
      * 
      * @param id
@@ -195,5 +201,46 @@ public class MediaMockOrmFactory {
         o.setProducer("Producer Name");
 
         return o;
+    }
+
+    /**
+     * 
+     * @param contentId
+     * @param filepath
+     * @param filename
+     * @return
+     */
+    public static final Content createOrmContent(int contentId, String filepath, String filename) {
+        Content o = new Content();
+        o.setContentId(contentId);
+        o.setMimeTypeId(TEST_MIMETYPE_ID);
+        o.setFilepath(filepath);
+        o.setFilename(filename);
+        o.setProjectId(0);
+        o.setAppCode("Media");
+        o.setModuleCode("Maint");
+        o.setTextData("TextData");
+        o.setImageData(getFileContent());
+        o.setSize(o.getImageData().length);
+        return o;
+    }
+
+    private static final byte[] getFileContent() {
+        String OS = System.getProperty("os.name").toLowerCase();
+        boolean win = (OS.indexOf("win") >= 0);
+        String srcDir = RMT2File.getCurrentDirectory();
+        if (win) {
+            srcDir += "\\src\\test\\resources\\media\\document\\";
+        }
+        else {
+            srcDir += "/src/test/resources/media/document/";
+        }
+        // Get test file contents
+        try {
+            return RMT2File.getFileContentsAsBytes(srcDir + TEST_BINARY_FILENAME);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

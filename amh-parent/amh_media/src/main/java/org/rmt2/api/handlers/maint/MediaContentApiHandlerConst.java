@@ -12,6 +12,7 @@ public class MediaContentApiHandlerConst {
     public static final String MESSAGE_FOUND = "Media content data found!";
     public static final String MESSAGE_NOT_FOUND = "Media content data not found!";
     public static final String MESSAGE_FETCH_ERROR = "Failure to retrieve Media content data";
+    public static final String MESSAGE_FETCH_MISSING_CRITERIA = "Media content fetch operation requires selection criteria";
 
     public static final String MESSAGE_UPLOAD_SUCCESS = "Media content was uploaded successfully for file: "
             + ApiMessageHandlerConst.MSG_PLACEHOLDER;

@@ -9,8 +9,10 @@ import org.dao.mapping.orm.rmt2.AvMediaType;
 import org.dao.mapping.orm.rmt2.AvProject;
 import org.dao.mapping.orm.rmt2.AvProjectType;
 import org.dao.mapping.orm.rmt2.AvTracks;
+import org.dao.mapping.orm.rmt2.Content;
 import org.dao.mapping.orm.rmt2.VwAudioVideoArtists;
 import org.dto.ArtistDto;
+import org.dto.ContentDto;
 import org.dto.GenreDto;
 import org.dto.MediaTypeDto;
 import org.dto.ProjectDto;
@@ -31,6 +33,9 @@ import org.dto.adapter.orm.Rmt2MediaDtoFactory;
 public class MediaMockDtoFactory {
     public static final int TEST_PROJECT_TYPE_ID_AUDIO = 1;
     public static final int TEST_PROJECT_TYPE_ID_VIDEO = 2;
+    public static final int TEST_CONTENT_ID = 9875;
+    public static final String TEST_FILEPATH = "media/document";
+    public static final String TEST_FILENAME = "MsWord.docx";
 
     public static final List<GenreDto> createGenreSingleMockData() {
         List<GenreDto> list = new ArrayList<>();
@@ -324,4 +329,13 @@ public class MediaMockDtoFactory {
         return list;
     }
 
+    /**
+     * 
+     * @return
+     */
+    public static final ContentDto createMediaContentMockData() {
+        Content o = MediaMockOrmFactory.createOrmContent(TEST_CONTENT_ID, TEST_FILEPATH, TEST_FILENAME);
+        ContentDto d = Rmt2MediaDtoFactory.getContentInstance(o);
+        return d;
+    }
 }
