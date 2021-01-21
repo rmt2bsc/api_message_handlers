@@ -1,15 +1,11 @@
 package org.rmt2.api.handlers.maint;
 
 import java.io.Serializable;
-import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.dto.VwArtistDto;
-import org.modules.audiovideo.AudioVideoApi;
-import org.modules.audiovideo.AudioVideoFactory;
+import org.dto.ContentDto;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
-import org.rmt2.jaxb.AudioVideoType;
 import org.rmt2.jaxb.MultimediaRequest;
 
 import com.InvalidDataException;
@@ -20,22 +16,21 @@ import com.api.util.assistants.Verifier;
 import com.api.util.assistants.VerifyException;
 
 /**
- * Message handler for fetching and consolidating audio/video media information
- * into one payload for the Media API.
+ * Message handler for deleting media content via the Media API.
  * 
  * @author roy.terrell
  *
  */
-public class ConsolidatedMediaFetchApiHandler extends AudioVideoApiHandler {
+public class DocumentDeleteApiHandler extends MediaContentApiHandler {
     
-    private static final Logger logger = Logger.getLogger(ConsolidatedMediaFetchApiHandler.class);
+    private static final Logger logger = Logger.getLogger(DocumentDeleteApiHandler.class);
 
     /**
      * @param payload
      */
-    public ConsolidatedMediaFetchApiHandler() {
+    public DocumentDeleteApiHandler() {
         super();
-        logger.info(ConsolidatedMediaFetchApiHandler.class.getName() + " was instantiated successfully");
+        logger.info(DocumentDeleteApiHandler.class.getName() + " was instantiated successfully");
     }
 
     /*
@@ -54,7 +49,7 @@ public class ConsolidatedMediaFetchApiHandler extends AudioVideoApiHandler {
             return r;
         }
         switch (command) {
-            case ApiTransactionCodes.MEDIA_CONSOLIDATED_SEARCH:
+            case ApiTransactionCodes.MEDIA_CONTENT_DELETE:
                 r = this.doOperation(this.requestObj);
                 break;
             default:
@@ -66,51 +61,69 @@ public class ConsolidatedMediaFetchApiHandler extends AudioVideoApiHandler {
     }
 
     /**
-     * Handler for invoking the appropriate API in order to fetch one or more
-     * artist objects.
+     * Handler for invoking the appropriate API in order to delete the content
+     * record
      * 
      * @param req
      *            an instance of {@link MultimediaRequest}
      */
     @Override
     protected void processTransactionCode(MultimediaRequest req) {
+        this.jaxbResults = null;
         try {
-            VwArtistDto criteriaDto = ConsolidatedMediaJaxbDtoFactory.createVwArtistProjectDtoInstance(req.getCriteria()
-                    .getAudioVideoCriteria());
+            // Get artist profile data
+            ContentDto criteria = MediaContentJaxbDtoFactory
+                    .createMediaContentDtoInstance(req.getCriteria().getContentCriteria());
 
             // Make API call
-            AudioVideoApi api = AudioVideoFactory.createApi();
-            List<VwArtistDto> dtoList = api.getConsolidatedArtist(criteriaDto);
-            if (dtoList == null) {
-                this.rs.setMessage(ConsolidatedMediaApiHandlerConst.MESSAGE_NOT_FOUND);
-                this.rs.setRecordCount(0);
+            int rc = this.api.delete(criteria.getContentId());
+            if (rc == 1) {
+                this.rs.setMessage(MediaContentApiHandlerConst.MESSAGE_DELETED);
+                this.rs.setRecordCount(rc);
             }
             else {
-                // Package API results into JAXB objects
-                AudioVideoType avt = this.buildConsolidatedMedia(dtoList);
-                this.jaxbResults.add(avt);
-                this.rs.setMessage(ConsolidatedMediaApiHandlerConst.MESSAGE_FOUND);
-                this.rs.setRecordCount(dtoList.size());
+                this.rs.setMessage(MediaContentApiHandlerConst.MESSAGE_NOT_FOUND);
+                this.rs.setRecordCount(0);
             }
+
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setMessage(ConsolidatedMediaApiHandlerConst.MESSAGE_FETCH_ERROR);
+            rs.setMessage(MediaContentApiHandlerConst.MESSAGE_DELETE_ERROR);
             rs.setExtMessage(e.getMessage());
         }
     }
 
-    
+    /**
+     * Verifies the multimedia request payload exist and that it contains a
+     * valid criteria section.
+     * 
+     * @param req
+     *            instance of {@link MultimediaRequest}
+     * @throws {@link InvalidDataException} when <i>req</i> is null, transaction
+     *         code is incorrect, does not contain a profile section, profile
+     *         section does not contain an audio video details section, the
+     *         audio video details section does not contatin an artist, or
+     *         contains two or more artists to be processed.
+     */
     @Override
     protected void validateRequest(MultimediaRequest req) throws InvalidDataException {
         super.validateRequest(req);
         try {
-            Verifier.verify(req.getHeader().getTransaction().equalsIgnoreCase(ApiTransactionCodes.MEDIA_CONSOLIDATED_SEARCH));
+            Verifier.verify(req.getHeader().getTransaction().equalsIgnoreCase(ApiTransactionCodes.MEDIA_CONTENT_DELETE));
         }
         catch (VerifyException e) {
             throw new InvalidRequestException("Invalid transaction code for this message handler: "
                     + req.getHeader().getTransaction());
+        }
+        
+        try {
+            Verifier.verifyNotNull(req.getCriteria());
+            Verifier.verifyNotNull(req.getCriteria().getContentCriteria());
+        }
+        catch (VerifyException e) {
+            throw new InvalidRequestException(MediaContentApiHandlerConst.MESSAGE_DELETE_MISSING_CRITERIA);
         }
     }
 

@@ -14,6 +14,10 @@ public class MediaContentApiHandlerConst {
     public static final String MESSAGE_FETCH_ERROR = "Failure to retrieve Media content data";
     public static final String MESSAGE_FETCH_MISSING_CRITERIA = "Media content fetch operation requires selection criteria";
 
+    public static final String MESSAGE_DELETED = "Media content deleted successfully";
+    public static final String MESSAGE_DELETE_ERROR = "Failure to delete Media content data";
+    public static final String MESSAGE_DELETE_MISSING_CRITERIA = "Media content delete operation requires selection criteria";
+
     public static final String MESSAGE_UPLOAD_SUCCESS = "Media content was uploaded successfully for file: "
             + ApiMessageHandlerConst.MSG_PLACEHOLDER;
     public static final String MESSAGE_UPLOAD_ERROR = "Media content upload failed.  Please consult system administrator";
