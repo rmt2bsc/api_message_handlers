@@ -60,8 +60,8 @@ public class MediaFileListenerStartApiHandler extends MediaFileListenerApiHandle
     }
 
     /**
-     * Handler for invoking the appropriate API in order to fetch one or more
-     * artist objects.
+     * Handler for invoking the appropriate API in order to start the media file
+     * listener
      * 
      * @param req
      *            an instance of {@link MultimediaRequest}
