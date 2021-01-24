@@ -1,0 +1,12 @@
+<MultimediaRequest>
+    <header>
+        <routing>JMS:rmt2.queue.media</routing>
+        <application>media</application>
+        <module>listener</module>
+        <transaction>STOP_MEDIA_FILE_LISTENER</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>01/23/2021 22:52:13</delivery_date>
+        <session_id>ABCDEFGHIJKLMNOPQRSTUVWXYZ</session_id>
+    </header>
+</MultimediaRequest>
