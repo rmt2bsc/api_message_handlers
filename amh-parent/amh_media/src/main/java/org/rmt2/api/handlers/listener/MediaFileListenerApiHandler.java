@@ -1,14 +1,13 @@
 package org.rmt2.api.handlers.listener;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.modules.document.DocumentContentApi;
 import org.modules.document.DocumentContentApiFactory;
 import org.rmt2.api.handler.util.MessageHandlerUtility;
 import org.rmt2.constants.MessagingConstants;
+import org.rmt2.jaxb.MediaFileListenerDetailsType;
 import org.rmt2.jaxb.MultimediaRequest;
 import org.rmt2.jaxb.MultimediaResponse;
 import org.rmt2.jaxb.ObjectFactory;
@@ -32,14 +31,14 @@ import com.api.util.assistants.VerifyException;
  *
  */
 public abstract class MediaFileListenerApiHandler extends
-        AbstractJaxbMessageHandler<MultimediaRequest, MultimediaResponse, List<Object>> {
+        AbstractJaxbMessageHandler<MultimediaRequest, MultimediaResponse, MediaFileListenerDetailsType> {
     
     private static final Logger logger = Logger.getLogger(MediaFileListenerApiHandler.class);
 
     protected ObjectFactory jaxbObjFactory;
     protected DocumentContentApi api;
     protected MessageHandlerCommonReplyStatus rs;
-    List<Object> jaxbResults;
+    MediaFileListenerDetailsType jaxbResults;
 
     /**
      * @param payload
@@ -50,7 +49,6 @@ public abstract class MediaFileListenerApiHandler extends
         this.jaxbObjFactory = new ObjectFactory();
         this.responseObj = jaxbObjFactory.createMultimediaResponse();
         this.rs = new MessageHandlerCommonReplyStatus();
-        this.jaxbResults = new ArrayList<>();
         logger.info(MediaFileListenerApiHandler.class.getName() + " was instantiated successfully");
     }
 
@@ -77,6 +75,7 @@ public abstract class MediaFileListenerApiHandler extends
      */
     protected MessageHandlerResults doOperation(MultimediaRequest req) {
         MessageHandlerResults results = new MessageHandlerResults();
+        this.jaxbResults = null;
 
         // Set reply status
         rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_SUCCESS);
@@ -117,15 +116,15 @@ public abstract class MediaFileListenerApiHandler extends
 
 
     @Override
-    protected String buildResponse(List<Object> payload, MessageHandlerCommonReplyStatus replyStatus) {
+    protected String buildResponse(MediaFileListenerDetailsType payload, MessageHandlerCommonReplyStatus replyStatus) {
         if (replyStatus != null) {
             ReplyStatusType rs = MessageHandlerUtility.createReplyStatus(replyStatus);
             this.responseObj.setReplyStatus(rs);    
         }
         
-        if (payload != null && payload.size() > 0) {
+        if (payload != null) {
             this.responseObj.setProfile(this.jaxbObjFactory.createMimeDetailGroup());
-            // this.responseObj.getProfile().setAudioVideoDetails(payload.get(0));
+            this.responseObj.getProfile().setMediaFileListenerDetails(payload);
         }
         
         String xml = this.jaxb.marshalMessage(this.responseObj);
