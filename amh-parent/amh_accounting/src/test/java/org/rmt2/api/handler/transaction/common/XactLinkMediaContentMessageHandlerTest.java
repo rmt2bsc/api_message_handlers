@@ -4,12 +4,9 @@ import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
-import java.util.List;
-
 import org.dao.transaction.XactDao;
 import org.dao.transaction.XactDaoFactory;
 import org.dto.XactDto;
-import org.dto.XactTypeDto;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -24,7 +21,6 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.rmt2.api.ApiMessageHandlerConst;
 import org.rmt2.api.handler.BaseAccountingMessageHandlerTest;
-import org.rmt2.api.handler.HandlerCacheMockData;
 import org.rmt2.api.handlers.transaction.XactAttachDocumentApiHandler;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
@@ -74,18 +70,8 @@ public class XactLinkMediaContentMessageHandlerTest extends BaseAccountingMessag
         when(mockXactDaoFactory.createRmt2OrmXactDao(isA(String.class))).thenReturn(mockDao);
         PowerMockito.when(XactApiFactory.createDefaultXactApi()).thenReturn(this.mockApi);
         doNothing().when(this.mockApi).close();
-        
-        List<XactTypeDto> mockXactTypeListData = HandlerCacheMockData.createMockXactTypes();
-        try {
-            when(this.mockApi.getXactTypes(null)).thenReturn(mockXactTypeListData);
-        } catch (XactApiException e) {
-            Assert.fail("Unable to setup mock stub for fetching a treansaction type data");
-        }
-        
         return;
     }
-
-
     
     /*
      * (non-Javadoc)
