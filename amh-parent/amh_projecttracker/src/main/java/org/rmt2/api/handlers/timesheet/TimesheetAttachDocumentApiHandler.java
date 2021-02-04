@@ -41,7 +41,8 @@ public class TimesheetAttachDocumentApiHandler extends
     
     private static final Logger logger = Logger.getLogger(TimesheetAttachDocumentApiHandler.class);
     public static final String MSG_UPDATE_SUCCESS = "Document, %1, was attached to timesheet, %2, successfully";
-    public static final String MSG_UPDATE_FAILURE = "Error occurred attaching document, %1, to timesheet, %2";
+    public static final String MSG_UPDATE_NOTFOUND = "Unable to attach documnet due to timesheet does not exits";
+    public static final String MSG_UPDATE_NO_ROWS_EFFECTED = "The document attachment process did not effect any timesheet";
     public static final String MSG_API_ERROR = "Media application link failed due to a system error.  Consult system administrator";
     public static final String MSG_DATA_NOT_FOUND = "Timesheet was not found using %1";
     public static final String MSG_MISSING_PROFILE_DATA = "Media application link request profile is required";
@@ -119,32 +120,35 @@ public class TimesheetAttachDocumentApiHandler extends
         // Set reply status
         rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
         rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+        rs.setRecordCount(0);
         
         // Ensure that this handler is the intended audience for this attachment
         if (reqData.getProjectName().equalsIgnoreCase(ApiMessageHandlerConst.MEDIA_LINK_VALID_APPNAME_PROJECTTRACKER) &&
                 reqData.getModuleName().equalsIgnoreCase(ApiMessageHandlerConst.MEDIA_LINK_VALID_MODULENAME_PROJECTTRACKER)) {
             try {
                 TimesheetDto xactDto = this.api.get(reqData.getPropertyId());
-                xactDto.setDocumentId(reqData.getContentId());
-                int rc = this.api.updateTimesheet(xactDto);
-
-                // Setup response message
-                if (rc == 1) {
-                    msg = RMT2String.replace(TimesheetAttachDocumentApiHandler.MSG_UPDATE_SUCCESS,
-                            String.valueOf(reqData.getContentId()), ApiMessageHandlerConst.MSG_PLACEHOLDER1);
-                    msg = RMT2String.replace(msg, String.valueOf(reqData.getPropertyId()),
-                            ApiMessageHandlerConst.MSG_PLACEHOLDER2);
+                if (xactDto == null) {
+                    msg = TimesheetAttachDocumentApiHandler.MSG_UPDATE_NOTFOUND;
                 }
                 else {
-                    msg = RMT2String.replace(TimesheetAttachDocumentApiHandler.MSG_UPDATE_FAILURE,
-                            String.valueOf(reqData.getContentId()), ApiMessageHandlerConst.MSG_PLACEHOLDER1);
-                    msg = RMT2String.replace(msg, String.valueOf(reqData.getPropertyId()),
-                            ApiMessageHandlerConst.MSG_PLACEHOLDER2);
+                    xactDto.setDocumentId(reqData.getContentId());
+                    int rc = this.api.updateTimesheet(xactDto);
+
+                    // Setup response message
+                    if (rc == 1) {
+                        msg = RMT2String.replace(TimesheetAttachDocumentApiHandler.MSG_UPDATE_SUCCESS,
+                                String.valueOf(reqData.getContentId()), ApiMessageHandlerConst.MSG_PLACEHOLDER1);
+                        msg = RMT2String.replace(msg, String.valueOf(reqData.getPropertyId()),
+                                ApiMessageHandlerConst.MSG_PLACEHOLDER2);
+                    }
+                    else {
+                        msg = TimesheetAttachDocumentApiHandler.MSG_UPDATE_NO_ROWS_EFFECTED;
+                    }
+                    rs.setRecordCount(rc);
+                    this.responseObj.setHeader(req.getHeader());
+                    this.api.commitTrans();
                 }
                 rs.setMessage(msg);
-                rs.setRecordCount(1);
-                this.responseObj.setHeader(req.getHeader());
-                this.api.commitTrans();
             } catch (Exception e) {
                 logger.error("Error occurred during API Message Handler operation, " + this.command, e);
                 rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
@@ -159,10 +163,8 @@ public class TimesheetAttachDocumentApiHandler extends
             msg = RMT2String.replace(ApiMessageHandlerConst.MEDIA_LINK_PROCESSING_SKIPPED,
                     ProjectTrackerApiConst.APP_NAME, ApiMessageHandlerConst.MSG_PLACEHOLDER);
             rs.setMessage(msg);
-            rs.setRecordCount(0);
             this.responseObj.setHeader(req.getHeader());
         }
-        // ApiMessageHandlerConst.MEDIA_LINK_PROCESSING_SKIPPED
         
         String xml = this.buildResponse(reqData, rs);
         results.setPayload(xml);

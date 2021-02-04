@@ -42,7 +42,8 @@ public class XactAttachDocumentApiHandler extends
     
     private static final Logger logger = Logger.getLogger(XactAttachDocumentApiHandler.class);
     public static final String MSG_UPDATE_SUCCESS = "Document, %1, was attached to accounting transaction, %2, successfully";
-    public static final String MSG_UPDATE_FAILURE = "Error occurred attaching document, %1, to accounting transaction, %2";
+    public static final String MSG_UPDATE_NOTFOUND = "Unable to attach documnet due to transaction does not exits";
+    public static final String MSG_UPDATE_NO_ROWS_EFFECTED = "The document attachment process did not effect any transactions";
     public static final String MSG_API_ERROR = "Media application link failed due to a system error.  Consult system administrator";
     public static final String MSG_DATA_NOT_FOUND = "Accounting transaction was not found using %1";
     public static final String MSG_MISSING_PROFILE_DATA = "Media application link request profile is required";
@@ -126,30 +127,34 @@ public class XactAttachDocumentApiHandler extends
                 reqData.getModuleName().equalsIgnoreCase(ApiMessageHandlerConst.MEDIA_LINK_VALID_MODULENAME_ACCOUNTING)) {
             try {
                 XactDto xactDto = this.api.getXactById(reqData.getPropertyId());
-                xactDto.setDocumentId(reqData.getContentId());
-                int rc = this.api.update(xactDto);
-
-                // Setup response message
-                if (rc == 1) {
-                    msg = RMT2String.replace(XactAttachDocumentApiHandler.MSG_UPDATE_SUCCESS,
-                            String.valueOf(reqData.getContentId()), ApiMessageHandlerConst.MSG_PLACEHOLDER1);
-                    msg = RMT2String.replace(msg, String.valueOf(reqData.getPropertyId()),
-                            ApiMessageHandlerConst.MSG_PLACEHOLDER2);
+                if (xactDto == null) {
+                    msg = XactAttachDocumentApiHandler.MSG_UPDATE_NOTFOUND;
+                    rs.setRecordCount(0);
                 }
                 else {
-                    msg = RMT2String.replace(XactAttachDocumentApiHandler.MSG_UPDATE_FAILURE,
-                            String.valueOf(reqData.getContentId()), ApiMessageHandlerConst.MSG_PLACEHOLDER1);
-                    msg = RMT2String.replace(msg, String.valueOf(reqData.getPropertyId()),
-                            ApiMessageHandlerConst.MSG_PLACEHOLDER2);
+                    xactDto.setDocumentId(reqData.getContentId());
+                    int rc = this.api.update(xactDto);
+                    rs.setRecordCount(rc);
+
+                    // Setup response message
+                    if (rc == 1) {
+                        msg = RMT2String.replace(XactAttachDocumentApiHandler.MSG_UPDATE_SUCCESS,
+                                String.valueOf(reqData.getContentId()), ApiMessageHandlerConst.MSG_PLACEHOLDER1);
+                        msg = RMT2String.replace(msg, String.valueOf(reqData.getPropertyId()),
+                                ApiMessageHandlerConst.MSG_PLACEHOLDER2);
+                    }
+                    else {
+                        msg = XactAttachDocumentApiHandler.MSG_UPDATE_NO_ROWS_EFFECTED;
+                    }
                 }
+
                 rs.setMessage(msg);
-                rs.setRecordCount(1);
                 this.responseObj.setHeader(req.getHeader());
                 this.api.commitTrans();
             } catch (Exception e) {
                 logger.error("Error occurred during API Message Handler operation, " + this.command, e);
                 rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-                rs.setMessage(MSG_API_ERROR);
+                rs.setMessage(XactAttachDocumentApiHandler.MSG_API_ERROR);
                 rs.setExtMessage(e.getMessage());
                 this.api.rollbackTrans();
             } finally {
@@ -163,7 +168,6 @@ public class XactAttachDocumentApiHandler extends
             rs.setRecordCount(0);
             this.responseObj.setHeader(req.getHeader());
         }
-        // ApiMessageHandlerConst.MEDIA_LINK_PROCESSING_SKIPPED
         
         String xml = this.buildResponse(reqData, rs);
         results.setPayload(xml);
