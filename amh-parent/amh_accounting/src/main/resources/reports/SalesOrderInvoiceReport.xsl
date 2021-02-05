@@ -400,7 +400,7 @@
 			<fo:table-cell border-right-color="black" border-right-width=".5pt" border-right-style="solid">
 				<fo:block text-align="left" font-size="11pt">
 					<xsl:text>&#xA0;</xsl:text>
-					<xsl:value-of select="sales_order_item_id"/>
+					<xsl:value-of select="item/item_id"/>
 				</fo:block>
 			</fo:table-cell>
 			<fo:table-cell border-right-color="black" border-right-width=".5pt" border-right-style="solid">
