@@ -7,6 +7,7 @@
         <delivery_mode>XXXXXXX</delivery_mode>
         <message_mode>REQUEST</message_mode>
         <delivery_date>02/05/2020 23:09:47</delivery_date>
+        <session_id>ABCDEFGHIJKLMNOPQRSTUVWXYZ</session_id>
     </header>
     <criteria>
         <customer_criteria/>

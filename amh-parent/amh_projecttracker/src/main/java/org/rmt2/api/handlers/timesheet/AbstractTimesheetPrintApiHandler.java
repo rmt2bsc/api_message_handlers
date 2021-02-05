@@ -54,7 +54,6 @@ public abstract class AbstractTimesheetPrintApiHandler extends
     protected TimesheetApi api;
     private String reportName;
 
-
     /**
      * @param payload
      */
@@ -82,7 +81,7 @@ public abstract class AbstractTimesheetPrintApiHandler extends
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         TimesheetDto timesheetDto = null;
         ReportAttachmentType pdfReport = null;
-
+        this.sessionId = req.getHeader().getSessionId();
 
         try {
             // Set reply status
@@ -154,7 +153,7 @@ public abstract class AbstractTimesheetPrintApiHandler extends
     abstract protected String buildTimesheetData(BusinessContactDto serviceProvider);
 
     private ReportAttachmentType generatePdf(String jaxbXml) {
-        PdfReportUtility xform = new PdfReportUtility(this.reportName, jaxbXml, true);
+        PdfReportUtility xform = new PdfReportUtility(this.reportName, jaxbXml, true, this.sessionId);
         try {
             ByteArrayOutputStream pdf = null;
             OutputStream output = xform.buildReport();
