@@ -159,7 +159,7 @@ public class ConsolidatedMediaQueryMessageHandlerTest extends BaseMediaMessageHa
 
         MultimediaResponse actualRepsonse = (MultimediaResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertEquals(1, actualRepsonse.getProfile().getAudioVideoDetails().getArtist().size());
-        Assert.assertEquals(5, actualRepsonse.getReplyStatus().getRecordCount().intValue());
+        Assert.assertEquals(1, actualRepsonse.getReplyStatus().getRecordCount().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals(ConsolidatedMediaApiHandlerConst.MESSAGE_FOUND, actualRepsonse.getReplyStatus().getMessage());
