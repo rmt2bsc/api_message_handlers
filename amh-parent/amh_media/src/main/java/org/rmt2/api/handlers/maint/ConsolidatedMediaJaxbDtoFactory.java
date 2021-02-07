@@ -40,7 +40,7 @@ public class ConsolidatedMediaJaxbDtoFactory extends RMT2Base {
             // Get specific artist by id
             dto.setArtistId(jaxbObj.getArtistId());
         }
-        if (!jaxbObj.getArtistName().isEmpty()) {
+        if (jaxbObj.getArtistName() != null && !jaxbObj.getArtistName().isEmpty()) {
             dto.setArtistName(jaxbObj.getArtistName());
         }
 
@@ -77,8 +77,78 @@ public class ConsolidatedMediaJaxbDtoFactory extends RMT2Base {
         if (jaxbObj.getMediaTypeId() != null) {
             dto.setMediaTypeId(jaxbObj.getMediaTypeId());
         }
-
+        dto.setSearchTerm(jaxbObj.getSearchTerm());
         return dto;
+    }
+
+    /**
+     * Creates a List instance of <i>ArtistType</i> using a valid List of
+     * <i>VwArtistDto</i> DTO objects by filtering out duplicate records.
+     * 
+     * @param dto
+     *            List of {@link VwArtistDto} objects
+     * @param searchTerm
+     *            the search term value that was used to fetch the data which is
+     *            also used to filter the results.
+     * @return List of {@link ArtistType} objects
+     */
+    public static final List<ArtistType> createMediaJaxbInstance(List<VwArtistDto> dto, String searchTerm) {
+        if (dto == null) {
+            return null;
+        }
+        if (searchTerm == null || searchTerm.isEmpty()) {
+            return null;
+        }
+
+        List<ArtistType> artists = new ArrayList<>();
+        List<AvProjectType> projs = new ArrayList<>();
+        List<TrackType> tracks = new ArrayList<>();
+        int prevArtistId = 0;
+        int prevProjId = 0;
+
+        // Evaluate data from the lowest entity to highest i.e. track to project
+        // to artist
+        for (VwArtistDto item : dto) {
+            // Begin evauluating the track
+            if (item.getTrackName() != null && item.getTrackName().toLowerCase().contains(searchTerm.toLowerCase())) {
+                // Build and add artist/project/track nodes
+                tracks.add(ConsolidatedMediaJaxbDtoFactory.createTrackTypeJaxbInstance(item));
+                AvProjectType proj = ConsolidatedMediaJaxbDtoFactory.createAvProjectTypeJaxbInstance(item, tracks);
+                projs.add(proj);
+                ArtistType artist = ConsolidatedMediaJaxbDtoFactory.createArtistTypeJaxbInstance(item, projs);
+                artists.add(artist);
+                projs.clear();
+                tracks.clear();
+            }
+            else {
+                // Next, evaluate project
+                if (item.getProjectName() != null && item.getProjectName().toLowerCase().contains(searchTerm.toLowerCase())
+                        && item.getProjectId() != prevProjId) {
+                    // Build and add artist/project nodes
+                    AvProjectType proj = ConsolidatedMediaJaxbDtoFactory.createAvProjectTypeJaxbInstance(item, null);
+                    projs.add(proj);
+                    ArtistType artist = ConsolidatedMediaJaxbDtoFactory.createArtistTypeJaxbInstance(item, projs);
+                    artists.add(artist);
+                    projs.clear();
+
+                    // Update previous project id variable
+                    prevProjId = item.getProjectId();
+                }
+                else {
+                    // Next, evaluate artist
+                    if (item.getArtistName() != null && item.getArtistName().toLowerCase().contains(searchTerm.toLowerCase())
+                            && item.getArtistId() != prevArtistId) {
+                        // Build and add artist node
+                        ArtistType artist = ConsolidatedMediaJaxbDtoFactory.createArtistTypeJaxbInstance(item, null);
+                        artists.add(artist);
+
+                        // Update previous artist id variable
+                        prevArtistId = item.getArtistId();
+                    }
+                }
+            }
+        }
+        return artists;
     }
 
     /**
@@ -121,10 +191,10 @@ public class ConsolidatedMediaJaxbDtoFactory extends RMT2Base {
                     tracks.clear();
                     prevProjId = item.getProjectId();
 
-                    // Do not attempt to add track data for movies.
-                    if (item.getProjectTypeId() != 2) {
-                        tracks.add(ConsolidatedMediaJaxbDtoFactory.createTrackTypeJaxbInstance(item));
-                    }
+                    // // Do not attempt to add track data for movies.
+                    // if (item.getProjectTypeId() != 2) {
+                    // tracks.add(ConsolidatedMediaJaxbDtoFactory.createTrackTypeJaxbInstance(item));
+                    // }
                 }
             }
             else {

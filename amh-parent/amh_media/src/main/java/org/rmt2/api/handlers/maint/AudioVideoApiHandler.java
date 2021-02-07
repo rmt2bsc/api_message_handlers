@@ -252,6 +252,27 @@ public abstract class AudioVideoApiHandler extends
     }
 
     /**
+     * Builds an AudioVideoType object graph of list of VwArtistDto objects.
+     * 
+     * @param mediaList
+     *            a List of {@link VwArtistDto} instances
+     * @param searhTerm
+     *            used to filter out duplicate records based on track, projects
+     *            and/or artists
+     * @return {@link AudioVideoType}
+     * @throws AudioVideoApiException
+     */
+    protected AudioVideoType buildConsolidatedMedia(List<VwArtistDto> mediaList, String searhTerm) throws AudioVideoApiException {
+        AudioVideoType avt = this.jaxbObjFactory.createAudioVideoType();
+
+        List<ArtistType> results = ConsolidatedMediaJaxbDtoFactory.createMediaJaxbInstance(mediaList, searhTerm);
+        if (results != null) {
+            avt.getArtist().addAll(results);
+        }
+        return avt;
+    }
+
+    /**
      * Dynamically builds a full AudioVideoType object graph beggining with a
      * list of artist objects.
      * <p>

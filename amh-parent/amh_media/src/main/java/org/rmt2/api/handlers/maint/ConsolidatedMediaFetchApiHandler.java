@@ -75,8 +75,12 @@ public class ConsolidatedMediaFetchApiHandler extends AudioVideoApiHandler {
     @Override
     protected void processTransactionCode(MultimediaRequest req) {
         try {
-            VwArtistDto criteriaDto = ConsolidatedMediaJaxbDtoFactory.createVwArtistProjectDtoInstance(req.getCriteria()
+            VwArtistDto criteriaDto = ConsolidatedMediaJaxbDtoFactory
+                    .createVwArtistProjectDtoInstance(req.getCriteria()
                     .getAudioVideoCriteria());
+
+            String searchTerm = req.getCriteria().getAudioVideoCriteria().getSearchTerm();
+            boolean searhTermUsed = (searchTerm != null && !searchTerm.isEmpty());
 
             // Make API call
             AudioVideoApi api = AudioVideoFactory.createApi();
@@ -87,10 +91,17 @@ public class ConsolidatedMediaFetchApiHandler extends AudioVideoApiHandler {
             }
             else {
                 // Package API results into JAXB objects
-                AudioVideoType avt = this.buildConsolidatedMedia(dtoList);
+                AudioVideoType avt = null;
+                if (searhTermUsed) {
+                    avt = this.buildConsolidatedMedia(dtoList, searchTerm);
+                }
+                else {
+                    avt = this.buildConsolidatedMedia(dtoList);
+                }
+
                 this.jaxbResults.add(avt);
                 this.rs.setMessage(ConsolidatedMediaApiHandlerConst.MESSAGE_FOUND);
-                this.rs.setRecordCount(dtoList.size());
+                this.rs.setRecordCount(avt.getArtist().size());
             }
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {

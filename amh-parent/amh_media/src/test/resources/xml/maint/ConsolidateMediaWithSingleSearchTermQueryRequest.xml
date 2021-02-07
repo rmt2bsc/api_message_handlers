@@ -1,0 +1,17 @@
+<MultimediaRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>media</application>
+        <module>maint</module>
+        <transaction>SEARCH_MEDIA</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>02/06/2021 21:33:32</delivery_date>
+        <session_id>ABCDEFGHIJKLMNOPQRSTUVWXYZ</session_id>
+    </header>
+    <criteria>
+        <audio_video_criteria>
+            <search_term>Dennis Chambers</search_term>
+        </audio_video_criteria>
+    </criteria>
+</MultimediaRequest>
