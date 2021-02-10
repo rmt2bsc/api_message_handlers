@@ -89,6 +89,53 @@ public class ConsolidatedMediaQueryMessageHandlerTest extends BaseMediaMessageHa
         return;
     }
 
+    @Test
+    public void testSuccess_Fetch_With_SearchTerm() {
+        String request = RMT2File.getFileContentsAsString("xml/maint/ConsolidateMediaWithSingleSearchTermQueryRequest.xml");
+        List<VwArtistDto> mockListData = MediaMockDtoFactory.createConsolidatedMediaLikeMockData();
+
+        // Modify data set for testing purposes
+        mockListData.get(0).setArtistName("After 7");
+
+        mockListData.get(1).setArtistId(MediaMockOrmFactory.TEST_ARTIST_ID + 1);
+        mockListData.get(1).setProjectId(MediaMockOrmFactory.TEST_PROJECT_ID + 1);
+        mockListData.get(1).setArtistName("Afterlife");
+
+        mockListData.get(2).setArtistId(MediaMockOrmFactory.TEST_ARTIST_ID + 2);
+        mockListData.get(2).setProjectId(MediaMockOrmFactory.TEST_PROJECT_ID + 2);
+        mockListData.get(2).setProjectName("Afterlife Again");
+
+        mockListData.get(3).setArtistId(MediaMockOrmFactory.TEST_ARTIST_ID + 3);
+        mockListData.get(3).setProjectId(MediaMockOrmFactory.TEST_PROJECT_ID + 3);
+        mockListData.get(3).setTrackName("After The Love Is Gone");
+
+        mockListData.get(4).setArtistId(MediaMockOrmFactory.TEST_ARTIST_ID + 4);
+        mockListData.get(4).setProjectId(MediaMockOrmFactory.TEST_PROJECT_ID + 4);
+        mockListData.get(4).setTrackName("After The Storm");
+
+        try {
+            when(this.mockApi.getConsolidatedArtist(isA(VwArtistDto.class))).thenReturn(mockListData);
+        } catch (AudioVideoApiException e) {
+            Assert.fail("Unable to setup mock stub for fetching vw_audio_video_artist records");
+        }
+
+        MessageHandlerResults results = null;
+        ConsolidatedMediaFetchApiHandler handler = new ConsolidatedMediaFetchApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.MEDIA_CONSOLIDATED_SEARCH, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        MultimediaResponse actualRepsonse = (MultimediaResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertEquals(5, actualRepsonse.getReplyStatus().getRecordCount().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(ConsolidatedMediaApiHandlerConst.MESSAGE_FOUND, actualRepsonse.getReplyStatus().getMessage());
+    }
     
     @Test
     public void testSuccess_Fetch_Unique_Media() {
