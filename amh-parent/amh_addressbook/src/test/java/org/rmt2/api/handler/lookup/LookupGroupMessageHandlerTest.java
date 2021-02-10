@@ -186,7 +186,8 @@ public class LookupGroupMessageHandlerTest extends BaseAddressBookMessageHandler
         Assert.assertNotNull(actualRepsonse.getDetailCodes());
         Assert.assertTrue(actualRepsonse.getDetailCodes().isEmpty());
         Assert.assertEquals(4, actualRepsonse.getGroupCodes().size());
-        Assert.assertEquals(4, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(4, actualRepsonse.getReplyStatus().getRecordCount().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Group Lookup record(s) found", actualRepsonse.getReplyStatus().getMessage());
         for (int ndx = 0; ndx < actualRepsonse.getGroupCodes().size(); ndx++) {
@@ -224,7 +225,8 @@ public class LookupGroupMessageHandlerTest extends BaseAddressBookMessageHandler
         Assert.assertNotNull(actualRepsonse.getDetailCodes());
         Assert.assertTrue(actualRepsonse.getGroupCodes().isEmpty());
         Assert.assertTrue(actualRepsonse.getDetailCodes().isEmpty());
-        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getRecordCount().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Group Lookup data not found!", actualRepsonse.getReplyStatus().getMessage());
     }
@@ -350,11 +352,11 @@ public class LookupGroupMessageHandlerTest extends BaseAddressBookMessageHandler
         Assert.assertNotNull(actualRepsonse.getDetailCodes());
         Assert.assertTrue(!actualRepsonse.getGroupCodes().isEmpty());
         Assert.assertTrue(actualRepsonse.getDetailCodes().isEmpty());
-        Assert.assertEquals(GROUP_ID, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getRecordCount().intValue());
         Assert.assertEquals(WebServiceConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Lookup Group was created successfully", actualRepsonse.getReplyStatus().getMessage());
-        Assert.assertEquals("The new group id is " + actualRepsonse.getReplyStatus().getReturnCode().intValue(),
-                actualRepsonse.getReplyStatus().getExtMessage());
+        Assert.assertEquals("The new group id is " + GROUP_ID, actualRepsonse.getReplyStatus().getExtMessage());
     }
 
     @Test

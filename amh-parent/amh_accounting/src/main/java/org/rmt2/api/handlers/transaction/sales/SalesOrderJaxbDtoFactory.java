@@ -14,12 +14,14 @@ import org.dto.SalesOrderItemDto;
 import org.dto.adapter.orm.transaction.sales.Rmt2SalesOrderDtoFactory;
 import org.modules.transaction.sales.SalesApiConst;
 import org.rmt2.api.handlers.transaction.TransactionJaxbDtoFactory;
+import org.rmt2.jaxb.InventoryItemType;
 import org.rmt2.jaxb.RecordTrackingType;
 import org.rmt2.jaxb.SalesInvoiceType;
 import org.rmt2.jaxb.SalesOrderCriteria;
 import org.rmt2.jaxb.SalesOrderItemType;
 import org.rmt2.jaxb.SalesOrderType;
 import org.rmt2.util.RecordTrackingTypeBuilder;
+import org.rmt2.util.accounting.inventory.InventoryItemTypeBuilder;
 import org.rmt2.util.accounting.transaction.sales.SalesInvoiceTypeBuilder;
 import org.rmt2.util.accounting.transaction.sales.SalesOrderItemTypeBuilder;
 import org.rmt2.util.accounting.transaction.sales.SalesOrderTypeBuilder;
@@ -92,6 +94,11 @@ public class SalesOrderJaxbDtoFactory extends TransactionJaxbDtoFactory {
         if (profileData.getSalesOrderId() != null) {
             dto.setSalesOrderId(profileData.getSalesOrderId().intValue());
         }
+        else {
+            // In the event client did not supply the sales order id, initialize
+            // it as "new".
+            dto.setSalesOrderId(0);
+        }
         if (profileData.getCustomerId() != null) {
             dto.setCustomerId(profileData.getCustomerId().intValue());
         }
@@ -162,8 +169,14 @@ public class SalesOrderJaxbDtoFactory extends TransactionJaxbDtoFactory {
         if (profileItem.getSalesOrderItemId() != null) {
             dto.setSoItemId(profileItem.getSalesOrderItemId().intValue());
         }
+        else {
+            dto.setSoItemId(0);
+        }
         if (profileItem.getSalesOrderId() != null) {
             dto.setSalesOrderId(profileItem.getSalesOrderId().intValue());
+        }
+        else {
+            dto.setSalesOrderId(0);
         }
         if (profileItem.getItem() != null && profileItem.getItem().getItemId() != null) {
             dto.setItemId(profileItem.getItem().getItemId().intValue());
@@ -290,8 +303,14 @@ public class SalesOrderJaxbDtoFactory extends TransactionJaxbDtoFactory {
                 .withUserId(dto.getUpdateUserId())
                 .build();
 
+        InventoryItemType inv = InventoryItemTypeBuilder.Builder.create()
+                .withItemId(dto.getItemId())
+                .withItemName(dto.getImName())
+                .build();
+
         SalesOrderItemType jaxb = SalesOrderItemTypeBuilder.Builder.create()
                 .withSalesOrderItemId(dto.getSoItemId())
+                .withInventoryItem(inv)
                 .withSalesOrderId(dto.getSalesOrderId())
                 .withBackOrderQty(dto.getBackOrderQty())
                 .withMarkup(dto.getInitMarkup())

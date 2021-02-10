@@ -1,0 +1,17 @@
+<MultimediaRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>media</application>
+        <module>batch</module>
+        <transaction>BATCH_VIDEO_METADATA_IMPORT</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>08/19/2020 20:28:44</delivery_date>
+    </header>
+    <criteria>
+        <audio_batch_import_criteria>
+            <location>k:/multimedia/video/movies</location>
+            <import_file_path>C:/AppServer/data/video_batch_import.txt</import_file_path>
+        </audio_batch_import_criteria>
+    </criteria>
+</MultimediaRequest>

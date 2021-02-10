@@ -1,13 +1,16 @@
 package org.rmt2.api.handler.transaction.disbursements;
 
+import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.dto.XactDto;
 import org.dto.XactTypeDto;
+import org.dto.adapter.orm.transaction.Rmt2XactDtoFactory;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -15,6 +18,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.modules.transaction.XactApiException;
+import org.modules.transaction.XactConst;
 import org.modules.transaction.disbursements.DisbursementsApi;
 import org.modules.transaction.disbursements.DisbursementsApiException;
 import org.modules.transaction.disbursements.DisbursementsApiFactory;
@@ -24,8 +28,9 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.rmt2.api.handler.BaseAccountingMessageHandlerTest;
 import org.rmt2.api.handler.HandlerCacheMockData;
 import org.rmt2.api.handler.transaction.common.CommonXactMockData;
+import org.rmt2.api.handler.transaction.purchases.CreditorPurchasesMockData;
 import org.rmt2.api.handlers.transaction.XactApiHandler;
-import org.rmt2.api.handlers.transaction.cashdisbursement.CashDisbursementApiHandler;
+import org.rmt2.api.handlers.transaction.cashdisbursement.CreateCashDisbursementApiHandler;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.AccountingTransactionResponse;
@@ -46,7 +51,7 @@ import com.api.util.RMT2String;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ AbstractDaoClientImpl.class, Rmt2OrmClientFactory.class,
-    CashDisbursementApiHandler.class, DisbursementsApiFactory.class, SystemConfigurator.class })
+    CreateCashDisbursementApiHandler.class, DisbursementsApiFactory.class, SystemConfigurator.class })
 public class CashDisbursementUpdateMessageHandlerTest extends BaseAccountingMessageHandlerTest {
 
     private DisbursementsApi mockApi;
@@ -106,8 +111,20 @@ public class CashDisbursementUpdateMessageHandlerTest extends BaseAccountingMess
             Assert.fail("Unable to setup mock stub for creating a cash disbursement transaction");
         }
         
+        XactDto newXactDto = Rmt2XactDtoFactory.createXactBaseInstance(null);
+        newXactDto.setXactId(CommonXactMockData.NEW_XACT_ID);
+        newXactDto.setXactId(CreditorPurchasesMockData.NEW_XACT_ID);
+        newXactDto.setXactTypeId(XactConst.XACT_TYPE_CASH_DISBURSE);
+        List<XactDto> mockVerifyList = new ArrayList<>();
+        mockVerifyList.add(newXactDto);
+        try {
+            when(this.mockApi.get(isA(XactDto.class), eq(null))).thenReturn(mockVerifyList);
+        } catch (Exception e) {
+            Assert.fail("Unable to setup mock stub for updating a cash disbursment transaction");
+        }
+
         MessageHandlerResults results = null;
-        CashDisbursementApiHandler handler = new CashDisbursementApiHandler();
+        CreateCashDisbursementApiHandler handler = new CreateCashDisbursementApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_CREATE, request);
         } catch (MessageHandlerCommandException e) {
@@ -124,7 +141,7 @@ public class CashDisbursementUpdateMessageHandlerTest extends BaseAccountingMess
         Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         
-        String msg = RMT2String.replace(CashDisbursementApiHandler.MSG_CREATE_SUCCESS,
+        String msg = RMT2String.replace(CreateCashDisbursementApiHandler.MSG_CREATE_SUCCESS,
                 String.valueOf(CommonXactMockData.NEW_XACT_ID), "%s");
         Assert.assertEquals(msg, actualRepsonse.getReplyStatus().getMessage());
         
@@ -153,7 +170,7 @@ public class CashDisbursementUpdateMessageHandlerTest extends BaseAccountingMess
         }
 
         MessageHandlerResults results = null;
-        CashDisbursementApiHandler handler = new CashDisbursementApiHandler();
+        CreateCashDisbursementApiHandler handler = new CreateCashDisbursementApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_CREATE, request);
         } catch (MessageHandlerCommandException e) {
@@ -168,7 +185,7 @@ public class CashDisbursementUpdateMessageHandlerTest extends BaseAccountingMess
         Assert.assertNotNull(actualRepsonse.getProfile());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(CashDisbursementApiHandler.MSG_FAILURE, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(CreateCashDisbursementApiHandler.MSG_FAILURE, actualRepsonse.getReplyStatus().getMessage());
         Assert.assertEquals("An Xact API test error occurred", actualRepsonse.getReplyStatus().getExtMessage());
     }
 
@@ -179,7 +196,7 @@ public class CashDisbursementUpdateMessageHandlerTest extends BaseAccountingMess
 
 
         MessageHandlerResults results = null;
-        CashDisbursementApiHandler handler = new CashDisbursementApiHandler();
+        CreateCashDisbursementApiHandler handler = new CreateCashDisbursementApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_CREATE, request);
         } catch (MessageHandlerCommandException e) {
@@ -205,7 +222,7 @@ public class CashDisbursementUpdateMessageHandlerTest extends BaseAccountingMess
                 "xml/transaction/disbursements/cash/CashDisbursementCreateRequestMissingTransactionSection.xml");
 
         MessageHandlerResults results = null;
-        CashDisbursementApiHandler handler = new CashDisbursementApiHandler();
+        CreateCashDisbursementApiHandler handler = new CreateCashDisbursementApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_CREATE, request);
         } catch (MessageHandlerCommandException e) {
@@ -231,7 +248,7 @@ public class CashDisbursementUpdateMessageHandlerTest extends BaseAccountingMess
                 "xml/transaction/disbursements/cash/CashDisbursementCreateRequestZeroTransactions.xml");
 
         MessageHandlerResults results = null;
-        CashDisbursementApiHandler handler = new CashDisbursementApiHandler();
+        CreateCashDisbursementApiHandler handler = new CreateCashDisbursementApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_CREATE, request);
         } catch (MessageHandlerCommandException e) {
@@ -257,7 +274,7 @@ public class CashDisbursementUpdateMessageHandlerTest extends BaseAccountingMess
                 "xml/transaction/disbursements/cash/CashDisbursementCreateRequestTooManyTransactions.xml");
 
         MessageHandlerResults results = null;
-        CashDisbursementApiHandler handler = new CashDisbursementApiHandler();
+        CreateCashDisbursementApiHandler handler = new CreateCashDisbursementApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_CREATE, request);
         } catch (MessageHandlerCommandException e) {
@@ -290,8 +307,20 @@ public class CashDisbursementUpdateMessageHandlerTest extends BaseAccountingMess
             Assert.fail("Unable to setup mock stub for creating a creditor cash disbursement transaction");
         }
         
+        XactDto newXactDto = Rmt2XactDtoFactory.createXactBaseInstance(null);
+        newXactDto.setXactId(CommonXactMockData.NEW_XACT_ID);
+        newXactDto.setXactId(CreditorPurchasesMockData.NEW_XACT_ID);
+        newXactDto.setXactTypeId(XactConst.XACT_TYPE_CASH_DISBURSE);
+        List<XactDto> mockVerifyList = new ArrayList<>();
+        mockVerifyList.add(newXactDto);
+        try {
+            when(this.mockApi.get(isA(XactDto.class), eq(null))).thenReturn(mockVerifyList);
+        } catch (Exception e) {
+            Assert.fail("Unable to setup mock stub for updating a creditor cash disbursment transaction");
+        }
+
         MessageHandlerResults results = null;
-        CashDisbursementApiHandler handler = new CashDisbursementApiHandler();
+        CreateCashDisbursementApiHandler handler = new CreateCashDisbursementApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_CREDITOR_CREATE, request);
         } catch (MessageHandlerCommandException e) {
@@ -308,7 +337,7 @@ public class CashDisbursementUpdateMessageHandlerTest extends BaseAccountingMess
         Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         
-        String msg = RMT2String.replace(CashDisbursementApiHandler.MSG_CREATE_SUCCESS,
+        String msg = RMT2String.replace(CreateCashDisbursementApiHandler.MSG_CREATE_SUCCESS,
                 String.valueOf(CommonXactMockData.NEW_XACT_ID), "%s");
         Assert.assertEquals(msg, actualRepsonse.getReplyStatus().getMessage());
         
@@ -336,7 +365,7 @@ public class CashDisbursementUpdateMessageHandlerTest extends BaseAccountingMess
         }
         
         MessageHandlerResults results = null;
-        CashDisbursementApiHandler handler = new CashDisbursementApiHandler();
+        CreateCashDisbursementApiHandler handler = new CreateCashDisbursementApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_CREDITOR_CREATE, request);
         } catch (MessageHandlerCommandException e) {
@@ -352,7 +381,7 @@ public class CashDisbursementUpdateMessageHandlerTest extends BaseAccountingMess
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus()
                 .getReturnStatus());
-        Assert.assertEquals(CashDisbursementApiHandler.MSG_MISSING_CREDITOR_PROFILE_DATA,
+        Assert.assertEquals(CreateCashDisbursementApiHandler.MSG_MISSING_CREDITOR_PROFILE_DATA,
                 actualRepsonse.getReplyStatus().getMessage());
     }
 }

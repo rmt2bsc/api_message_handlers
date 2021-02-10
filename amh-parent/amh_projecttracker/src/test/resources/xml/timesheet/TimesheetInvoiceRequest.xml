@@ -1,0 +1,16 @@
+<ProjectProfileRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>projecttracker</application>
+        <module>timesheet</module>
+        <transaction>INVOICE_TIMESHEET</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>05/29/2020 02:01:16</delivery_date>
+    </header>
+    <criteria>
+        <timesheet_criteria>
+            <timesheet_id>625</timesheet_id>
+        </timesheet_criteria>
+    </criteria>
+</ProjectProfileRequest>

@@ -99,6 +99,7 @@ public class RegionApiHandler extends AbstractJaxbMessageHandler<PostalRequest, 
         try {
             // Set reply status
             rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.validateCriteria(req);
             CountryRegionDto criteriaDto = this.extractSelectionCriteria(req.getPostalCriteria().getProvince());
             
@@ -106,12 +107,12 @@ public class RegionApiHandler extends AbstractJaxbMessageHandler<PostalRequest, 
             List<CountryRegionDto> dtoList = api.getCountryRegion(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage("No Region/State/Province data found!");
-                rs.setReturnCode(0);
+                rs.setRecordCount(0);
             }
             else {
                 queryResults = this.buildJaxbListData(dtoList);
                 rs.setMessage("Region/State/Province record(s) found");
-                rs.setReturnCode(dtoList.size());
+                rs.setRecordCount(dtoList.size());
             }
             this.responseObj.setHeader(req.getHeader());
             

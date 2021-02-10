@@ -116,12 +116,14 @@ public class LookupGroupApiHandler extends
             List<LookupGroupDto> dtoList = api.getGroup(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage("Group Lookup data not found!");
-                rs.setReturnCode(0);
+                rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+                rs.setRecordCount(0);
             }
             else {
                 cdgList = this.buildJaxbListData(dtoList);
                 rs.setMessage("Group Lookup record(s) found");
-                rs.setReturnCode(dtoList.size());
+                rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+                rs.setRecordCount(dtoList.size());
             }
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
@@ -177,6 +179,7 @@ public class LookupGroupApiHandler extends
                 rs.setMessage("Lookup Group was modified successfully");
                 rs.setExtMessage("Total number of rows modified: " + rc);
             }
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             api.commitTrans();
         } catch (LookupDataApiException | NotFoundException | InvalidDataException e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
@@ -212,6 +215,7 @@ public class LookupGroupApiHandler extends
         LookupGroupDto criteriaDto = null;
         try {
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.validateRequest(req); 
             criteriaDto = this.extractSelectionCriteria(req.getCriteria());
             

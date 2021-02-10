@@ -189,7 +189,7 @@ public class PrintCustomerSalesOrderApiHandler extends SalesOrderApiHandler {
                 recCount = salesOrders.size();
                 XactApi xactApi = XactApiFactory.createDefaultXactApi();
                 for (SalesInvoiceDto header : salesOrders) {
-                    List<SalesOrderItemDto> items = api.getLineItems(header.getSalesOrderId());
+                    List<SalesOrderItemDto> items = api.getLineItemsExt(header.getSalesOrderId());
                     itemsMap.put(header.getSalesOrderId(), items);
                     Xact orm = new Xact();
                     orm.setXactId(jaxbXactCriteria.getBasicCriteria().getXactId().intValue());
@@ -293,7 +293,7 @@ public class PrintCustomerSalesOrderApiHandler extends SalesOrderApiHandler {
     }
 
     private OutputStream generatePdf(String jaxbXml) {
-        this.xform = new PdfReportUtility(REPORT_NAME, jaxbXml, true);
+        this.xform = new PdfReportUtility(REPORT_NAME, jaxbXml, true, this.sessionId);
         try {
             return this.xform.buildReport();
         } catch (RMT2Exception e) {

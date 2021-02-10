@@ -5,6 +5,7 @@ package org.rmt2.api.handlers.transaction.purchases;
 
 import org.dto.XactCreditChargeDto;
 import org.dto.adapter.orm.transaction.purchases.creditor.Rmt2CreditChargeDtoFactory;
+import org.modules.transaction.XactConst;
 import org.rmt2.api.handlers.transaction.TransactionJaxbDtoFactory;
 import org.rmt2.jaxb.XactBasicCriteriaType;
 import org.rmt2.jaxb.XactType;
@@ -51,6 +52,8 @@ public class CreditorPurchasesJaxbDtoFactory extends TransactionJaxbDtoFactory {
         if (jaxbCriteria.getXactDate() != null) {
             dto.setXactDate(RMT2Date.stringToDate(jaxbCriteria.getXactDate()));    
         }  
+        // Xact Type Id is ignored as a selection criteria property on the API
+        // side.
         if (jaxbCriteria.getXactTypeId() != null) {
             dto.setXactTypeId(jaxbCriteria.getXactTypeId().intValue());    
         }
@@ -83,8 +86,18 @@ public class CreditorPurchasesJaxbDtoFactory extends TransactionJaxbDtoFactory {
         if (jaxbObj.getXactId() != null) {
             dto.setXactId(jaxbObj.getXactId().intValue());    
         }
+        else {
+            // In the event user decides not to include xact id value when
+            // creating transaction.
+            dto.setXactId(0);
+        }
         if (jaxbObj.getXactType() != null && jaxbObj.getXactType().getXactTypeId() != null) {
             dto.setXactTypeId(jaxbObj.getXactType().getXactTypeId().intValue());    
+        }
+        else {
+            // In the event user decides not to include xact type id value when
+            // creating transaction.
+            dto.setXactTypeId(XactConst.XACT_TYPE_CREDITOR_PURCHASE);
         }
         if (jaxbObj.getXactSubtype() != null && jaxbObj.getXactSubtype().getXactTypeId() != null) {
             dto.setXactSubtypeId(jaxbObj.getXactSubtype().getXactTypeId().intValue());    

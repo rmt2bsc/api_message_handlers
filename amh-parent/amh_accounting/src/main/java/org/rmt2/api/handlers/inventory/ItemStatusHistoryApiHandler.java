@@ -152,6 +152,7 @@ public class ItemStatusHistoryApiHandler extends
             ItemMasterStatusHistDto dtoObj = this.api.getCurrentItemStatusHist(criteriaDto.getItemId());
             if (dtoObj == null) {
                 rs.setMessage("Current inventory item status history data not found!");
+                rs.setRecordCount(0);
             }
             else {
                 List<ItemMasterStatusHistDto> dtoList = new ArrayList<>();

@@ -105,13 +105,13 @@ public class RegionMessageHandlerTest extends BaseAddressBookMessageHandlerTest 
         }
         Assert.assertNotNull(results);
         Assert.assertNotNull(results.getPayload());
-        Assert.assertEquals(5, results.getReturnCode());
+        Assert.assertEquals(1, results.getReturnCode());
 
         PostalResponse actualRepsonse = 
                 (PostalResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertNotNull(actualRepsonse.getStates());
         Assert.assertEquals(5, actualRepsonse.getStates().size());
-        Assert.assertEquals(actualRepsonse.getReplyStatus().getReturnCode().intValue(),
+        Assert.assertEquals(actualRepsonse.getReplyStatus().getRecordCount().intValue(),
                 actualRepsonse.getStates().size());
         Assert.assertEquals(WebServiceConstants.RETURN_STATUS_SUCCESS,
                 actualRepsonse.getReplyStatus().getReturnStatus());
@@ -150,7 +150,8 @@ public class RegionMessageHandlerTest extends BaseAddressBookMessageHandlerTest 
         PostalResponse actualRepsonse = 
                 (PostalResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertNotNull(actualRepsonse.getStates());
-        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getRecordCount().intValue());
         Assert.assertEquals(WebServiceConstants.RETURN_STATUS_SUCCESS,
                 actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("No Region/State/Province data found!", actualRepsonse.getReplyStatus().getMessage());

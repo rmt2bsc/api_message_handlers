@@ -9,7 +9,7 @@
         <delivery_date>07/18/2018 15:18:20</delivery_date>
     </header>
     <criteria>
-        <criteria>
+        <gl_criteria>
             <acct_id>200</acct_id>
             <acct_type>
                 <acct_type_id>111</acct_type_id>
@@ -29,6 +29,6 @@
             <balance_type>
                 <account_baltype_id>1</account_baltype_id>
             </balance_type>
-        </criteria>
+        </gl_criteria>
     </criteria>
 </AccountingGeneralLedgerRequest>

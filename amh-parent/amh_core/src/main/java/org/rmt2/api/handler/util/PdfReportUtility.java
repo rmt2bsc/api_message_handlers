@@ -1,6 +1,7 @@
 package org.rmt2.api.handler.util;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
@@ -68,6 +69,8 @@ public class PdfReportUtility extends RMT2Base {
 
     private String xml;
 
+    private String sessionId;
+
     /**
      * Default constructor.
      */
@@ -78,12 +81,37 @@ public class PdfReportUtility extends RMT2Base {
     /**
      * 
      * @param xslFile
+     *            the XSL transformation file name
      * @param xml
+     *            the data to be transformed into the report.
      * @param outpurAsFile
+     *            flag to indicate whether or not to output generated .pdf to a
+     *            file. Set to <i>true</i> to save output to file. Otherwise,
+     *            set to <i>false</i>.
+     * @param sessionId
+     *            the user's session id which is used to setup the temporary
+     *            directory for storing the file under the location indicated by
+     *            the System variable, <i>SerialPath</i>.
      */
-    public PdfReportUtility(String xslFile, String xml, boolean outpurAsFile) {
+    public PdfReportUtility(String xslFile, String xml, boolean outpurAsFile, String sessionId) {
         this();
         this.outputAsFile = outpurAsFile;
+        this.sessionId = sessionId;
+
+        // Get path to user's work area to store report output. Prefix with
+        // user.home property to make compatible with UNIX and Windows based
+        // systems. This logic will force all filenames to UNIX style regardless
+        // what is set in the configuration.
+
+        // String homeDir = System.getProperty("user.home");
+        // homeDir = RMT2File.convertToUnixStyle(homeDir);
+        // String pathExt = System.getProperty("SerialPath");
+        // pathExt = RMT2File.convertToUnixStyle(pathExt);
+        // this.userWorkArea = homeDir + pathExt;
+        this.userWorkArea = System.getProperty("SerialPath")
+                + (this.sessionId != null ? (File.separatorChar + this.sessionId) : "");
+
+        // Build Report
         this.setupReportLayout(xslFile, xml);
     }
 
@@ -105,15 +133,10 @@ public class PdfReportUtility extends RMT2Base {
      */
     public void init() throws SystemException {
         super.init();
-        // Get path to user's work area to store report output
-        this.userWorkArea = System.getProperty("SerialPath");
-        // if (OS.startsWith("Windows")) {
-        // this.userWorkArea = System.getProperty("SerialDrive") +
-        // this.userWorkArea;
-        // }
 
         // Get image directory
-        this.imageDirPath += "..\\images\\"; // might need to reference "images"
+        this.imageDirPath = RMT2File.resolveRelativeFilePath("images/RMT2_logo2.jpg");
+        this.imageDirPath = RMT2File.removeWindowsDriveFromFilename(this.imageDirPath);
         
         // Get path to xslt files.   The results should be the path that is on the classpath
         this.xslPath = System.getProperty("RptXsltPath");
@@ -134,11 +157,11 @@ public class PdfReportUtility extends RMT2Base {
         String origRptPath = this.xslPath + "/" + xslFile;
         this.reportName = origRptPath;
         this.reportId = String.valueOf(new java.util.Date().getTime()) + "-" + RMT2String.getTokens(xslFile, ".").get(0);
-        String userRptPath = this.userWorkArea + this.reportId + ".xsl";
+        String userRptPath = this.userWorkArea + File.separatorChar + this.reportId + ".xsl";
         this.xslFileName = userRptPath;
-        this.xmlFileName = this.userWorkArea + this.reportId + ".xml";
-        this.foFileName = this.userWorkArea + this.reportId + ".fo";
-        this.pdfFileName = this.userWorkArea + this.reportId + ".pdf";
+        this.xmlFileName = this.userWorkArea + File.separatorChar + this.reportId + ".xml";
+        this.foFileName = this.userWorkArea + File.separatorChar + this.reportId + ".fo";
+        this.pdfFileName = this.userWorkArea + File.separatorChar + this.reportId + ".pdf";
 
         // Persist XML data to disk.
         try {
@@ -161,7 +184,7 @@ public class PdfReportUtility extends RMT2Base {
             }
             // Substitute place holders in the report layout
             fileData = RMT2File.getStreamStringData(is);
-            fileData = RMT2String.replaceAll2(fileData, this.imageDirPath, PdfReportUtility.IMAGE_PATH_PLACEHOLDER);
+            fileData = RMT2String.replace(fileData, this.imageDirPath, PdfReportUtility.IMAGE_PATH_PLACEHOLDER);
             // Copy report layout to the user's work area.
             RMT2File.outputFile(fileData, this.xslFileName);
             return userRptPath;

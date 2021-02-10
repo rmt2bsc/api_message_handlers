@@ -1,0 +1,45 @@
+<MultimediaRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>media</application>
+        <module>maint</module>
+        <transaction>UPDATE_TRACK</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>01/12/2021 21:16:32</delivery_date>
+        <session_id>ABCDEFGHIJKLMNOPQRSTUVWXYZ</session_id>
+    </header>
+    <profile>
+        <audio_video_details>
+            <artist>
+                <artist_id>2</artist_id>
+                <projects>
+                    <project>
+                        <project_id>2</project_id>
+                        <tracks>
+                            <track>
+                                <project_id>2</project_id>
+                                <genre_id>13</genre_id>
+                                <disc_number>1</disc_number>
+                                <track_number>6</track_number>
+                                <track_name>New Track Title</track_name>
+                                <hours>0</hours>
+                                <minutes>5</minutes>
+                                <seconds>55</seconds>
+                                <producer>Track Producer</producer>
+                                <composer>Track Composer</composer>
+                                <lyricist>Track Lyrisist</lyricist>
+                                <location_servername>test_servername</location_servername>
+                                <location_sharename>test_shearename</location_sharename>
+                                <location_root_path>test_root_path</location_root_path>
+                                <location_path>/artist/project/track/location_path</location_path>
+                                <location_filename>Test Location File Name</location_filename>
+                                <comments>Test Comments</comments>
+                            </track>
+                        </tracks>
+                    </project>
+                </projects>
+            </artist>
+        </audio_video_details>
+    </profile>
+</MultimediaRequest>

@@ -106,14 +106,14 @@ public class ZipcodeMessageHandlerTest extends BaseAddressBookMessageHandlerTest
         }
         Assert.assertNotNull(results);
         Assert.assertNotNull(results.getPayload());
-        Assert.assertEquals(5, results.getReturnCode());
+        Assert.assertEquals(1, results.getReturnCode());
 
         PostalResponse actualRepsonse = 
                 (PostalResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertNotNull(actualRepsonse.getZipFull());
         Assert.assertTrue(!actualRepsonse.getZipFull().isEmpty());
         Assert.assertEquals(5, actualRepsonse.getZipFull().size());
-        Assert.assertEquals(actualRepsonse.getReplyStatus().getReturnCode().intValue(),
+        Assert.assertEquals(actualRepsonse.getReplyStatus().getRecordCount().intValue(),
                 actualRepsonse.getZipFull().size());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS,
                 actualRepsonse.getReplyStatus().getReturnStatus());
@@ -158,14 +158,14 @@ public class ZipcodeMessageHandlerTest extends BaseAddressBookMessageHandlerTest
         }
         Assert.assertNotNull(results);
         Assert.assertNotNull(results.getPayload());
-        Assert.assertEquals(5, results.getReturnCode());
+        Assert.assertEquals(1, results.getReturnCode());
 
         PostalResponse actualRepsonse = 
                 (PostalResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertNotNull(actualRepsonse.getZipFull());
         Assert.assertTrue(!actualRepsonse.getZipShort().isEmpty());
         Assert.assertEquals(5, actualRepsonse.getZipShort().size());
-        Assert.assertEquals(actualRepsonse.getReplyStatus().getReturnCode().intValue(),
+        Assert.assertEquals(actualRepsonse.getReplyStatus().getRecordCount().intValue(),
                 actualRepsonse.getZipShort().size());
         Assert.assertEquals(WebServiceConstants.RETURN_STATUS_SUCCESS,
                 actualRepsonse.getReplyStatus().getReturnStatus());
@@ -208,7 +208,8 @@ public class ZipcodeMessageHandlerTest extends BaseAddressBookMessageHandlerTest
         Assert.assertNotNull(actualRepsonse.getZipFull());
         Assert.assertTrue(!actualRepsonse.getZipShort().isEmpty());
         Assert.assertEquals(5, actualRepsonse.getZipShort().size());
-        Assert.assertEquals(actualRepsonse.getReplyStatus().getReturnCode().intValue(),
+        Assert.assertEquals(1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(actualRepsonse.getReplyStatus().getRecordCount().intValue(),
                 actualRepsonse.getZipShort().size());
         Assert.assertEquals(WebServiceConstants.RETURN_STATUS_SUCCESS,
                 actualRepsonse.getReplyStatus().getReturnStatus());
@@ -248,7 +249,7 @@ public class ZipcodeMessageHandlerTest extends BaseAddressBookMessageHandlerTest
                 (PostalResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertNotNull(actualRepsonse.getZipFull());
         Assert.assertTrue(actualRepsonse.getZipShort().isEmpty());
-        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(WebServiceConstants.RETURN_STATUS_SUCCESS,
                 actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("No Zipcode data not found!", actualRepsonse.getReplyStatus().getMessage());

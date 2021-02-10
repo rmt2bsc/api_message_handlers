@@ -1,15 +1,20 @@
 package org.rmt2.api.handlers.transaction.sales;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.dto.SalesOrderDto;
 import org.dto.SalesOrderItemDto;
+import org.dto.SalesOrderStatusDto;
+import org.dto.SalesOrderStatusHistDto;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.AccountingTransactionRequest;
+import org.rmt2.jaxb.SalesOrderStatusType;
 import org.rmt2.jaxb.SalesOrderType;
 
 import com.InvalidDataException;
@@ -91,20 +96,38 @@ public class UpdateSalesOrderApiHandler extends SalesOrderApiHandler {
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         SalesOrderType reqSalesOrder = req.getProfile().getSalesOrders().getSalesOrder().get(0);
         List<SalesOrderType> tranRresults = new ArrayList<>();
+        SalesOrderType respSalesOrder = this.jaxbObjFactory.createSalesOrderType();
+        SalesOrderStatusType respSOST = this.jaxbObjFactory.createSalesOrderStatusType();
         boolean newSalesOrder = false;
         try {
             SalesOrderDto salesOrderDto = SalesOrderJaxbDtoFactory.createSalesOrderHeaderDtoInstance(reqSalesOrder);
-            List<SalesOrderItemDto> itemsDtoList = SalesOrderJaxbDtoFactory.createSalesOrderItemsDtoInstance(reqSalesOrder.getSalesOrderItems()
+            List<SalesOrderItemDto> itemsDtoList = SalesOrderJaxbDtoFactory
+                    .createSalesOrderItemsDtoInstance(reqSalesOrder.getSalesOrderItems()
                     .getSalesOrderItem());
             newSalesOrder = (salesOrderDto.getSalesOrderId() == 0);
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
 
             // Create sales order
+            api.beginTrans();
             int updateReturnCode = SalesOrderRequestUtil.updateSalesOrder(this.api, salesOrderDto, itemsDtoList, reqSalesOrder);
 
             // Update the request with current sales order status information
             SalesOrderRequestUtil.assignCurrentStatus(this.api, reqSalesOrder);
+
+            // Verify transaction
+            int verifySalesOrderId = (newSalesOrder ? updateReturnCode : salesOrderDto.getSalesOrderId());
+            SalesOrderDto so = this.api.getSalesOrder(verifySalesOrderId);
+            SalesOrderStatusHistDto statusHistDto = this.api.getCurrentStatus(verifySalesOrderId);
+            SalesOrderStatusDto statusDto = this.api.getStatus(statusHistDto.getSoStatusId());
+            if (so != null) {
+                respSalesOrder.setSalesOrderId(BigInteger.valueOf(so.getSalesOrderId()));
+                respSalesOrder.setOrderTotal(BigDecimal.valueOf(so.getOrderTotal()));
+                respSalesOrder.setInvoiced(so.isInvoiced());
+                respSOST.setDescription(statusDto.getSoStatusDescription());
+                respSalesOrder.setStatus(respSOST);
+            }
 
             // Assign messages to the reply status that apply to the outcome of
             // this operation
@@ -113,7 +136,6 @@ public class UpdateSalesOrderApiHandler extends SalesOrderApiHandler {
             rs.setMessage(msg);
             rs.setRecordCount(1);
 
-            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.responseObj.setHeader(req.getHeader());
             this.api.commitTrans();
         } catch (Exception e) {
@@ -125,10 +147,11 @@ public class UpdateSalesOrderApiHandler extends SalesOrderApiHandler {
             else {
                 rs.setMessage(SalesOrderHandlerConst.MSG_UPDATE_FAILURE);
             }
+            rs.setRecordCount(0);
             rs.setExtMessage(e.getMessage());
             this.api.rollbackTrans();
         } finally {
-            tranRresults.add(reqSalesOrder);
+            tranRresults.add(respSalesOrder);
             this.api.close();
         }
 

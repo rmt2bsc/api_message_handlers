@@ -1,0 +1,22 @@
+<ProjectProfileRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>projecttracker</application>
+        <module>employee</module>
+        <transaction>GET_EMPLOYEE_PROJECT</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>05/25/2020 23:21:41</delivery_date>
+    </header>
+    <criteria>
+        <employee_project_criteria>
+            <emp_proj_id>100</emp_proj_id>
+            <emp_id>200</emp_id>
+            <proj_id>300</proj_id>
+            <effective_date>2020-05-23-05:00</effective_date>
+            <end_date>2021-05-23-05:00</end_date>
+            <hourly_rate>100.0</hourly_rate>
+            <flat_rate>150000.0</flat_rate>
+        </employee_project_criteria>
+    </criteria>
+</ProjectProfileRequest>

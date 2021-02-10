@@ -94,6 +94,7 @@ public class CountryApiHandler extends AbstractJaxbMessageHandler<PostalRequest,
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             
             this.validateCriteria(req);
             CountryDto criteriaDto = this.extractSelectionCriteria(req.getPostalCriteria().getCountry());
@@ -102,12 +103,12 @@ public class CountryApiHandler extends AbstractJaxbMessageHandler<PostalRequest,
             List<CountryDto> dtoList = api.getCountry(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage("No Country data found!");
-                rs.setReturnCode(0);
+                rs.setRecordCount(0);
             }
             else {
                 queryResults = this.buildJaxbListData(dtoList);
                 rs.setMessage("Country record(s) found");
-                rs.setReturnCode(dtoList.size());
+                rs.setRecordCount(dtoList.size());
             }
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
@@ -141,7 +142,12 @@ public class CountryApiHandler extends AbstractJaxbMessageHandler<PostalRequest,
    private CountryDto extractSelectionCriteria(CountryCriteriaType criteria) {
        CountryDto criteriaDto = Rmt2AddressBookDtoFactory.getNewCountryInstance();
        if (criteria != null) {
-          criteriaDto.setCountryId(criteria.getCountryId().intValue());
+            if (criteria.getCountryId() != null) {
+                criteriaDto.setCountryId(criteria.getCountryId().intValue());
+            }
+            if (criteria.getCountyName() != null) {
+                criteriaDto.setCountryName(criteria.getCountyName());
+            }
        }
        return criteriaDto;
    }

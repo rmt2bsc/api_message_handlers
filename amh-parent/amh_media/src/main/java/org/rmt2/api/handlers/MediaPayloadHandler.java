@@ -47,7 +47,7 @@ public class MediaPayloadHandler extends AbstractJaxbMessageHandler<MultimediaRe
         }
         
         if (payload != null) {
-            this.responseObj.setContent(payload);
+            this.responseObj.getProfile().setAudioVideoContent(payload);
         }
         
         String xml = this.jaxb.marshalMessage(this.responseObj);

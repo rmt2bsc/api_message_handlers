@@ -53,8 +53,9 @@ public class GeneralLedgerJaxbDtoFactory extends RMT2Base {
             dto.setBalanceTypeId(jaxbCriteria.getBalanceType().getAccountBaltypeId().intValue());    
         }
         dto.setAcctNo(jaxbCriteria.getAccountNo());
-        dto.setAcctCode(jaxbCriteria.getAccountNo());
+        dto.setAcctCode(jaxbCriteria.getAccountCode());
         dto.setAcctName(jaxbCriteria.getAccountName());
+        dto.setAcctDescription(jaxbCriteria.getAccountDescription());
         return dto;
     }
     
@@ -142,8 +143,13 @@ public class GeneralLedgerJaxbDtoFactory extends RMT2Base {
             }
             if (jaxbCriteria.getAcctType().getDescription() != null) {
                 dto.setAcctTypeDescription(jaxbCriteria.getAcctType().getDescription());    
-            }   
+            }
+            if (jaxbCriteria.getAcctType().getBalanceType() != null
+                    && jaxbCriteria.getAcctType().getBalanceType().getAccountBaltypeId() != null) {
+                dto.setBalanceTypeId(jaxbCriteria.getAcctType().getBalanceType().getAccountBaltypeId().intValue());
+            }
         }
+
         return dto;
     }
     
@@ -204,18 +210,15 @@ public class GeneralLedgerJaxbDtoFactory extends RMT2Base {
             return null;
         }
         AccountCategoryDto dto = Rmt2AccountDtoFactory.createAccountCategoryInstance(null);
-        if (jaxbCriteria.getAcctType() != null) {
-            if (jaxbCriteria.getAcctType().getAcctTypeId() != null) {
-                dto.setAcctTypeId(jaxbCriteria.getAcctType().getAcctTypeId().intValue());    
-            }
-        }
-        
         if (jaxbCriteria.getAcctCatg() != null) {
             if (jaxbCriteria.getAcctCatg().getAcctCatgId() != null) {
                 dto.setAcctCatgId(jaxbCriteria.getAcctCatg().getAcctCatgId().intValue());
             }
             if (jaxbCriteria.getAcctCatg().getDescription() != null) {
                 dto.setAcctCatgDescription(jaxbCriteria.getAcctCatg().getDescription());
+            }
+            if (jaxbCriteria.getAcctCatg().getAcctType().getAcctTypeId() != null) {
+                dto.setAcctTypeId(jaxbCriteria.getAcctCatg().getAcctType().getAcctTypeId().intValue());
             }
         }
         

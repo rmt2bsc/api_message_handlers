@@ -1,0 +1,41 @@
+<MultimediaRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>media</application>
+        <module>maint</module>
+        <transaction>UPDATE_ARTIST_PROJECT</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>01/01/2021 13:09:07</delivery_date>
+        <session_id>ABCDEFGHIJKLMNOPQRSTUVWXYZ</session_id>
+    </header>
+    <profile>
+        <audio_video_details>
+            <artist>
+                <artist_id>1</artist_id>
+                <projects>
+                    <project>
+                        <project_id>3475</project_id>
+                        <artist_id>1</artist_id>
+                        <project_type_id>1</project_type_id>
+                        <genre_id>13</genre_id>
+                        <content_id></content_id>
+                        <media_type_id>1</media_type_id>
+                        <title>Test Update of Roy Terrell Album</title>
+                        <year>1984</year>
+                        <total_time>16</total_time>
+                        <producer>Producer #1</producer>
+                        <master_dup_id>0</master_dup_id>
+                        <ripped>1</ripped>
+                        <cost>12.99</cost>
+                        <content_path>/multimedia/audio/ripped/artists/Test Roy Terrell Album</content_path>
+                        <art_work_path>/multimedia/audio/ripped/artists/Test Roy Terrell Album</art_work_path>
+                        <art_work_filename>folder.jpg</art_work_filename>
+                        <comments>Test modification operation</comments>
+                        <tracks/>
+                    </project>
+                </projects>
+            </artist>
+        </audio_video_details>
+    </profile>
+</MultimediaRequest>

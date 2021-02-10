@@ -198,7 +198,8 @@ public class LookupCodeMessageHandlerTest extends BaseAddressBookMessageHandlerT
         Assert.assertTrue(!actualRepsonse.getDetailCodes().isEmpty());
         Assert.assertTrue(actualRepsonse.getGroupCodes().isEmpty());
         Assert.assertEquals(4, actualRepsonse.getDetailCodes().size());
-        Assert.assertEquals(4, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(4, actualRepsonse.getReplyStatus().getRecordCount().intValue());
         Assert.assertEquals(WebServiceConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Code Detail Lookup record(s) found", actualRepsonse.getReplyStatus().getMessage());
         for (int ndx = 0; ndx < actualRepsonse.getDetailCodes().size(); ndx++) {
@@ -240,7 +241,8 @@ public class LookupCodeMessageHandlerTest extends BaseAddressBookMessageHandlerT
         Assert.assertNotNull(actualRepsonse.getDetailCodes());
         Assert.assertTrue(actualRepsonse.getGroupCodes().isEmpty());
         Assert.assertTrue(actualRepsonse.getDetailCodes().isEmpty());
-        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getRecordCount().intValue());
         Assert.assertEquals(WebServiceConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Code Detail Lookup data not found!", actualRepsonse.getReplyStatus().getMessage());
     }
@@ -366,11 +368,10 @@ public class LookupCodeMessageHandlerTest extends BaseAddressBookMessageHandlerT
         Assert.assertNotNull(actualRepsonse.getDetailCodes());
         Assert.assertTrue(actualRepsonse.getGroupCodes().isEmpty());
         Assert.assertTrue(!actualRepsonse.getDetailCodes().isEmpty());
-        Assert.assertEquals(CODE_ID, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(WebServiceConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Lookup Code was created successfully", actualRepsonse.getReplyStatus().getMessage());
-        Assert.assertEquals("The new code id is " + actualRepsonse.getReplyStatus().getReturnCode().intValue(),
-                actualRepsonse.getReplyStatus().getExtMessage());
+        Assert.assertEquals("The new code id is " + CODE_ID, actualRepsonse.getReplyStatus().getExtMessage());
     }
 
     @Test

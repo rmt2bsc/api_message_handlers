@@ -5,6 +5,7 @@ import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
+import java.io.File;
 import java.util.List;
 
 import org.dto.BusinessContactDto;
@@ -37,7 +38,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.rmt2.api.handler.BaseAccountingMessageHandlerTest;
 import org.rmt2.api.handler.transaction.common.CommonXactMockData;
-import org.rmt2.api.handlers.transaction.receipts.CashReceiptsApiHandler;
+import org.rmt2.api.handlers.transaction.receipts.QueryCashReceiptsApiHandler;
 import org.rmt2.api.handlers.transaction.sales.PrintCustomerSalesOrderApiHandler;
 import org.rmt2.api.handlers.transaction.sales.SalesOrderHandlerConst;
 import org.rmt2.constants.ApiTransactionCodes;
@@ -69,11 +70,13 @@ public class SalesOrderPrintMessageHandlerTest extends BaseAccountingMessageHand
     protected static final int SALES_ORDER_ID = 1000;
     protected static final int CUSTOMER_CONTACT_ID = 1351;
     protected static final int MAIN_COMPANY_CONTACT_ID = 1343;
+    public static final String PROP_SERIAL_PATH = "\\temp\\output\\";
 
     private SalesApi mockSalesApi;
     private CustomerApi mockCustApi;
     private ContactsApi mockContactApi;
     private XactApi mockXactApi;
+    private String path;
 
     /**
      * 
@@ -106,12 +109,21 @@ public class SalesOrderPrintMessageHandlerTest extends BaseAccountingMessageHand
         doNothing().when(this.mockSalesApi).close();
 
         // Setup System Properteis
-        System.setProperty("SerialPath", "/temp/");
+        System.setProperty("SerialPath", PROP_SERIAL_PATH);
         System.setProperty("SerialDrive", "c:");
         System.setProperty("RptXsltPath", "reports");
         System.setProperty("CompContactId", "1343");
         System.setProperty("javax.xml.transform.TransformerFactory", "net.sf.saxon.TransformerFactoryImpl");
         String xsltTransformer = System.getProperty("javax.xml.transform.TransformerFactory");
+
+        String homeDir = System.getProperty("user.home");
+        homeDir = RMT2File.convertToUnixStyle(homeDir);
+        String pathExt = RMT2File.convertToUnixStyle(PROP_SERIAL_PATH);
+        path = homeDir + pathExt;
+        File f = new File(path);
+        if (RMT2File.verifyDirectory(f) == RMT2File.FILE_IO_NOTEXIST) {
+            RMT2File.createDirectory(path);
+        }
 
         return;
     }
@@ -123,7 +135,15 @@ public class SalesOrderPrintMessageHandlerTest extends BaseAccountingMessageHand
      */
     @After
     public void tearDown() throws Exception {
+        File f = new File(path);
+        RMT2File.deleteFile(f);
         return;
+    }
+
+    @Test
+    public void testReportLogoExistence() {
+        String path = RMT2File.resolveRelativeFilePath("images/RMT2_logo2.jpg");
+        Assert.assertNotNull(path);
     }
 
     /**
@@ -272,7 +292,7 @@ public class SalesOrderPrintMessageHandlerTest extends BaseAccountingMessageHand
         Assert.assertNull(actualRepsonse.getProfile());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(CashReceiptsApiHandler.ERROR_MSG_TRANS_NOT_FOUND +
+        Assert.assertEquals(QueryCashReceiptsApiHandler.ERROR_MSG_TRANS_NOT_FOUND +
                 "INCORRECT_TRAN_CODE", actualRepsonse.getReplyStatus().getMessage());
     }
 

@@ -1,0 +1,48 @@
+<ProjectProfileRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>projecttracker</application>
+        <module>employee</module>
+        <transaction>UPDATE_EMPLOYEE</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>05/21/2020 09:57:05</delivery_date>
+    </header>
+    <profile>
+        <employee>
+            <employee_type>
+                <employee_type_id>3</employee_type_id>
+                <description>EMployee Type Name</description>
+            </employee_type>
+            <is_manager>false</is_manager>
+            <manager_id>2001</manager_id>
+            <employee_title>
+                <employee_title_id>44</employee_title_id>
+                <description>Employee Title Name</description>
+            </employee_title>
+            <login_id>1234</login_id>
+            <login_name>rterrell</login_name>
+            <contact_details>
+                <first_name>John</first_name>
+                <last_name>Doe</last_name>
+                <ssn>222334444</ssn>
+                <email>royroy@gte.net</email>
+                <address>
+                    <addr_id>1000</addr_id>
+                    <addr1>Address Line 1</addr1>
+                    <addr2>Address Line 2</addr2>
+                    <addr3>Address Line 3</addr3>
+                    <addr4>Address Line 4</addr4>
+                    <zip>
+                        <zipcode>75232</zipcode>
+                        <city>Dallas</city>
+                        <state>Tx</state>
+                    </zip>
+                    <phone_main>2147777777</phone_main>
+                </address>
+            </contact_details>
+            <start_date>2020-05-21-05:00</start_date>
+            <project_count>3</project_count>
+        </employee>
+    </profile>
+</ProjectProfileRequest>

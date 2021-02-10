@@ -89,6 +89,7 @@ public class CancelSalesOrderApiHandler extends SalesOrderApiHandler {
         try {
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             int cancelTotal = 0;
+            api.beginTrans();
             for (SalesOrderType so : reqSalesOrder) {
                 api.cancelSalesOrder(so.getSalesOrderId().intValue());
                 cancelTotal++;

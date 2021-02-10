@@ -1,5 +1,6 @@
 package org.rmt2.api.handler.transaction.receipts;
 
+import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -8,6 +9,7 @@ import java.util.List;
 
 import org.dto.XactDto;
 import org.dto.XactTypeDto;
+import org.dto.adapter.orm.transaction.Rmt2XactDtoFactory;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -24,7 +26,8 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.rmt2.api.handler.BaseAccountingMessageHandlerTest;
 import org.rmt2.api.handler.HandlerCacheMockData;
-import org.rmt2.api.handlers.transaction.receipts.CashReceiptsApiHandler;
+import org.rmt2.api.handlers.transaction.receipts.CreateCashReceiptsApiHandler;
+import org.rmt2.api.handlers.transaction.receipts.QueryCashReceiptsApiHandler;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.AccountingTransactionResponse;
@@ -45,7 +48,8 @@ import com.api.util.RMT2String;
  *
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ AbstractDaoClientImpl.class, Rmt2OrmClientFactory.class, CashReceiptsApiHandler.class, CashReceiptApiFactory.class,
+@PrepareForTest({ AbstractDaoClientImpl.class, Rmt2OrmClientFactory.class, QueryCashReceiptsApiHandler.class,
+        CreateCashReceiptsApiHandler.class, CashReceiptApiFactory.class,
         SystemConfigurator.class })
 public class CashReceiptsUpdateMessageHandlerTest extends BaseAccountingMessageHandlerTest {
 
@@ -105,8 +109,18 @@ public class CashReceiptsUpdateMessageHandlerTest extends BaseAccountingMessageH
             Assert.fail("Unable to setup mock stub for creating a cash receipt transactions");
         }
 
+        XactDto mockNewXactDto = Rmt2XactDtoFactory.createXactBaseInstance(null);
+        mockNewXactDto.setXactId(CashReceiptsMockData.NEW_XACT_ID);
+        mockNewXactDto.setXactTypeId(XactConst.XACT_TYPE_CASHRECEIPT);
+        mockNewXactDto.setXactAmount(100.00);
+        try {
+            when(this.mockApi.getXactById(eq(CashReceiptsMockData.NEW_XACT_ID))).thenReturn(mockNewXactDto);
+        } catch (XactApiException e) {
+            Assert.fail("Unable to setup mock stub for creating a cash receipt transactions");
+        }
+
         MessageHandlerResults results = null;
-        CashReceiptsApiHandler handler = new CashReceiptsApiHandler();
+        CreateCashReceiptsApiHandler handler = new CreateCashReceiptsApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_CASHRECEIPT_CREATE, request);
         } catch (MessageHandlerCommandException e) {
@@ -122,7 +136,8 @@ public class CashReceiptsUpdateMessageHandlerTest extends BaseAccountingMessageH
         Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
 
-        String expectedMsg = RMT2String.replace(CashReceiptsApiHandler.MSG_CREATE_SUCCESS, String.valueOf(CashReceiptsMockData.NEW_XACT_ID), "%s");
+        String expectedMsg = RMT2String.replace(CreateCashReceiptsApiHandler.MSG_CREATE_SUCCESS,
+                String.valueOf(CashReceiptsMockData.NEW_XACT_ID), "%s");
         Assert.assertEquals(expectedMsg, actualRepsonse.getReplyStatus().getMessage());
 
         Assert.assertNotNull(actualRepsonse.getProfile());
@@ -151,7 +166,7 @@ public class CashReceiptsUpdateMessageHandlerTest extends BaseAccountingMessageH
         }
 
         MessageHandlerResults results = null;
-        CashReceiptsApiHandler handler = new CashReceiptsApiHandler();
+        CreateCashReceiptsApiHandler handler = new CreateCashReceiptsApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_CASHRECEIPT_CREATE, request);
         } catch (MessageHandlerCommandException e) {
@@ -166,31 +181,8 @@ public class CashReceiptsUpdateMessageHandlerTest extends BaseAccountingMessageH
         Assert.assertNotNull(actualRepsonse.getProfile());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(CashReceiptsApiHandler.MSG_FAILURE, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(CreateCashReceiptsApiHandler.MSG_FAILURE, actualRepsonse.getReplyStatus().getMessage());
         Assert.assertEquals("An Xact API test error occurred", actualRepsonse.getReplyStatus().getExtMessage());
-    }
-
-    @Test
-    public void testError_Incorrect_Trans_Code() {
-        String request = RMT2File.getFileContentsAsString("xml/transaction/common/TransactionQueryInvalidTranCodeRequest.xml");
-
-        MessageHandlerResults results = null;
-        CashReceiptsApiHandler handler = new CashReceiptsApiHandler();
-        try {
-            results = handler.processMessage("INCORRECT_TRAN_CODE", request);
-        } catch (MessageHandlerCommandException e) {
-            e.printStackTrace();
-            Assert.fail("An unexpected exception was thrown");
-        }
-
-        Assert.assertNotNull(results);
-        Assert.assertNotNull(results.getPayload());
-
-        AccountingTransactionResponse actualRepsonse = (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-        Assert.assertNull(actualRepsonse.getProfile());
-        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(CashReceiptsApiHandler.ERROR_MSG_TRANS_NOT_FOUND + "INCORRECT_TRAN_CODE", actualRepsonse.getReplyStatus().getMessage());
     }
 
 }

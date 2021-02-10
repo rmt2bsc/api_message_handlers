@@ -1,0 +1,14 @@
+<MultimediaRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>media</application>
+        <module>maint</module>
+        <transaction>UPDATE_ARTIST</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>10/02/2020 03:12:16</delivery_date>
+    </header>
+    <profile>
+        <audio_video_details/>
+    </profile>
+</MultimediaRequest>

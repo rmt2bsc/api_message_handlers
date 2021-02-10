@@ -1,5 +1,6 @@
 package org.rmt2.api.handler.transaction.purchases;
 
+import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -8,6 +9,7 @@ import java.util.List;
 
 import org.dto.XactCreditChargeDto;
 import org.dto.XactTypeDto;
+import org.dto.adapter.orm.transaction.purchases.creditor.Rmt2CreditChargeDtoFactory;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -15,6 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.modules.transaction.XactApiException;
+import org.modules.transaction.XactConst;
 import org.modules.transaction.purchases.creditor.CreditorPurchasesApi;
 import org.modules.transaction.purchases.creditor.CreditorPurchasesApiException;
 import org.modules.transaction.purchases.creditor.CreditorPurchasesApiFactory;
@@ -23,11 +26,11 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.rmt2.api.handler.BaseAccountingMessageHandlerTest;
 import org.rmt2.api.handler.HandlerCacheMockData;
-import org.rmt2.api.handlers.transaction.purchases.CreditorPurchasesApiHandler;
+import org.rmt2.api.handlers.transaction.purchases.CreateCreditorPurchasesApiHandler;
+import org.rmt2.api.handlers.transaction.purchases.QueryCreditorPurchasesApiHandler;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.AccountingTransactionResponse;
-import org.rmt2.jaxb.XactType;
 
 import com.api.config.SystemConfigurator;
 import com.api.messaging.handler.MessageHandlerCommandException;
@@ -43,7 +46,7 @@ import com.api.util.RMT2String;
  *
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ AbstractDaoClientImpl.class, Rmt2OrmClientFactory.class, CreditorPurchasesApiHandler.class, CreditorPurchasesApiFactory.class,
+@PrepareForTest({ AbstractDaoClientImpl.class, Rmt2OrmClientFactory.class, QueryCreditorPurchasesApiHandler.class, CreditorPurchasesApiFactory.class,
         SystemConfigurator.class })
 public class CreditorPurchasesUpdateMessageHandlerTest extends BaseAccountingMessageHandlerTest {
 
@@ -102,8 +105,17 @@ public class CreditorPurchasesUpdateMessageHandlerTest extends BaseAccountingMes
             Assert.fail("Unable to setup mock stub for updating a creditor purchases transaction");
         }
 
+        XactCreditChargeDto newMockXactDto = Rmt2CreditChargeDtoFactory.createCreditChargeInstance();
+        newMockXactDto.setXactId(CreditorPurchasesMockData.NEW_XACT_ID);
+        newMockXactDto.setXactTypeId(XactConst.XACT_TYPE_CREDITOR_PURCHASE);
+        try {
+            when(this.mockApi.get(eq(CreditorPurchasesMockData.NEW_XACT_ID))).thenReturn(newMockXactDto);
+        } catch (CreditorPurchasesApiException e) {
+            Assert.fail("Unable to setup mock stub for updating a creditor purchases transaction");
+        }
+
         MessageHandlerResults results = null;
-        CreditorPurchasesApiHandler handler = new CreditorPurchasesApiHandler();
+        CreateCreditorPurchasesApiHandler handler = new CreateCreditorPurchasesApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_CREDITPURCHASE_CREATE, request);
         } catch (MessageHandlerCommandException e) {
@@ -114,24 +126,20 @@ public class CreditorPurchasesUpdateMessageHandlerTest extends BaseAccountingMes
         Assert.assertNotNull(results.getPayload());
 
         AccountingTransactionResponse actualRepsonse = (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertNotNull(actualRepsonse.getProfile());
+        Assert.assertNotNull(actualRepsonse.getProfile().getTransactions());
+        Assert.assertNotNull(actualRepsonse.getProfile().getTransactions().getTransaction());
         Assert.assertEquals(1, actualRepsonse.getProfile().getTransactions().getTransaction().size());
         Assert.assertEquals(1, actualRepsonse.getReplyStatus().getRecordCount().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
-        String msg = RMT2String.replace(CreditorPurchasesApiHandler.MSG_CREATE_SUCCESS, String.valueOf(CreditorPurchasesMockData.NEW_XACT_ID), "%s");
+        String msg = RMT2String.replace(CreateCreditorPurchasesApiHandler.MSG_CREATE_SUCCESS,
+                String.valueOf(CreditorPurchasesMockData.NEW_XACT_ID), "%s");
         Assert.assertEquals(msg, actualRepsonse.getReplyStatus().getMessage());
-
-        Assert.assertNotNull(actualRepsonse.getProfile());
-        Assert.assertNotNull(actualRepsonse.getProfile().getTransactions());
-        Assert.assertTrue(actualRepsonse.getProfile().getTransactions().getTransaction().size() > 0);
-        for (int ndx = 0; ndx < actualRepsonse.getProfile().getTransactions().getTransaction().size(); ndx++) {
-            XactType a = actualRepsonse.getProfile().getTransactions().getTransaction().get(ndx);
-            Assert.assertNotNull(a.getXactId());
-            Assert.assertEquals(CreditorPurchasesMockData.NEW_XACT_ID, a.getXactId().intValue());
-            Assert.assertNotNull(a.getLineitems());
-            Assert.assertNotNull(a.getLineitems().getLineitem());
-            Assert.assertTrue(a.getLineitems().getLineitem().size() > 0);
-        }
+        Assert.assertNotNull(actualRepsonse.getProfile().getTransactions().getTransaction().get(0));
+        Assert.assertNotNull(actualRepsonse.getProfile().getTransactions().getTransaction().get(0).getXactId());
+        Assert.assertEquals(CreditorPurchasesMockData.NEW_XACT_ID, actualRepsonse.getProfile().getTransactions().getTransaction()
+                .get(0).getXactId().intValue());
     }
 
     @Test
@@ -146,7 +154,7 @@ public class CreditorPurchasesUpdateMessageHandlerTest extends BaseAccountingMes
         }
 
         MessageHandlerResults results = null;
-        CreditorPurchasesApiHandler handler = new CreditorPurchasesApiHandler();
+        CreateCreditorPurchasesApiHandler handler = new CreateCreditorPurchasesApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_CREDITPURCHASE_CREATE, request);
         } catch (MessageHandlerCommandException e) {
@@ -158,10 +166,9 @@ public class CreditorPurchasesUpdateMessageHandlerTest extends BaseAccountingMes
         Assert.assertNotNull(results.getPayload());
 
         AccountingTransactionResponse actualRepsonse = (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-        Assert.assertNotNull(actualRepsonse.getProfile());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(CreditorPurchasesApiHandler.MSG_CREATE_FAILURE, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(CreateCreditorPurchasesApiHandler.MSG_CREATE_FAILURE, actualRepsonse.getReplyStatus().getMessage());
         Assert.assertEquals(API_ERROR_MESSAGE, actualRepsonse.getReplyStatus().getExtMessage());
     }
 
@@ -176,7 +183,7 @@ public class CreditorPurchasesUpdateMessageHandlerTest extends BaseAccountingMes
         }
 
         MessageHandlerResults results = null;
-        CreditorPurchasesApiHandler handler = new CreditorPurchasesApiHandler();
+        CreateCreditorPurchasesApiHandler handler = new CreateCreditorPurchasesApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_CREDITPURCHASE_CREATE, request);
         } catch (MessageHandlerCommandException e) {
@@ -191,7 +198,8 @@ public class CreditorPurchasesUpdateMessageHandlerTest extends BaseAccountingMes
         Assert.assertNull(actualRepsonse.getProfile());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(CreditorPurchasesApiHandler.MSG_MISSING_PROFILE_DATA, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(CreateCreditorPurchasesApiHandler.MSG_MISSING_PROFILE_DATA, actualRepsonse.getReplyStatus()
+                .getMessage());
     }
 
     @Test
@@ -206,7 +214,7 @@ public class CreditorPurchasesUpdateMessageHandlerTest extends BaseAccountingMes
         }
 
         MessageHandlerResults results = null;
-        CreditorPurchasesApiHandler handler = new CreditorPurchasesApiHandler();
+        CreateCreditorPurchasesApiHandler handler = new CreateCreditorPurchasesApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_CREDITPURCHASE_CREATE, request);
         } catch (MessageHandlerCommandException e) {
@@ -221,7 +229,8 @@ public class CreditorPurchasesUpdateMessageHandlerTest extends BaseAccountingMes
         Assert.assertNull(actualRepsonse.getProfile());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(CreditorPurchasesApiHandler.MSG_MISSING_TRANSACTION_SECTION, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(CreateCreditorPurchasesApiHandler.MSG_MISSING_TRANSACTION_SECTION, actualRepsonse.getReplyStatus()
+                .getMessage());
     }
 
     @Test
@@ -235,7 +244,7 @@ public class CreditorPurchasesUpdateMessageHandlerTest extends BaseAccountingMes
         }
 
         MessageHandlerResults results = null;
-        CreditorPurchasesApiHandler handler = new CreditorPurchasesApiHandler();
+        CreateCreditorPurchasesApiHandler handler = new CreateCreditorPurchasesApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_CREDITPURCHASE_CREATE, request);
         } catch (MessageHandlerCommandException e) {
@@ -250,7 +259,8 @@ public class CreditorPurchasesUpdateMessageHandlerTest extends BaseAccountingMes
         Assert.assertNull(actualRepsonse.getProfile());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(CreditorPurchasesApiHandler.MSG_REQUIRED_NO_TRANSACTIONS_INCORRECT, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(CreateCreditorPurchasesApiHandler.MSG_REQUIRED_NO_TRANSACTIONS_INCORRECT, actualRepsonse
+                .getReplyStatus().getMessage());
     }
 
     @Test
@@ -265,7 +275,7 @@ public class CreditorPurchasesUpdateMessageHandlerTest extends BaseAccountingMes
         }
 
         MessageHandlerResults results = null;
-        CreditorPurchasesApiHandler handler = new CreditorPurchasesApiHandler();
+        CreateCreditorPurchasesApiHandler handler = new CreateCreditorPurchasesApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_CREDITPURCHASE_CREATE, request);
         } catch (MessageHandlerCommandException e) {
@@ -280,7 +290,8 @@ public class CreditorPurchasesUpdateMessageHandlerTest extends BaseAccountingMes
         Assert.assertNull(actualRepsonse.getProfile());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(CreditorPurchasesApiHandler.MSG_REQUIRED_NO_TRANSACTIONS_INCORRECT, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(CreateCreditorPurchasesApiHandler.MSG_REQUIRED_NO_TRANSACTIONS_INCORRECT, actualRepsonse
+                .getReplyStatus().getMessage());
     }
 
     @Test
@@ -295,7 +306,7 @@ public class CreditorPurchasesUpdateMessageHandlerTest extends BaseAccountingMes
         }
 
         MessageHandlerResults results = null;
-        CreditorPurchasesApiHandler handler = new CreditorPurchasesApiHandler();
+        CreateCreditorPurchasesApiHandler handler = new CreateCreditorPurchasesApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_CREDITPURCHASE_CREATE, request);
         } catch (MessageHandlerCommandException e) {
@@ -310,31 +321,9 @@ public class CreditorPurchasesUpdateMessageHandlerTest extends BaseAccountingMes
         Assert.assertNull(actualRepsonse.getProfile());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(CreditorPurchasesApiHandler.MSG_MISSING_CREDITOR_PROFILE_DATA, actualRepsonse.getReplyStatus().getMessage());
-    }
-
-    @Test
-    public void testError_Incorrect_Trans_Code() {
-        String request = RMT2File.getFileContentsAsString("xml/transaction/common/TransactionQueryInvalidTranCodeRequest.xml");
-
-        MessageHandlerResults results = null;
-        CreditorPurchasesApiHandler handler = new CreditorPurchasesApiHandler();
-        try {
-            results = handler.processMessage("INCORRECT_TRAN_CODE", request);
-        } catch (MessageHandlerCommandException e) {
-            e.printStackTrace();
-            Assert.fail("An unexpected exception was thrown");
-        }
-
-        Assert.assertNotNull(results);
-        Assert.assertNotNull(results.getPayload());
-
-        AccountingTransactionResponse actualRepsonse = (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-        Assert.assertNull(actualRepsonse.getProfile());
-        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(CreditorPurchasesApiHandler.ERROR_MSG_TRANS_NOT_FOUND + "INCORRECT_TRAN_CODE", actualRepsonse.getReplyStatus()
+        Assert.assertEquals(CreateCreditorPurchasesApiHandler.MSG_MISSING_CREDITOR_PROFILE_DATA, actualRepsonse.getReplyStatus()
                 .getMessage());
     }
+
 
 }

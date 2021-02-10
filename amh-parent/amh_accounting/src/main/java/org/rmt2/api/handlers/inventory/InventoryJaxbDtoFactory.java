@@ -239,7 +239,7 @@ public class InventoryJaxbDtoFactory extends RMT2Base {
         InventoryStatusHistoryType jaxbObj = InventoryItemStatusHistTypeBuilder.Builder.create()
                 .withStatusHistId(dto.getEntityId())
                 .withItemId(dto.getItemId())
-                .withItemStatusId(dto.getItemStatusId(), null)
+                .withItemStatusId(dto.getItemStatusId(), dto.getItemStatusName())
                 .withEffectiveDate(dto.getEffectiveDate())
                 .withEndDate(dto.getEndDate())
                 .withMarkup(dto.getMarkup())

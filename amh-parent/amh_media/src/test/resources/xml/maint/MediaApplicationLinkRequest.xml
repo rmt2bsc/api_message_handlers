@@ -1,0 +1,22 @@
+<MediaApplicationLinkRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>media</application>
+        <module>maint</module>
+        <transaction>LINK_CONTENT_TO_APPLICATION</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>01/30/2021 16:50:36</delivery_date>
+        <session_id>ABCDEFGHIJKLMNOPQRSTUVWXYZ</session_id>
+    </header>
+    <profile>
+        <media_link_data>
+            <attachment>
+                <content_id>100</content_id>
+                <project_name>Accounting</project_name>
+                <module_name>transaction</module_name>
+                <property_name>xact_id</property_name>
+            </attachment>
+        </media_link_data>
+    </profile>
+</MediaApplicationLinkRequest>

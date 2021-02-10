@@ -1,0 +1,241 @@
+.menuBar
+{
+  margin-top:-2 px;
+  margin-left:1 px
+}
+
+.menuBarItems
+{
+   font: 9pt arial;
+   color: #FFFFFF;
+   text-decoration: none;
+   cursor: hand
+}
+
+.menuBarMainMenuItem
+{
+  font: 9pt arial;
+  background: green;
+  color:#FFFF99;
+  text-decoration: none;
+  cursor: hand
+}
+
+.menuTaskOptions
+{
+}
+
+.clsMenu
+{
+    BACKGROUND: #eeeee6;
+    BORDER-BOTTOM: black 1px solid;
+    BORDER-LEFT: black 2px solid;
+    BORDER-RIGHT: black 1px solid;
+    BORDER-TOP: black 2px solid;
+    PADDING-BOTTOM: 0px;
+    POSITION: absolute;
+    DISPLAY: none;
+    WIDTH: 175px
+}
+
+.taskMenu
+{
+  position:absolute;
+  left:1px;
+  top:63px;
+  width:162px;
+  height:89.7%;
+  z-index:0;
+  background-color: #ccffcc;
+  layer-background-color: #ccffcc;
+  border: 1px none #000000
+}
+
+.taskMenuItems
+{
+  position:absolute;
+  left:1px;
+  top:1px;
+  width:162px;
+  height:538px;
+  z-index:0;
+  background-color: #ccffcc;
+  layer-background-color: #ccffcc;
+  border: 1px none #000000
+}
+
+.cellOff
+{
+    BACKGROUND: #ccffcc;
+    BORDER-BOTTOM: black 1px solid;
+    BORDER-RIGHT: black 1px solid;
+    CURSOR: hand;
+    FONT-FAMILY: 'sans-serif';
+    FONT-SIZE: 8pt;
+    FONT-WEIGHT: bold;
+    HEIGHT: 25px;
+    PADDING-BOTTOM: 2px;
+    PADDING-LEFT: 4px;
+    PADDING-RIGHT: 4px;
+    PADDING-TOP: 2px;
+    TEXT-DECORATION: none;
+    WIDTH: 100%
+}
+
+TD.toolCell
+{
+    BORDER-LEFT: #ffffff 1px;
+    BORDER-RIGHT: #ffffff solid 1px;
+    BORDER-TOP: #ffffff 1px;
+    BORDER-BOTTOM-: #ffffff 1px
+}
+
+.taskHeader
+{
+  position:absolute;
+  left:1px;
+  top:20px;
+  width:992px;
+  height:'5%';
+  z-index:0;
+  background-color: #FFFFCC;
+  layer-background-color: #FFFFCC;
+  border: 1px none #000000
+}
+
+
+.taskMenuDetail
+{
+  position:absolute;
+  left:163px;
+  top:63px;
+  width:830px;
+  height:82%;
+  z-index:0;
+  background-color: #CCCCCC;
+  layer-background-color: #CCCCCC;
+  border: 1px none #000000;
+  overflow: auto
+}
+
+.taskMenuDetailB
+{
+  position:absolute;
+  left:163px;
+  top:63px;
+  width:830px;
+  height:82%;
+  z-index:0;
+  background-color: #000000;
+  layer-background-color: #000000;
+  border: 1px none #CCCCCC
+}
+
+.taskMenuFooter
+{
+  position:absolute;
+  left:163px;
+  top:92%;
+  width:830px;
+  height:30px;
+  z-index:0;
+  background-color: #CCCCCC;
+  layer-background-color: #CCCCCC;
+  border: 1px none #000000
+}
+
+.tabs
+{
+  position:absolute;
+  left:1px;
+  top:1px;
+  width:100%;
+  height:6%;
+  z-index:1;
+  visibility: visible
+}
+
+.tabPage
+{
+  position:absolute;
+  left:1px;
+  top:45px;
+  width:830px;
+  height:57.5%;
+  z-index:2;
+  background-color: #CCCCCC;
+  layer-background-color: #CCCCCC;
+  overflow: auto;
+  visibility: visible
+}
+
+.searchCriteriaFull
+{
+  position:absolute;
+  left:1px;
+  top:63px;
+  width:992px;
+  height:150px;
+  z-index:0;
+  background-color: #ffffcc;
+  layer-background-color: #ffffcc;
+  border: 1px solid #000000;
+  overflow: auto
+}
+
+.searchResultsFull
+{
+  position:absolute;
+  left:1px;
+  top:212px;
+  width:992px;
+  height:340px;
+  z-index:0;
+  background-color: #CCCCCC;
+  layer-background-color: #CCCCCC;
+  border: 1px solid #000000;
+  overflow: scroll
+}
+
+
+.searchCriteriaFullExt
+{
+  position:absolute;
+  left:1px;
+  top:63px;
+  width:992px;
+  height:250px;
+  z-index:0;
+  background-color: #ffffcc;
+  layer-background-color: #ffffcc;
+  border: 1px solid #000000;
+  overflow: auto
+}
+
+.searchResultsFullExt
+{
+  position:absolute;
+  left:1px;
+  top:322px;
+  width:992px;
+  height:228px;
+  z-index:0;
+  background-color: #CCCCCC;
+  layer-background-color: #CCCCCC;
+  border: 1px solid #000000;
+  overflow: scroll
+}
+
+
+.fullFooter
+{
+  position:absolute;
+  left:1px;
+  top:92%;
+  width:992px;
+  height:30px;
+  z-index:0;
+  background-color: #CCCCCC;
+  layer-background-color: #CCCCCC;
+  border: 1px none #000000
+}

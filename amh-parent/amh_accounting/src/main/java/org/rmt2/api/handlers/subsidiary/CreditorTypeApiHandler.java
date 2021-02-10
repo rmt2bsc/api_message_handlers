@@ -49,8 +49,7 @@ public class CreditorTypeApiHandler extends
      */
     public CreditorTypeApiHandler() {
         super();
-        SubsidiaryApiFactory f = new SubsidiaryApiFactory();
-        this.api = f.createCreditorApi(CommonAccountingConst.APP_NAME);
+        this.api = SubsidiaryApiFactory.createCreditorApi(CommonAccountingConst.APP_NAME);
         this.jaxbObjFactory = new ObjectFactory();
         this.responseObj = jaxbObjFactory.createAccountingTransactionResponse();
         logger.info(CreditorTypeApiHandler.class.getName() + " was instantiated successfully");

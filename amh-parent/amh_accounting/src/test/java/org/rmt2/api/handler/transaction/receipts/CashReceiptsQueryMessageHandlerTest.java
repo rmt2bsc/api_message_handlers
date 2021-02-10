@@ -23,7 +23,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.rmt2.api.handler.BaseAccountingMessageHandlerTest;
 import org.rmt2.api.handler.HandlerCacheMockData;
-import org.rmt2.api.handlers.transaction.receipts.CashReceiptsApiHandler;
+import org.rmt2.api.handlers.transaction.receipts.QueryCashReceiptsApiHandler;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.AccountingTransactionResponse;
@@ -43,7 +43,7 @@ import com.api.util.RMT2File;
  *
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ AbstractDaoClientImpl.class, Rmt2OrmClientFactory.class, CashReceiptsApiHandler.class, CashReceiptApiFactory.class,
+@PrepareForTest({ AbstractDaoClientImpl.class, Rmt2OrmClientFactory.class, QueryCashReceiptsApiHandler.class, CashReceiptApiFactory.class,
         SystemConfigurator.class })
 public class CashReceiptsQueryMessageHandlerTest extends BaseAccountingMessageHandlerTest {
 
@@ -104,7 +104,7 @@ public class CashReceiptsQueryMessageHandlerTest extends BaseAccountingMessageHa
         }
 
         MessageHandlerResults results = null;
-        CashReceiptsApiHandler handler = new CashReceiptsApiHandler();
+        QueryCashReceiptsApiHandler handler = new QueryCashReceiptsApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_CASHRECEIPT_GET, request);
         } catch (MessageHandlerCommandException e) {
@@ -146,7 +146,7 @@ public class CashReceiptsQueryMessageHandlerTest extends BaseAccountingMessageHa
         }
 
         MessageHandlerResults results = null;
-        CashReceiptsApiHandler handler = new CashReceiptsApiHandler();
+        QueryCashReceiptsApiHandler handler = new QueryCashReceiptsApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_CASHRECEIPT_GET, request);
         } catch (MessageHandlerCommandException e) {
@@ -161,7 +161,7 @@ public class CashReceiptsQueryMessageHandlerTest extends BaseAccountingMessageHa
         Assert.assertNull(actualRepsonse.getProfile());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(CashReceiptsApiHandler.MSG_FAILURE, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(QueryCashReceiptsApiHandler.MSG_FAILURE, actualRepsonse.getReplyStatus().getMessage());
         Assert.assertEquals("An Xact API test error occurred", actualRepsonse.getReplyStatus().getExtMessage());
     }
 
@@ -170,7 +170,7 @@ public class CashReceiptsQueryMessageHandlerTest extends BaseAccountingMessageHa
         String request = RMT2File.getFileContentsAsString("xml/transaction/common/TransactionQueryInvalidTranCodeRequest.xml");
 
         MessageHandlerResults results = null;
-        CashReceiptsApiHandler handler = new CashReceiptsApiHandler();
+        QueryCashReceiptsApiHandler handler = new QueryCashReceiptsApiHandler();
         try {
             results = handler.processMessage("INCORRECT_TRAN_CODE", request);
         } catch (MessageHandlerCommandException e) {
@@ -185,7 +185,7 @@ public class CashReceiptsQueryMessageHandlerTest extends BaseAccountingMessageHa
         Assert.assertNull(actualRepsonse.getProfile());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(CashReceiptsApiHandler.ERROR_MSG_TRANS_NOT_FOUND + "INCORRECT_TRAN_CODE", actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(QueryCashReceiptsApiHandler.ERROR_MSG_TRANS_NOT_FOUND + "INCORRECT_TRAN_CODE", actualRepsonse.getReplyStatus().getMessage());
     }
 
 }

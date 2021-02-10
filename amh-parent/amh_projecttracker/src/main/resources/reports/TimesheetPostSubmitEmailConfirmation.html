@@ -1,0 +1,29 @@
+<html>
+  <head>
+    <title>Timesheet Email Delivery Confirmation</title>
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="-1">  
+     <link rel=STYLESHEET type="text/css" href="$root$/common/css/RMT2Table.css">
+		<link rel=STYLESHEET type="text/css" href="$root$/common/css/RMT2General.css">
+		<script Language="JavaScript" src="$root$/common/js/RMT2General.js"></script>
+  </head>
+   
+  <body bgcolor="#FFFFFF" text="#000000">
+     <h3><strong>RMT2 Time Sheet Email Delivery Confirmation</strong></h3>
+        <div style="border-style:groove; border-color:#999999; background-color:buttonface; width:55%; height:140px">     
+		      <table>
+		      <tr>
+		        <td><b>Hello $firstName$ $lastName$,</b></td>
+		      </tr>
+		      <tr><td>&nbsp;</td></tr>
+			     <tr>
+				    <td>
+						 <font face="Verdana, Arial, Helvetica, sans-serif" size="2">
+							  Your time sheet, $timesheetId$, for the period ending on $endingPeriod$<br>has been $confirmStatus$ at $confirmDate$ for $clientName$ - $totalHours$ hours. 
+						 </font>					
+					  </td>
+					</tr>
+			  </table>
+		  </div>       
+ </body>
+</html>

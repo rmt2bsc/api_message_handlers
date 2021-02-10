@@ -74,8 +74,8 @@ public class SalesOrderRequestUtil {
      *            A list of {@link SalesOrderItemDto}
      * @param reqSalesOrder
      *            an instance of {@link SalesOrderType}
-     * @return int - transaction id for new sales orders or the total number of
-     *         rows updated for existing sales orders
+     * @return int - sales order id for the newly created sales order or the
+     *         total number of rows updated for existing sales orders.
      * @throws SalesApiException
      *             for sales order API error
      * @throws SystemException
@@ -90,6 +90,7 @@ public class SalesOrderRequestUtil {
         if (newSalesOrder) {
             // Update XML with new sales order id
             reqSalesOrder.setSalesOrderId(BigInteger.valueOf(rc));
+            salesOrderDto.setSalesOrderId(rc);
 
             // Ensure that each sales order item is associated with the sales
             // order.
@@ -116,21 +117,23 @@ public class SalesOrderRequestUtil {
      *            transaction once invoiced.
      * @param reqSalesOrder
      *            an instance of {@link SalesOrderType}
-     * @return new invoice id
+     * @return int. If the operation is invoice only, then the transaction id of
+     *         the sales order invoice is returned. If a payment is applied, the
+     *         transaction id of the payment is returned.
      * @throws SalesApiException
      *             for sales order API error
      */
     public static final int invoiceSalesOrder(SalesApi api, SalesOrderDto salesOrderDto, List<SalesOrderItemDto> itemsDtoList,
             boolean applyPayment, SalesOrderType reqSalesOrder) throws SalesApiException {
 
-        int newInvoiceId = api.invoiceSalesOrder(salesOrderDto, itemsDtoList, applyPayment);
+        int newXactId = api.invoiceSalesOrder(salesOrderDto, itemsDtoList, applyPayment);
         ObjectFactory fact = new ObjectFactory();
         SalesInvoiceType sit = fact.createSalesInvoiceType();
-        sit.setInvoiceId(BigInteger.valueOf(newInvoiceId));
+        sit.setInvoiceId(BigInteger.valueOf(newXactId));
         reqSalesOrder.setInvoiceDetails(sit);
-        reqSalesOrder.setInvoiced(newInvoiceId > 0);
+        reqSalesOrder.setInvoiced(newXactId > 0);
 
-        return newInvoiceId;
+        return newXactId;
     }
 
     /**

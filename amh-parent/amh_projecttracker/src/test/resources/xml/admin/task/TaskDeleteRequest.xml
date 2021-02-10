@@ -1,0 +1,18 @@
+<ProjectProfileRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>projecttracker</application>
+        <module>admin</module>
+        <transaction>DELETE_TASK</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>05/18/2020 00:05:50</delivery_date>
+    </header>
+    <profile>
+        <task>
+            <task_id>39</task_id>
+            <description>Test Task Name Updated</description>
+            <billable>1</billable>
+        </task>
+    </profile>
+</ProjectProfileRequest>

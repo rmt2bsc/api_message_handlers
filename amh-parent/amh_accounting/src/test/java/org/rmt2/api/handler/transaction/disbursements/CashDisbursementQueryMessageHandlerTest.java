@@ -27,7 +27,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.rmt2.api.handler.BaseAccountingMessageHandlerTest;
 import org.rmt2.api.handler.HandlerCacheMockData;
 import org.rmt2.api.handlers.transaction.XactApiHandler;
-import org.rmt2.api.handlers.transaction.cashdisbursement.CashDisbursementApiHandler;
+import org.rmt2.api.handlers.transaction.cashdisbursement.QueryDisbursementApiHandler;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.AccountingTransactionResponse;
@@ -47,7 +47,7 @@ import com.api.util.RMT2File;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ AbstractDaoClientImpl.class, Rmt2OrmClientFactory.class,
-    CashDisbursementApiHandler.class, DisbursementsApiFactory.class, SystemConfigurator.class })
+        QueryDisbursementApiHandler.class, DisbursementsApiFactory.class, SystemConfigurator.class })
 public class CashDisbursementQueryMessageHandlerTest extends BaseAccountingMessageHandlerTest {
 
     private DisbursementsApi mockApi;
@@ -108,7 +108,7 @@ public class CashDisbursementQueryMessageHandlerTest extends BaseAccountingMessa
         }
         
         MessageHandlerResults results = null;
-        CashDisbursementApiHandler handler = new CashDisbursementApiHandler();
+        QueryDisbursementApiHandler handler = new QueryDisbursementApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_GET, request);
         } catch (MessageHandlerCommandException e) {
@@ -156,7 +156,7 @@ public class CashDisbursementQueryMessageHandlerTest extends BaseAccountingMessa
         }
         
         MessageHandlerResults results = null;
-        CashDisbursementApiHandler handler = new CashDisbursementApiHandler();
+        QueryDisbursementApiHandler handler = new QueryDisbursementApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_GET, request);
         } catch (MessageHandlerCommandException e) {
@@ -200,7 +200,7 @@ public class CashDisbursementQueryMessageHandlerTest extends BaseAccountingMessa
         }
         
         MessageHandlerResults results = null;
-        CashDisbursementApiHandler handler = new CashDisbursementApiHandler();
+        QueryDisbursementApiHandler handler = new QueryDisbursementApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_GET, request);
         } catch (MessageHandlerCommandException e) {
@@ -248,7 +248,7 @@ public class CashDisbursementQueryMessageHandlerTest extends BaseAccountingMessa
         }
         
         MessageHandlerResults results = null;
-        CashDisbursementApiHandler handler = new CashDisbursementApiHandler();
+        QueryDisbursementApiHandler handler = new QueryDisbursementApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_GET, request);
         } catch (MessageHandlerCommandException e) {
@@ -293,7 +293,7 @@ public class CashDisbursementQueryMessageHandlerTest extends BaseAccountingMessa
         }
         
         MessageHandlerResults results = null;
-        CashDisbursementApiHandler handler = new CashDisbursementApiHandler();
+        QueryDisbursementApiHandler handler = new QueryDisbursementApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_GET, request);
         } catch (MessageHandlerCommandException e) {
@@ -309,7 +309,7 @@ public class CashDisbursementQueryMessageHandlerTest extends BaseAccountingMessa
         Assert.assertEquals(0, actualRepsonse.getReplyStatus().getRecordCount().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(CashDisbursementApiHandler.MSG_DATA_NOT_FOUND, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(QueryDisbursementApiHandler.MSG_DATA_NOT_FOUND, actualRepsonse.getReplyStatus().getMessage());
     }
     
     @Test
@@ -318,7 +318,7 @@ public class CashDisbursementQueryMessageHandlerTest extends BaseAccountingMessa
                 "xml/transaction/disbursements/cash/CashDisbursementBasicQueryRequestDetails.xml");
         
         MessageHandlerResults results = null;
-        CashDisbursementApiHandler handler = new CashDisbursementApiHandler();
+        QueryDisbursementApiHandler handler = new QueryDisbursementApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_GET, request);
         } catch (MessageHandlerCommandException e) {
@@ -352,7 +352,7 @@ public class CashDisbursementQueryMessageHandlerTest extends BaseAccountingMessa
         }
         
         MessageHandlerResults results = null;
-        CashDisbursementApiHandler handler = new CashDisbursementApiHandler();
+        QueryDisbursementApiHandler handler = new QueryDisbursementApiHandler();
         try {
             results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_GET, request);
         } catch (MessageHandlerCommandException e) {
@@ -368,7 +368,7 @@ public class CashDisbursementQueryMessageHandlerTest extends BaseAccountingMessa
         Assert.assertNull(actualRepsonse.getProfile());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(CashDisbursementApiHandler.MSG_FAILURE, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(QueryDisbursementApiHandler.MSG_FAILURE, actualRepsonse.getReplyStatus().getMessage());
         Assert.assertEquals("An Xact API test error occurred",
                 actualRepsonse.getReplyStatus().getExtMessage());
     }
@@ -380,7 +380,7 @@ public class CashDisbursementQueryMessageHandlerTest extends BaseAccountingMessa
                 "xml/transaction/common/TransactionQueryInvalidTranCodeRequest.xml");
         
         MessageHandlerResults results = null;
-        CashDisbursementApiHandler handler = new CashDisbursementApiHandler();
+        QueryDisbursementApiHandler handler = new QueryDisbursementApiHandler();
         try {
             results = handler.processMessage("INCORRECT_TRAN_CODE", request);
         } catch (MessageHandlerCommandException e) {
@@ -396,7 +396,7 @@ public class CashDisbursementQueryMessageHandlerTest extends BaseAccountingMessa
         Assert.assertNull(actualRepsonse.getProfile());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(CashDisbursementApiHandler.ERROR_MSG_TRANS_NOT_FOUND + "INCORRECT_TRAN_CODE", actualRepsonse
+        Assert.assertEquals(QueryDisbursementApiHandler.ERROR_MSG_TRANS_NOT_FOUND + "INCORRECT_TRAN_CODE", actualRepsonse
                 .getReplyStatus().getMessage());
     }
 

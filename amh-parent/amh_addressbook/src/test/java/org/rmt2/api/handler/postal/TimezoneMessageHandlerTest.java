@@ -107,13 +107,13 @@ public class TimezoneMessageHandlerTest extends BaseAddressBookMessageHandlerTes
         }
         Assert.assertNotNull(results);
         Assert.assertNotNull(results.getPayload());
-        Assert.assertEquals(5, results.getReturnCode());
+        Assert.assertEquals(1, results.getReturnCode());
 
         PostalResponse actualRepsonse = 
                 (PostalResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertNotNull(actualRepsonse.getTimezones());
-        Assert.assertEquals(results.getReturnCode(), actualRepsonse.getTimezones().size());
-        Assert.assertEquals(actualRepsonse.getReplyStatus().getReturnCode().intValue(),
+        Assert.assertEquals(1, results.getReturnCode());
+        Assert.assertEquals(actualRepsonse.getReplyStatus().getRecordCount().intValue(),
                 actualRepsonse.getTimezones().size());
         Assert.assertEquals(WebServiceConstants.RETURN_STATUS_SUCCESS,
                 actualRepsonse.getReplyStatus().getReturnStatus());
@@ -149,13 +149,12 @@ public class TimezoneMessageHandlerTest extends BaseAddressBookMessageHandlerTes
         }
         Assert.assertNotNull(results);
         Assert.assertNotNull(results.getPayload());
-        Assert.assertEquals(5, results.getReturnCode());
+        Assert.assertEquals(1, results.getReturnCode());
 
         PostalResponse actualRepsonse = 
                 (PostalResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertNotNull(actualRepsonse.getTimezones());
-        Assert.assertEquals(results.getReturnCode(), actualRepsonse.getTimezones().size());
-        Assert.assertEquals(actualRepsonse.getReplyStatus().getReturnCode().intValue(),
+        Assert.assertEquals(actualRepsonse.getReplyStatus().getRecordCount().intValue(),
                 actualRepsonse.getTimezones().size());
         Assert.assertEquals(WebServiceConstants.RETURN_STATUS_SUCCESS,
                 actualRepsonse.getReplyStatus().getReturnStatus());
@@ -193,7 +192,8 @@ public class TimezoneMessageHandlerTest extends BaseAddressBookMessageHandlerTes
         PostalResponse actualRepsonse = 
                 (PostalResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertNotNull(actualRepsonse.getTimezones());
-        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getRecordCount().intValue());
         Assert.assertEquals(WebServiceConstants.RETURN_STATUS_SUCCESS,
                 actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("No Timezone data found!", actualRepsonse.getReplyStatus().getMessage());

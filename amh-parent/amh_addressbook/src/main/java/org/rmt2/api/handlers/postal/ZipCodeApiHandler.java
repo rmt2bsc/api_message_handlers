@@ -100,6 +100,7 @@ public class ZipCodeApiHandler extends AbstractJaxbMessageHandler<PostalRequest,
         try {
             // Set reply status
             rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.validateCriteria(req);
             this.queryResultFormat = req.getPostalCriteria().getZipcode().getResultFormat();
             ZipcodeDto criteriaDto = this.extractSelectionCriteria(req.getPostalCriteria().getZipcode());
@@ -108,12 +109,12 @@ public class ZipCodeApiHandler extends AbstractJaxbMessageHandler<PostalRequest,
             List<ZipcodeDto> dtoList = api.getZipCode(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage("No Zipcode data not found!");
-                rs.setReturnCode(0);
+                rs.setRecordCount(0);
             }
             else {
                 queryResults = this.buildJaxbListData(dtoList);
                 rs.setMessage("Zipcode record(s) found");
-                rs.setReturnCode(dtoList.size());
+                rs.setRecordCount(dtoList.size());
             }
             this.responseObj.setHeader(req.getHeader());
             
@@ -169,7 +170,7 @@ public class ZipCodeApiHandler extends AbstractJaxbMessageHandler<PostalRequest,
                criteriaDto.setZip(criteria.getZipcode().intValue());    
            }
            criteriaDto.setCity(criteria.getCity());
-           criteriaDto.setStateName(criteria.getState());
+            criteriaDto.setStateCode(criteria.getState());
            criteriaDto.setAreaCode(criteria.getAreaCode());
            criteriaDto.setCountyName(criteria.getCountyName());
        }

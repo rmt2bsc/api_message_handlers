@@ -4,7 +4,6 @@
 	<xsl:variable name="tableBorder" select="'solid'"/>
 	<xsl:variable name="normalTextSize" select="'normal'"/>
 	<xsl:variable name="signatureBorder" select="'solid'"/>
-	<xsl:variable name="imagePath" select="'$IMAGES_DIRECTORY$'"/>
 	<xsl:variable name="lightGray">#CCCCCC</xsl:variable>
 	<xsl:variable name="white">#FFFFFF</xsl:variable>
 	<xsl:variable name="listColHeaderShade">#FACC2E</xsl:variable>
@@ -36,8 +35,10 @@
 							<fo:table-row>
 								<fo:table-cell>
 									<fo:block text-align="left">
-										<!--<xsl:text>Replace this with image...</xsl:text>-->
-										<fo:external-graphic src="url(reports/RMT2_logo.gif')"/>
+										<fo:external-graphic src="url('$IMAGES_DIRECTORY$')"/>
+										<!-- Use for testing outside normal runtime environment 
+										    <fo:external-graphic src="url('\source\Api_Message_Handlers\amh-parent\amh_core\src\main\resources\images\RMT2_logo2.jpg')"/> 
+										 -->
 									</fo:block>
 								</fo:table-cell>
 							</fo:table-row>
@@ -45,13 +46,6 @@
 								<fo:table-cell>
 									<fo:block>
 										<xsl:text>&#xA0;</xsl:text>
-									</fo:block>
-								</fo:table-cell>
-							</fo:table-row>
-							<fo:table-row>
-								<fo:table-cell>
-									<fo:block font-size="18pt" text-align="center" font-weight="bold">
-										<xsl:text>RMT2 Business Systems Corp.</xsl:text>
 									</fo:block>
 								</fo:table-cell>
 							</fo:table-row>
@@ -406,7 +400,7 @@
 			<fo:table-cell border-right-color="black" border-right-width=".5pt" border-right-style="solid">
 				<fo:block text-align="left" font-size="11pt">
 					<xsl:text>&#xA0;</xsl:text>
-					<xsl:value-of select="sales_order_item_id"/>
+					<xsl:value-of select="item/item_id"/>
 				</fo:block>
 			</fo:table-cell>
 			<fo:table-cell border-right-color="black" border-right-width=".5pt" border-right-style="solid">

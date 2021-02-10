@@ -115,12 +115,14 @@ public class LookupCodeApiHandler extends
             List<LookupCodeDto> dtoList = api.getCode(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage("Code Detail Lookup data not found!");
-                rs.setReturnCode(0);
+                rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+                rs.setRecordCount(0);
             }
             else {
                 cdtList = this.buildJaxbListData(dtoList);
                 rs.setMessage("Code Detail Lookup record(s) found");
-                rs.setReturnCode(dtoList.size());
+                rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+                rs.setRecordCount(dtoList.size());
             }
             this.responseObj.setHeader(req.getHeader());
             
@@ -172,10 +174,12 @@ public class LookupCodeApiHandler extends
             
             if (newRec) {
                 rs.setMessage("Lookup Code was created successfully");
+                rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
                 rs.setExtMessage("The new code id is " + rc);
             }
             else {
                 rs.setMessage("Lookup Code was modified successfully");
+                rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
                 rs.setExtMessage("Total number of rows modified: " + rc);
             }
             api.commitTrans();
@@ -220,6 +224,7 @@ public class LookupCodeApiHandler extends
             
             // Return code is either the total number of rows deleted
             rs.setReturnCode(rc);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             rs.setMessage("Lookup Code was deleted successfully");
             rs.setExtMessage("Lookup Code Id deleted was " + criteriaDto.getCodeId());
             api.commitTrans();

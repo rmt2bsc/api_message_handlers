@@ -121,6 +121,7 @@ public class CreditorApiHandler extends
             List<CreditorDto> dtoList = this.api.getExt(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage("Creditor data not found!");
+                rs.setRecordCount(0);
             }
             else {
                 queryDtoResults = this.buildJaxbListData(dtoList);
@@ -160,22 +161,23 @@ public class CreditorApiHandler extends
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             CreditorDto profileDto = SubsidiaryJaxbDtoFactory
                     .createCreditorDtoInstance(req.getProfile().getCreditors().getCreditor().get(0));
-            
-           rc = this.api.update(profileDto);
+            api.beginTrans();
+            rc = this.api.update(profileDto);
             if (rc <= 0) {
                 rs.setMessage("Creditor data not found for update");
                 String extraMsg = "Creditor Id: " + profileDto.getCreditorId() + ", Creditor Name: " + profileDto.getContactName();
                 rs.setExtMessage(extraMsg);
-                rs.setReturnCode(0);
+                rs.setRecordCount(0);
             }
             else {
                 List<CreditorDto> dtoList = new ArrayList<>();
                 dtoList.add(profileDto);
                 queryDtoResults = this.buildJaxbListData(dtoList);
                 rs.setMessage("Creditor record(s) updated successfully");
-                rs.setReturnCode(rc);
+                rs.setRecordCount(rc);
             }
             this.responseObj.setHeader(req.getHeader());
             this.api.commitTrans();
@@ -210,13 +212,14 @@ public class CreditorApiHandler extends
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             criteriaDto = SubsidiaryJaxbDtoFactory
                     .createCreditorDtoCriteriaInstance(req.getCriteria().getCreditorCriteria());
-            
+            api.beginTrans();
             rc = this.api.delete(criteriaDto);
             rs.setMessage("Creditor delete operation completed!");
             rs.setExtMessage("Total records deleted: " + rc);
-            rs.setReturnCode(rc);
+            rs.setRecordCount(rc);
             this.responseObj.setHeader(req.getHeader());
             this.api.commitTrans();
         } catch (Exception e) {

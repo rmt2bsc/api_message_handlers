@@ -26,11 +26,14 @@ import org.rmt2.api.handler.subsidiary.SubsidiaryMockData;
 public class SalesOrderMockData extends SubsidiaryMockData {
 
     public static final int NEW_XACT_ID = 1234567;
-    public static final int NEW_INVOICE_ID = 3786;
+    // public static final int NEW_INVOICE_ID = 3786;
+    public static final int NEW_INVOICE_ID = 7000;
+    public static final String NEW_INVOICE_NO = "INVOICE_NO";
     public static final int NEW_SALES_ORDER_ID = 1000;
     public static final int EXISTING_XACT_ID = 7777;
     public static final int CUSTOMER_ID = 3333;
     public static final int TOTAL_SALES_ORDERS_CLOSED = 1;
+    public static final int SALES_ORDER_STAT_INVOICES = 2;
 
     /**
      * 

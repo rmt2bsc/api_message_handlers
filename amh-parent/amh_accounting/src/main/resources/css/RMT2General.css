@@ -1,0 +1,82 @@
+body {
+	background-color: #FFFFCC;
+}
+
+a:visited {
+      color:#800000;
+      text-decoration:none;
+}
+
+.popupLayer
+{
+   position:absolute;
+   left:77px;
+   top:117px;
+   width:645px;
+   height:209px;
+   z-index:1;
+   background-color: #FFFFCC;
+   layer-background-color: #FFFFCC;
+   border: 5px double #000000;
+   visibility: hidden
+ }
+
+.gridEdit {background-color: #FFFFFF}
+.gridHeader {background-color: #66CC99}
+.gridProtect {background-color: #CCCCCC}
+
+.packItemSelection
+{
+  width:95%;
+  height:160px
+  word-wrap: break-word
+}
+
+.clsGeneralButton {
+   width:90px;
+}
+
+.clsErrorText {
+    color:#FF0000;
+    text-align:left;
+    font-size:16px;
+    font-weight:normal;
+}
+
+.loadSplash {
+  visibility:visible;
+  position:absolute; 
+  top:1;
+}
+
+.resultsPage {
+  position:absolute; 
+  top:1;
+  visibility:hidden;
+}  
+
+.msgBox{
+	font-family: Verdana, Arial, Helvetica,sans-serif;
+	font-size:10pt;color:#000000;
+	background-color: #FFFFFF;
+	border-bottom-color: #C6708A;
+	border-bottom-style: orange;
+	border-bottom-width: thin;
+	border-color: orange ;
+	border-left-color: orange ;
+	border-left-style: solid;
+	border-left-width: thin;
+	border-right-color: orange;
+	border-right-style: dashed;
+	border-right-width: thin;
+	border-style: solid;
+	border-top-color: orange;
+	border-top-style: solid;
+	border-top-width: thin;
+	border-width: thin;
+	margin: auto;
+	margin-bottom: auto;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: auto
+}

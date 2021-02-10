@@ -105,6 +105,7 @@ public class ItemStatusApiHandler extends
             List<ItemMasterStatusDto> dtoList = this.api.getItemStatus(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage("Inventory item status data not found!");
+                rs.setRecordCount(0);
             }
             else {
                 queryDtoResults = this.buildJaxbListData(dtoList);

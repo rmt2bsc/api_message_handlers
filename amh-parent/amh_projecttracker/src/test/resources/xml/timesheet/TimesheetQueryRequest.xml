@@ -1,0 +1,24 @@
+<ProjectProfileRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>projecttracker</application>
+        <module>timesheet</module>
+        <transaction>GET_TIMESHEET</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>05/29/2020 02:01:16</delivery_date>
+    </header>
+    <criteria>
+        <timesheet_criteria>
+            <timesheet_id>169</timesheet_id>
+            <status_id>2</status_id>
+            <employee_id>2000</employee_id>
+            <client_id>20</client_id>
+            <project_id>30</project_id>
+            <period_begin>2020-05-23-05:00</period_begin>
+            <period_begin2>2020-05-23-05:00</period_begin2>
+            <period_end>2021-06-23-05:00</period_end>
+            <period_end2>2021-06-23-05:00</period_end2>
+        </timesheet_criteria>
+    </criteria>
+</ProjectProfileRequest>

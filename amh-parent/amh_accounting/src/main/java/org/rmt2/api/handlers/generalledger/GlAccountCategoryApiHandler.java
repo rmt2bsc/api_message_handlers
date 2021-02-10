@@ -109,7 +109,7 @@ public class GlAccountCategoryApiHandler extends
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             AccountCategoryDto criteriaDto = GeneralLedgerJaxbDtoFactory
-                    .createGlAccountCatgDtoCriteriaInstance(req.getCriteria().getCriteria());
+                    .createGlAccountCatgDtoCriteriaInstance(req.getCriteria().getGlCriteria());
             
             List<AccountCategoryDto> dtoList = this.api.getAccountCategory(criteriaDto);
             if (dtoList == null) {

@@ -9,7 +9,7 @@
         <delivery_date>07/19/2018 13:46:50</delivery_date>
     </header>
     <criteria>
-        <criteria>
+        <gl_criteria>
             <acct_type>
                 <acct_type_id>111</acct_type_id>
                 <description>GL Account Type Description Test</description>
@@ -17,6 +17,6 @@
                     <account_baltype_id>1</account_baltype_id>
                 </balance_type>
             </acct_type>
-        </criteria>
+        </gl_criteria>
     </criteria>
 </AccountingGeneralLedgerRequest>
