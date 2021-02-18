@@ -1,0 +1,20 @@
+<AuthenticationRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>authentication</application>
+        <module>admin</module>
+        <transaction>UPDATE_APPLICATION</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>02/17/2021 18:32:10</delivery_date>
+        <session_id>ABCDEFGHIJKLMNOPQRSTUVWXYZ</session_id>
+    </header>
+    <profile>
+        <application_info>
+            <app_id>0</app_id>
+            <app_code>test_app</app_code>
+            <description>Test Application</description>
+            <active>1</active>
+        </application_info>
+    </profile>
+</AuthenticationRequest>
