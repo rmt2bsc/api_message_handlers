@@ -112,6 +112,7 @@ public abstract class ApplicationApiHandler extends
 
     @Override
     protected String buildResponse(List<ApplicationType> payload, MessageHandlerCommonReplyStatus replyStatus) {
+        this.responseObj.setHeader(this.requestObj.getHeader());
         if (replyStatus != null) {
             ReplyStatusType rs = MessageHandlerUtility.createReplyStatus(replyStatus);
             this.responseObj.setReplyStatus(rs);    
