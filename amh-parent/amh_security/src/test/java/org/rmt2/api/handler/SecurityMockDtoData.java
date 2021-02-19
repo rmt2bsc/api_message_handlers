@@ -35,58 +35,6 @@ import org.dto.adapter.orm.Rmt2OrmDtoFactory;
  * 
  */
 public class SecurityMockDtoData {
-    // protected List<AppRole> mockAppRoleData;
-    // protected List<Application> mockApplicationData;
-    // protected List<ApplicationAccess> mockApplicationAccessData;
-    // protected List<GroupRoles> mockGroupRolesData;
-    // protected List<Roles> mockRolesData;
-    // protected List<UserAppRole> mockUserAppRoleData;
-    // protected List<UserGroup> mockUserGroupData;
-    // protected List<UserLogin> mockUserLoginData;
-    // protected List<UserResource> mockUserResourceData;
-    // protected List<UserResourceAccess> mockUserResourceAccessData;
-    // protected List<UserResourceSubtype> mockUserResourceSubtypeData;
-    // protected List<UserResourceType> mockUserResourceTypeData;
-    // protected List<VwAppRoles> mockVwAppRolesData;
-    // protected List<VwResource> mockVwResourceData;
-    // protected List<VwResourceType> mockVwResourceTypeData;
-    // protected List<VwUser> mockVwUserData;
-    // protected List<VwUser> mockVwUserSingleData;
-    // protected List<VwUserAppRoles> mockVwUserAppRolesData;
-    // protected List<VwUserGroup> mockVwUserGroupData;
-    // protected List<VwUserResourceAccess> mockVwUserResourceAccessData;
-
-    // /**
-    // * @throws java.lang.Exception
-    // */
-    // @Before
-    // public void setUp() throws Exception {
-    //
-    // this.mockAppRoleData = this.createAppRoleMockData();
-    // this.mockApplicationData = this.createApplicationMockData();
-    // this.mockApplicationAccessData = this.createApplicationAccessMockData();
-    // this.mockGroupRolesData = this.createGroupRolesMockData();
-    // this.mockRolesData = this.createRolesMockData();
-    // this.mockUserAppRoleData = this.createUserAppRoleMockData();
-    // this.mockUserGroupData = this.createUserGroupMockData();
-    // this.mockUserLoginData = this.createUserLoginMockData();
-    // this.mockUserResourceData = this.createUserResourceMockData();
-    // this.mockUserResourceAccessData =
-    // this.createUserResourceAccessMockData();
-    // this.mockUserResourceSubtypeData =
-    // this.createUserResourceSubtypeMockData();
-    // this.mockUserResourceTypeData = this.createUserResourceTypeMockData();
-    // this.mockVwAppRolesData = this.createVwAppRolesMockData();
-    // this.mockVwResourceData = this.createVwResourceMockData();
-    // this.mockVwResourceTypeData = this.createVwResourceTypeMockData();
-    // this.mockVwUserData = this.createVwUserMockData();
-    // this.mockVwUserSingleData = this.createVwUserSingleMockData();
-    // this.mockVwUserAppRolesData = this.createVwUserAppRolesMockData();
-    // this.mockVwUserGroupData = this.createVwUserGroupMockData();
-    // this.mockVwUserResourceAccessData =
-    // this.createVwUserResourceAccessMockData();
-    // return;
-    // }
 
     public static final List<AppRole> createAppRoleMockData() {
         List<AppRole> list = new ArrayList<>();

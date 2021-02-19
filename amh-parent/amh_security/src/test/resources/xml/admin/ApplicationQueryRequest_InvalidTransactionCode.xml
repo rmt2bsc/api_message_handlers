@@ -1,0 +1,22 @@
+<AuthenticationRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>authentication</application>
+        <module>admin</module>
+        <transaction>GET_APPLICATION_XXXX</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>02/18/2021 16:35:05</delivery_date>
+        <session_id>ABCDEFGHIJKLMNOPQRSTUVWXYZ</session_id>
+    </header>
+    <criteria>
+        <user_app_roles_criteria>
+            <app_id>200</app_id>
+            <app_code>auth_app</app_code>
+            <app_description>Authentication application</app_description>
+            <app_active>1</app_active>
+            <role_id>0</role_id>
+            <app_role_id>0</app_role_id>
+        </user_app_roles_criteria>
+    </criteria>
+</AuthenticationRequest>
