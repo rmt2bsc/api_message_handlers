@@ -86,7 +86,7 @@ public class ApplicationUpdateMessageHandlerTest extends BaseAuthenticationMessa
     
     @Test
     public void testSuccess_Create() {
-        String request = RMT2File.getFileContentsAsString("xml/admin/ApplicationInsertRequest.xml");
+        String request = RMT2File.getFileContentsAsString("xml/admin/application/ApplicationInsertRequest.xml");
         try {
             when(this.mockApi.update(isA(ApplicationDto.class))).thenReturn(SecurityMockOrmDataFactory.TEST_NEW_APP_ID);
         } catch (AppApiException e) {
@@ -123,7 +123,7 @@ public class ApplicationUpdateMessageHandlerTest extends BaseAuthenticationMessa
     
     @Test
     public void testSuccess_Update() {
-        String request = RMT2File.getFileContentsAsString("xml/admin/ApplicationUpdateRequest.xml");
+        String request = RMT2File.getFileContentsAsString("xml/admin/application/ApplicationUpdateRequest.xml");
         try {
             when(this.mockApi.update(isA(ApplicationDto.class))).thenReturn(1);
         } catch (AppApiException e) {
@@ -161,7 +161,7 @@ public class ApplicationUpdateMessageHandlerTest extends BaseAuthenticationMessa
 
     @Test
     public void testError_API_Error() {
-        String request = RMT2File.getFileContentsAsString("xml/admin/ApplicationInsertRequest.xml");
+        String request = RMT2File.getFileContentsAsString("xml/admin/application/ApplicationInsertRequest.xml");
         try {
             when(this.mockApi.update(isA(ApplicationDto.class))).thenThrow(new AppApiException(API_ERROR));
         } catch (AppApiException e) {
@@ -191,7 +191,8 @@ public class ApplicationUpdateMessageHandlerTest extends BaseAuthenticationMessa
     
     @Test
     public void testValidation_Invalid_Transaction_Code() {
-        String request = RMT2File.getFileContentsAsString("xml/admin/ApplicationUpdateRequest_InvalidTransactionCode.xml");
+        String request = RMT2File
+                .getFileContentsAsString("xml/admin/application/ApplicationUpdateRequest_InvalidTransactionCode.xml");
 
         MessageHandlerResults results = null;
         ApplicationUpdateApiHandler handler = new ApplicationUpdateApiHandler();
@@ -215,7 +216,7 @@ public class ApplicationUpdateMessageHandlerTest extends BaseAuthenticationMessa
 
     @Test
     public void testValidation_Missing_Profile() {
-        String request = RMT2File.getFileContentsAsString("xml/admin/ApplicationUpdateRequest_MissingProfile.xml");
+        String request = RMT2File.getFileContentsAsString("xml/admin/application/ApplicationUpdateRequest_MissingProfile.xml");
 
         MessageHandlerResults results = null;
         ApplicationUpdateApiHandler handler = new ApplicationUpdateApiHandler();
@@ -239,7 +240,7 @@ public class ApplicationUpdateMessageHandlerTest extends BaseAuthenticationMessa
 
     @Test
     public void testValidation_Too_Many_App_Records() {
-        String request = RMT2File.getFileContentsAsString("xml/admin/ApplicationUpdateRequest_TooManyRecords.xml");
+        String request = RMT2File.getFileContentsAsString("xml/admin/application/ApplicationUpdateRequest_TooManyRecords.xml");
 
         MessageHandlerResults results = null;
         ApplicationUpdateApiHandler handler = new ApplicationUpdateApiHandler();

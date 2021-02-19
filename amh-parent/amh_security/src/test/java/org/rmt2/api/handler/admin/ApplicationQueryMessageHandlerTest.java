@@ -89,7 +89,7 @@ public class ApplicationQueryMessageHandlerTest extends BaseAuthenticationMessag
     
     @Test
     public void testSuccess_Fetch() {
-        String request = RMT2File.getFileContentsAsString("xml/admin/ApplicationQueryRequest.xml");
+        String request = RMT2File.getFileContentsAsString("xml/admin/application/ApplicationQueryRequest.xml");
         try {
             when(this.mockApi.get(isA(ApplicationDto.class))).thenReturn(SecurityMockDtoData.createApplicationMockData());
         } catch (AppApiException e) {
@@ -126,7 +126,7 @@ public class ApplicationQueryMessageHandlerTest extends BaseAuthenticationMessag
 
     @Test
     public void testError_API_Error() {
-        String request = RMT2File.getFileContentsAsString("xml/admin/ApplicationQueryRequest.xml");
+        String request = RMT2File.getFileContentsAsString("xml/admin/application/ApplicationQueryRequest.xml");
         try {
             when(this.mockApi.get(isA(ApplicationDto.class))).thenThrow(new AppApiException(API_ERROR));
         } catch (AppApiException e) {
@@ -154,7 +154,8 @@ public class ApplicationQueryMessageHandlerTest extends BaseAuthenticationMessag
     
     @Test
     public void testValidation_Invalid_Transaction_Code() {
-        String request = RMT2File.getFileContentsAsString("xml/admin/ApplicationQueryRequest_InvalidTransactionCode.xml");
+        String request = RMT2File
+                .getFileContentsAsString("xml/admin/application/ApplicationQueryRequest_InvalidTransactionCode.xml");
 
         MessageHandlerResults results = null;
         ApplicationQueryApiHandler handler = new ApplicationQueryApiHandler();
@@ -178,7 +179,7 @@ public class ApplicationQueryMessageHandlerTest extends BaseAuthenticationMessag
 
     @Test
     public void testValidation_Missing_Criteria() {
-        String request = RMT2File.getFileContentsAsString("xml/admin/ApplicationQueryRequest_MissingCriteria.xml");
+        String request = RMT2File.getFileContentsAsString("xml/admin/application/ApplicationQueryRequest_MissingCriteria.xml");
 
         MessageHandlerResults results = null;
         ApplicationQueryApiHandler handler = new ApplicationQueryApiHandler();
@@ -202,7 +203,8 @@ public class ApplicationQueryMessageHandlerTest extends BaseAuthenticationMessag
 
     @Test
     public void testValidation_Missing_Application_Criteria() {
-        String request = RMT2File.getFileContentsAsString("xml/admin/ApplicationQueryRequest_MissingApplicationCriteria.xml");
+        String request = RMT2File
+                .getFileContentsAsString("xml/admin/application/ApplicationQueryRequest_MissingApplicationCriteria.xml");
 
         MessageHandlerResults results = null;
         ApplicationQueryApiHandler handler = new ApplicationQueryApiHandler();
