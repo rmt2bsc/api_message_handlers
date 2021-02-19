@@ -1,0 +1,20 @@
+<AuthenticationRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>authentication</application>
+        <module>admin</module>
+        <transaction>DELETE_APPLICATION</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>02/19/2021 08:33:48</delivery_date>
+        <session_id>ABCDEFGHIJKLMNOPQRSTUVWXYZ</session_id>
+    </header>
+    <profile>
+        <application_info>
+            <app_id>100</app_id>
+            <app_code>auth_app</app_code>
+            <description>Authenticationa pplication</description>
+            <active>1</active>
+        </application_info>
+    </profile>
+</AuthenticationRequest>
