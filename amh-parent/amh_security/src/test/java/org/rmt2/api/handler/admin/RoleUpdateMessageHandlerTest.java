@@ -93,7 +93,6 @@ public class RoleUpdateMessageHandlerTest extends BaseAuthenticationMessageHandl
         } catch (SecurityModuleException e) {
             Assert.fail("Unable to setup mock stub for inserting role record");
         }
-        
         MessageHandlerResults results = null;
         RoleUpdateApiHandler handler = new RoleUpdateApiHandler();
         try {
@@ -115,7 +114,7 @@ public class RoleUpdateMessageHandlerTest extends BaseAuthenticationMessageHandl
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals(RoleMessageHandlerConst.MESSAGE_CREATE_SUCCESS, actualRepsonse.getReplyStatus()
                 .getMessage());
-        
+
         for (int ndx = 0; ndx < actualRepsonse.getProfile().getRoleInfo().size(); ndx++) {
             RoleType a = actualRepsonse.getProfile().getRoleInfo().get(ndx);
             Assert.assertEquals(SecurityMockOrmDataFactory.TEST_ROLE_ID, a.getRoleId());
@@ -168,7 +167,7 @@ public class RoleUpdateMessageHandlerTest extends BaseAuthenticationMessageHandl
         } catch (SecurityModuleException e) {
             Assert.fail("Unable to setup mock stub for inserting application record");
         }
-        
+
         MessageHandlerResults results = null;
         RoleUpdateApiHandler handler = new RoleUpdateApiHandler();
         try {
@@ -189,7 +188,7 @@ public class RoleUpdateMessageHandlerTest extends BaseAuthenticationMessageHandl
                 .getMessage());
 
     }
-    
+
     @Test
     public void testValidation_Invalid_Transaction_Code() {
         String request = RMT2File
