@@ -1,0 +1,12 @@
+<AuthenticationRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>authentication</application>
+        <module>admin</module>
+        <transaction>GET_ROLE</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>02/21/2021 13:46:09</delivery_date>
+        <session_id>ABCDEFGHIJKLMNOPQRSTUVWXYZ</session_id>
+    </header>
+</AuthenticationRequest>

@@ -1,6 +1,7 @@
 package org.rmt2.api.handlers.admin;
 
 import org.dto.ApplicationDto;
+import org.dto.CategoryDto;
 import org.dto.adapter.orm.Rmt2OrmDtoFactory;
 import org.rmt2.jaxb.UserAppRolesCriteriaType;
 
@@ -38,6 +39,27 @@ public class AuthenticationAdminJaxbDtoFactory extends RMT2Base {
             dto.setActive(jaxbObj.getAppActive().toString());
         }
 
+        return dto;
+    }
+
+    /**
+     * Creates an instance of <i>CategoryDto</i> using a valid
+     * <i>UserAppRolesCriteriaType</i> JAXB object.
+     * 
+     * @param jaxbObj
+     *            an instance of {@link UserAppRolesCriteriaType}
+     * @return an instance of {@link CategoryDto}
+     */
+    public static final CategoryDto createRoleCriteriaDtoInstance(UserAppRolesCriteriaType jaxbObj) {
+        if (jaxbObj == null) {
+            return null;
+        }
+        CategoryDto dto = Rmt2OrmDtoFactory.getRoleDtoInstance(null);
+        if (jaxbObj.getAppId() != null) {
+            dto.setRoleId(jaxbObj.getRoleId());
+        }
+        dto.setRoleDescription(jaxbObj.getRoleDescription());
+        dto.setRoleName(jaxbObj.getRoleName());
         return dto;
     }
 }

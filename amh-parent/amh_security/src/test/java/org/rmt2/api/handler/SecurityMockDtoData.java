@@ -23,6 +23,7 @@ import org.dao.mapping.orm.rmt2.VwUserAppRoles;
 import org.dao.mapping.orm.rmt2.VwUserGroup;
 import org.dao.mapping.orm.rmt2.VwUserResourceAccess;
 import org.dto.ApplicationDto;
+import org.dto.CategoryDto;
 import org.dto.adapter.orm.Rmt2OrmDtoFactory;
 
 /**
@@ -134,19 +135,24 @@ public class SecurityMockDtoData {
         return list;
     }
     
-    public static final List<Roles> createRolesMockData() {
-        List<Roles> list = new ArrayList<>();
+    public static final List<CategoryDto> createRolesMockData() {
+        List<CategoryDto> list = new ArrayList<>();
         int roleId = SecurityMockOrmDataFactory.TEST_ROLE_ID;
         Roles o = SecurityMockOrmDataFactory.createOrmRoles(roleId);
-        list.add(o);
+        CategoryDto d = Rmt2OrmDtoFactory.getRoleDtoInstance(o);
+        list.add(d);
         o = SecurityMockOrmDataFactory.createOrmRoles(++roleId);
-        list.add(o);
+        d = Rmt2OrmDtoFactory.getRoleDtoInstance(o);
+        list.add(d);
         o = SecurityMockOrmDataFactory.createOrmRoles(++roleId);
-        list.add(o);
+        d = Rmt2OrmDtoFactory.getRoleDtoInstance(o);
+        list.add(d);
         o = SecurityMockOrmDataFactory.createOrmRoles(++roleId);
-        list.add(o);
+        d = Rmt2OrmDtoFactory.getRoleDtoInstance(o);
+        list.add(d);
         o = SecurityMockOrmDataFactory.createOrmRoles(++roleId);
-        list.add(o);
+        d = Rmt2OrmDtoFactory.getRoleDtoInstance(o);
+        list.add(d);
         
         return list;
     }
