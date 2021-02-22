@@ -1,0 +1,19 @@
+<AuthenticationRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>authentication</application>
+        <module>admin</module>
+        <transaction>DELETE_ROLE_1234</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>02/21/2021 00:07:52</delivery_date>
+        <session_id>ABCDEFGHIJKLMNOPQRSTUVWXYZ</session_id>
+    </header>
+    <profile>
+        <role_info>
+            <role_id>7777</role_id>
+            <role_name>auth_role</role_name>
+            <role_description>Authenticationa Role</role_description>
+        </role_info>
+    </profile>
+</AuthenticationRequest>
