@@ -1,0 +1,20 @@
+<AuthenticationRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>authentication</application>
+        <module>admin</module>
+        <transaction>UPDATE_RESOURCE_TYPE</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>02/23/2021 09:57:34</delivery_date>
+        <session_id>ABCDEFGHIJKLMNOPQRSTUVWXYZ</session_id>
+    </header>
+    <profile>
+        <resources_info>
+            <resourcetype>
+                <uid>0</uid>
+                <description>rsrouce type Name</description>
+            </resourcetype>
+        </resources_info>
+    </profile>
+</AuthenticationRequest>
