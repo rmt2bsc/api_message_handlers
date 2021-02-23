@@ -102,9 +102,8 @@ public class PdfReportUtility extends RMT2Base {
         // user.home property to make compatible with UNIX and Windows based
         // systems. This logic will force all filenames to UNIX style regardless
         // what is set in the configuration.
-        this.userWorkArea = RMT2File.createUserSessionWorkArea()
-                + (this.sessionId != null ? (File.separatorChar + this.sessionId) : "");
-
+        this.userWorkArea = RMT2File.createUserSessionWorkArea(this.sessionId);
+        
         // String homeDir = System.getProperty("user.home");
         // homeDir = RMT2File.convertToUnixStyle(homeDir);
         // String pathExt = System.getProperty("SerialPath");
