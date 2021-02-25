@@ -2,7 +2,9 @@ package org.rmt2.api.handlers.admin;
 
 import org.dto.ApplicationDto;
 import org.dto.CategoryDto;
+import org.dto.ResourceDto;
 import org.dto.adapter.orm.Rmt2OrmDtoFactory;
+import org.rmt2.jaxb.ResourceCriteriaType;
 import org.rmt2.jaxb.UserAppRolesCriteriaType;
 
 import com.RMT2Base;
@@ -58,6 +60,24 @@ public class AuthenticationAdminJaxbDtoFactory extends RMT2Base {
         dto.setRoleId(jaxbObj.getRoleId());
         dto.setRoleDescription(jaxbObj.getRoleDescription());
         dto.setRoleName(jaxbObj.getRoleName());
+        return dto;
+    }
+
+    /**
+     * Creates an instance of <i>ResourceDto</i> using a valid
+     * <i>ResourceCriteriaType</i> JAXB object.
+     * 
+     * @param jaxbObj
+     *            an instance of {@link ResourceCriteriaType}
+     * @return an instance of {@link ResourceDto}
+     */
+    public static final ResourceDto createResourceTypeDtoInstance(ResourceCriteriaType jaxbObj) {
+        if (jaxbObj == null) {
+            return null;
+        }
+        ResourceDto dto = Rmt2OrmDtoFactory.getNewResourceTypeInstance();
+        dto.setTypeId(jaxbObj.getRsrcTypeId());
+        dto.setTypeDescription(jaxbObj.getRsrcDescription());
         return dto;
     }
 }
