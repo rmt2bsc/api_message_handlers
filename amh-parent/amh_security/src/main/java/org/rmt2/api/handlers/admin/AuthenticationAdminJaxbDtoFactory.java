@@ -76,8 +76,10 @@ public class AuthenticationAdminJaxbDtoFactory extends RMT2Base {
             return null;
         }
         ResourceDto dto = Rmt2OrmDtoFactory.getNewResourceTypeInstance();
-        dto.setTypeId(jaxbObj.getRsrcTypeId());
-        dto.setTypeDescription(jaxbObj.getRsrcDescription());
+        if (jaxbObj.getRsrcTypeId() != null) {
+            dto.setTypeId(jaxbObj.getRsrcTypeId());
+        }
+        dto.setTypeDescription(jaxbObj.getRsrcTypeName());
         return dto;
     }
 }
