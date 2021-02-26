@@ -18,7 +18,7 @@ public class ResourceTypeMessageHandlerConst {
     public static final String MESSAGE_DELETE_SUCCESS = "Resource Type was deleted successfully";
     public static final String MESSAGE_DELETE_ERROR = "Resource Type delete operation failed";
 
-    public static final String MESSAGE_MISSING_RESOURCE_TYPE_SECTION = "Resource Type section is required for create/update operations";
+    public static final String MESSAGE_MISSING_RESOURCE_TYPE_SECTION = "Resource Type section is required for create/update/delete operations";
     public static final String MESSAGE_MISSING_RESOURCE_TYPE_CRITERIA_SECTION = "Resource Type criteria section is required for query operations";
 
 

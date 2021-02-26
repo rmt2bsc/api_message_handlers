@@ -1,0 +1,25 @@
+<AuthenticationRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>authentication</application>
+        <module>admin</module>
+        <transaction>DELETE_RESOURCE_TYPE</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>02/25/2021 08:23:15</delivery_date>
+        <session_id>ABCDEFGHIJKLMNOPQRSTUVWXYZ</session_id>
+    </header>
+    <profile>
+        <resources_info>
+            <resourcetype>
+                <uid>7771</uid>
+            </resourcetype>
+            <resourcetype>
+                <uid>7772</uid>
+            </resourcetype>
+            <resourcetype>
+                <uid>7773</uid>
+            </resourcetype>
+        </resources_info>
+    </profile>
+</AuthenticationRequest>
