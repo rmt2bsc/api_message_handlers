@@ -6,7 +6,9 @@ import java.util.List;
 import org.dto.ResourceDto;
 import org.dto.adapter.orm.Rmt2OrmDtoFactory;
 import org.rmt2.jaxb.ResourcesInfoType;
+import org.rmt2.jaxb.ResourcesubtypeType;
 import org.rmt2.jaxb.ResourcetypeType;
+import org.rmt2.util.authentication.ResourceSubtypeTypeBuilder;
 import org.rmt2.util.authentication.ResourcesInfoTypeBuilder;
 import org.rmt2.util.authentication.ResourcetypeTypeBuilder;
 
@@ -40,6 +42,26 @@ public class ResourceTypeJaxbDtoFactory extends RMT2Base {
     }
 
     /**
+     * Creates an instance of <i>ResourceDto</i> using a valid
+     * <i>ResourcesubtypeType</i> JAXB object.
+     * 
+     * @param jaxbObj
+     *            an instance of {@link ResourcesubtypeType}
+     * @return an instance of {@link ResourceDto}
+     */
+    public static final ResourceDto createDtoInstance(ResourcesubtypeType jaxbObj) {
+        if (jaxbObj == null) {
+            return null;
+        }
+        ResourceDto dto = Rmt2OrmDtoFactory.getNewResourceSubTypeInstance();
+        dto.setSubTypeId(jaxbObj.getUid() == null ? 0 : jaxbObj.getUid());
+        dto.setTypeId(jaxbObj.getResourceTypeId());
+        dto.setSubTypeName(jaxbObj.getCode());
+        dto.setSubTypeDescription(jaxbObj.getDescription());
+        return dto;
+    }
+
+    /**
      * Creates an instance of <i>ResourcetypeType</i> using a valid
      * <i>ResourceDto</i> JAXB object.
      * 
@@ -47,13 +69,34 @@ public class ResourceTypeJaxbDtoFactory extends RMT2Base {
      *            an instance of {@link ResourceDto}
      * @return an instance of {@link ResourcetypeType}
      */
-    public static final ResourcetypeType createJaxbInstance(ResourceDto dto) {
+    public static final ResourcetypeType createJaxbResourceTypeInstance(ResourceDto dto) {
         if (dto == null) {
             return null;
         }
         ResourcetypeType obj = ResourcetypeTypeBuilder.Builder.create()
                 .withTypeId(dto.getTypeId())
                 .withDescription(dto.getTypeDescription())
+                .build();
+        return obj;
+    }
+
+    /**
+     * Creates an instance of <i>ResourcesubtypeType</i> using a valid
+     * <i>ResourceDto</i> JAXB object.
+     * 
+     * @param dto
+     *            an instance of {@link ResourceDto}
+     * @return an instance of {@link ResourcesubtypeType}
+     */
+    public static final ResourcesubtypeType createJaxbResourceSubTypeInstance(ResourceDto dto) {
+        if (dto == null) {
+            return null;
+        }
+        ResourcesubtypeType obj = ResourceSubtypeTypeBuilder.Builder.create()
+                .withSubTypeId(dto.getSubTypeId())
+                .withTypeId(dto.getTypeId())
+                .withName(dto.getSubTypeName())
+                .withDescription(dto.getSubTypeDescription())
                 .build();
         return obj;
     }
@@ -71,9 +114,11 @@ public class ResourceTypeJaxbDtoFactory extends RMT2Base {
             return null;
         }
 
-        ResourcetypeType rt = ResourceTypeJaxbDtoFactory.createJaxbInstance(dto);
+        ResourcetypeType rt = ResourceTypeJaxbDtoFactory.createJaxbResourceTypeInstance(dto);
+        ResourcesubtypeType rst = ResourceTypeJaxbDtoFactory.createJaxbResourceSubTypeInstance(dto);
         ResourcesInfoType obj = ResourcesInfoTypeBuilder.Builder.create()
                 .addResourceType(rt)
+                .addResourceSubType(rst)
                 .build();
         return obj;
     }
@@ -89,7 +134,7 @@ public class ResourceTypeJaxbDtoFactory extends RMT2Base {
     public static final ResourcesInfoType createJaxbResourcesInfoInstance(List<ResourceDto> results) {
         List<ResourcetypeType> list = new ArrayList<>();
         for (ResourceDto item : results) {
-            list.add(ResourceTypeJaxbDtoFactory.createJaxbInstance(item));
+            list.add(ResourceTypeJaxbDtoFactory.createJaxbResourceTypeInstance(item));
         }
         ResourcesInfoType obj = ResourcesInfoTypeBuilder.Builder.create()
                 .withResourceTypes(list)
