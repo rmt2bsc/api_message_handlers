@@ -132,12 +132,15 @@ public class ResourceTypeJaxbDtoFactory extends RMT2Base {
      * @return an instance of {@link ResourcesInfoType}
      */
     public static final ResourcesInfoType createJaxbResourcesInfoInstance(List<ResourceDto> results) {
-        List<ResourcetypeType> list = new ArrayList<>();
+        List<ResourcetypeType> rtList = new ArrayList<>();
+        List<ResourcesubtypeType> rstList = new ArrayList<>();
         for (ResourceDto item : results) {
-            list.add(ResourceTypeJaxbDtoFactory.createJaxbResourceTypeInstance(item));
+            rtList.add(ResourceTypeJaxbDtoFactory.createJaxbResourceTypeInstance(item));
+            rstList.add(ResourceTypeJaxbDtoFactory.createJaxbResourceSubTypeInstance(item));
         }
         ResourcesInfoType obj = ResourcesInfoTypeBuilder.Builder.create()
-                .withResourceTypes(list)
+                .withResourceTypes(rtList)
+                .withResourceSubTypes(rstList)
                 .build();
         return obj;
     }
