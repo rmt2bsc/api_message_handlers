@@ -10,7 +10,7 @@ public class AuthenticationMessageHandlerConst {
     public static final String MSG_MISSING_CRITERIA_SECTION = "Authentication criteria section is missing";
     public static final String MSG_MISSING_PROFILE_SECTION = "Authentication profile section is missing";
     public static final String MSG_MISSING_USER_APP_ROLE_CRITERIA_SECTION = "Application criteria section is required for %s query operations";
-    public static final String MSG_TOO_MANY_RECORDS = "Too many records exist in the requrest";
+    public static final String MSG_TOO_MANY_RECORDS = "Too many records exist in the request";
     public static final String MSG_INVALID_TRANSACTION_CODE = "Transaction code is invalid for target operation";
 
     /**

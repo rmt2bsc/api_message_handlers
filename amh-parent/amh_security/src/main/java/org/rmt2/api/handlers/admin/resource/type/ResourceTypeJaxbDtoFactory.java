@@ -54,8 +54,12 @@ public class ResourceTypeJaxbDtoFactory extends RMT2Base {
             return null;
         }
         ResourceDto dto = Rmt2OrmDtoFactory.getNewResourceSubTypeInstance();
-        dto.setSubTypeId(jaxbObj.getUid() == null ? 0 : jaxbObj.getUid());
-        dto.setTypeId(jaxbObj.getResourceTypeId());
+        if (jaxbObj.getUid() != null) {
+            dto.setSubTypeId(jaxbObj.getUid());
+        }
+        if (jaxbObj.getResourceTypeId() != null) {
+            dto.setTypeId(jaxbObj.getResourceTypeId());
+        }
         dto.setSubTypeName(jaxbObj.getCode());
         dto.setSubTypeDescription(jaxbObj.getDescription());
         return dto;
