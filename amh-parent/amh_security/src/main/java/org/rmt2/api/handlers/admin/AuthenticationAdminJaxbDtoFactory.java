@@ -71,15 +71,39 @@ public class AuthenticationAdminJaxbDtoFactory extends RMT2Base {
      *            an instance of {@link ResourceCriteriaType}
      * @return an instance of {@link ResourceDto}
      */
-    public static final ResourceDto createResourceTypeDtoInstance(ResourceCriteriaType jaxbObj) {
+    public static final ResourceDto createResourceTypeCriteriaDtoInstance(ResourceCriteriaType jaxbObj) {
         if (jaxbObj == null) {
             return null;
         }
         ResourceDto dto = Rmt2OrmDtoFactory.getNewResourceTypeInstance();
+
+        // Resource type related criteria
         if (jaxbObj.getRsrcTypeId() != null) {
             dto.setTypeId(jaxbObj.getRsrcTypeId());
         }
         dto.setTypeDescription(jaxbObj.getRsrcTypeName());
+        return dto;
+    }
+
+    /**
+     * Creates an instance of <i>ResourceDto</i> using a valid
+     * <i>ResourceCriteriaType</i> JAXB object.
+     * 
+     * @param jaxbObj
+     *            an instance of {@link ResourceCriteriaType}
+     * @return an instance of {@link ResourceDto}
+     */
+    public static final ResourceDto createResourceSubTypeCriteriaDtoInstance(ResourceCriteriaType jaxbObj) {
+        if (jaxbObj == null) {
+            return null;
+        }
+        ResourceDto dto = Rmt2OrmDtoFactory.getNewResourceSubTypeInstance();
+        // Resource sub type related criteria
+        if (jaxbObj.getRsrcSubtypeId() != null) {
+            dto.setSubTypeId(jaxbObj.getRsrcSubtypeId());
+        }
+        dto.setSubTypeName(jaxbObj.getRsrcSubtypeName());
+        dto.setSubTypeDescription(jaxbObj.getRsrcSubtypeDescription());
         return dto;
     }
 }
