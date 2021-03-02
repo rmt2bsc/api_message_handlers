@@ -46,7 +46,7 @@ public class ResourceTypeQueryApiHandler extends ResourcesInfoApiHandler {
      */
     @Override
     protected void processTransactionCode() {
-        ResourceDto dto = AuthenticationAdminJaxbDtoFactory.createResourceTypeDtoInstance(this.requestObj.getCriteria()
+        ResourceDto dto = AuthenticationAdminJaxbDtoFactory.createResourceTypeCriteriaDtoInstance(this.requestObj.getCriteria()
                 .getResourceCriteria());
         ResourceRegistryApi api = ResourceRegistryApiFactory.createWebServiceRegistryApiInstance();
         List<ResourceDto> list = null;
