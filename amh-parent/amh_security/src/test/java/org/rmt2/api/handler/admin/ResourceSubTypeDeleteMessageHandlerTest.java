@@ -225,7 +225,7 @@ public class ResourceSubTypeDeleteMessageHandlerTest extends BaseAuthenticationM
     @Test
     public void testValidation_Missing_Profile_ResourceInfo_Node() {
         String request = RMT2File
-                .getFileContentsAsString("xml/admin/resource/subtype/Copy of ResourceSubTypeDeleteRequest_MissingSubTypeSection.xml");
+                .getFileContentsAsString("xml/admin/resource/subtype/ResourceSubTypeDeleteRequest_MissingSubTypeSection.xml");
 
         MessageHandlerResults results = null;
         ResourceSubTypeDeleteApiHandler handler = new ResourceSubTypeDeleteApiHandler();
