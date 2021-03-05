@@ -1,0 +1,12 @@
+<AuthenticationRequest>
+    <header>
+        <routing>JMS:rmt2.queue.authentication</routing>
+        <application>authentication</application>
+        <module>admin</module>
+        <transaction>UPDATE_RESOURCE</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>03/03/2021 13:39:31</delivery_date>
+        <session_id>ABCDEFGHIJKLMNOPQRSTUVWXYZ</session_id>
+    </header>
+</AuthenticationRequest>

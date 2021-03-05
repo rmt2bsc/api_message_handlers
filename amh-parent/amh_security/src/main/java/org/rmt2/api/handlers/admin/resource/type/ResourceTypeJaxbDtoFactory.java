@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.dto.ResourceDto;
+import org.dto.WebServiceDto;
 import org.dto.adapter.orm.Rmt2OrmDtoFactory;
+import org.rmt2.jaxb.ResourceType;
 import org.rmt2.jaxb.ResourcesInfoType;
 import org.rmt2.jaxb.ResourcesubtypeType;
 import org.rmt2.jaxb.ResourcetypeType;
 import org.rmt2.util.authentication.ResourceSubtypeTypeBuilder;
+import org.rmt2.util.authentication.ResourceTypeBuilder;
 import org.rmt2.util.authentication.ResourcesInfoTypeBuilder;
 import org.rmt2.util.authentication.ResourcetypeTypeBuilder;
 
@@ -22,6 +25,37 @@ import com.RMT2Base;
  * 
  */
 public class ResourceTypeJaxbDtoFactory extends RMT2Base {
+
+    /**
+     * Creates an instance of <i>ResourceDto</i> using a valid
+     * <i>ResourceType</i> JAXB object.
+     * 
+     * @param jaxbObj
+     *            an instance of {@link ResourceType}
+     * @return an instance of {@link ResourceDto}
+     */
+    public static final WebServiceDto createDtoInstance(ResourceType jaxbObj) {
+        if (jaxbObj == null) {
+            return null;
+        }
+        WebServiceDto dto = Rmt2OrmDtoFactory.getNewResourceInstance();
+        if (jaxbObj.getUid() != null) {
+            dto.setUid(jaxbObj.getUid());
+        }
+        if (jaxbObj.getTypeId() != null) {
+            dto.setTypeId(jaxbObj.getTypeId());
+        }
+        if (jaxbObj.getSubtypeId() != null) {
+            dto.setSubTypeId(jaxbObj.getSubtypeId());
+        }
+        dto.setName(jaxbObj.getCode());
+        dto.setDescription(jaxbObj.getDescription());
+        dto.setSecured(jaxbObj.getSecured() == null ? false : (jaxbObj.getSecured() == 1 ? true : false));
+        dto.setRequestUrl(jaxbObj.getUrl());
+        dto.setHost(jaxbObj.getHost());
+
+        return dto;
+    }
 
     /**
      * Creates an instance of <i>ResourceDto</i> using a valid
@@ -85,6 +119,31 @@ public class ResourceTypeJaxbDtoFactory extends RMT2Base {
     }
 
     /**
+     * Creates an instance of <i>ResourceType</i> using a valid
+     * <i>WebServiceDto</i> JAXB object.
+     * 
+     * @param dto
+     *            an instance of {@link WebServiceDto}
+     * @return an instance of {@link ResourceType}
+     */
+    public static final ResourceType createJaxbResourceInstance(WebServiceDto dto) {
+        if (dto == null) {
+            return null;
+        }
+        ResourceType obj = ResourceTypeBuilder.Builder.create()
+                .withResourceId(dto.getUid())
+                .withName(dto.getName())
+                .withDescription(dto.getDescription())
+                .withTypeId(dto.getTypeId())
+                .withSubTypeId(dto.getSubTypeId())
+                .withSecuredFlag(dto.isSecured())
+                .withUrl(dto.getRequestUrl())
+                .withHost(dto.getHost())
+                .build();
+        return obj;
+    }
+
+    /**
      * Creates an instance of <i>ResourcesubtypeType</i> using a valid
      * <i>ResourceDto</i> JAXB object.
      * 
@@ -118,9 +177,15 @@ public class ResourceTypeJaxbDtoFactory extends RMT2Base {
             return null;
         }
 
+        ResourceType r = null;
+        if (dto instanceof WebServiceDto) {
+            r = ResourceTypeJaxbDtoFactory.createJaxbResourceInstance((WebServiceDto) dto);
+        }
+
         ResourcetypeType rt = ResourceTypeJaxbDtoFactory.createJaxbResourceTypeInstance(dto);
         ResourcesubtypeType rst = ResourceTypeJaxbDtoFactory.createJaxbResourceSubTypeInstance(dto);
         ResourcesInfoType obj = ResourcesInfoTypeBuilder.Builder.create()
+                .addResource(r)
                 .addResourceType(rt)
                 .addResourceSubType(rst)
                 .build();
