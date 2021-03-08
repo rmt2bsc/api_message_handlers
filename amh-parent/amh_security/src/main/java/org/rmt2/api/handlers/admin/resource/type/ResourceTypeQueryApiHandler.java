@@ -8,6 +8,7 @@ import org.modules.resource.ResourceRegistryApi;
 import org.modules.resource.ResourceRegistryApiFactory;
 import org.rmt2.api.handlers.AuthenticationMessageHandlerConst;
 import org.rmt2.api.handlers.admin.AuthenticationAdminJaxbDtoFactory;
+import org.rmt2.api.handlers.admin.resource.ResourceJaxbDtoFactory;
 import org.rmt2.api.handlers.admin.resource.ResourcesInfoApiHandler;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.jaxb.AuthenticationRequest;
@@ -61,7 +62,7 @@ public class ResourceTypeQueryApiHandler extends ResourcesInfoApiHandler {
             else {
                 this.rs.setMessage(ResourceTypeMessageHandlerConst.MESSAGE_FOUND);
                 this.rs.setRecordCount(list.size());
-                this.jaxbObj = ResourceTypeJaxbDtoFactory.createJaxbResourcesInfoInstance(list);
+                this.jaxbObj = ResourceJaxbDtoFactory.createJaxbResourcesInfoInstance(list);
             }
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e);

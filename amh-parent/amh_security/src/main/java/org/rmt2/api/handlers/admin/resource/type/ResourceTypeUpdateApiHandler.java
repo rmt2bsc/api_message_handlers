@@ -5,6 +5,7 @@ import org.dto.ResourceDto;
 import org.modules.resource.ResourceRegistryApi;
 import org.modules.resource.ResourceRegistryApiFactory;
 import org.rmt2.api.handlers.AuthenticationMessageHandlerConst;
+import org.rmt2.api.handlers.admin.resource.ResourceJaxbDtoFactory;
 import org.rmt2.api.handlers.admin.resource.ResourcesInfoApiHandler;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.jaxb.AuthenticationRequest;
@@ -43,7 +44,7 @@ public class ResourceTypeUpdateApiHandler extends ResourcesInfoApiHandler {
      */
     @Override
     protected void processTransactionCode() {
-        ResourceDto dto = ResourceTypeJaxbDtoFactory.createDtoInstance(this.requestObj.getProfile().getResourcesInfo()
+        ResourceDto dto = ResourceJaxbDtoFactory.createDtoInstance(this.requestObj.getProfile().getResourcesInfo()
                 .getResourcetype()
                 .get(0));
         boolean newRec = (dto.getTypeId() == 0);
@@ -64,7 +65,7 @@ public class ResourceTypeUpdateApiHandler extends ResourcesInfoApiHandler {
                     dto.setTypeId(rc);
 
                     // Include profile data in response
-                    this.jaxbObj = ResourceTypeJaxbDtoFactory.createJaxbResourcesInfoInstance(dto);
+                    this.jaxbObj = ResourceJaxbDtoFactory.createJaxbResourcesInfoInstance(dto);
                 }
                 else {
                     this.rs.setMessage(ResourceTypeMessageHandlerConst.MESSAGE_UPDATE_SUCCESS);

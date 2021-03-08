@@ -5,7 +5,6 @@ import org.dto.WebServiceDto;
 import org.modules.resource.ResourceRegistryApi;
 import org.modules.resource.ResourceRegistryApiFactory;
 import org.rmt2.api.handlers.AuthenticationMessageHandlerConst;
-import org.rmt2.api.handlers.admin.resource.type.ResourceTypeJaxbDtoFactory;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.jaxb.AuthenticationRequest;
 
@@ -43,7 +42,7 @@ public class ResourceUpdateApiHandler extends ResourcesInfoApiHandler {
      */
     @Override
     protected void processTransactionCode() {
-        WebServiceDto dto = ResourceTypeJaxbDtoFactory.createDtoInstance(this.requestObj.getProfile().getResourcesInfo()
+        WebServiceDto dto = ResourceJaxbDtoFactory.createDtoInstance(this.requestObj.getProfile().getResourcesInfo()
                 .getResource().get(0));
         boolean newRec = (dto.getUid() == 0);
         ResourceRegistryApi api = ResourceRegistryApiFactory.createWebServiceRegistryApiInstance();
@@ -63,7 +62,7 @@ public class ResourceUpdateApiHandler extends ResourcesInfoApiHandler {
                     dto.setUid(rc);
 
                     // Include profile data in response
-                    this.jaxbObj = ResourceTypeJaxbDtoFactory.createJaxbResourcesInfoInstance(dto);
+                    this.jaxbObj = ResourceJaxbDtoFactory.createJaxbResourcesInfoInstance(dto);
                 }
                 else {
                     this.rs.setMessage(ResourceMessageHandlerConst.MESSAGE_UPDATE_SUCCESS);

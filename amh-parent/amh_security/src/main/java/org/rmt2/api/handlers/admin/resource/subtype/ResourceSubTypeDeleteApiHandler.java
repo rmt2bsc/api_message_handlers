@@ -5,8 +5,8 @@ import org.dto.ResourceDto;
 import org.modules.resource.ResourceRegistryApi;
 import org.modules.resource.ResourceRegistryApiFactory;
 import org.rmt2.api.handlers.AuthenticationMessageHandlerConst;
+import org.rmt2.api.handlers.admin.resource.ResourceJaxbDtoFactory;
 import org.rmt2.api.handlers.admin.resource.ResourcesInfoApiHandler;
-import org.rmt2.api.handlers.admin.resource.type.ResourceTypeJaxbDtoFactory;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.jaxb.AuthenticationRequest;
 
@@ -44,7 +44,7 @@ public class ResourceSubTypeDeleteApiHandler extends ResourcesInfoApiHandler {
      */
     @Override
     protected void processTransactionCode() {
-        ResourceDto dto = ResourceTypeJaxbDtoFactory.createDtoInstance(this.requestObj.getProfile().getResourcesInfo()
+        ResourceDto dto = ResourceJaxbDtoFactory.createDtoInstance(this.requestObj.getProfile().getResourcesInfo()
                 .getResourcesubtype()
                 .get(0));
         ResourceRegistryApi api = ResourceRegistryApiFactory.createWebServiceRegistryApiInstance();

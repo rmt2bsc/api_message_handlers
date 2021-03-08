@@ -1,4 +1,4 @@
-package org.rmt2.api.handlers.admin.resource.type;
+package org.rmt2.api.handlers.admin.resource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ import com.RMT2Base;
  * @author Roy Terrell.
  * 
  */
-public class ResourceTypeJaxbDtoFactory extends RMT2Base {
+public class ResourceJaxbDtoFactory extends RMT2Base {
 
     /**
      * Creates an instance of <i>ResourceDto</i> using a valid
@@ -179,11 +179,11 @@ public class ResourceTypeJaxbDtoFactory extends RMT2Base {
 
         ResourceType r = null;
         if (dto instanceof WebServiceDto) {
-            r = ResourceTypeJaxbDtoFactory.createJaxbResourceInstance((WebServiceDto) dto);
+            r = ResourceJaxbDtoFactory.createJaxbResourceInstance((WebServiceDto) dto);
         }
 
-        ResourcetypeType rt = ResourceTypeJaxbDtoFactory.createJaxbResourceTypeInstance(dto);
-        ResourcesubtypeType rst = ResourceTypeJaxbDtoFactory.createJaxbResourceSubTypeInstance(dto);
+        ResourcetypeType rt = ResourceJaxbDtoFactory.createJaxbResourceTypeInstance(dto);
+        ResourcesubtypeType rst = ResourceJaxbDtoFactory.createJaxbResourceSubTypeInstance(dto);
         ResourcesInfoType obj = ResourcesInfoTypeBuilder.Builder.create()
                 .addResource(r)
                 .addResourceType(rt)
@@ -204,8 +204,8 @@ public class ResourceTypeJaxbDtoFactory extends RMT2Base {
         List<ResourcetypeType> rtList = new ArrayList<>();
         List<ResourcesubtypeType> rstList = new ArrayList<>();
         for (ResourceDto item : results) {
-            rtList.add(ResourceTypeJaxbDtoFactory.createJaxbResourceTypeInstance(item));
-            rstList.add(ResourceTypeJaxbDtoFactory.createJaxbResourceSubTypeInstance(item));
+            rtList.add(ResourceJaxbDtoFactory.createJaxbResourceTypeInstance(item));
+            rstList.add(ResourceJaxbDtoFactory.createJaxbResourceSubTypeInstance(item));
         }
         ResourcesInfoType obj = ResourcesInfoTypeBuilder.Builder.create()
                 .withResourceTypes(rtList)
