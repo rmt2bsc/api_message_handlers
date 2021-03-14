@@ -1,0 +1,23 @@
+<AuthenticationRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>authentication</application>
+        <module>admin</module>
+        <transaction>GET_RESOURCE</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>03/08/2021 14:25:20</delivery_date>
+        <session_id>ABCDEFGHIJKLMNOPQRSTUVWXYZ</session_id>
+    </header>
+    <criteria>
+        <resource_criteria>
+            <rsrc_id>1</rsrc_id>
+            <rsrc_name>Resource Name</rsrc_name>
+            <rsrc_description>Resource Description</rsrc_description>
+            <rsrc_type_id>10</rsrc_type_id>
+            <rsrc_subtype_id>100</rsrc_subtype_id>
+            <secured>1</secured>
+            <login_id>0</login_id>
+        </resource_criteria>
+    </criteria>
+</AuthenticationRequest>

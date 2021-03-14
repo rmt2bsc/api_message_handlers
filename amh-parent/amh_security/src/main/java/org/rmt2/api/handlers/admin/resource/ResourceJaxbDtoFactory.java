@@ -194,20 +194,26 @@ public class ResourceJaxbDtoFactory extends RMT2Base {
 
     /**
      * Creates an instance of ResourcesInfoType using a valid List of
-     * ResourceDto DTO objects.
+     * ResourceDto DTO objects which could be in the form of resources, resource
+     * types, or resource sub types.
      * 
      * @param results
      *            List of {@link ResourceDto}
      * @return an instance of {@link ResourcesInfoType}
      */
     public static final ResourcesInfoType createJaxbResourcesInfoInstance(List<ResourceDto> results) {
+        List<ResourceType> rList = new ArrayList<>();
         List<ResourcetypeType> rtList = new ArrayList<>();
         List<ResourcesubtypeType> rstList = new ArrayList<>();
         for (ResourceDto item : results) {
+            if (item instanceof WebServiceDto) {
+                rList.add(ResourceJaxbDtoFactory.createJaxbResourceInstance((WebServiceDto) item));
+            }
             rtList.add(ResourceJaxbDtoFactory.createJaxbResourceTypeInstance(item));
             rstList.add(ResourceJaxbDtoFactory.createJaxbResourceSubTypeInstance(item));
         }
         ResourcesInfoType obj = ResourcesInfoTypeBuilder.Builder.create()
+                .withResources(rList)
                 .withResourceTypes(rtList)
                 .withResourceSubTypes(rstList)
                 .build();
