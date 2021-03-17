@@ -89,7 +89,7 @@ public class AuthenticationAdminJaxbDtoFactory extends RMT2Base {
             dto.setSecured(null);
         }
         else {
-            dto.setSecured(jaxbObj.getSecured() == 1 ? true : false);
+            dto.setSecured(jaxbObj.getSecured() == null ? -1 : jaxbObj.getSecured());
         }
 
         // Resource Type criteria

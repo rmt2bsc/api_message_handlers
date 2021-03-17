@@ -50,7 +50,7 @@ public class ResourceJaxbDtoFactory extends RMT2Base {
         }
         dto.setName(jaxbObj.getCode());
         dto.setDescription(jaxbObj.getDescription());
-        dto.setSecured(jaxbObj.getSecured() == null ? false : (jaxbObj.getSecured() == 1 ? true : false));
+        dto.setSecured(jaxbObj.getSecured() == null ? -1 : jaxbObj.getSecured());
         dto.setRequestUrl(jaxbObj.getUrl());
         dto.setHost(jaxbObj.getHost());
 
@@ -136,7 +136,7 @@ public class ResourceJaxbDtoFactory extends RMT2Base {
                 .withDescription(dto.getDescription())
                 .withTypeId(dto.getTypeId())
                 .withSubTypeId(dto.getSubTypeId())
-                .withSecuredFlag(dto.isSecured())
+                .withSecuredFlag(dto.getSecured())
                 .withUrl(dto.getRequestUrl())
                 .withHost(dto.getHost())
                 .build();
