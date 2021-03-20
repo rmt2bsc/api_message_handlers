@@ -40,7 +40,7 @@ public class UserGroupUpdateApiHandler extends UserGroupApiHandler {
      */
     @Override
     protected void processTransactionCode() {
-        UserDto dto = UserGroupJaxbDtoFactory.createDtoInstance(this.requestObj.getCriteria().getUserCriteria());
+        UserDto dto = UserGroupJaxbDtoFactory.createDtoInstance(this.requestObj.getProfile().getUserGroupInfo().get(0));
         boolean newRec = (dto.getGroupId() == 0);
 
         int rc = 0;

@@ -3,7 +3,7 @@
         <routing>XXXXXXX</routing>
         <application>authentication</application>
         <module>admin</module>
-        <transaction>UPDATE_USER_GROUP</transaction>
+        <transaction>UPDATE_USER_GROUP_1234</transaction>
         <delivery_mode>XXXXXXX</delivery_mode>
         <message_mode>REQUEST</message_mode>
         <delivery_date>03/19/2021 21:03:55</delivery_date>

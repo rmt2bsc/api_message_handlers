@@ -14,5 +14,9 @@
             <grp_id>77</grp_id>
             <description>Group Description</description>
         </user_group_info>
+        <user_group_info>
+            <grp_id>77</grp_id>
+            <description>Group Description</description>
+        </user_group_info>
     </profile>
 </AuthenticationRequest>

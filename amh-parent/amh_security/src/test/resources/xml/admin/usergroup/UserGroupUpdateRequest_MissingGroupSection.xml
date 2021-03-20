@@ -9,10 +9,5 @@
         <delivery_date>03/19/2021 21:03:55</delivery_date>
         <session_id>ABCDEFGHIJKLMNOPQRSTUVWXYZ</session_id>
     </header>
-    <profile>
-        <user_group_info>
-            <grp_id>77</grp_id>
-            <description>Group Description</description>
-        </user_group_info>
-    </profile>
+    <profile/>
 </AuthenticationRequest>
