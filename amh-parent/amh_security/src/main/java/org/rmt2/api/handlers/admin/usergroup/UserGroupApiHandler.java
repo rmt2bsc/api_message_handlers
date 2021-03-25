@@ -1,6 +1,7 @@
 package org.rmt2.api.handlers.admin.usergroup;
 
 import java.io.Serializable;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.modules.users.UserApi;
@@ -31,11 +32,11 @@ import com.api.util.assistants.VerifyException;
  *
  */
 public abstract class UserGroupApiHandler extends
-        AbstractJaxbMessageHandler<AuthenticationRequest, AuthenticationResponse, UserGroupType> {
+        AbstractJaxbMessageHandler<AuthenticationRequest, AuthenticationResponse, List<UserGroupType>> {
     
     private static final Logger logger = Logger.getLogger(UserGroupApiHandler.class);
     protected ObjectFactory jaxbObjFactory;
-    protected UserGroupType jaxbObj;
+    protected List<UserGroupType> jaxbObj;
     protected MessageHandlerCommonReplyStatus rs;
     protected UserApi api;
 
@@ -108,7 +109,7 @@ public abstract class UserGroupApiHandler extends
     }
 
     @Override
-    protected String buildResponse(UserGroupType payload, MessageHandlerCommonReplyStatus replyStatus) {
+    protected String buildResponse(List<UserGroupType> payload, MessageHandlerCommonReplyStatus replyStatus) {
         this.responseObj.setHeader(this.requestObj.getHeader());
         if (replyStatus != null) {
             ReplyStatusType rs = MessageHandlerUtility.createReplyStatus(replyStatus);
@@ -118,7 +119,7 @@ public abstract class UserGroupApiHandler extends
         if (payload != null) {
             AuthProfileGroupType apgt = this.jaxbObjFactory.createAuthProfileGroupType();
             this.responseObj.setProfile(apgt);
-            this.responseObj.getProfile().getUserGroupInfo().add(payload);
+            this.responseObj.getProfile().getUserGroupInfo().addAll(payload);
         }
         
         String xml = this.jaxb.marshalMessage(this.responseObj);

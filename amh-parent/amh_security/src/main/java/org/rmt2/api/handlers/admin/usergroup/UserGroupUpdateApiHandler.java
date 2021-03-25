@@ -1,5 +1,8 @@
 package org.rmt2.api.handlers.admin.usergroup;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.dto.UserDto;
 import org.rmt2.api.handlers.AuthenticationMessageHandlerConst;
@@ -59,7 +62,9 @@ public class UserGroupUpdateApiHandler extends UserGroupApiHandler {
                     dto.setGroupId(rc);
 
                     // Include profile data in response
-                    this.jaxbObj = UserGroupJaxbDtoFactory.createJaxbInstance(dto);
+                    List<UserDto> list = new ArrayList<>();
+                    list.add(dto);
+                    this.jaxbObj = UserGroupJaxbDtoFactory.createJaxbResourcesInfoInstance(list);
                 }
                 else {
                     this.rs.setMessage(UserGroupMessageHandlerConst.MESSAGE_UPDATE_SUCCESS);
