@@ -1,0 +1,18 @@
+<AuthenticationRequest>
+    <header>
+        <routing>JMS:rmt2.queue.authentication</routing>
+        <application>authentication</application>
+        <module>admin</module>
+        <transaction>DELETE_USER_GROUP</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>03/27/2021 09:44:28</delivery_date>
+        <session_id>ABCDEFGHIJKLMNOPQRSTUVWXYZ</session_id>
+    </header>
+    <profile>
+        <user_group_info>
+            <grp_id>777</grp_id>
+            <description>Group Description</description>
+        </user_group_info>
+    </profile>
+</AuthenticationRequest>
