@@ -1,0 +1,30 @@
+<AuthenticationRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>authentication</application>
+        <module>admin</module>
+        <transaction>UPDATE_APP_ROLE</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>03/31/2021 15:50:18</delivery_date>
+        <session_id>ABCDEFGHIJKLMNOPQRSTUVWXYZ</session_id>
+    </header>
+    <profile>
+        <app_role_info>
+            <app_role_id>6000</app_role_id>
+            <app_info>
+                <app_id>10</app_id>
+                <description>Application  REcords</description>
+                <active>0</active>
+            </app_info>
+            <role_info>
+                <role_id>20</role_id>
+                <role_name>Role Name</role_name>
+                <role_description>Role description</role_description>
+            </role_info>
+            <app_role_code>AppCode</app_role_code>
+            <app_role_name>App Role Name</app_role_name>
+            <app_role_desc>App Role Description</app_role_desc>
+        </app_role_info>
+    </profile>
+</AuthenticationRequest>

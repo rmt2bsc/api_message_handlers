@@ -64,6 +64,39 @@ public class AuthenticationAdminJaxbDtoFactory extends RMT2Base {
     }
 
     /**
+     * Creates an instance of <i>CategoryDto</i> using a valid
+     * <i>UserAppRolesCriteriaType</i> JAXB object to query App Roles .
+     * 
+     * @param jaxbObj
+     *            an instance of {@link UserAppRolesCriteriaType}
+     * @return an instance of {@link CategoryDto}
+     */
+    public static final CategoryDto createAppRoleCriteriaDtoInstance(UserAppRolesCriteriaType jaxbObj) {
+        if (jaxbObj == null) {
+            return null;
+        }
+        CategoryDto dto = Rmt2OrmDtoFactory.getRoleDtoInstance(null);
+        // Get app-role info
+        dto.setApplicationId(jaxbObj.getAppRoleId());
+        dto.setAppRoleCode(jaxbObj.getAppRoleCode());
+        dto.setAppRoleDescription(jaxbObj.getAppRoleDescription());
+
+        // Get application info
+        if (jaxbObj.getAppId() != null) {
+            dto.setApplicationId(jaxbObj.getAppId());
+        }
+        dto.setAppDescription(jaxbObj.getAppDescription());
+        dto.setAppName(jaxbObj.getAppCode());
+        dto.setAppName(jaxbObj.getAppCode());
+
+        // Get role info
+        dto.setRoleId(jaxbObj.getRoleId());
+        dto.setRoleDescription(jaxbObj.getRoleDescription());
+        dto.setRoleName(jaxbObj.getRoleName());
+        return dto;
+    }
+
+    /**
      * Creates an instance of <i>ResourceDto</i> using a valid
      * <i>ResourceCriteriaType</i> JAXB object.
      * 
