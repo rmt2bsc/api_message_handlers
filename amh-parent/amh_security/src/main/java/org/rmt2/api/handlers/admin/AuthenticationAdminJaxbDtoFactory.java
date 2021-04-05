@@ -75,10 +75,11 @@ public class AuthenticationAdminJaxbDtoFactory extends RMT2Base {
         if (jaxbObj == null) {
             return null;
         }
-        CategoryDto dto = Rmt2OrmDtoFactory.getRoleDtoInstance(null);
+        CategoryDto dto = Rmt2OrmDtoFactory.getAppRoleDtoInstance(null);
         // Get app-role info
-        dto.setApplicationId(jaxbObj.getAppRoleId());
+        dto.setAppRoleId(jaxbObj.getAppRoleId());
         dto.setAppRoleCode(jaxbObj.getAppRoleCode());
+        dto.setAppRoleName(jaxbObj.getAppRoleName());
         dto.setAppRoleDescription(jaxbObj.getAppRoleDescription());
 
         // Get application info
