@@ -39,6 +39,7 @@ public class AppRoleJaxbDtoFactory extends RMT2Base {
         // Get app-role info
         dto.setAppRoleId(jaxbObj.getAppRoleId());
         dto.setAppRoleCode(jaxbObj.getAppRoleCode());
+        dto.setAppRoleName(jaxbObj.getAppRoleName());
         dto.setAppRoleDescription(jaxbObj.getAppRoleDesc());
 
         // Get application info

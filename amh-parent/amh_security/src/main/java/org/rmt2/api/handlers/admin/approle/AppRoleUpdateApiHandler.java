@@ -55,7 +55,7 @@ public class AppRoleUpdateApiHandler extends AppRoleApiHandler {
             if (rc > 0) {
                 if (newRec) {
                     this.rs.setMessage(AppRoleMessageHandlerConst.MESSAGE_CREATE_SUCCESS);
-                    this.rs.setExtMessage("The user group id is " + rc);
+                    this.rs.setExtMessage("The new application role id is " + rc);
                     this.rs.setRecordCount(1);
                     // Update DTO with new group id. This is probably
                     // done at the DAO level.
