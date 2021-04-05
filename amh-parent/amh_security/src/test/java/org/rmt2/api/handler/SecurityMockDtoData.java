@@ -356,25 +356,30 @@ public class SecurityMockDtoData {
         return list;
     }
     
-    public static final List<VwAppRoles> createVwAppRolesMockData() {
-        List<VwAppRoles> list = new ArrayList<>();
+    public static final List<CategoryDto> createVwAppRolesMockData() {
+        List<CategoryDto> list = new ArrayList<>();
         int appRoleId = SecurityMockOrmDataFactory.TEST_APP_ROLE_ID;
         int roleId = SecurityMockOrmDataFactory.TEST_ROLE_ID;
         VwAppRoles o = SecurityMockOrmDataFactory.createOrmVwAppRoles(appRoleId,
                 SecurityMockOrmDataFactory.TEST_NEW_APP_ID, roleId);
-        list.add(o);
+        CategoryDto d = Rmt2OrmDtoFactory.getAppRoleDtoInstance(o, null);
+        list.add(d);
         o = SecurityMockOrmDataFactory.createOrmVwAppRoles(++appRoleId,
                 SecurityMockOrmDataFactory.TEST_NEW_APP_ID, ++roleId);
-        list.add(o);
+        d = Rmt2OrmDtoFactory.getAppRoleDtoInstance(o, null);
+        list.add(d);
         o = SecurityMockOrmDataFactory.createOrmVwAppRoles(++appRoleId,
                 SecurityMockOrmDataFactory.TEST_NEW_APP_ID, ++roleId);
-        list.add(o);
+        d = Rmt2OrmDtoFactory.getAppRoleDtoInstance(o, null);
+        list.add(d);
         o = SecurityMockOrmDataFactory.createOrmVwAppRoles(++appRoleId,
                 SecurityMockOrmDataFactory.TEST_NEW_APP_ID, ++roleId);
-        list.add(o);
+        d = Rmt2OrmDtoFactory.getAppRoleDtoInstance(o, null);
+        list.add(d);
         o = SecurityMockOrmDataFactory.createOrmVwAppRoles(++appRoleId,
                 SecurityMockOrmDataFactory.TEST_NEW_APP_ID, ++roleId);
-        list.add(o);
+        d = Rmt2OrmDtoFactory.getAppRoleDtoInstance(o, null);
+        list.add(d);
         
         return list;
     }
