@@ -53,7 +53,7 @@ public class AppRoleDeleteApiHandler extends AppRoleApiHandler {
             this.rs.setRecordCount(rc);
             if (rc > 0) {
                 this.rs.setMessage(AppRoleMessageHandlerConst.MESSAGE_DELETE_SUCCESS);
-                this.rs.setExtMessage("The deleted application role id is " + rc);
+                this.rs.setExtMessage("The deleted application role id is " + dto.getAppRoleId());
 
                 // Include profile data in response
                 List<CategoryDto> list = new ArrayList<>();
