@@ -1,6 +1,6 @@
 <AuthenticationRequest>
     <header>
-        <routing>XXXXXXX</routing>
+        <routing>JMS:rmt2.queue.authentication</routing>
         <application>authentication</application>
         <module>admin</module>
         <transaction>UPDATE_USER</transaction>
@@ -11,9 +11,9 @@
     </header>
     <profile>
         <user_info>
-            <login_id>36</login_id>
+            <login_id>0</login_id>
             <group_info>
-                <grp_id>2</grp_id>
+                <grp_id>1</grp_id>
                 <description>Group Description</description>
             </group_info>
             <user_name>username</user_name>

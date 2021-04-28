@@ -59,7 +59,7 @@ public class UserUpdateApiHandler extends UserApiHandler {
                     this.rs.setRecordCount(1);
                     // Update DTO with new group id. This is probably
                     // done at the DAO level.
-                    dto.setGroupId(rc);
+                    dto.setLoginUid(rc);
 
                     // Include profile data in response
                     List<UserDto> list = new ArrayList<>();
