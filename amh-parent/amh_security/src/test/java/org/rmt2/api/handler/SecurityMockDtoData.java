@@ -439,29 +439,34 @@ public class SecurityMockDtoData {
         return list;
     }
     
-    public static final List<VwUser> createVwUserMockData() {
-        List<VwUser> list = new ArrayList<>();
+    public static final List<UserDto> createVwUserMockData() {
+        List<UserDto> list = new ArrayList<>();
         int loginId = SecurityMockOrmDataFactory.TEST_USER_ID;
         VwUser o = SecurityMockOrmDataFactory.createOrmVwUser(loginId,
                 SecurityMockOrmDataFactory.TEST_GROUP_ID, "UserName_" + loginId,
                 "test1234" + loginId, "2018-01-01", "ShortName_" + loginId);
-        list.add(o);
+        UserDto d = Rmt2OrmDtoFactory.getUserDtoInstance(o);
+        list.add(d);
         o = SecurityMockOrmDataFactory.createOrmVwUser(++loginId,
                 SecurityMockOrmDataFactory.TEST_GROUP_ID, "UserName_" + loginId,
                 "test1234" + loginId, "2018-01-01", "ShortName_" + loginId);
-        list.add(o);
+        d = Rmt2OrmDtoFactory.getUserDtoInstance(o);
+        list.add(d);
         o = SecurityMockOrmDataFactory.createOrmVwUser(++loginId,
                 SecurityMockOrmDataFactory.TEST_GROUP_ID, "UserName_" + loginId,
                 "test1234" + loginId, "2018-01-01", "ShortName_" + loginId);
-        list.add(o);
+        d = Rmt2OrmDtoFactory.getUserDtoInstance(o);
+        list.add(d);
         o = SecurityMockOrmDataFactory.createOrmVwUser(++loginId,
                 SecurityMockOrmDataFactory.TEST_GROUP_ID, "UserName_" + loginId,
                 "test1234" + loginId, "2018-01-01", "ShortName_" + loginId);
-        list.add(o);
+        d = Rmt2OrmDtoFactory.getUserDtoInstance(o);
+        list.add(d);
         o = SecurityMockOrmDataFactory.createOrmVwUser(++loginId,
                 SecurityMockOrmDataFactory.TEST_GROUP_ID, "UserName_" + loginId,
                 "test1234" + loginId, "2018-01-01", "ShortName_" + loginId);
-        list.add(o);
+        d = Rmt2OrmDtoFactory.getUserDtoInstance(o);
+        list.add(d);
         
         return list;
     }

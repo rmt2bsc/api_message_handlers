@@ -1,0 +1,27 @@
+<AuthenticationRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>authentication</application>
+        <module>admin</module>
+        <transaction>GET_USER_1234</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>04/28/2021 21:53:54</delivery_date>
+        <session_id>ABCDEFGHIJKLMNOPQRSTUVWXYZ</session_id>
+    </header>
+    <criteria>
+        <user_criteria>
+            <login_id>10</login_id>
+            <user_name>username</user_name>
+            <first_name>roy</first_name>
+            <last_name>terrell</last_name>
+            <email>royterrell@hotmail.com</email>
+            <dob>1989-01-01-06:00</dob>
+            <ssn>999-99-9999</ssn>
+            <start_date>1989-01-01-06:00</start_date>
+            <term_date>1989-01-01-06:00</term_date>
+            <group_id>10</group_id>
+            <group_name>Group Name</group_name>
+        </user_criteria>
+    </criteria>
+</AuthenticationRequest>
