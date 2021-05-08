@@ -3,9 +3,12 @@ package org.rmt2.api.handlers.admin.user;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.dto.CategoryDto;
 import org.dto.UserDto;
 import org.dto.adapter.orm.Rmt2OrmDtoFactory;
 import org.rmt2.jaxb.RecordTrackingType;
+import org.rmt2.jaxb.UserAppRoleType;
+import org.rmt2.jaxb.UserAppRolesType;
 import org.rmt2.jaxb.UserCriteriaType;
 import org.rmt2.jaxb.UserGroupType;
 import org.rmt2.jaxb.UserType;
@@ -191,4 +194,42 @@ public class UserJaxbDtoFactory extends RMT2Base {
         }
         return list;
     }
+
+    /**
+     * 
+     * @param jaxbObj
+     * @return
+     */
+    public static final List<String> createAppRoleCodeList(UserAppRolesType jaxbObj) {
+        if (jaxbObj == null) {
+            return null;
+        }
+        List<CategoryDto> list = UserJaxbDtoFactory.createDtoInstance(jaxbObj);
+        List<String> codeList = new ArrayList<>();
+        for (CategoryDto item : list) {
+            codeList.add(item.getAppRoleCode());
+        }
+        return codeList;
+    }
+
+    /**
+     * 
+     * @param jaxbObj
+     * @return
+     */
+    public static final List<CategoryDto> createDtoInstance(UserAppRolesType jaxbObj) {
+        if (jaxbObj == null) {
+            return null;
+        }
+        List<CategoryDto> list = new ArrayList<>();
+        for (UserAppRoleType item : jaxbObj.getUserAppRole()) {
+            CategoryDto dto = Rmt2OrmDtoFactory.getAppRoleDtoInstance(null);
+            // Get app-role info
+            dto.setUserAppRoleId(item.getUserAppRoleId());
+            dto.setAppRoleId(item.getAppRoleInfo().getAppRoleId());
+            list.add(dto);
+        }
+        return list;
+    }
+
 }
