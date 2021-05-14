@@ -41,10 +41,10 @@ public class UserAppRoleMaintenanceApiHandler extends UserAppRoleApiHandler {
      * Handler for invoking the appropriate API in order to add a new or modify
      * an existing user object.
      * <p>
-     * The idea is for the client to include every assigned app/role in the
-     * request. Subsequently the web service will refresh the user's profile
-     * with the new assignments, which those that were selected as revocations
-     * will be updated as well during the refresh.
+     * The idea is for the client to include every application role that was
+     * selected to assigned to the user in the request. Subsequently the web
+     * service will refresh the user's profile with the new assignments in which
+     * deleting those that are not included in the request.
      * 
      * @param req
      *            an instance of {@link AuthenticationRequest}
@@ -55,25 +55,21 @@ public class UserAppRoleMaintenanceApiHandler extends UserAppRoleApiHandler {
         UserDto dto = UserJaxbDtoFactory.createDtoInstance(this.requestObj.getProfile().getUserInfo().get(0));
         CategoryDto userAppRoleDto = Rmt2OrmDtoFactory.getUserAppRoleDtoInstance(null);
         userAppRoleDto.setUsername(dto.getUsername());
-        List<String> assigned = UserJaxbDtoFactory.createAppRoleCodeList(this.requestObj.getProfile().getUserInfo().get(0)
+        List<String> assignedAppRoleCodes = UserJaxbDtoFactory.createAppRoleCodeList(this.requestObj.getProfile().getUserInfo().get(0)
                 .getGrantedAppRoles());
-        // List<CategoryDto> revoked =
-        // UserJaxbDtoFactory.createDtoInstance(this.requestObj.getProfile().getUserInfo().get(0)
-        // .getRevokedAppRoles());
 
         int rc = 0;
         try {
             // call api
             api.beginTrans();
-            // rc = this.api.updateUser(dto);
-            rc = this.api.update(userAppRoleDto, assigned);
+            rc = this.api.update(userAppRoleDto, assignedAppRoleCodes);
             if (rc > 0) {
-                String msg = RMT2String.replace(UserAppRoleMessageHandlerConst.MESSAGE_CREATE_SUCCESS, String.valueOf(rc),
+                String msg = RMT2String.replace(UserAppRoleMessageHandlerConst.MESSAGE_UPDATE_SUCCESS, String.valueOf(rc),
                         ApiMessageHandlerConst.MSG_PLACEHOLDER1);
                 this.rs.setMessage(msg);
             }
             else {
-                this.rs.setMessage(UserAppRoleMessageHandlerConst.MESSAGE_NOT_FOUND);
+                this.rs.setMessage(UserAppRoleMessageHandlerConst.MESSAGE_ZERO_APPROLES_PROCESSED);
             }
             // Do not include profile data in response
             this.jaxbObj = null;
@@ -112,8 +108,6 @@ public class UserAppRoleMaintenanceApiHandler extends UserAppRoleApiHandler {
         try {
             Verifier.verifyNotNull(req.getProfile().getUserInfo());
             Verifier.verifyTrue(req.getProfile().getUserInfo().size() > 0);
-            Verifier.verifyNotNull(req.getProfile().getUserInfo().get(0).getGrantedAppRoles());
-            Verifier.verifyTrue(req.getProfile().getUserInfo().get(0).getGrantedAppRoles().getUserAppRole().size() > 0);
         } catch (VerifyException e) {
             throw new InvalidRequestException(UserAppRoleMessageHandlerConst.MESSAGE_MISSING_USER_SECTION);
         }
