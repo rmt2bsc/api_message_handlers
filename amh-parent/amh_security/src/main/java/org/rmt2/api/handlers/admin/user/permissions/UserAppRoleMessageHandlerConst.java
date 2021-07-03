@@ -1,4 +1,4 @@
-package org.rmt2.api.handlers.admin.user.approle;
+package org.rmt2.api.handlers.admin.user.permissions;
 
 /**
  * User common message handler API constants

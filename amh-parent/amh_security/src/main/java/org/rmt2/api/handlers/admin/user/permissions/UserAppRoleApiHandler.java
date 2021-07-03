@@ -1,4 +1,4 @@
-package org.rmt2.api.handlers.admin.user.approle;
+package org.rmt2.api.handlers.admin.user.permissions;
 
 import java.io.Serializable;
 import java.util.List;
