@@ -18,27 +18,30 @@ import com.api.util.assistants.Verifier;
 import com.api.util.assistants.VerifyException;
 
 /**
- * Handles and routes user application role query related messages to the Authentication/Security
- * API.
+ * Handles and routes messages related to the user and its permissions from the
+ * Authentication/Security API.
+ * <p>
+ * The permissions consist of the application roles and resources that are
+ * associated with the user.
  * 
  * @author roy.terrell
  *
  */
-public class UserAppRoleQueryApiHandler extends UserAppRoleApiHandler {
+public class UserPermissionsQueryApiHandler extends UserAppRoleApiHandler {
     
-    private static final Logger logger = Logger.getLogger(UserAppRoleQueryApiHandler.class);
+    private static final Logger logger = Logger.getLogger(UserPermissionsQueryApiHandler.class);
 
     /**
      * @param payload
      */
-    public UserAppRoleQueryApiHandler() {
+    public UserPermissionsQueryApiHandler() {
         super();
-        logger.info(UserAppRoleQueryApiHandler.class.getName() + " was instantiated successfully");
+        logger.info(UserPermissionsQueryApiHandler.class.getName() + " was instantiated successfully");
     }
 
     /**
      * Handler for invoking the appropriate API in order to fetch user objects
-     * containing the application roles the user has been granted.
+     * containing the application roles and resources the user has been granted.
      * 
      * @param req
      *            an instance of {@link AuthenticationRequest}
@@ -56,12 +59,16 @@ public class UserAppRoleQueryApiHandler extends UserAppRoleApiHandler {
                 this.rs.setMessage(UserMessageHandlerConst.MESSAGE_NOT_FOUND);
                 this.rs.setRecordCount(0);
                 this.jaxbObj = null;
+
+                // TODO: Fetch each user's application/role and resource
+                // permissions
             }
             else {
                 this.rs.setMessage(UserMessageHandlerConst.MESSAGE_FOUND);
                 this.rs.setRecordCount(list.size());
                 
-                // TODO:  Use user DTO results to fetch the granted application roles for each user
+                // TODO: Build the user JAXB object and attach all the user's
+                // application/role and resource permissions
                 this.jaxbObj = UserJaxbDtoFactory.createJaxbInstance(list);
             }
         } catch (Exception e) {
