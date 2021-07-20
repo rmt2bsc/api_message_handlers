@@ -53,13 +53,13 @@ public class UserPermissionsQueryApiHandler extends UserAppRoleApiHandler {
      */
     @Override
     protected void processTransactionCode() {
-        UserDto dto = UserJaxbDtoFactory.createDtoInstance(this.requestObj.getCriteria().getUserAppRolesCriteria());
-        List<UserDto> list = null;
+        CategoryDto dto = UserJaxbDtoFactory.createDtoInstance(this.requestObj.getCriteria().getUserAppRolesCriteria());
+        List<UserDto> userList = null;
         UserApi userApi = UserApiFactory.createApiInstance();
         try {
             // call api
-            list = userApi.getUser(dto);
-            if (list == null) {
+            userList = userApi.getUser(dto);
+            if (userList == null) {
                 this.rs.setMessage(UserMessageHandlerConst.MESSAGE_NOT_FOUND);
                 this.rs.setRecordCount(0);
                 this.jaxbObj = null;
@@ -68,7 +68,7 @@ public class UserPermissionsQueryApiHandler extends UserAppRoleApiHandler {
                 // Fetch each user's application/role and resource
                 // permissions
                 Map<Integer, List<CategoryDto>> userAppRolesMap = new HashMap<>();
-                for (UserDto user : list) {
+                for (UserDto user : userList) {
                     CategoryDto userAppRoleCriteria = Rmt2OrmDtoFactory.getUserAppRoleDtoInstance(null, null);
                     userAppRoleCriteria.setUsername(user.getUsername());
                     List<CategoryDto> userAppRoles = this.api.getAssignedRoles(userAppRoleCriteria);
@@ -76,11 +76,11 @@ public class UserPermissionsQueryApiHandler extends UserAppRoleApiHandler {
                 }
 
                 this.rs.setMessage(UserMessageHandlerConst.MESSAGE_FOUND);
-                this.rs.setRecordCount(list.size());
+                this.rs.setRecordCount(userList.size());
                 
                 // Build the user JAXB object and attach all the user's
                 // application/role and resource permissions
-                this.jaxbObj = UserJaxbDtoFactory.createJaxbInstance(list, userAppRolesMap);
+                this.jaxbObj = UserJaxbDtoFactory.createJaxbInstance(userList, userAppRolesMap);
             }
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e);

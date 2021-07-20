@@ -83,33 +83,35 @@ public class UserJaxbDtoFactory extends RMT2Base {
      *            an instance of {@link UserAppRolesCriteriaType}
      * @return an instance of {@link CategoryDto}
      */
-    public static final UserDto createDtoInstance(UserAppRolesCriteriaType jaxbObj) {
+    public static final CategoryDto createDtoInstance(UserAppRolesCriteriaType jaxbObj) {
         if (jaxbObj == null) {
             return null;
         }
-        UserDto dto = Rmt2OrmDtoFactory.getNewUserInstance();
+        // UserDto dto = Rmt2OrmDtoFactory.getNewUserInstance();
+        CategoryDto dto = Rmt2OrmDtoFactory.getUserAppRoleDtoInstance(null, null);
 
         if (jaxbObj.getLoginId() != null) {
             dto.setLoginUid(jaxbObj.getLoginId());
         }
         dto.setUsername(jaxbObj.getUserName());
+        dto.setFirstname(jaxbObj.getFirstName());
+        dto.setLastname(jaxbObj.getLastName());
 
-        // CategoryDto dto = Rmt2OrmDtoFactory.getUserAppRoleDtoInstance(null);
-        // if (jaxbObj.getUserAppRoleId() != null) {
-        // dto.setUserAppRoleId(jaxbObj.getUserAppRoleId());
-        // }
+        if (jaxbObj.getUserAppRoleId() != null) {
+            dto.setUserAppRoleId(jaxbObj.getUserAppRoleId());
+        }
 
-        // if (jaxbObj.getAppId() != null) {
-        // dto.setApplicationId(jaxbObj.getAppId());
-        // }
-        // dto.setAppName(jaxbObj.getAppCode());
-        // dto.setAppDescription(jaxbObj.getAppDescription());
-        // dto.setRoleId(jaxbObj.getRoleId());
-        // dto.setRoleName(jaxbObj.getRoleName());
-        // dto.setRoleDescription(jaxbObj.getRoleDescription());
-        // dto.setAppRoleId(jaxbObj.getAppRoleId());
-        // dto.setAppRoleCode(jaxbObj.getAppRoleCode());
-        // dto.setAppRoleDescription(jaxbObj.getAppRoleDescription());
+        if (jaxbObj.getAppId() != null) {
+            dto.setApplicationId(jaxbObj.getAppId());
+        }
+        dto.setAppName(jaxbObj.getAppCode());
+        dto.setAppDescription(jaxbObj.getAppDescription());
+        dto.setRoleId(jaxbObj.getRoleId());
+        dto.setRoleName(jaxbObj.getRoleName());
+        dto.setRoleDescription(jaxbObj.getRoleDescription());
+        dto.setAppRoleId(jaxbObj.getAppRoleId());
+        dto.setAppRoleCode(jaxbObj.getAppRoleCode());
+        dto.setAppRoleDescription(jaxbObj.getAppRoleDescription());
         return dto;
     }
 
