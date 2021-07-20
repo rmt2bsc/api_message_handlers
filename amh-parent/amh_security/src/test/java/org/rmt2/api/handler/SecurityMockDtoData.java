@@ -471,8 +471,8 @@ public class SecurityMockDtoData {
         return list;
     }
     
-    public static final List<VwUserAppRoles> createVwUserAppRolesMockData() {
-        List<VwUserAppRoles> list = new ArrayList<>();
+    public static final List<CategoryDto> createVwUserAppRolesMockData() {
+        List<CategoryDto> list = new ArrayList<>();
         int appRoleId = SecurityMockOrmDataFactory.TEST_APP_ROLE_ID;
         VwUserAppRoles o = SecurityMockOrmDataFactory.createOrmVwUserAppRoles(SecurityMockOrmDataFactory.TEST_USER_ID,
                 SecurityMockOrmDataFactory.TEST_NEW_APP_ID,
@@ -480,35 +480,40 @@ public class SecurityMockDtoData {
                 appRoleId,
                 SecurityMockOrmDataFactory.TEST_GROUP_ID, "user_name",
                 "2018-01-01");
-        list.add(o);
+        CategoryDto d = Rmt2OrmDtoFactory.getUserAppRoleDtoInstance(o, null);
+        list.add(d);
         o = SecurityMockOrmDataFactory.createOrmVwUserAppRoles(SecurityMockOrmDataFactory.TEST_USER_ID,
                 SecurityMockOrmDataFactory.TEST_NEW_APP_ID,
                 SecurityMockOrmDataFactory.TEST_ROLE_ID,
                 ++appRoleId,
                 SecurityMockOrmDataFactory.TEST_GROUP_ID, "user_name",
                 "2018-01-01");
-        list.add(o);
-        o = SecurityMockOrmDataFactory.createOrmVwUserAppRoles(SecurityMockOrmDataFactory.TEST_USER_ID,
-                SecurityMockOrmDataFactory.TEST_NEW_APP_ID,
-                SecurityMockOrmDataFactory.TEST_ROLE_ID,
-                ++appRoleId,
-                SecurityMockOrmDataFactory.TEST_GROUP_ID, "user_name",
-                "2018-01-01");
-        list.add(o);
-        o = SecurityMockOrmDataFactory.createOrmVwUserAppRoles(SecurityMockOrmDataFactory.TEST_USER_ID,
-                SecurityMockOrmDataFactory.TEST_NEW_APP_ID,
-                SecurityMockOrmDataFactory.TEST_ROLE_ID,
-                ++appRoleId,
-                SecurityMockOrmDataFactory.TEST_GROUP_ID, "user_name",
-                "2018-01-01");
-        list.add(o);
-        o = SecurityMockOrmDataFactory.createOrmVwUserAppRoles(SecurityMockOrmDataFactory.TEST_USER_ID,
-                SecurityMockOrmDataFactory.TEST_NEW_APP_ID,
-                SecurityMockOrmDataFactory.TEST_ROLE_ID,
-                ++appRoleId,
-                SecurityMockOrmDataFactory.TEST_GROUP_ID, "user_name",
-                "2018-01-01");
-        list.add(o);
+        d = Rmt2OrmDtoFactory.getUserAppRoleDtoInstance(o, null);
+        list.add(d);
+        // o =
+        // SecurityMockOrmDataFactory.createOrmVwUserAppRoles(SecurityMockOrmDataFactory.TEST_USER_ID,
+        // SecurityMockOrmDataFactory.TEST_NEW_APP_ID,
+        // SecurityMockOrmDataFactory.TEST_ROLE_ID,
+        // ++appRoleId,
+        // SecurityMockOrmDataFactory.TEST_GROUP_ID, "user_name",
+        // "2018-01-01");
+        // list.add(o);
+        // o =
+        // SecurityMockOrmDataFactory.createOrmVwUserAppRoles(SecurityMockOrmDataFactory.TEST_USER_ID,
+        // SecurityMockOrmDataFactory.TEST_NEW_APP_ID,
+        // SecurityMockOrmDataFactory.TEST_ROLE_ID,
+        // ++appRoleId,
+        // SecurityMockOrmDataFactory.TEST_GROUP_ID, "user_name",
+        // "2018-01-01");
+        // list.add(o);
+        // o =
+        // SecurityMockOrmDataFactory.createOrmVwUserAppRoles(SecurityMockOrmDataFactory.TEST_USER_ID,
+        // SecurityMockOrmDataFactory.TEST_NEW_APP_ID,
+        // SecurityMockOrmDataFactory.TEST_ROLE_ID,
+        // ++appRoleId,
+        // SecurityMockOrmDataFactory.TEST_GROUP_ID, "user_name",
+        // "2018-01-01");
+        // list.add(o);
         
         return list;
     }

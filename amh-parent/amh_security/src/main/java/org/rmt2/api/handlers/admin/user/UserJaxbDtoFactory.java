@@ -2,17 +2,27 @@ package org.rmt2.api.handlers.admin.user;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.dto.CategoryDto;
 import org.dto.UserDto;
 import org.dto.adapter.orm.Rmt2OrmDtoFactory;
+import org.rmt2.jaxb.AppRoleType;
+import org.rmt2.jaxb.ApplicationType;
+import org.rmt2.jaxb.ObjectFactory;
 import org.rmt2.jaxb.RecordTrackingType;
+import org.rmt2.jaxb.RoleType;
 import org.rmt2.jaxb.UserAppRoleType;
+import org.rmt2.jaxb.UserAppRolesCriteriaType;
 import org.rmt2.jaxb.UserAppRolesType;
 import org.rmt2.jaxb.UserCriteriaType;
 import org.rmt2.jaxb.UserGroupType;
 import org.rmt2.jaxb.UserType;
 import org.rmt2.util.RecordTrackingTypeBuilder;
+import org.rmt2.util.authentication.AppRoleTypeBuilder;
+import org.rmt2.util.authentication.ApplicationTypeBuilder;
+import org.rmt2.util.authentication.RoleTypeBuilder;
+import org.rmt2.util.authentication.UserAppRoleTypeBuilder;
 import org.rmt2.util.authentication.UserGroupTypeBuilder;
 import org.rmt2.util.authentication.UserTypeBuilder;
 
@@ -62,6 +72,44 @@ public class UserJaxbDtoFactory extends RMT2Base {
             dto.setGroupId(jaxbObj.getGroupId());
         }
         dto.setGrpDescription(jaxbObj.getGroupName());
+        return dto;
+    }
+
+    /**
+     * Creates an instance of <i>CategoryDto</i> using a valid
+     * <i>UserAppRolesCriteriaType</i> JAXB object.
+     * 
+     * @param jaxbObj
+     *            an instance of {@link UserAppRolesCriteriaType}
+     * @return an instance of {@link CategoryDto}
+     */
+    public static final UserDto createDtoInstance(UserAppRolesCriteriaType jaxbObj) {
+        if (jaxbObj == null) {
+            return null;
+        }
+        UserDto dto = Rmt2OrmDtoFactory.getNewUserInstance();
+
+        if (jaxbObj.getLoginId() != null) {
+            dto.setLoginUid(jaxbObj.getLoginId());
+        }
+        dto.setUsername(jaxbObj.getUserName());
+
+        // CategoryDto dto = Rmt2OrmDtoFactory.getUserAppRoleDtoInstance(null);
+        // if (jaxbObj.getUserAppRoleId() != null) {
+        // dto.setUserAppRoleId(jaxbObj.getUserAppRoleId());
+        // }
+
+        // if (jaxbObj.getAppId() != null) {
+        // dto.setApplicationId(jaxbObj.getAppId());
+        // }
+        // dto.setAppName(jaxbObj.getAppCode());
+        // dto.setAppDescription(jaxbObj.getAppDescription());
+        // dto.setRoleId(jaxbObj.getRoleId());
+        // dto.setRoleName(jaxbObj.getRoleName());
+        // dto.setRoleDescription(jaxbObj.getRoleDescription());
+        // dto.setAppRoleId(jaxbObj.getAppRoleId());
+        // dto.setAppRoleCode(jaxbObj.getAppRoleCode());
+        // dto.setAppRoleDescription(jaxbObj.getAppRoleDescription());
         return dto;
     }
 
@@ -196,6 +244,32 @@ public class UserJaxbDtoFactory extends RMT2Base {
     }
 
     /**
+     * Creates a List of UserType using a valid List of UserDto DTO objects
+     * containing the user group data.
+     * 
+     * @param users
+     *            List of {@link UserDto}
+     * @param userAppRolesMap
+     *            A Map of {@link CategoryDto} keyed by Integer
+     * @return a List of {@link UserType}
+     */
+    public static final List<UserType> createJaxbInstance(List<UserDto> results, Map<Integer, List<CategoryDto>> userAppRolesMap) {
+        List<UserType> list = new ArrayList<>();
+        ObjectFactory f = new ObjectFactory();
+        for (UserDto item : results) {
+            UserType ut = UserJaxbDtoFactory.createJaxbInstance(item);
+            List<CategoryDto> userAppRoles = userAppRolesMap.get(item.getLoginUid());
+            if (userAppRoles != null) {
+                UserAppRolesType uart = f.createUserAppRolesType();
+                ut.setGrantedAppRoles(uart);
+                ut.getGrantedAppRoles().getUserAppRole().addAll(UserJaxbDtoFactory.createJaxbListInstance(userAppRoles));
+            }
+            list.add(ut);
+        }
+        return list;
+    }
+
+    /**
      * 
      * @param jaxbObj
      * @return
@@ -228,6 +302,58 @@ public class UserJaxbDtoFactory extends RMT2Base {
             dto.setUserAppRoleId(item.getUserAppRoleId());
             dto.setAppRoleId(item.getAppRoleInfo().getAppRoleId());
             list.add(dto);
+        }
+        return list;
+    }
+
+    /**
+     * 
+     * @param dtoObj
+     * @return
+     */
+    public static final UserAppRoleType createJaxbInstance(CategoryDto dtoObj) {
+        if (dtoObj == null) {
+            return null;
+        }
+        ApplicationType at = ApplicationTypeBuilder.Builder.create()
+                .withAppId(dtoObj.getApplicationId())
+                .withName(dtoObj.getAppName())
+                .withDescription(dtoObj.getAppDescription())
+                .build();
+
+        RoleType rt = RoleTypeBuilder.Builder.create()
+                .withRoleId(dtoObj.getRoleId())
+                .withName(dtoObj.getRoleName())
+                .withDescription(dtoObj.getRoleDescription())
+                .build();
+
+        AppRoleType art = AppRoleTypeBuilder.Builder.create()
+                .withAppRoleId(dtoObj.getAppRoleId())
+                .withApplication(at)
+                .withRole(rt)
+                .build();
+
+        UserAppRoleType uart = UserAppRoleTypeBuilder.Builder.create()
+                .withUserApplicationRoleId(dtoObj.getUserAppRoleId())
+                .withApplicationRoleInfo(art)
+                .build();
+
+        return uart;
+    }
+
+    /**
+     * 
+     * @param dtoList
+     * @return
+     */
+    public static final List<UserAppRoleType> createJaxbListInstance(List<CategoryDto> dtoList) {
+        if (dtoList == null) {
+            return null;
+        }
+        List<UserAppRoleType> list = new ArrayList<>();
+        for (CategoryDto item : dtoList) {
+            UserAppRoleType uart = UserJaxbDtoFactory.createJaxbInstance(item);
+            list.add(uart);
         }
         return list;
     }

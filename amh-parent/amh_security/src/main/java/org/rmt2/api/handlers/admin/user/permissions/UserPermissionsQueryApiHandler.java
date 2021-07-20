@@ -1,9 +1,13 @@
 package org.rmt2.api.handlers.admin.user.permissions;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.dto.CategoryDto;
 import org.dto.UserDto;
+import org.dto.adapter.orm.Rmt2OrmDtoFactory;
 import org.modules.users.UserApi;
 import org.modules.users.UserApiFactory;
 import org.rmt2.api.handlers.AuthenticationMessageHandlerConst;
@@ -49,7 +53,7 @@ public class UserPermissionsQueryApiHandler extends UserAppRoleApiHandler {
      */
     @Override
     protected void processTransactionCode() {
-        UserDto dto = UserJaxbDtoFactory.createDtoInstance(this.requestObj.getCriteria().getUserCriteria());
+        UserDto dto = UserJaxbDtoFactory.createDtoInstance(this.requestObj.getCriteria().getUserAppRolesCriteria());
         List<UserDto> list = null;
         UserApi userApi = UserApiFactory.createApiInstance();
         try {
@@ -59,17 +63,24 @@ public class UserPermissionsQueryApiHandler extends UserAppRoleApiHandler {
                 this.rs.setMessage(UserMessageHandlerConst.MESSAGE_NOT_FOUND);
                 this.rs.setRecordCount(0);
                 this.jaxbObj = null;
-
-                // TODO: Fetch each user's application/role and resource
-                // permissions
             }
             else {
+                // Fetch each user's application/role and resource
+                // permissions
+                Map<Integer, List<CategoryDto>> userAppRolesMap = new HashMap<>();
+                for (UserDto user : list) {
+                    CategoryDto userAppRoleCriteria = Rmt2OrmDtoFactory.getUserAppRoleDtoInstance(null, null);
+                    userAppRoleCriteria.setUsername(user.getUsername());
+                    List<CategoryDto> userAppRoles = this.api.getAssignedRoles(userAppRoleCriteria);
+                    userAppRolesMap.put(user.getLoginUid(), userAppRoles);
+                }
+
                 this.rs.setMessage(UserMessageHandlerConst.MESSAGE_FOUND);
                 this.rs.setRecordCount(list.size());
                 
-                // TODO: Build the user JAXB object and attach all the user's
+                // Build the user JAXB object and attach all the user's
                 // application/role and resource permissions
-                this.jaxbObj = UserJaxbDtoFactory.createJaxbInstance(list);
+                this.jaxbObj = UserJaxbDtoFactory.createJaxbInstance(list, userAppRolesMap);
             }
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e);
@@ -87,7 +98,7 @@ public class UserPermissionsQueryApiHandler extends UserAppRoleApiHandler {
         super.validateRequest(req);
 
         try {
-            Verifier.verifyTrue(req.getHeader().getTransaction().equalsIgnoreCase(ApiTransactionCodes.AUTH_USER_GET));
+            Verifier.verifyTrue(req.getHeader().getTransaction().equalsIgnoreCase(ApiTransactionCodes.AUTH_USER_PERMISSIONS_GET));
         } catch (VerifyException e) {
             throw new InvalidRequestException(AuthenticationMessageHandlerConst.MSG_INVALID_TRANSACTION_CODE);
         }
@@ -99,9 +110,9 @@ public class UserPermissionsQueryApiHandler extends UserAppRoleApiHandler {
         }
 
         try {
-            Verifier.verifyNotNull(req.getCriteria().getUserCriteria());
+            Verifier.verifyNotNull(req.getCriteria().getUserAppRolesCriteria());
         } catch (VerifyException e) {
-            throw new InvalidRequestException(UserMessageHandlerConst.MESSAGE_MISSING_USER_CRITERIA_SECTION);
+            throw new InvalidRequestException(UserMessageHandlerConst.MESSAGE_MISSING_USER_APP_ROLE_CRITERIA_SECTION);
         }
     }
 

@@ -354,6 +354,7 @@ public class SecurityMockOrmDataFactory {
     public static final VwUserAppRoles createOrmVwUserAppRoles(int loginId, int appId, int roleId, 
             int appRoleId, int grpId, String userName, String startDate) {
         VwUserAppRoles o = new VwUserAppRoles();
+        o.setUserAppRoleId(loginId + appId + roleId);
         o.setLoginUid(loginId);
         o.setApplicationId(appId);
         o.setAppName("AppName_" + appId);
