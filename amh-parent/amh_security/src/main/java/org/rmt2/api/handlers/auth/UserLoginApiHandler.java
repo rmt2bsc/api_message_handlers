@@ -9,13 +9,14 @@ import org.dto.CategoryDto;
 import org.dto.UserDto;
 import org.dto.adapter.orm.Rmt2OrmDtoFactory;
 import org.modules.authentication.AuthenticationException;
-import org.modules.roles.RoleSecurityApiFactory;
-import org.modules.roles.UserAppRoleApi;
+import org.modules.authentication.Authenticator;
+import org.modules.authentication.AuthenticatorFactory;
 import org.modules.users.UserApi;
 import org.modules.users.UserApiFactory;
 import org.rmt2.api.handlers.AuthenticationMessageHandlerConst;
 import org.rmt2.api.handlers.admin.user.UserJaxbDtoFactory;
 import org.rmt2.api.handlers.admin.user.UserMessageHandlerConst;
+import org.rmt2.api.handlers.admin.user.permissions.UserAppRoleApiHandler;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.jaxb.AuthenticationRequest;
 
@@ -32,7 +33,7 @@ import com.api.web.security.RMT2SecurityToken;
  * @author roy.terrell
  *
  */
-public class UserLoginApiHandler extends UserAuthenticationApiHandler {
+public class UserLoginApiHandler extends UserAppRoleApiHandler {
     
     private static final Logger logger = Logger.getLogger(UserLoginApiHandler.class);
 
@@ -57,12 +58,17 @@ public class UserLoginApiHandler extends UserAuthenticationApiHandler {
         RMT2SecurityToken token = null;
         
         // TODO:  Add logic to authenticate user.  May need to consider client not sending pass word in plain text.
+        Authenticator authApi = AuthenticatorFactory.createApi();
         try {
-            token = this.api.authenticate(dto.getUsername(), dto.getPassword());
+            token = authApi.authenticate(dto.getUsername(), dto.getPassword());
         } catch (AuthenticationException e) {
             // User name could not be found or password is incorrect
             this.rs.setMessage(e.getMessage());
         }
+        finally {
+            authApi.close();
+        }
+        
         try {
             if (token == null) {
                 // User was not successfully authentiated
@@ -81,12 +87,11 @@ public class UserLoginApiHandler extends UserAuthenticationApiHandler {
             else {
                 // Fetch each user's application/role and resource
                 // permissions
-                UserAppRoleApi userAppRoleApi = RoleSecurityApiFactory.createUserAppRoleApi();
                 Map<Integer, List<CategoryDto>> userAppRolesMap = new HashMap<>();
                 for (UserDto user : userList) {
                     CategoryDto userAppRoleCriteria = Rmt2OrmDtoFactory.getUserAppRoleDtoInstance(null, null);
                     userAppRoleCriteria.setUsername(user.getUsername());
-                    List<CategoryDto> userAppRoles = userAppRoleApi.getAssignedRoles(userAppRoleCriteria);
+                    List<CategoryDto> userAppRoles = this.api.getAssignedRoles(userAppRoleCriteria);
                     userAppRolesMap.put(user.getLoginUid(), userAppRoles);
                 }
 
