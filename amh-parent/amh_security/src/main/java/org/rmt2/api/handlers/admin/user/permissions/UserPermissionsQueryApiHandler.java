@@ -13,6 +13,7 @@ import org.modules.users.UserApiFactory;
 import org.rmt2.api.handlers.AuthenticationMessageHandlerConst;
 import org.rmt2.api.handlers.admin.user.UserJaxbDtoFactory;
 import org.rmt2.api.handlers.admin.user.UserMessageHandlerConst;
+import org.rmt2.api.handlers.auth.UserAuthenticationMessageHandlerConst;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.jaxb.AuthenticationRequest;
 
@@ -112,7 +113,7 @@ public class UserPermissionsQueryApiHandler extends UserAppRoleApiHandler {
         try {
             Verifier.verifyNotNull(req.getCriteria().getUserAppRolesCriteria());
         } catch (VerifyException e) {
-            throw new InvalidRequestException(UserMessageHandlerConst.MESSAGE_MISSING_USER_APP_ROLE_CRITERIA_SECTION);
+            throw new InvalidRequestException(UserAuthenticationMessageHandlerConst.MESSAGE_MISSING_USER_APP_ROLE_CRITERIA_SECTION);
         }
     }
 

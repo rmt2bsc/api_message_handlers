@@ -10,9 +10,6 @@ public class UserMessageHandlerConst {
     public static final String MESSAGE_FOUND = "User data found!";
     public static final String MESSAGE_NOT_FOUND = "User data not found!";
     public static final String MESSAGE_FETCH_ERROR = "User fetch operation failed";
-    public static final String MESSAGE_AUTH_FAILED = "User name or password is incorrect";
-    public static final String MESSAGE_AUTH_API_VALIDATION_ERROR = "Authentication API validation error occurred";
-
     public static final String MESSAGE_CREATE_SUCCESS = "User was created successfully";
     public static final String MESSAGE_UPDATE_SUCCESS = "User was modified successfully";
     public static final String MESSAGE_UPDATE_ERROR = "User update operation failed";
@@ -22,9 +19,6 @@ public class UserMessageHandlerConst {
 
     public static final String MESSAGE_MISSING_USER_SECTION = "User section is required for create/update/delete operations";
     public static final String MESSAGE_MISSING_USER_CRITERIA_SECTION = "User criteria section is required for query operations";
-    public static final String MESSAGE_MISSING_USER_APP_ROLE_CRITERIA_SECTION = "User Application Role criteria section is required for query operations";
-
-
     /**
      * 
      */

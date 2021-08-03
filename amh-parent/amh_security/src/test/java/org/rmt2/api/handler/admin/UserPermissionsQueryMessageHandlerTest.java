@@ -28,6 +28,7 @@ import org.rmt2.api.handler.SecurityMockOrmDataFactory;
 import org.rmt2.api.handlers.AuthenticationMessageHandlerConst;
 import org.rmt2.api.handlers.admin.user.UserMessageHandlerConst;
 import org.rmt2.api.handlers.admin.user.permissions.UserPermissionsQueryApiHandler;
+import org.rmt2.api.handlers.auth.UserAuthenticationMessageHandlerConst;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.AuthenticationResponse;
@@ -284,7 +285,7 @@ public class UserPermissionsQueryMessageHandlerTest extends BaseAuthenticationMe
         Assert.assertEquals(0, actualRepsonse.getReplyStatus().getRecordCount().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_CODE_FAILURE, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(UserMessageHandlerConst.MESSAGE_MISSING_USER_APP_ROLE_CRITERIA_SECTION, actualRepsonse
+        Assert.assertEquals(UserAuthenticationMessageHandlerConst.MESSAGE_MISSING_USER_APP_ROLE_CRITERIA_SECTION, actualRepsonse
                 .getReplyStatus().getMessage());
     }
 }

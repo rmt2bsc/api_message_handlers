@@ -28,7 +28,6 @@ import com.api.util.assistants.VerifyException;
  * Common message handler for authenticating users within the Authentication/Security API.
  * 
  * @author roy.terrell
- * @deprecated No longer needed.
  *
  */
 public abstract class UserAuthenticationApiHandler extends
