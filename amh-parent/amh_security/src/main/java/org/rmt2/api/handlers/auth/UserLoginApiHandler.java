@@ -98,7 +98,7 @@ public class UserLoginApiHandler extends UserAppRoleApiHandler {
         }
         catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e);
-            this.rs.setMessage(UserMessageHandlerConst.MESSAGE_FETCH_ERROR);
+            this.rs.setMessage(UserMessageHandlerConst.MESSAGE_AUTH_API_VALIDATION_ERROR);
             this.rs.setExtMessage(e.getMessage());
         } 
         finally {
