@@ -30,6 +30,7 @@ import org.rmt2.api.handlers.auth.UserLoginApiHandler;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.AuthenticationResponse;
+import org.rmt2.jaxb.UserAppRoleType;
 
 import com.api.config.SystemConfigurator;
 import com.api.messaging.handler.MessageHandlerCommandException;
@@ -91,7 +92,7 @@ public class UserLoginMessageHandlerTest extends BaseAuthenticationMessageHandle
     private RMT2SecurityToken setupSecurityToken() {
         UserDto user = Rmt2OrmDtoFactory.getNewUserInstance();
         user.setLoginUid(7777);
-        user.setUsername("testuser");
+        user.setUsername("test_username");
         user.setTotalLogons(5);
         user.setActive(1);
         user.setLoggedIn(1);
@@ -99,6 +100,10 @@ public class UserLoginMessageHandlerTest extends BaseAuthenticationMessageHandle
         user.setLastname("terrell");
         RMT2SecurityToken token = new RMT2SecurityToken();
         User tokenUser = Rmt2OrmDtoFactory.getUserInstance(user);
+        tokenUser.addRole("Role1");
+        tokenUser.addRole("Role2");
+        tokenUser.addRole("Role3");
+        tokenUser.addRole("Role4");
         token.update(tokenUser);
         return token;
     }
@@ -129,6 +134,17 @@ public class UserLoginMessageHandlerTest extends BaseAuthenticationMessageHandle
         Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals(UserAuthenticationMessageHandlerConst.MESSAGE_AUTH_SUCCESS, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(actualRepsonse.getProfile().getUserInfo().size(), 1);
+        Assert.assertEquals(actualRepsonse.getProfile().getUserInfo().get(0).getLoginId(), 7777, 0);
+        Assert.assertNotNull(actualRepsonse.getProfile().getUserInfo().get(0).getGrantedAppRoles());
+        Assert.assertEquals(actualRepsonse.getProfile().getUserInfo().get(0).getGrantedAppRoles().getUserAppRole().size(), 4, 0);
+        int ndx = 1;
+        for (UserAppRoleType uart : actualRepsonse.getProfile().getUserInfo().get(0).getGrantedAppRoles().getUserAppRole()) {
+            Assert.assertNotNull(uart.getAppRoleInfo());
+            Assert.assertNotNull(uart.getAppRoleInfo().getAppRoleCode());
+            Assert.assertEquals("Role" + ndx, uart.getAppRoleInfo().getAppRoleCode());
+            ndx++;
+        }
     }
 
     @Test

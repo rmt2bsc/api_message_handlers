@@ -335,6 +335,7 @@ public class UserJaxbDtoFactory extends RMT2Base {
                 .withAppRoleId(dtoObj.getAppRoleId())
                 .withApplication(at)
                 .withRole(rt)
+                .withCode(dtoObj.getAppRoleCode())
                 .build();
 
         UserAppRoleType uart = UserAppRoleTypeBuilder.Builder.create()
