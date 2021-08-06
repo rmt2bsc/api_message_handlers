@@ -113,7 +113,7 @@ public class UserPermissionsQueryApiHandler extends UserAppRoleApiHandler {
         try {
             Verifier.verifyNotNull(req.getCriteria().getUserAppRolesCriteria());
         } catch (VerifyException e) {
-            throw new InvalidRequestException(UserAuthenticationMessageHandlerConst.MESSAGE_MISSING_USER_APP_ROLE_CRITERIA_SECTION);
+            throw new InvalidRequestException(UserAuthenticationMessageHandlerConst.MESSAGE_MISSING_USER_APP_ROLE_SECTION);
         }
     }
 

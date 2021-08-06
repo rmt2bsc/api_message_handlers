@@ -4,9 +4,7 @@ import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
-import java.util.List;
-
-import org.dto.CategoryDto;
+import org.dao.SecurityDaoException;
 import org.dto.UserDto;
 import org.dto.adapter.orm.Rmt2OrmDtoFactory;
 import org.junit.After;
@@ -16,6 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.modules.SecurityModuleException;
+import org.modules.authentication.AuthenticationException;
 import org.modules.authentication.Authenticator;
 import org.modules.authentication.AuthenticatorFactory;
 import org.powermock.api.mockito.PowerMockito;
@@ -23,8 +22,6 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.rmt2.api.handler.BaseAuthenticationMessageHandlerTest;
 import org.rmt2.api.handlers.AuthenticationMessageHandlerConst;
-import org.rmt2.api.handlers.admin.user.permissions.UserAppRoleMaintenanceApiHandler;
-import org.rmt2.api.handlers.admin.user.permissions.UserAppRoleMessageHandlerConst;
 import org.rmt2.api.handlers.auth.UserAuthenticationMessageHandlerConst;
 import org.rmt2.api.handlers.auth.UserLoginApiHandler;
 import org.rmt2.constants.ApiTransactionCodes;
@@ -136,6 +133,7 @@ public class UserLoginMessageHandlerTest extends BaseAuthenticationMessageHandle
         Assert.assertEquals(UserAuthenticationMessageHandlerConst.MESSAGE_AUTH_SUCCESS, actualRepsonse.getReplyStatus().getMessage());
         Assert.assertEquals(actualRepsonse.getProfile().getUserInfo().size(), 1);
         Assert.assertEquals(actualRepsonse.getProfile().getUserInfo().get(0).getLoginId(), 7777, 0);
+        Assert.assertEquals(actualRepsonse.getProfile().getUserInfo().get(0).getUserName(), "test_username");
         Assert.assertNotNull(actualRepsonse.getProfile().getUserInfo().get(0).getGrantedAppRoles());
         Assert.assertEquals(actualRepsonse.getProfile().getUserInfo().get(0).getGrantedAppRoles().getUserAppRole().size(), 4, 0);
         int ndx = 1;
@@ -148,17 +146,19 @@ public class UserLoginMessageHandlerTest extends BaseAuthenticationMessageHandle
     }
 
     @Test
-    public void testSuccess_AppRolesMissingFromRequest() {
-        String request = RMT2File.getFileContentsAsString("xml/admin/user/approle/UserAppRoleMaintenanceRequest_AppRolesExcluded.xml");
+    public void test_Invalid_Credentials() {
+        String request = RMT2File.getFileContentsAsString("xml/authentication/UserLoginRequest.xml");
+
         try {
-            when(this.mockApi.update(isA(CategoryDto.class), isA(List.class))).thenReturn(0);
+            when(this.mockApi.authenticate(isA(String.class), isA(String.class))).thenThrow(
+                    new AuthenticationException("Test invalid user credentials"));
         } catch (SecurityModuleException e) {
-            Assert.fail("Unable to setup mock stub for assigning/unassigning user application roles");
+            Assert.fail("Unable to setup mock stub for authenticating the user");
         }
         MessageHandlerResults results = null;
-        UserAppRoleMaintenanceApiHandler handler = new UserAppRoleMaintenanceApiHandler();
+        UserLoginApiHandler handler = new UserLoginApiHandler();
         try {
-            results = handler.processMessage(ApiTransactionCodes.AUTH_USER_APPROLE_MAINT, request);
+            results = handler.processMessage(ApiTransactionCodes.AUTH_USER_LOGIN, request);
         } catch (MessageHandlerCommandException e) {
             e.printStackTrace();
             Assert.fail("An unexpected exception was thrown");
@@ -167,26 +167,32 @@ public class UserLoginMessageHandlerTest extends BaseAuthenticationMessageHandle
         Assert.assertNotNull(results.getPayload());
 
         AuthenticationResponse actualRepsonse = (AuthenticationResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-        Assert.assertNull(actualRepsonse.getProfile());
-        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getRecordCount().intValue());
-        Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertNotNull(actualRepsonse.getProfile());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_FAILURE, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(UserAppRoleMessageHandlerConst.MESSAGE_ZERO_APPROLES_PROCESSED, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(UserAuthenticationMessageHandlerConst.MESSAGE_AUTH_FAILED, actualRepsonse.getReplyStatus()
+                .getMessage());
+        Assert.assertEquals(actualRepsonse.getProfile().getUserInfo().size(), 1);
+        Assert.assertEquals(actualRepsonse.getProfile().getUserInfo().get(0).getUserName(), "test_username");
+        Assert.assertNull(actualRepsonse.getProfile().getUserInfo().get(0).getGrantedAppRoles());
     }
+
+
 
     @Test
     public void testError_API_Error() {
-        String request = RMT2File.getFileContentsAsString("xml/admin/user/approle/UserAppRoleMaintenanceRequest.xml");
+        String request = RMT2File.getFileContentsAsString("xml/authentication/UserLoginRequest.xml");
         try {
-            when(this.mockApi.update(isA(CategoryDto.class), isA(List.class))).thenThrow(new SecurityModuleException(API_ERROR));
-        } catch (SecurityModuleException e) {
-            Assert.fail("Unable to setup mock stub for inserting application record");
+            when(this.mockApi.authenticate(isA(String.class), isA(String.class))).thenThrow(
+                    new SecurityDaoException("Test API Error"));
+        } catch (Exception e) {
+            Assert.fail("Unable to setup mock stub for authenticating the user");
         }
 
         MessageHandlerResults results = null;
-        UserAppRoleMaintenanceApiHandler handler = new UserAppRoleMaintenanceApiHandler();
+        UserLoginApiHandler handler = new UserLoginApiHandler();
         try {
-            results = handler.processMessage(ApiTransactionCodes.AUTH_USER_APPROLE_MAINT, request);
+            results = handler.processMessage(ApiTransactionCodes.AUTH_USER_LOGIN, request);
         } catch (MessageHandlerCommandException e) {
             e.printStackTrace();
             Assert.fail("An unexpected exception was thrown");
@@ -196,20 +202,21 @@ public class UserLoginMessageHandlerTest extends BaseAuthenticationMessageHandle
 
         AuthenticationResponse actualRepsonse = (AuthenticationResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertEquals(0, actualRepsonse.getReplyStatus().getRecordCount().intValue());
-        Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_FAILURE, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(UserAppRoleMessageHandlerConst.MESSAGE_UPDATE_ERROR, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(UserAuthenticationMessageHandlerConst.MESSAGE_FETCH_ERROR, actualRepsonse.getReplyStatus()
+                .getMessage());
 
     }
 
     @Test
     public void testValidation_Invalid_Transaction_Code() {
-        String request = RMT2File.getFileContentsAsString("xml/admin/user/approle/UserAppRoleMaintenanceRequest_InvalidTransactionCode.xml");
+        String request = RMT2File.getFileContentsAsString("xml/authentication/UserLoginRequest_InvalidTransactionCode.xml");
 
         MessageHandlerResults results = null;
-        UserAppRoleMaintenanceApiHandler handler = new UserAppRoleMaintenanceApiHandler();
+        UserLoginApiHandler handler = new UserLoginApiHandler();
         try {
-            results = handler.processMessage(ApiTransactionCodes.AUTH_USER_APPROLE_MAINT, request);
+            results = handler.processMessage(ApiTransactionCodes.AUTH_USER_LOGIN, request);
         } catch (MessageHandlerCommandException e) {
             e.printStackTrace();
             Assert.fail("An unexpected exception was thrown");
@@ -226,12 +233,12 @@ public class UserLoginMessageHandlerTest extends BaseAuthenticationMessageHandle
 
     @Test
     public void testValidation_Missing_Profile() {
-        String request = RMT2File.getFileContentsAsString("xml/admin/user/approle/UserAppRoleMaintenanceRequest_ProfileSectionMissing.xml");
+        String request = RMT2File.getFileContentsAsString("xml/authentication/UserLoginRequest_MissingProfileSection.xml");
 
         MessageHandlerResults results = null;
-        UserAppRoleMaintenanceApiHandler handler = new UserAppRoleMaintenanceApiHandler();
+        UserLoginApiHandler handler = new UserLoginApiHandler();
         try {
-            results = handler.processMessage(ApiTransactionCodes.AUTH_USER_APPROLE_MAINT, request);
+            results = handler.processMessage(ApiTransactionCodes.AUTH_USER_LOGIN, request);
         } catch (MessageHandlerCommandException e) {
             e.printStackTrace();
             Assert.fail("An unexpected exception was thrown");
@@ -247,13 +254,14 @@ public class UserLoginMessageHandlerTest extends BaseAuthenticationMessageHandle
     }
 
     @Test
-    public void testValidation_Missing_Profile_User_Section() {
-        String request = RMT2File.getFileContentsAsString("xml/admin/user/approle/UserAppRoleMaintenanceRequest_ProfileUserSectionMissing.xml");
+    public void testValidation_Missing_Profile_UserApplicationRole_Section() {
+        String request = RMT2File
+                .getFileContentsAsString("xml/authentication/UserLoginRequest_MissingApplicationAccessSection.xml");
 
         MessageHandlerResults results = null;
-        UserAppRoleMaintenanceApiHandler handler = new UserAppRoleMaintenanceApiHandler();
+        UserLoginApiHandler handler = new UserLoginApiHandler();
         try {
-            results = handler.processMessage(ApiTransactionCodes.AUTH_USER_APPROLE_MAINT, request);
+            results = handler.processMessage(ApiTransactionCodes.AUTH_USER_LOGIN, request);
         } catch (MessageHandlerCommandException e) {
             e.printStackTrace();
             Assert.fail("An unexpected exception was thrown");
@@ -265,17 +273,19 @@ public class UserLoginMessageHandlerTest extends BaseAuthenticationMessageHandle
         Assert.assertEquals(0, actualRepsonse.getReplyStatus().getRecordCount().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_CODE_FAILURE, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(UserAppRoleMessageHandlerConst.MESSAGE_MISSING_USER_SECTION, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(UserAuthenticationMessageHandlerConst.MESSAGE_INVALID_APPLICATION_ACCESS_INFO, actualRepsonse
+                .getReplyStatus().getMessage());
     }
 
     @Test
-    public void testValidation_Too_Many_Records() {
-        String request = RMT2File.getFileContentsAsString("xml/admin/user/approle/UserAppRoleMaintenanceRequest_TooManyRecords.xml");
+    public void testValidation_Missing_Profile_UserInfo_Section() {
+        String request = RMT2File
+                .getFileContentsAsString("xml/authentication/UserLoginRequest_MissingUserInfoSection.xml");
 
         MessageHandlerResults results = null;
-        UserAppRoleMaintenanceApiHandler handler = new UserAppRoleMaintenanceApiHandler();
+        UserLoginApiHandler handler = new UserLoginApiHandler();
         try {
-            results = handler.processMessage(ApiTransactionCodes.AUTH_USER_APPROLE_MAINT, request);
+            results = handler.processMessage(ApiTransactionCodes.AUTH_USER_LOGIN, request);
         } catch (MessageHandlerCommandException e) {
             e.printStackTrace();
             Assert.fail("An unexpected exception was thrown");
@@ -287,7 +297,8 @@ public class UserLoginMessageHandlerTest extends BaseAuthenticationMessageHandle
         Assert.assertEquals(0, actualRepsonse.getReplyStatus().getRecordCount().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_CODE_FAILURE, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(AuthenticationMessageHandlerConst.MSG_TOO_MANY_RECORDS, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(UserAuthenticationMessageHandlerConst.MESSAGE_INVALID_USERINFO, actualRepsonse
+                .getReplyStatus().getMessage());
     }
 
 }

@@ -12,9 +12,6 @@ public class AuthenticationMessageHandlerConst {
     public static final String MSG_MISSING_USER_APP_ROLE_CRITERIA_SECTION = "Application criteria section is required for %s query operations";
     public static final String MSG_TOO_MANY_RECORDS = "Too many records exist in the request";
     public static final String MSG_INVALID_TRANSACTION_CODE = "Transaction code is invalid for target operation";
-    public static final String MSG_INVALID_APPLICATION_ACCESS_INFO = "Application Access Info section is invalid or missing";
-    
-    
     
     /**
      * 

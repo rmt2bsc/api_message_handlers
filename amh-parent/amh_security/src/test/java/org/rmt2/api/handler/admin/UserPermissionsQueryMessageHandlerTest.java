@@ -285,7 +285,7 @@ public class UserPermissionsQueryMessageHandlerTest extends BaseAuthenticationMe
         Assert.assertEquals(0, actualRepsonse.getReplyStatus().getRecordCount().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_CODE_FAILURE, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(UserAuthenticationMessageHandlerConst.MESSAGE_MISSING_USER_APP_ROLE_CRITERIA_SECTION, actualRepsonse
+        Assert.assertEquals(UserAuthenticationMessageHandlerConst.MESSAGE_MISSING_USER_APP_ROLE_SECTION, actualRepsonse
                 .getReplyStatus().getMessage());
     }
 }

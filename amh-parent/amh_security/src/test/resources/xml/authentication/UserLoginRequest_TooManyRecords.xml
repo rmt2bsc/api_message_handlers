@@ -1,0 +1,26 @@
+<AuthenticationRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>authentication</application>
+        <module>admin</module>
+        <transaction>LOGIN_USER</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>08/03/2021 14:01:23</delivery_date>
+        <session_id>ABCDEFGHIJKLMNOPQRSTUVWXYZ</session_id>
+    </header>
+    <profile>
+        <application_access_info>
+            <user_info>
+                <user_name>test_username</user_name>
+                <password>kfd93939dk39</password>
+            </user_info>
+        </application_access_info>
+        <application_access_info>
+            <user_info>
+                <user_name>test_username</user_name>
+                <password>kfd93939dk39</password>
+            </user_info>
+        </application_access_info>
+    </profile>
+</AuthenticationRequest>

@@ -13,6 +13,7 @@ import org.modules.authentication.AuthenticationException;
 import org.rmt2.api.handlers.AuthenticationMessageHandlerConst;
 import org.rmt2.api.handlers.admin.user.UserJaxbDtoFactory;
 import org.rmt2.constants.ApiTransactionCodes;
+import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.AuthenticationRequest;
 
 import com.InvalidDataException;
@@ -87,14 +88,19 @@ public class UserLoginApiHandler extends UserAuthenticationApiHandler {
             this.rs.setMessage(e.getMessage());
             this.rs.setMessage(UserAuthenticationMessageHandlerConst.MESSAGE_AUTH_FAILED);
             this.rs.setRecordCount(0);
+            this.rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             logger.error(e.getMessage());
-        }
-        catch (Exception e) {
+        } catch (InvalidDataException e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e);
             this.rs.setMessage(UserAuthenticationMessageHandlerConst.MESSAGE_AUTH_API_VALIDATION_ERROR);
             this.rs.setExtMessage(e.getMessage());
-        } 
-        finally {
+            this.rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
+        } catch (Exception e) {
+            logger.error("Error occurred during API Message Handler operation, " + this.command, e);
+            this.rs.setMessage(UserAuthenticationMessageHandlerConst.MESSAGE_FETCH_ERROR);
+            this.rs.setExtMessage(e.getMessage());
+            this.rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
+        } finally {
             // Build the user JAXB object which includes user's application/role and resource permissions
             this.jaxbObj = UserJaxbDtoFactory.createJaxbInstance(userList, userAppRolesMap);
             this.api.close();
@@ -118,11 +124,17 @@ public class UserLoginApiHandler extends UserAuthenticationApiHandler {
         }
 
         try {
-            Verifier.verifyNotNull(req.getProfile().getApplicationAccessInfo());
             Verifier.verifyTrue(req.getProfile().getApplicationAccessInfo().size() == 1);
         } catch (VerifyException e) {
-            throw new InvalidRequestException(AuthenticationMessageHandlerConst.MSG_INVALID_APPLICATION_ACCESS_INFO);
+            throw new InvalidRequestException(UserAuthenticationMessageHandlerConst.MESSAGE_INVALID_APPLICATION_ACCESS_INFO);
         }
+
+        try {
+            Verifier.verifyNotNull(req.getProfile().getApplicationAccessInfo().get(0).getUserInfo());
+        } catch (VerifyException e) {
+            throw new InvalidRequestException(UserAuthenticationMessageHandlerConst.MESSAGE_INVALID_USERINFO);
+        }
+
     }
 
 }
