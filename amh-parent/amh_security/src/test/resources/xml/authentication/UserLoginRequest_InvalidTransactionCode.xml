@@ -2,7 +2,7 @@
     <header>
         <routing>XXXXXXX</routing>
         <application>authentication</application>
-        <module>admin</module>
+        <module>auth</module>
         <transaction>LOGIN_USER_1234</transaction>
         <delivery_mode>XXXXXXX</delivery_mode>
         <message_mode>REQUEST</message_mode>
