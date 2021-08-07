@@ -104,7 +104,6 @@ public class UserLoginApiHandler extends UserAuthenticationApiHandler {
             // Build the user JAXB object which includes user's application/role and resource permissions
             this.jaxbObj = UserJaxbDtoFactory.createJaxbInstance(userList, userAppRolesMap);
             this.api.close();
-            api.close();
         }
     }
 
