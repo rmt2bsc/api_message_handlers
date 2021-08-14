@@ -19,7 +19,7 @@ import com.api.util.assistants.Verifier;
 import com.api.util.assistants.VerifyException;
 
 /**
- * Handles and routes messages related to logging a user out of one or more applications using the 
+ * Handles and routes messages related to logging out a user from one or more applications using the 
  * Authentication/Security API.
  *
  * @author roy.terrell
