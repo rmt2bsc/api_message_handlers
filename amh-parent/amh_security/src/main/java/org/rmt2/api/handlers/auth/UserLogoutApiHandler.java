@@ -38,7 +38,7 @@ public class UserLogoutApiHandler extends UserAuthenticationApiHandler {
     }
 
     /**
-     * Handler for invoking the appropriate API in order logout user from the system.
+     * Handler for invoking the appropriate API regarding user logout.
      * 
      */
     @Override
