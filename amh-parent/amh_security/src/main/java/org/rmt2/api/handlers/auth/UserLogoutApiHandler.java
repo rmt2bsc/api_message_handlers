@@ -29,6 +29,8 @@ public class UserLogoutApiHandler extends UserAuthenticationApiHandler {
     private static final Logger logger = Logger.getLogger(UserLogoutApiHandler.class);
 
     /**
+     * Default constructor
+     * 
      * @param payload
      */
     public UserLogoutApiHandler() {
