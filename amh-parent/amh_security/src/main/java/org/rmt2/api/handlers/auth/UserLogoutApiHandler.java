@@ -31,7 +31,6 @@ public class UserLogoutApiHandler extends UserAuthenticationApiHandler {
     /**
      * Default constructor
      * 
-     * @param payload
      */
     public UserLogoutApiHandler() {
         super();
