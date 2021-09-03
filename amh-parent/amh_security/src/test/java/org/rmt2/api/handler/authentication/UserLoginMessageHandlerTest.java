@@ -20,6 +20,7 @@ import org.modules.authentication.AuthenticatorFactory;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.rmt2.api.ApiMessageHandlerConst;
 import org.rmt2.api.handler.BaseAuthenticationMessageHandlerTest;
 import org.rmt2.api.handlers.AuthenticationMessageHandlerConst;
 import org.rmt2.api.handlers.auth.UserAuthenticationMessageHandlerConst;
@@ -37,6 +38,7 @@ import com.api.persistence.AbstractDaoClientImpl;
 import com.api.persistence.db.orm.Rmt2OrmClientFactory;
 import com.api.security.User;
 import com.api.util.RMT2File;
+import com.api.util.RMT2String;
 import com.api.web.security.RMT2SecurityToken;
 
 /**
@@ -50,6 +52,7 @@ import com.api.web.security.RMT2SecurityToken;
 public class UserLoginMessageHandlerTest extends BaseAuthenticationMessageHandlerTest {
     public static final String API_ERROR = "API ERROR: Test failed";
     public static final int TOTAL_LOGONS = 5;
+    public static final int APPS_LOGGED_IN_COUNT = 1;
     private Authenticator mockApi;
     private RMT2SecurityToken mockSecurityToken;
     
@@ -103,6 +106,7 @@ public class UserLoginMessageHandlerTest extends BaseAuthenticationMessageHandle
         tokenUser.addRole("Role2");
         tokenUser.addRole("Role3");
         tokenUser.addRole("Role4");
+        tokenUser.setAppCount(APPS_LOGGED_IN_COUNT);
         token.update(tokenUser);
         return token;
     }
@@ -130,7 +134,6 @@ public class UserLoginMessageHandlerTest extends BaseAuthenticationMessageHandle
         Assert.assertNotNull(actualRepsonse.getProfile());
         Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(UserAuthenticationMessageHandlerConst.MESSAGE_AUTH_SUCCESS, actualRepsonse.getReplyStatus().getMessage());
         Assert.assertEquals(actualRepsonse.getProfile().getUserInfo().size(), 1);
         UserType u = actualRepsonse.getProfile().getUserInfo().get(0);
         Assert.assertEquals(u.getLoginId(), 7777, 0);
@@ -138,6 +141,15 @@ public class UserLoginMessageHandlerTest extends BaseAuthenticationMessageHandle
         Assert.assertEquals(TOTAL_LOGONS, u.getTotalLogons(), 0);
         Assert.assertNotNull(u.getGrantedAppRoles());
         Assert.assertEquals(u.getGrantedAppRoles().getUserAppRole().size(), 4, 0);
+
+        // Assert success message
+        Assert.assertEquals(actualRepsonse.getReplyStatus().getRecordCount().intValue(), APPS_LOGGED_IN_COUNT, 0);
+        String successMsg = RMT2String.replace(UserAuthenticationMessageHandlerConst.MESSAGE_AUTH_SUCCESS,
+                u.getUserName(), ApiMessageHandlerConst.MSG_PLACEHOLDER1);
+        successMsg = RMT2String.replace(successMsg, String.valueOf(actualRepsonse.getReplyStatus().getRecordCount().intValue()),
+                ApiMessageHandlerConst.MSG_PLACEHOLDER2);
+        Assert.assertEquals(successMsg, actualRepsonse.getReplyStatus().getMessage());
+
         int ndx = 1;
         for (UserAppRoleType uart : actualRepsonse.getProfile().getUserInfo().get(0).getGrantedAppRoles().getUserAppRole()) {
             Assert.assertNotNull(uart.getAppRoleInfo());
