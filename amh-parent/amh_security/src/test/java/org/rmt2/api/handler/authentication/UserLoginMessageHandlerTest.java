@@ -28,6 +28,7 @@ import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.AuthenticationResponse;
 import org.rmt2.jaxb.UserAppRoleType;
+import org.rmt2.jaxb.UserType;
 
 import com.api.config.SystemConfigurator;
 import com.api.messaging.handler.MessageHandlerCommandException;
@@ -48,6 +49,7 @@ import com.api.web.security.RMT2SecurityToken;
     SystemConfigurator.class })
 public class UserLoginMessageHandlerTest extends BaseAuthenticationMessageHandlerTest {
     public static final String API_ERROR = "API ERROR: Test failed";
+    public static final int TOTAL_LOGONS = 5;
     private Authenticator mockApi;
     private RMT2SecurityToken mockSecurityToken;
     
@@ -90,7 +92,7 @@ public class UserLoginMessageHandlerTest extends BaseAuthenticationMessageHandle
         UserDto user = Rmt2OrmDtoFactory.getNewUserInstance();
         user.setLoginUid(7777);
         user.setUsername("test_username");
-        user.setTotalLogons(5);
+        user.setTotalLogons(TOTAL_LOGONS);
         user.setActive(1);
         user.setLoggedIn(1);
         user.setFirstname("roy");
@@ -108,8 +110,6 @@ public class UserLoginMessageHandlerTest extends BaseAuthenticationMessageHandle
     @Test
     public void test_Success() {
         String request = RMT2File.getFileContentsAsString("xml/authentication/UserLoginRequest.xml");
-        
-        
         try {
             when(this.mockApi.authenticate(isA(String.class), isA(String.class))).thenReturn(this.mockSecurityToken);
         } catch (SecurityModuleException e) {
@@ -132,10 +132,12 @@ public class UserLoginMessageHandlerTest extends BaseAuthenticationMessageHandle
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals(UserAuthenticationMessageHandlerConst.MESSAGE_AUTH_SUCCESS, actualRepsonse.getReplyStatus().getMessage());
         Assert.assertEquals(actualRepsonse.getProfile().getUserInfo().size(), 1);
-        Assert.assertEquals(actualRepsonse.getProfile().getUserInfo().get(0).getLoginId(), 7777, 0);
-        Assert.assertEquals(actualRepsonse.getProfile().getUserInfo().get(0).getUserName(), "test_username");
-        Assert.assertNotNull(actualRepsonse.getProfile().getUserInfo().get(0).getGrantedAppRoles());
-        Assert.assertEquals(actualRepsonse.getProfile().getUserInfo().get(0).getGrantedAppRoles().getUserAppRole().size(), 4, 0);
+        UserType u = actualRepsonse.getProfile().getUserInfo().get(0);
+        Assert.assertEquals(u.getLoginId(), 7777, 0);
+        Assert.assertEquals(u.getUserName(), "test_username");
+        Assert.assertEquals(TOTAL_LOGONS, u.getTotalLogons(), 0);
+        Assert.assertNotNull(u.getGrantedAppRoles());
+        Assert.assertEquals(u.getGrantedAppRoles().getUserAppRole().size(), 4, 0);
         int ndx = 1;
         for (UserAppRoleType uart : actualRepsonse.getProfile().getUserInfo().get(0).getGrantedAppRoles().getUserAppRole()) {
             Assert.assertNotNull(uart.getAppRoleInfo());
