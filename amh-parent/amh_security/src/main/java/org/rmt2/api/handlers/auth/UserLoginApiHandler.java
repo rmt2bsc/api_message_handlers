@@ -91,7 +91,7 @@ public class UserLoginApiHandler extends UserAuthenticationApiHandler {
             return;
         } catch (AuthenticationException e) {
             // User name could not be found or password is incorrect
-            this.rs.setMessage(e.getMessage());
+            this.rs.setExtMessage(e.getMessage());
             this.rs.setMessage(UserAuthenticationMessageHandlerConst.MESSAGE_AUTH_FAILED);
             this.rs.setRecordCount(0);
             this.rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
