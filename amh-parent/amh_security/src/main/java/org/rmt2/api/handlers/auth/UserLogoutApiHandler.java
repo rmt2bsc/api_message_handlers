@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.dto.UserDto;
 import org.dto.adapter.orm.Rmt2OrmDtoFactory;
+import org.rmt2.api.ApiMessageHandlerConst;
 import org.rmt2.api.handlers.AuthenticationMessageHandlerConst;
 import org.rmt2.api.handlers.admin.user.UserJaxbDtoFactory;
 import org.rmt2.constants.ApiTransactionCodes;
@@ -15,6 +16,7 @@ import org.rmt2.jaxb.AuthenticationRequest;
 import com.InvalidDataException;
 import com.api.messaging.InvalidRequestException;
 import com.api.security.authentication.web.LogoutException;
+import com.api.util.RMT2String;
 import com.api.util.assistants.Verifier;
 import com.api.util.assistants.VerifyException;
 
@@ -46,6 +48,7 @@ public class UserLogoutApiHandler extends UserAuthenticationApiHandler {
         UserDto userCredentialsDto = UserAuthenticationJaxbDtoFactory
                 .createDtoInstance(this.requestObj.getProfile().getApplicationAccessInfo().get(0));
         int rc = 0;
+        this.rs.setRecordCount(0);
 
         // Setup authenticator API
         List<UserDto> userList = new ArrayList<>();
@@ -54,14 +57,16 @@ public class UserLogoutApiHandler extends UserAuthenticationApiHandler {
         user.setUsername(userCredentialsDto.getUsername());
         try {
             rc = this.api.logout(userCredentialsDto.getUsername());
-            this.rs.setMessage(UserAuthenticationMessageHandlerConst.MESSAGE_LOGOUT_SUCCESS);
+            String successMsg = RMT2String.replace(UserAuthenticationMessageHandlerConst.MESSAGE_LOGOUT_SUCCESS,
+                    userCredentialsDto.getUsername(), ApiMessageHandlerConst.MSG_PLACEHOLDER1);
+            successMsg = RMT2String.replace(successMsg, String.valueOf(rc), ApiMessageHandlerConst.MSG_PLACEHOLDER2);
+            this.rs.setMessage(successMsg);
             this.rs.setRecordCount(rc);
             return;
         } catch (LogoutException e) {
             // User name could not be found or password is incorrect
-            this.rs.setMessage(e.getMessage());
+            this.rs.setExtMessage(e.getMessage());
             this.rs.setMessage(UserAuthenticationMessageHandlerConst.MESSAGE_LOGOUT_FAILED);
-            this.rs.setRecordCount(0);
             this.rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             logger.error(e.getMessage());
         } catch (InvalidDataException e) {
@@ -69,6 +74,7 @@ public class UserLogoutApiHandler extends UserAuthenticationApiHandler {
             this.rs.setMessage(UserAuthenticationMessageHandlerConst.MESSAGE_AUTH_API_VALIDATION_ERROR);
             this.rs.setExtMessage(e.getMessage());
             this.rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
+            this.rs.setReturnStatus(MessagingConstants.RETURN_STATUS_BAD_REQUEST);
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e);
             this.rs.setMessage(UserAuthenticationMessageHandlerConst.MESSAGE_FETCH_ERROR);

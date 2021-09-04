@@ -262,11 +262,13 @@ public class UserJaxbDtoFactory extends RMT2Base {
         ObjectFactory f = new ObjectFactory();
         for (UserDto item : results) {
             UserType ut = UserJaxbDtoFactory.createJaxbInstance(item);
-            List<CategoryDto> userAppRoles = userAppRolesMap.get(item.getLoginUid());
-            if (userAppRoles != null) {
-                UserAppRolesType uart = f.createUserAppRolesType();
-                ut.setGrantedAppRoles(uart);
-                ut.getGrantedAppRoles().getUserAppRole().addAll(UserJaxbDtoFactory.createJaxbListInstance(userAppRoles));
+            if (userAppRolesMap != null) {
+                List<CategoryDto> userAppRoles = userAppRolesMap.get(item.getLoginUid());
+                if (userAppRoles != null) {
+                    UserAppRolesType uart = f.createUserAppRolesType();
+                    ut.setGrantedAppRoles(uart);
+                    ut.getGrantedAppRoles().getUserAppRole().addAll(UserJaxbDtoFactory.createJaxbListInstance(userAppRoles));
+                }
             }
             list.add(ut);
         }
