@@ -10,6 +10,8 @@ public class UserAuthenticationMessageHandlerConst {
     
     public static final String MESSAGE_AUTH_SUCCESS = "User, %1, authenticated successfully!  Total number of applications available: %2";
     public static final String MESSAGE_AUTH_FAILED = "User name or password is incorrect";
+    public static final String MESSAGE_AUTH_SSO_SUCCESS = "User, %1, authenticated successfully via SSO!  Total number of applications available: %2";
+    public static final String MESSAGE_AUTH_SSO_FAILED = "User SSO attempt failed";
     public static final String MESSAGE_FETCH_ERROR = "User authentication fetch operation failed";
     public static final String MESSAGE_LOGOUT_SUCCESS = "User, %1, logged out successfully!  Remaining applications available are %2";
     public static final String MESSAGE_LOGOUT_FAILED = "User logout failed";
