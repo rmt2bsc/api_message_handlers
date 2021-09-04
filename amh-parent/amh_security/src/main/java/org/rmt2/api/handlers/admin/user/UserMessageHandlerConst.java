@@ -13,6 +13,8 @@ public class UserMessageHandlerConst {
     public static final String MESSAGE_CREATE_SUCCESS = "User was created successfully";
     public static final String MESSAGE_UPDATE_SUCCESS = "User was modified successfully";
     public static final String MESSAGE_UPDATE_ERROR = "User update operation failed";
+    public static final String MESSAGE_CHANGE_PASSWORD_SUCCESS = "Password was changed successfully";
+    public static final String MESSAGE_CHANGE_PASSWORD_ERROR = "Password change operation failed";
 
     public static final String MESSAGE_DELETE_SUCCESS = "User was deleted successfully";
     public static final String MESSAGE_DELETE_ERROR = "User delete operation failed";
