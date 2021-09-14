@@ -20,6 +20,7 @@ import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.AddressBookRequest;
 import org.rmt2.jaxb.AddressBookResponse;
+import org.rmt2.jaxb.AddressType;
 import org.rmt2.jaxb.BusinessContactCriteria;
 import org.rmt2.jaxb.BusinessType;
 import org.rmt2.jaxb.CommonContactCriteria;
@@ -33,6 +34,7 @@ import org.rmt2.jaxb.PersonType;
 import org.rmt2.jaxb.ReplyStatusType;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
+import org.rmt2.util.addressbook.AddressTypeBuilder;
 
 import com.InvalidDataException;
 import com.api.messaging.InvalidRequestException;
@@ -308,7 +310,12 @@ public class ContactProfileApiHandler extends
         o.setContactType(ContacttypeType.BUS.name().equalsIgnoreCase(contact.getContactType()) ? ContacttypeType.BUS
                 : ContacttypeType.PER);
         o.setContactName(contact.getContactName());
-
+        // IS-70: added address information in order to identify the address
+        // object that was added or updated.
+        AddressType at = AddressTypeBuilder.Builder.create()
+                .withAddrId(contact.getAddrId())
+                .build();
+        o.setAddress(at);
         cdg.getCommonContacts().add(o);
         return cdg;
     }
