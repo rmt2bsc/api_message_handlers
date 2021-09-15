@@ -46,6 +46,9 @@ public class LookupGroupApiHandler extends
     
     private static final Logger logger = Logger.getLogger(LookupGroupApiHandler.class);
     private ObjectFactory jaxbObjFactory;
+    // IS-70: Added to better control the closing of DB connections to prevent
+    // memeoy leaks
+    private LookupDataApi api;
 
     /**
      * @param payload
@@ -54,7 +57,16 @@ public class LookupGroupApiHandler extends
         super();
         this.jaxbObjFactory = new ObjectFactory();
         this.responseObj = jaxbObjFactory.createLookupCodesResponse();
+        // IS-70: added logic to close DB connections to prevent memeoy leaks
+        LookupDataApiFactory f = new LookupDataApiFactory();
+        this.api = f.createApi(AddressBookConstants.APP_NAME);
         logger.info(LookupGroupApiHandler.class.getName() + " was instantiated successfully");
+    }
+
+    // IS-70: added to close DB connections to prevent memeoy leaks
+    private void shutDown() {
+        this.api.close();
+        this.api = null;
     }
 
     /*
@@ -110,10 +122,7 @@ public class LookupGroupApiHandler extends
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             this.validateRequest(req);
             LookupGroupDto criteriaDto = this.extractSelectionCriteria(req.getCriteria());
-            
-            LookupDataApiFactory f = new LookupDataApiFactory();
-            LookupDataApi api = f.createApi(AddressBookConstants.APP_NAME);
-            List<LookupGroupDto> dtoList = api.getGroup(criteriaDto);
+            List<LookupGroupDto> dtoList = this.api.getGroup(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage("Group Lookup data not found!");
                 rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
@@ -131,6 +140,10 @@ public class LookupGroupApiHandler extends
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to retrieve Lookup Group(s)");
             rs.setExtMessage(e.getMessage());
+        } finally {
+            // IS-70: added logic to close DB connections to prevent memeoy
+            // leaks
+            this.shutDown();
         }
         String xml = this.buildResponse(cdgList, rs);
         results.setPayload(xml);
@@ -151,8 +164,6 @@ public class LookupGroupApiHandler extends
         List<CodeGroupType> cdgList = null;
         
         boolean newRec = false;
-        LookupDataApiFactory f = new LookupDataApiFactory();
-        LookupDataApi api = f.createApi(AddressBookConstants.APP_NAME);
         int rc = 0;
         try {
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
@@ -189,7 +200,9 @@ public class LookupGroupApiHandler extends
             cdgList = req.getGroupCodes();
             api.rollbackTrans();
         } finally {
-            api.close();
+            // IS-70: added logic to close DB connections to prevent memeoy
+            // leaks
+            this.shutDown();
         }
         
         String xml = this.buildResponse(cdgList, rs);
@@ -209,8 +222,6 @@ public class LookupGroupApiHandler extends
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         
-        LookupDataApiFactory f = new LookupDataApiFactory();
-        LookupDataApi api = f.createApi(AddressBookConstants.APP_NAME);
         int rc = 0;
         LookupGroupDto criteriaDto = null;
         try {
@@ -235,7 +246,9 @@ public class LookupGroupApiHandler extends
             rs.setExtMessage(e.getMessage());
             api.rollbackTrans();
         } finally {
-            api.close();
+            // IS-70: added logic to close DB connections to prevent memeoy
+            // leaks
+            this.shutDown();
         }
         
         String xml = this.buildResponse(null, rs);

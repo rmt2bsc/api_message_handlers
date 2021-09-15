@@ -92,7 +92,7 @@ public class TimezoneApiHandler extends AbstractJaxbMessageHandler<PostalRequest
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         List<TimezoneType> queryResults = null;
-
+        PostalApi api = null;
         try {
             // Set reply status
             rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_SUCCESS);
@@ -100,7 +100,7 @@ public class TimezoneApiHandler extends AbstractJaxbMessageHandler<PostalRequest
             this.validateRequest(req);
             TimeZoneDto criteriaDto = this.extractSelectionCriteria(req.getPostalCriteria().getTimezone());
             
-            PostalApi api = PostalApiFactory.createApi(AddressBookConstants.APP_NAME);
+            api = PostalApiFactory.createApi(AddressBookConstants.APP_NAME);
             List<TimeZoneDto> dtoList = null;
             dtoList = api.getTimezone(criteriaDto);
             if (dtoList == null) {
@@ -119,6 +119,12 @@ public class TimezoneApiHandler extends AbstractJaxbMessageHandler<PostalRequest
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to retrieve Timezone data");
             rs.setExtMessage(e.getMessage());
+        } finally {
+            // IS-70: added logic to close DB connections to prevent memeoy
+            // leaks
+            if (api != null) {
+                api.close();
+            }
         }
         results.setReturnCode(rs.getReturnCode());
         String xml = this.buildResponse(queryResults, rs);

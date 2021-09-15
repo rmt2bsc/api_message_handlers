@@ -90,7 +90,7 @@ public class CountryApiHandler extends AbstractJaxbMessageHandler<PostalRequest,
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         List<CountryType> queryResults = null;
-
+        PostalApi api = null;
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
@@ -99,7 +99,7 @@ public class CountryApiHandler extends AbstractJaxbMessageHandler<PostalRequest,
             this.validateCriteria(req);
             CountryDto criteriaDto = this.extractSelectionCriteria(req.getPostalCriteria().getCountry());
             
-            PostalApi api = PostalApiFactory.createApi(AddressBookConstants.APP_NAME);
+            api = PostalApiFactory.createApi(AddressBookConstants.APP_NAME);
             List<CountryDto> dtoList = api.getCountry(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage("No Country data found!");
@@ -116,7 +116,13 @@ public class CountryApiHandler extends AbstractJaxbMessageHandler<PostalRequest,
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to retrieve Country data");
             rs.setExtMessage(e.getMessage());
-        }        
+        } finally {
+            // IS-70: added logic to close DB connections to prevent memeoy
+            // leaks
+            if (api != null) {
+                api.close();
+            }
+        }
         results.setReturnCode(rs.getReturnCode());
         String xml = this.buildResponse(queryResults, rs);
         results.setPayload(xml);

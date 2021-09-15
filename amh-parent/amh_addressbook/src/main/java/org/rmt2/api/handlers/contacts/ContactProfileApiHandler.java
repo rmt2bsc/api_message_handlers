@@ -71,6 +71,14 @@ public class ContactProfileApiHandler extends
         logger.info(ContactProfileApiHandler.class.getName() + " was instantiated successfully");
     }
 
+    /**
+     * IS-70: Created to close DB connections to prevent memeoy leaks
+     */
+    private void shutDown() {
+        this.api.close();
+        this.api = null;
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -121,14 +129,13 @@ public class ContactProfileApiHandler extends
         ContactDetailGroup cdg = null;
 
         // ContactsApiFactory cf = new ContactsApiFactory();
-        ContactsApi api = ContactsApiFactory.createApi();
+
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.validateRequest(req);
             ContactDto criteriaDto = this.extractSelectionCriteria(req.getCriteria());
-
             List<ContactDto> dtoList = api.getContact(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage("Contact data not found!");
@@ -147,7 +154,9 @@ public class ContactProfileApiHandler extends
             rs.setMessage("Failure to retrieve contact(s)");
             rs.setExtMessage(e.getMessage());
         } finally {
-            api.close();
+            // IS-70: Added logic to close DB connections to prevent memeoy
+            // leaks
+            this.shutDown();
         }
         String xml = this.buildResponse(cdg, rs);
         results.setPayload(xml);
@@ -171,7 +180,6 @@ public class ContactProfileApiHandler extends
         ContactDetailGroup cdg = null;
 
         boolean newContact = false;
-        ContactsApi api = ContactsApiFactory.createApi();
         int rc = 0;
         try {
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
@@ -219,7 +227,9 @@ public class ContactProfileApiHandler extends
             rs.setExtMessage(e.getMessage());
             api.rollbackTrans();
         } finally {
-            api.close();
+            // IS-70: Added logic to close DB connections to prevent memeoy
+            // leaks
+            this.shutDown();
         }
 
         String xml = this.buildResponse(cdg, rs);
@@ -241,8 +251,6 @@ public class ContactProfileApiHandler extends
     protected MessageHandlerResults delete(AddressBookRequest req) {
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
-
-        ContactsApi api = ContactsApiFactory.createApi();
         int rc = 0;
         try {
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
@@ -274,7 +282,9 @@ public class ContactProfileApiHandler extends
             rs.setExtMessage(e.getMessage());
             api.rollbackTrans();
         } finally {
-            api.close();
+            // IS-70: Added logic to close DB connections to prevent memeoy
+            // leaks
+            this.shutDown();
         }
         String xml = this.buildResponse(null, rs);
         results.setPayload(xml);

@@ -42,20 +42,33 @@ import com.api.util.assistants.VerifyException;
  * @author roy.terrell
  *
  */
-public class LookupCodeApiHandler extends 
-                  AbstractJaxbMessageHandler<LookupCodesRequest, LookupCodesResponse, List<CodeDetailType>> {
-    
+public class LookupCodeApiHandler extends
+        AbstractJaxbMessageHandler<LookupCodesRequest, LookupCodesResponse, List<CodeDetailType>> {
     private static final Logger logger = Logger.getLogger(LookupCodeApiHandler.class);
     private ObjectFactory jaxbObjFactory;
 
+    // IS-70: Added as member variable to help control DB memory leaks
+    private LookupDataApi api;
+
     /**
+     * Default constructor.
+     * 
      * @param payload
      */
     public LookupCodeApiHandler() {
         super();
         this.jaxbObjFactory = new ObjectFactory();
         this.responseObj = jaxbObjFactory.createLookupCodesResponse();
+        // IS-70: added logic to close DB connections to prevent memeoy leaks
+        LookupDataApiFactory f = new LookupDataApiFactory();
+        this.api = f.createApi(AddressBookConstants.APP_NAME);
         logger.info(LookupCodeApiHandler.class.getName() + " was instantiated successfully");
+    }
+
+    // IS-70: Created to close DB connections to prevent memeoy leaks
+    private void shutDown() {
+        this.api.close();
+        this.api = null;
     }
 
     /*
@@ -109,9 +122,6 @@ public class LookupCodeApiHandler extends
             rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_SUCCESS);            
             this.validateRequest(req);
             LookupCodeDto criteriaDto = this.extractSelectionCriteria(req.getCriteria());
-            
-            LookupDataApiFactory f = new LookupDataApiFactory();
-            LookupDataApi api = f.createApi(AddressBookConstants.APP_NAME);
             List<LookupCodeDto> dtoList = api.getCode(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage("Code Detail Lookup data not found!");
@@ -131,6 +141,10 @@ public class LookupCodeApiHandler extends
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to retrieve Lookup Code Detail(s)");
             rs.setExtMessage(e.getMessage());
+        } finally {
+            // IS-70: added logic to close DB connections to prevent memeoy
+            // leaks
+            this.shutDown();
         }
         String xml = this.buildResponse(cdtList, rs);
         results.setPayload(xml);
@@ -151,8 +165,6 @@ public class LookupCodeApiHandler extends
         List<CodeDetailType> cdtList = null;
         
         boolean newRec = false;
-        LookupDataApiFactory f = new LookupDataApiFactory();
-        LookupDataApi api = f.createApi(AddressBookConstants.APP_NAME);
         int rc = 0;
         try {
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
@@ -190,6 +202,10 @@ public class LookupCodeApiHandler extends
             rs.setExtMessage(e.getMessage());
             cdtList = req.getDetailCodes();
             api.rollbackTrans();
+        } finally {
+            // IS-70: added logic to close DB connections to prevent memeoy
+            // leaks
+            this.shutDown();
         }
         
         String xml = this.buildResponse(cdtList, rs);
@@ -209,8 +225,6 @@ public class LookupCodeApiHandler extends
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         
-        LookupDataApiFactory f = new LookupDataApiFactory();
-        LookupDataApi api = f.createApi(AddressBookConstants.APP_NAME);
         int rc = 0;
         LookupCodeDto criteriaDto = null;
         try {
@@ -235,7 +249,9 @@ public class LookupCodeApiHandler extends
             rs.setExtMessage(e.getMessage());
             api.rollbackTrans();
         } finally {
-            api.close();
+            // IS-70: added logic to close DB connections to prevent memeoy
+            // leaks
+            this.shutDown();
         }
         
         String xml = this.buildResponse(null, rs);

@@ -95,7 +95,7 @@ public class RegionApiHandler extends AbstractJaxbMessageHandler<PostalRequest, 
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         List<StateType> queryResults = null;
-
+        PostalApi api = null;
         try {
             // Set reply status
             rs.setReturnStatus(WebServiceConstants.RETURN_STATUS_SUCCESS);
@@ -103,7 +103,7 @@ public class RegionApiHandler extends AbstractJaxbMessageHandler<PostalRequest, 
             this.validateCriteria(req);
             CountryRegionDto criteriaDto = this.extractSelectionCriteria(req.getPostalCriteria().getProvince());
             
-            PostalApi api = PostalApiFactory.createApi(AddressBookConstants.APP_NAME);
+            api = PostalApiFactory.createApi(AddressBookConstants.APP_NAME);
             List<CountryRegionDto> dtoList = api.getCountryRegion(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage("No Region/State/Province data found!");
@@ -121,6 +121,12 @@ public class RegionApiHandler extends AbstractJaxbMessageHandler<PostalRequest, 
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to retrieve Region/State/Province data");
             rs.setExtMessage(e.getMessage());
+        } finally {
+            // IS-70: added logic to close DB connections to prevent memeoy
+            // leaks
+            if (api != null) {
+                api.close();
+            }
         }
         results.setReturnCode(rs.getReturnCode());
         String xml = this.buildResponse(queryResults, rs);
