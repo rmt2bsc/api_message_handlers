@@ -78,6 +78,7 @@ public class RoleUpdateApiHandler extends RoleApiHandler {
             api.rollbackTrans();
         } finally {
             api.close();
+            api = null;
         }
         return;
     }

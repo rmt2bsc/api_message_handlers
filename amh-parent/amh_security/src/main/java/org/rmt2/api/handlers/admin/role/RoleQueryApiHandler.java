@@ -70,6 +70,11 @@ public class RoleQueryApiHandler extends RoleApiHandler {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e);
             this.rs.setMessage(RoleMessageHandlerConst.MESSAGE_FETCH_ERROR);
             this.rs.setExtMessage(e.getMessage());
+        } finally {
+            // IS-70: Added logic to close database connections associated with
+            // the API instance to prevent memory leaks.
+            api.close();
+            api = null;
         }
         return;
     }
