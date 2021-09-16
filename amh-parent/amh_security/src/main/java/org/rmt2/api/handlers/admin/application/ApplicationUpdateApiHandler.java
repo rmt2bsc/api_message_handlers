@@ -4,8 +4,6 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 import org.dto.ApplicationDto;
-import org.modules.application.AppApi;
-import org.modules.application.AppApiFactory;
 import org.rmt2.api.handlers.AuthenticationMessageHandlerConst;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.jaxb.AuthenticationRequest;
@@ -47,12 +45,12 @@ public class ApplicationUpdateApiHandler extends ApplicationApiHandler {
         ApplicationDto appDto = ApplicationJaxbDtoFactory
                 .createDtoInstance(this.requestObj.getProfile().getApplicationInfo().get(0));
         boolean newRec = (appDto.getApplicationId() == 0);
-        AppApi api = AppApiFactory.createApi();
         int rc = 0;
         try {
             // call api
+            // IS-70: Used member variable representing the API instance
             api.beginTrans();
-            rc = api.update(appDto);
+            rc = this.api.update(appDto);
 
             if (rc > 0) {
                 if (newRec) {
@@ -77,6 +75,11 @@ public class ApplicationUpdateApiHandler extends ApplicationApiHandler {
             this.rs.setMessage(ApplicationMessageHandlerConst.MESSAGE_UPDATE_ERROR);
             this.rs.setExtMessage(e.getMessage());
             api.rollbackTrans();
+        } finally {
+            // IS-70: Added logic to close database connections associated with
+            // the API instance to prevent memory leaks.
+            this.api.close();
+            this.api = null;
         }
         return;
     }

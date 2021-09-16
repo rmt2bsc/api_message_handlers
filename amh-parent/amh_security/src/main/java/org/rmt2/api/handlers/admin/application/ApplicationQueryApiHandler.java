@@ -5,8 +5,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.dto.ApplicationDto;
-import org.modules.application.AppApi;
-import org.modules.application.AppApiFactory;
 import org.rmt2.api.ApiMessageHandlerConst;
 import org.rmt2.api.handlers.AuthenticationMessageHandlerConst;
 import org.rmt2.api.handlers.admin.AuthenticationAdminJaxbDtoFactory;
@@ -51,11 +49,11 @@ public class ApplicationQueryApiHandler extends ApplicationApiHandler {
     protected void processTransactionCode() {
         UserAppRolesCriteriaType jaxbCriteria = this.requestObj.getCriteria().getUserAppRolesCriteria();
         ApplicationDto criteriaDto = AuthenticationAdminJaxbDtoFactory.createAppCriteriaDtoInstance(jaxbCriteria);
-        AppApi api = AppApiFactory.createApi();
         List<ApplicationDto> list = null;
         try {
             // call api
-            list = api.get(criteriaDto);
+            // IS-70: Used member variable representing the API instance
+            list = this.api.get(criteriaDto);
             if (list == null) {
                 this.rs.setMessage(ApplicationMessageHandlerConst.MESSAGE_NOT_FOUND);
                 this.rs.setRecordCount(0);
@@ -70,6 +68,11 @@ public class ApplicationQueryApiHandler extends ApplicationApiHandler {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e);
             this.rs.setMessage(ApplicationMessageHandlerConst.MESSAGE_FETCH_ERROR);
             this.rs.setExtMessage(e.getMessage());
+        } finally {
+            // IS-70: Added logic to close database connections associated with
+            // the API instance to prevent memory leaks.
+            this.api.close();
+            this.api = null;
         }
         return;
     }

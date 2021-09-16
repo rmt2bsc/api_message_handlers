@@ -2,8 +2,6 @@ package org.rmt2.api.handlers.admin.application;
 
 import org.apache.log4j.Logger;
 import org.dto.ApplicationDto;
-import org.modules.application.AppApi;
-import org.modules.application.AppApiFactory;
 import org.rmt2.api.handlers.AuthenticationMessageHandlerConst;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.jaxb.AuthenticationRequest;
@@ -46,12 +44,12 @@ public class ApplicationDeleteApiHandler extends ApplicationApiHandler {
         ApplicationDto appDto = ApplicationJaxbDtoFactory
                 .createDtoInstance(this.requestObj.getProfile().getApplicationInfo().get(0));
         int appId = appDto.getApplicationId();
-        AppApi api = AppApiFactory.createApi();
         int rc = 0;
         try {
             // call api
+            // IS-70: Used member variable representing the API instance
             api.beginTrans();
-            rc = api.delete(appId);
+            rc = this.api.delete(appId);
 
             if (rc > 0) {
                 this.rs.setMessage(ApplicationMessageHandlerConst.MESSAGE_DELETE_SUCCESS);
@@ -68,6 +66,11 @@ public class ApplicationDeleteApiHandler extends ApplicationApiHandler {
             this.rs.setMessage(ApplicationMessageHandlerConst.MESSAGE_DELETE_ERROR);
             this.rs.setExtMessage(e.getMessage());
             api.rollbackTrans();
+        } finally {
+            // IS-70: Added logic to close database connections associated with
+            // the API instance to prevent memory leaks.
+            this.api.close();
+            this.api = null;
         }
         return;
     }
