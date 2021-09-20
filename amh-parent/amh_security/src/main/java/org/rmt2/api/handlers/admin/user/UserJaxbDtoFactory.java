@@ -305,7 +305,12 @@ public class UserJaxbDtoFactory extends RMT2Base {
         for (UserAppRoleType item : jaxbObj.getUserAppRole()) {
             CategoryDto dto = Rmt2OrmDtoFactory.getAppRoleDtoInstance(null);
             // Get app-role info
-            dto.setUserAppRoleId(item.getUserAppRoleId());
+            // IS-70:  Added logic to only obtain user application role ID when it is not null.
+            if (item.getUserAppRoleId() != null) {
+                dto.setUserAppRoleId(item.getUserAppRoleId());    
+            }
+            // IS-70:  Added logic to obtain application role code
+            dto.setAppRoleCode(item.getAppRoleInfo().getAppRoleCode());
             dto.setAppRoleId(item.getAppRoleInfo().getAppRoleId());
             list.add(dto);
         }
