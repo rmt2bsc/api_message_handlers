@@ -15,6 +15,10 @@ public class UserAppRoleMessageHandlerConst {
     public static final String MESSAGE_ZERO_APPROLES_PROCESSED = "Zero application roles were processed";
     public static final String MESSAGE_UPDATE_ERROR = "User Application-Role update operation failed";
 
+    // IS-70 Added messages for deleting a single user application role entity
+    public static final String MESSAGE_DELTED_SUCCESS = "User Application-Role was deleted successfully";
+    public static final String MESSAGE_DELETE_ERROR = "User Application-Role delete operation failed";
+
     public static final String MESSAGE_MISSING_USER_SECTION = "User Application-Role section is required for create/update/delete operations";
     public static final String MESSAGE_MISSING_USER_APPROLE_PROFILE_SECTION = "User Application-Role profile section is required for query operations";
 

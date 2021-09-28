@@ -115,6 +115,8 @@ public class UserJaxbDtoFactory extends RMT2Base {
         return dto;
     }
 
+
+
     /**
      * Creates an instance of <i>UserDto</i> using a valid <i>UserGroupType</i>
      * JAXB object.
@@ -284,18 +286,22 @@ public class UserJaxbDtoFactory extends RMT2Base {
         if (jaxbObj == null) {
             return null;
         }
-        List<CategoryDto> list = UserJaxbDtoFactory.createDtoInstance(jaxbObj);
         List<String> codeList = new ArrayList<>();
-        for (CategoryDto item : list) {
-            codeList.add(item.getAppRoleCode());
+        for (UserAppRoleType item : jaxbObj.getUserAppRole()) {
+            // IS-70: Added logic to obtain application role code
+            if (item.getAppRoleInfo() != null && item.getAppRoleInfo().getAppRoleCode() != null) {
+                codeList.add(item.getAppRoleInfo().getAppRoleCode());
+            }
         }
         return codeList;
     }
 
     /**
+     * Convert a list of user application roles to a list of CategoryDto objects
      * 
      * @param jaxbObj
-     * @return
+     *            {@link UserAppRolesType}
+     * @return List of {@link CategoryDto}
      */
     public static final List<CategoryDto> createDtoInstance(UserAppRolesType jaxbObj) {
         if (jaxbObj == null) {
@@ -303,18 +309,36 @@ public class UserJaxbDtoFactory extends RMT2Base {
         }
         List<CategoryDto> list = new ArrayList<>();
         for (UserAppRoleType item : jaxbObj.getUserAppRole()) {
-            CategoryDto dto = Rmt2OrmDtoFactory.getAppRoleDtoInstance(null);
-            // Get app-role info
-            // IS-70:  Added logic to only obtain user application role ID when it is not null.
-            if (item.getUserAppRoleId() != null) {
-                dto.setUserAppRoleId(item.getUserAppRoleId());    
-            }
-            // IS-70:  Added logic to obtain application role code
-            dto.setAppRoleCode(item.getAppRoleInfo().getAppRoleCode());
-            dto.setAppRoleId(item.getAppRoleInfo().getAppRoleId());
+            CategoryDto dto = UserJaxbDtoFactory.createDtoInstance(item);
             list.add(dto);
         }
         return list;
+    }
+
+    /**
+     * Convert an user application role to an instance of CategoryDto
+     * 
+     * @param jaxbObj
+     *            {@link UserAppRoleType}
+     * @return {@link CategoryDto}
+     */
+    // IS-70: Created method to delete a single user application role
+    public static final CategoryDto createDtoInstance(UserAppRoleType jaxbObj) {
+        if (jaxbObj == null) {
+            return null;
+        }
+        CategoryDto dto = Rmt2OrmDtoFactory.getUserAppRoleDtoInstance(null);
+        // IS-70: Added logic to only obtain user application role ID when it is
+        // not null.
+        if (jaxbObj.getUserAppRoleId() != null) {
+            dto.setUserAppRoleId(jaxbObj.getUserAppRoleId());
+        }
+        // IS-70: Added logic to obtain application role code
+        if (jaxbObj.getAppRoleInfo() != null) {
+            dto.setAppRoleCode(jaxbObj.getAppRoleInfo().getAppRoleCode());
+            dto.setAppRoleId(jaxbObj.getAppRoleInfo().getAppRoleId());
+        }
+        return dto;
     }
 
     /**

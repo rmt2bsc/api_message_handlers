@@ -1,11 +1,15 @@
 package org.rmt2.api.handlers.admin.user.permissions;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.dto.CategoryDto;
 import org.dto.UserDto;
 import org.dto.adapter.orm.Rmt2OrmDtoFactory;
+import org.modules.users.UserApi;
+import org.modules.users.UserApiFactory;
 import org.rmt2.api.ApiMessageHandlerConst;
 import org.rmt2.api.handlers.AuthenticationMessageHandlerConst;
 import org.rmt2.api.handlers.admin.user.UserJaxbDtoFactory;
@@ -67,12 +71,27 @@ public class UserAppRoleMaintenanceApiHandler extends UserAppRoleApiHandler {
                 String msg = RMT2String.replace(UserAppRoleMessageHandlerConst.MESSAGE_UPDATE_SUCCESS, String.valueOf(rc),
                         ApiMessageHandlerConst.MSG_PLACEHOLDER1);
                 this.rs.setMessage(msg);
+                // Fetch results of user type and its persmissions to be used in
+                // response message
+                UserApi userApi = UserApiFactory.createApiInstance();
+                UserDto criteria = Rmt2OrmDtoFactory.getNewUserInstance();
+                criteria.setUsername(dto.getUsername());
+                List<UserDto> userList = userApi.getUser(dto);
+                Map<Integer, List<CategoryDto>> userAppRolesMap = new HashMap<>();
+                CategoryDto userAppRoleCriteria = Rmt2OrmDtoFactory.getUserAppRoleDtoInstance(null, null);
+                userAppRoleCriteria.setUsername(dto.getUsername());
+                List<CategoryDto> userAppRoles = this.api.getAssignedRoles(userAppRoleCriteria);
+                userAppRolesMap.put(userList.get(0).getLoginUid(), userAppRoles);
+                // Build the user JAXB object and attach all the user's
+                // application/role and resource permissions
+                this.jaxbObj = UserJaxbDtoFactory.createJaxbInstance(userList, userAppRolesMap);
             }
             else {
                 this.rs.setMessage(UserAppRoleMessageHandlerConst.MESSAGE_ZERO_APPROLES_PROCESSED);
+                // Do not include profile data in response
+                this.jaxbObj = null;
             }
-            // Do not include profile data in response
-            this.jaxbObj = null;
+
             this.rs.setRecordCount(rc);
             this.rs.setExtMessage("The user name is: " + dto.getUsername());
             api.commitTrans();
