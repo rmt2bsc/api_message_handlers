@@ -75,14 +75,14 @@ public class UserUpdateApiHandler extends UserApiHandler {
                     this.jaxbObj = null;
                 }
             }
-            api.commitTrans();
+            this.api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e);
             this.rs.setMessage(UserMessageHandlerConst.MESSAGE_UPDATE_ERROR);
             this.rs.setExtMessage(e.getMessage());
-            api.rollbackTrans();
+            this.api.rollbackTrans();
         } finally {
-            api.close();
+            this.api.close();
         }
         return;
     }

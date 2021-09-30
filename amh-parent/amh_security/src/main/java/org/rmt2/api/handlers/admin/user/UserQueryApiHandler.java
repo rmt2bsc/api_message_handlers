@@ -61,7 +61,7 @@ public class UserQueryApiHandler extends UserApiHandler {
             this.rs.setMessage(UserMessageHandlerConst.MESSAGE_FETCH_ERROR);
             this.rs.setExtMessage(e.getMessage());
         } finally {
-            api.close();
+            this.api.close();
         }
         return;
     }

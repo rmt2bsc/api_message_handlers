@@ -63,6 +63,11 @@ public abstract class UserAuthenticationApiHandler extends
         MessageHandlerResults r = super.processMessage(command, payload);
         if (r != null) {
             // This means an error occurred.
+            // IS-70: Added logic to close api in the event an error occurred
+            // which will prevent memory leaks
+            if (this.api != null) {
+                this.api.close();
+            }
             return r;
         }
         return this.doOperation();

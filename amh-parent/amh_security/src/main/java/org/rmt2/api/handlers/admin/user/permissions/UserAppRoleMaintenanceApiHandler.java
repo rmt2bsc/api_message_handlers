@@ -61,6 +61,7 @@ public class UserAppRoleMaintenanceApiHandler extends UserAppRoleApiHandler {
         userAppRoleDto.setUsername(dto.getUsername());
         List<String> assignedAppRoleCodes = UserJaxbDtoFactory.createAppRoleCodeList(this.requestObj.getProfile().getUserInfo().get(0)
                 .getGrantedAppRoles());
+        UserApi userApi = null;
 
         int rc = 0;
         try {
@@ -73,7 +74,7 @@ public class UserAppRoleMaintenanceApiHandler extends UserAppRoleApiHandler {
                 this.rs.setMessage(msg);
                 // Fetch results of user type and its persmissions to be used in
                 // response message
-                UserApi userApi = UserApiFactory.createApiInstance();
+                userApi = UserApiFactory.createApiInstance();
                 UserDto criteria = Rmt2OrmDtoFactory.getNewUserInstance();
                 criteria.setUsername(dto.getUsername());
                 List<UserDto> userList = userApi.getUser(dto);
@@ -101,6 +102,9 @@ public class UserAppRoleMaintenanceApiHandler extends UserAppRoleApiHandler {
             this.rs.setExtMessage(e.getMessage());
             api.rollbackTrans();
         } finally {
+            if (userApi != null) {
+                userApi.close();
+            }
             api.close();
         }
         return;

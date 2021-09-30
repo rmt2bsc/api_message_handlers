@@ -82,7 +82,7 @@ public class UserGroupUpdateApiHandler extends UserGroupApiHandler {
             this.rs.setExtMessage(e.getMessage());
             api.rollbackTrans();
         } finally {
-            api.close();
+            this.api.close();
         }
         return;
     }

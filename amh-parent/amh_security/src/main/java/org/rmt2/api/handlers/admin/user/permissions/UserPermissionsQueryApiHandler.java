@@ -88,6 +88,11 @@ public class UserPermissionsQueryApiHandler extends UserAppRoleApiHandler {
             this.rs.setMessage(UserMessageHandlerConst.MESSAGE_FETCH_ERROR);
             this.rs.setExtMessage(e.getMessage());
         } finally {
+            // IS-70: Added logic to close api in the event an error occurred
+            // which will prevent memory leaks
+            if (userApi != null) {
+                userApi.close();
+            }
             api.close();
         }
         return;
