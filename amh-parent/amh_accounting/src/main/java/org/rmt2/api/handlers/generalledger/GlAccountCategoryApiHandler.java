@@ -225,6 +225,7 @@ public class GlAccountCategoryApiHandler extends
             
             // Return code is either the total number of rows deleted
             rs.setReturnCode(rc);
+            rs.setRecordCount(rc);
             rs.setMessage("GL Account Category was deleted successfully");
             rs.setExtMessage("GL Account Category Id deleted was " + criteriaDto.getAcctCatgId());
             this.api.commitTrans();

@@ -71,6 +71,12 @@ public class GlAccountApiHandler extends
 
         if (r != null) {
             // This means an error occurred.
+            // IS-70: Added logic to close API in cases of an error so to
+            // prevent memory leaks.
+            if (this.api != null) {
+                this.api.close();
+                this.api = null;
+            }
             return r;
         }
         switch (command) {
@@ -219,6 +225,7 @@ public class GlAccountApiHandler extends
             
             // Return code is either the total number of rows deleted
             rs.setReturnCode(rc);
+            rs.setRecordCount(rc);
             rs.setMessage("GL Account was deleted successfully");
             rs.setExtMessage("GL Account Id deleted was " + criteriaDto.getAcctId());
             this.api.commitTrans();
