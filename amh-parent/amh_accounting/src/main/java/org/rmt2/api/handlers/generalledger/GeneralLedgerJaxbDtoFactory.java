@@ -81,8 +81,11 @@ public class GeneralLedgerJaxbDtoFactory extends RMT2Base {
         if (jaxbObj.getBalanceType() != null && jaxbObj.getBalanceType().getAccountBaltypeId() != null) {
             dto.setBalanceTypeId(jaxbObj.getBalanceType().getAccountBaltypeId().intValue());    
         }
+        if (jaxbObj.getAcctSeq() != null) {
+            dto.setAcctSeq(jaxbObj.getAcctSeq().intValue());
+        }
         dto.setAcctNo(jaxbObj.getAccountNo());
-        dto.setAcctCode(jaxbObj.getAccountNo());
+        dto.setAcctCode(jaxbObj.getAccountCode());
         dto.setAcctName(jaxbObj.getAccountName());
         dto.setAcctDescription(jaxbObj.getAccountDescription());
         return dto;
