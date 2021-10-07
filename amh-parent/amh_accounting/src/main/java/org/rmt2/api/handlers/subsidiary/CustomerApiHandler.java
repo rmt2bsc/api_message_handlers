@@ -76,6 +76,12 @@ public class CustomerApiHandler extends
 
         if (r != null) {
             // This means an error occurred.
+            // IS-70: Added logic to close API instance in order to prevent
+            // memory leaks from left over open DB connections
+            if (this.api != null) {
+                this.api.close();
+                this.api = null;
+            }
             return r;
         }
         switch (command) {
