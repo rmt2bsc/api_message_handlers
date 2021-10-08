@@ -1,6 +1,7 @@
 package org.rmt2.api.handlers.subsidiary;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -161,6 +162,7 @@ public class CustomerApiHandler extends
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         int rc = 0;
+        boolean newCustomer = false;
 
         try {
             // Set reply status
@@ -168,6 +170,8 @@ public class CustomerApiHandler extends
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             CustomerDto criteriaDto = SubsidiaryJaxbDtoFactory
                     .createCustomerDtoInstance(req.getProfile().getCustomers().getCustomer().get(0));
+            // IS-70: Determine if customer is new
+            newCustomer = criteriaDto.getCustomerId() == 0;
             api.beginTrans();
             rc = this.api.update(criteriaDto);
             if (rc > 0) {
@@ -189,6 +193,11 @@ public class CustomerApiHandler extends
         }
 
         List<CustomerType> queryDtoResults = new ArrayList<>();
+        // IS-70: Added logic to update customer with the customer id when the
+        // customer is new
+        if (newCustomer) {
+            req.getProfile().getCustomers().getCustomer().get(0).setCustomerId(BigInteger.valueOf(rc));
+        }
         queryDtoResults.add(req.getProfile().getCustomers().getCustomer().get(0));
         String xml = this.buildResponse(queryDtoResults, rs);
         results.setPayload(xml);
