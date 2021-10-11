@@ -17,6 +17,7 @@ import org.modules.subsidiary.SubsidiaryApiFactory;
 import org.modules.transaction.XactApi;
 import org.modules.transaction.XactApiException;
 import org.modules.transaction.XactApiFactory;
+import org.rmt2.api.ApiMessageHandlerConst;
 import org.rmt2.api.handler.util.MessageHandlerUtility;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
@@ -35,6 +36,7 @@ import com.api.messaging.handler.AbstractJaxbMessageHandler;
 import com.api.messaging.handler.MessageHandlerCommandException;
 import com.api.messaging.handler.MessageHandlerCommonReplyStatus;
 import com.api.messaging.handler.MessageHandlerResults;
+import com.api.util.RMT2String;
 import com.api.util.assistants.Verifier;
 import com.api.util.assistants.VerifyException;
 
@@ -48,8 +50,21 @@ public class CustomerApiHandler extends
                   AbstractJaxbMessageHandler<AccountingTransactionRequest, AccountingTransactionResponse, List<CustomerType>> {
     
     private static final Logger logger = Logger.getLogger(CustomerApiHandler.class);
+
+    public static final String MSG_FETCH_SUCCESS = "Customer record(s) found";
+    public static final String MSG_FETCH_NOTFOUND = "Customer data not found!";
+    public static final String MSG_FETCH_FAILURE = "Failure to retrieve customer(s)";
+
     public static final String MSG_UPDATE_MISSING_CRITERIA = "Customer transaction selection criteria is required for query/delete operation";
     public static final String MSG_UPDATE_MISSING_PROFILE = "Customer transaction profile data is required for update operation";
+    public static final String MSG_UPDATE_NEW_SUCCESS = "Customer profile was created successfully";
+    public static final String MSG_UPDATE_EXISTING_SUCCESS = "Customer profile was modified successfully";
+    public static final String MSG_UPDATE_CUSTOMER_NOTFOUND = "Customer profile was not found - No updates performed";
+    public static final String MSG_UPDATE_FAILURE = "Failure to update customer";
+
+    public static final String MSG_DELETE_SUCCESS = "Customer delete operation completed!";
+    public static final String MSG_DELETE_FAILURE = "Failure to delete customer: %s";
+
     private ObjectFactory jaxbObjFactory;
     private CustomerApi api;
 
@@ -127,11 +142,11 @@ public class CustomerApiHandler extends
             
             List<CustomerDto> dtoList = this.api.getExt(criteriaDto);
             if (dtoList == null) {
-                rs.setMessage("Customer data not found!");
+                rs.setMessage(CustomerApiHandler.MSG_FETCH_NOTFOUND);
             }
             else {
                 queryDtoResults = this.buildJaxbListData(dtoList);
-                rs.setMessage("Customer record(s) found");
+                rs.setMessage(CustomerApiHandler.MSG_FETCH_SUCCESS);
                 rs.setRecordCount(dtoList.size());
             }
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
@@ -139,7 +154,7 @@ public class CustomerApiHandler extends
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setMessage("Failure to retrieve customer(s)");
+            rs.setMessage(CustomerApiHandler.MSG_FETCH_FAILURE);
             rs.setExtMessage(e.getMessage());
         } finally {
             this.api.close();
@@ -174,19 +189,30 @@ public class CustomerApiHandler extends
             newCustomer = criteriaDto.getCustomerId() == 0;
             api.beginTrans();
             rc = this.api.update(criteriaDto);
+
+            // IS-70: Modified logic to apply the correct record count for
+            // repsonse message.
             if (rc > 0) {
-                rs.setMessage("Customer profile was updated successfully");    
+                if (newCustomer) {
+                    rs.setMessage(CustomerApiHandler.MSG_UPDATE_NEW_SUCCESS);
+                    rs.setRecordCount(1);
+                }
+                else {
+                    rs.setMessage(CustomerApiHandler.MSG_UPDATE_EXISTING_SUCCESS);
+                    rs.setRecordCount(rc);
+                }
             } else {
-                rs.setMessage("Customer profile was not found - No updates performed");
+                rs.setMessage(CustomerApiHandler.MSG_UPDATE_CUSTOMER_NOTFOUND);
+                rs.setRecordCount(0);
             }
-            rs.setRecordCount(rc);
             this.responseObj.setHeader(req.getHeader());
             this.api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setMessage("Failure to update customer");
+            rs.setMessage(CustomerApiHandler.MSG_UPDATE_FAILURE);
             rs.setExtMessage(e.getMessage());
+            rs.setRecordCount(0);
             this.api.rollbackTrans();
         } finally {
             this.api.close();
@@ -226,7 +252,7 @@ public class CustomerApiHandler extends
                     .createCustomerDtoCriteriaInstance(req.getCriteria().getCustomerCriteria());
             api.beginTrans();
             rc = this.api.delete(criteriaDto);
-            rs.setMessage("Customer delete operation completed!");
+            rs.setMessage(CustomerApiHandler.MSG_DELETE_SUCCESS);
             rs.setExtMessage("Total records deleted: " + rc);
             rs.setRecordCount(rc);
             this.responseObj.setHeader(req.getHeader());
@@ -234,7 +260,9 @@ public class CustomerApiHandler extends
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setMessage("Failure to delete customer: " + criteriaDto.getCustomerId());
+            String errMsg = RMT2String.replace(CustomerApiHandler.MSG_DELETE_FAILURE,
+                    String.valueOf(criteriaDto.getCustomerId()), ApiMessageHandlerConst.MSG_PLACEHOLDER);
+            rs.setMessage(errMsg);
             rs.setExtMessage(e.getMessage());
             this.api.rollbackTrans();
         } finally {

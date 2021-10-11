@@ -42,6 +42,8 @@ import com.api.util.RMT2File;
     CustomerApiHandler.class, SubsidiaryApiFactory.class, SystemConfigurator.class })
 public class CustomerUpdateMessageHandlerTest extends BaseAccountingMessageHandlerTest {
 
+    private static final int NEW_CUSTOMER_ID = 12345;
+
     // private SubsidiaryApiFactory mockApiFactory;
     private CustomerApi mockApi;
 
@@ -81,9 +83,39 @@ public class CustomerUpdateMessageHandlerTest extends BaseAccountingMessageHandl
         return;
     }
 
+    @Test
+    public void testSuccess_CreateCustomer() {
+        String request = RMT2File.getFileContentsAsString("xml/subsidiary/customer/CustomerCreateRequest.xml");
+        try {
+            when(this.mockApi.update(isA(CustomerDto.class)))
+                    .thenReturn(CustomerUpdateMessageHandlerTest.NEW_CUSTOMER_ID);
+        } catch (CustomerApiException e) {
+            Assert.fail("Unable to setup mock stub for updating a customer");
+        }
+
+        MessageHandlerResults results = null;
+        CustomerApiHandler handler = new CustomerApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.SUBSIDIARY_CUSTOMER_UPDATE, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingTransactionResponse actualRepsonse =
+                (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertEquals(1, actualRepsonse.getProfile().getCustomers().getCustomer().size());
+        Assert.assertEquals(WebServiceConstants.RETURN_CODE_SUCCESS,
+                actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS,
+                actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(CustomerApiHandler.MSG_UPDATE_NEW_SUCCESS, actualRepsonse.getReplyStatus().getMessage());
+    }
     
     @Test
-    public void testSuccess_UpdateCustomer() {
+    public void testSuccess_ModifyCustomer() {
         String request = RMT2File.getFileContentsAsString("xml/subsidiary/customer/CustomerUpdateRequest.xml");
         try {
             when(this.mockApi.update(isA(CustomerDto.class)))
@@ -110,8 +142,7 @@ public class CustomerUpdateMessageHandlerTest extends BaseAccountingMessageHandl
                 actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS,
                 actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals("Customer profile was updated successfully",
-                actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(CustomerApiHandler.MSG_UPDATE_EXISTING_SUCCESS, actualRepsonse.getReplyStatus().getMessage());
     }
     
  
@@ -141,8 +172,7 @@ public class CustomerUpdateMessageHandlerTest extends BaseAccountingMessageHandl
         Assert.assertEquals(0, actualRepsonse.getReplyStatus().getRecordCount().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS,
                 actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals("Customer profile was not found - No updates performed",
-                actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(CustomerApiHandler.MSG_UPDATE_CUSTOMER_NOTFOUND, actualRepsonse.getReplyStatus().getMessage());
     }
     
     @Test
@@ -172,7 +202,7 @@ public class CustomerUpdateMessageHandlerTest extends BaseAccountingMessageHandl
         Assert.assertNotNull(actualRepsonse.getProfile());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals("Failure to update customer", actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(CustomerApiHandler.MSG_UPDATE_FAILURE, actualRepsonse.getReplyStatus().getMessage());
         Assert.assertEquals("API error occurred", actualRepsonse.getReplyStatus().getExtMessage());
     }
   
