@@ -113,19 +113,19 @@ public class GlAccountApiHandler extends
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             AccountDto criteriaDto = GeneralLedgerJaxbDtoFactory
                     .createGlAccountDtoCriteriaInstance(req.getCriteria().getGlCriteria());
             
+            rs.setRecordCount(0);
             List<AccountDto> dtoList = this.api.getAccount(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage("GL Account data not found!");
-                rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             }
             else {
                 queryDtoResults = this.buildJaxbListData(dtoList);
                 rs.setMessage("GL Account record(s) found");
                 rs.setRecordCount(dtoList.size());
-                rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             }
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
@@ -160,6 +160,7 @@ public class GlAccountApiHandler extends
         int rc = 0;
         try {
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             AccountDto dataObjDto = GeneralLedgerJaxbDtoFactory
                     .createGlAccountDtoInstance(req.getProfile().getAccount().get(0));
             newRec = (dataObjDto.getAcctId() == 0);
@@ -174,15 +175,22 @@ public class GlAccountApiHandler extends
             updateData = this.buildJaxbListData(updateList);
             
             // Return code is either the total number of rows updated or the new group id
-            rs.setReturnCode(rc);
-            if (newRec) {
-                rs.setMessage("GL Account was created successfully");
-                rs.setExtMessage("The new acct id is " + rc);
+            rs.setRecordCount(rc);
+            rs.setExtMessage("Total number of rows modified: " + rc);
+            if (rc > 0) {
+                if (newRec) {
+                    rs.setMessage("GL Account was created successfully");
+                    rs.setExtMessage("The new acct id is " + rc);
+                    rs.setRecordCount(1);
+                }
+                else {
+                    rs.setMessage("GL Account was modified successfully");
+                }
             }
             else {
-                rs.setMessage("GL Account was modified successfully");
-                rs.setExtMessage("Total number of rows modified: " + rc);
+                rs.setMessage("GL Account was not modified due to it does not exists");
             }
+
             this.api.commitTrans();
             
         } catch (GeneralLedgerApiException | NotFoundException | InvalidDataException e) {
@@ -226,8 +234,15 @@ public class GlAccountApiHandler extends
             // Return code is either the total number of rows deleted
             rs.setReturnCode(rc);
             rs.setRecordCount(rc);
-            rs.setMessage("GL Account was deleted successfully");
-            rs.setExtMessage("GL Account Id deleted was " + criteriaDto.getAcctId());
+            if (rc > 0) {
+                rs.setMessage("GL Account was deleted successfully");
+                rs.setExtMessage("GL Account Id deleted was " + criteriaDto.getAcctId());
+            }
+            else {
+                rs.setMessage("GL Account was not found for delete operation");
+                rs.setExtMessage("GL Account Id: " + criteriaDto.getAcctId());
+            }
+
             this.api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );

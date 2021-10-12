@@ -167,6 +167,7 @@ public class GlAccountMessageHandlerTest extends BaseAccountingMessageHandlerTes
         Assert.assertNull(actualRepsonse.getProfile());
         Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
+        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getRecordCount().longValue());
         Assert.assertEquals("GL Account data not found!", actualRepsonse.getReplyStatus().getMessage());
     }
     
@@ -196,6 +197,7 @@ public class GlAccountMessageHandlerTest extends BaseAccountingMessageHandlerTes
         Assert.assertNull(actualRepsonse.getProfile());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getRecordCount().longValue());
         Assert.assertEquals("Failure to retrieve GL Account(s)", actualRepsonse.getReplyStatus().getMessage());
         Assert.assertEquals("Test validation error: selection criteria is required",
                 actualRepsonse.getReplyStatus().getExtMessage());
@@ -225,6 +227,7 @@ public class GlAccountMessageHandlerTest extends BaseAccountingMessageHandlerTes
                 (AccountingGeneralLedgerResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertEquals(1, actualRepsonse.getProfile().getAccount().size());
         Assert.assertEquals(1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(1, actualRepsonse.getReplyStatus().getRecordCount().longValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("GL Account was modified successfully", actualRepsonse.getReplyStatus().getMessage());
         Assert.assertEquals("Total number of rows modified: " + actualRepsonse.getReplyStatus().getReturnCode().intValue(),
@@ -254,10 +257,11 @@ public class GlAccountMessageHandlerTest extends BaseAccountingMessageHandlerTes
         AccountingGeneralLedgerResponse actualRepsonse = 
                 (AccountingGeneralLedgerResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertEquals(1, actualRepsonse.getProfile().getAccount().size());
-        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getRecordCount().longValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, 
                 actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals("GL Account was modified successfully",
+        Assert.assertEquals("GL Account was not modified due to it does not exists",
                 actualRepsonse.getReplyStatus().getMessage());
         Assert.assertTrue(actualRepsonse.getReplyStatus().getExtMessage()
                 .contains("Total number of rows modified: 0"));
