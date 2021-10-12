@@ -32,9 +32,11 @@ import org.rmt2.jaxb.ObjectFactory;
 import org.rmt2.jaxb.PersonContactCriteria;
 import org.rmt2.jaxb.PersonType;
 import org.rmt2.jaxb.ReplyStatusType;
+import org.rmt2.jaxb.ZipcodeType;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 import org.rmt2.util.addressbook.AddressTypeBuilder;
+import org.rmt2.util.addressbook.ZipcodeTypeBuilder;
 
 import com.InvalidDataException;
 import com.api.messaging.InvalidRequestException;
@@ -192,9 +194,6 @@ public class ContactProfileApiHandler extends
             api.beginTrans();
             rc = api.updateContact(contactDto);
 
-            // prepare response with updated contact data
-            cdg = this.buildUpdateResults(contactDto);
-
             // Return code is either the total number of rows updated or the
             // business id of the contact created
             if (rc > 0) {
@@ -207,6 +206,16 @@ public class ContactProfileApiHandler extends
                     rs.setMessage("Contact was modified successfully");
                     rs.setExtMessage("Total number of contacts modified: " + rc);
                     rs.setRecordCount(rc);
+                }
+
+                ContactDto result = api.getContact(contactDto.getContactId());
+                if (result != null) {
+                    // prepare response with updated contact data
+                    cdg = this.buildUpdateResults(result);
+                }
+                else {
+                    // prepare response with input data instead
+                    cdg = this.buildUpdateResults(contactDto);
                 }
             }
             else {
@@ -322,8 +331,19 @@ public class ContactProfileApiHandler extends
         o.setContactName(contact.getContactName());
         // IS-70: added address information in order to identify the address
         // object that was added or updated.
+        ZipcodeType zt = ZipcodeTypeBuilder.Builder.create()
+                .withCity(contact.getCity())
+                .withState(contact.getState())
+                .withZipcode(contact.getZip())
+                .build();
+
         AddressType at = AddressTypeBuilder.Builder.create()
                 .withAddrId(contact.getAddrId())
+                .withAddressLine1(contact.getAddr1())
+                .withAddressLine2(contact.getAddr2())
+                .withAddressLine3(contact.getAddr3())
+                .withAddressLine4(contact.getAddr4())
+                .withZipcode(zt)
                 .build();
         o.setAddress(at);
         cdg.getCommonContacts().add(o);

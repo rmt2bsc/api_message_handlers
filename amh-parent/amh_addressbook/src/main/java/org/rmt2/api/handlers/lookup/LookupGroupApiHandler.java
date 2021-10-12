@@ -167,6 +167,7 @@ public class LookupGroupApiHandler extends
         int rc = 0;
         try {
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.validateRequest(req); 
             LookupGroupDto dataObjDto = this.extractJaxbObject(req.getGroupCodes());
             newRec = (dataObjDto.getGrpId() == 0);
@@ -181,20 +182,21 @@ public class LookupGroupApiHandler extends
             cdgList = this.buildJaxbListData(updateList);
             
             // Return code is either the total number of rows updated or the new group id
-            rs.setReturnCode(rc);
+            rs.setRecordCount(rc);
             if (newRec) {
                 rs.setMessage("Lookup Group was created successfully");
                 rs.setExtMessage("The new group id is " + rc);
+                rs.setRecordCount(1);
             }
             else {
                 rs.setMessage("Lookup Group was modified successfully");
                 rs.setExtMessage("Total number of rows modified: " + rc);
             }
-            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             api.commitTrans();
         } catch (LookupDataApiException | NotFoundException | InvalidDataException e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
+            rs.setRecordCount(0);
             rs.setMessage("Failure to update " + (newRec ? "new" : "existing")  + " Lookup Group");
             rs.setExtMessage(e.getMessage());
             cdgList = req.getGroupCodes();
@@ -235,7 +237,7 @@ public class LookupGroupApiHandler extends
             rc = api.deleteGroup(criteriaDto.getGrpId());
             
             // Return code is either the total number of rows deleted
-            rs.setReturnCode(rc);
+            rs.setRecordCount(rc);
             rs.setMessage("Lookup Group was deleted successfully");
             rs.setExtMessage("Lookup Group Id deleted was " + criteriaDto.getGrpId());
             api.commitTrans();
@@ -244,6 +246,7 @@ public class LookupGroupApiHandler extends
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to delelte Lookup Group by group id, " + criteriaDto.getGrpId());
             rs.setExtMessage(e.getMessage());
+            rs.setRecordCount(0);
             api.rollbackTrans();
         } finally {
             // IS-70: added logic to close DB connections to prevent memeoy

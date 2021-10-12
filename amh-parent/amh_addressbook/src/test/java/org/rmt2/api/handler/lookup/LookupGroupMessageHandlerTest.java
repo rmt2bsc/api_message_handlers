@@ -353,7 +353,7 @@ public class LookupGroupMessageHandlerTest extends BaseAddressBookMessageHandler
         Assert.assertTrue(!actualRepsonse.getGroupCodes().isEmpty());
         Assert.assertTrue(actualRepsonse.getDetailCodes().isEmpty());
         Assert.assertEquals(1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getRecordCount().intValue());
+        Assert.assertEquals(1, actualRepsonse.getReplyStatus().getRecordCount().intValue());
         Assert.assertEquals(WebServiceConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Lookup Group was created successfully", actualRepsonse.getReplyStatus().getMessage());
         Assert.assertEquals("The new group id is " + GROUP_ID, actualRepsonse.getReplyStatus().getExtMessage());

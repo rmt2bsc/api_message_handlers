@@ -168,6 +168,7 @@ public class LookupCodeApiHandler extends
         int rc = 0;
         try {
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.validateRequest(req); 
             LookupCodeDto dataObjDto = this.extractJaxbObject(req.getDetailCodes());
             newRec = (dataObjDto.getCodeId() == 0);
@@ -182,22 +183,21 @@ public class LookupCodeApiHandler extends
             cdtList = this.buildJaxbListData(updateList);
             
             // Return code is either the total number of rows updated or the new code id
-            rs.setReturnCode(rc);
-            
+            rs.setRecordCount(rc);
             if (newRec) {
                 rs.setMessage("Lookup Code was created successfully");
-                rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
                 rs.setExtMessage("The new code id is " + rc);
+                rs.setRecordCount(1);
             }
             else {
                 rs.setMessage("Lookup Code was modified successfully");
-                rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
                 rs.setExtMessage("Total number of rows modified: " + rc);
             }
             api.commitTrans();
         } catch (LookupDataApiException | NotFoundException | InvalidDataException e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
+            rs.setRecordCount(0);
             rs.setMessage("Failure to update " + (newRec ? "new" : "existing")  + " Lookup Code");
             rs.setExtMessage(e.getMessage());
             cdtList = req.getDetailCodes();
@@ -229,6 +229,7 @@ public class LookupCodeApiHandler extends
         LookupCodeDto criteriaDto = null;
         try {
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.validateRequest(req); 
             criteriaDto = this.extractSelectionCriteria(req.getCriteria());
             
@@ -237,8 +238,7 @@ public class LookupCodeApiHandler extends
             rc = api.deleteCode(criteriaDto.getCodeId());
             
             // Return code is either the total number of rows deleted
-            rs.setReturnCode(rc);
-            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+            rs.setRecordCount(rc);
             rs.setMessage("Lookup Code was deleted successfully");
             rs.setExtMessage("Lookup Code Id deleted was " + criteriaDto.getCodeId());
             api.commitTrans();
@@ -247,6 +247,7 @@ public class LookupCodeApiHandler extends
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to delelte Lookup Code by code id, " + criteriaDto.getCodeId());
             rs.setExtMessage(e.getMessage());
+            rs.setRecordCount(0);
             api.rollbackTrans();
         } finally {
             // IS-70: added logic to close DB connections to prevent memeoy
