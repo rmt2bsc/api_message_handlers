@@ -220,7 +220,8 @@ public class GeneralLedgerJaxbDtoFactory extends RMT2Base {
             if (jaxbCriteria.getAcctCatg().getDescription() != null) {
                 dto.setAcctCatgDescription(jaxbCriteria.getAcctCatg().getDescription());
             }
-            if (jaxbCriteria.getAcctCatg().getAcctType().getAcctTypeId() != null) {
+            if (jaxbCriteria.getAcctCatg().getAcctType() != null
+                    && jaxbCriteria.getAcctCatg().getAcctType().getAcctTypeId() != null) {
                 dto.setAcctTypeId(jaxbCriteria.getAcctCatg().getAcctType().getAcctTypeId().intValue());
             }
         }

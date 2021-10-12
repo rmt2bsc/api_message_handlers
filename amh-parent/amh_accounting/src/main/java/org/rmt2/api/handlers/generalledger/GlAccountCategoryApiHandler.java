@@ -118,6 +118,7 @@ public class GlAccountCategoryApiHandler extends
                     .createGlAccountCatgDtoCriteriaInstance(req.getCriteria().getGlCriteria());
             
             List<AccountCategoryDto> dtoList = this.api.getAccountCategory(criteriaDto);
+            rs.setRecordCount(0);
             if (dtoList == null) {
                 rs.setMessage("GL Account Category data not found!");
                 rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
@@ -160,6 +161,7 @@ public class GlAccountCategoryApiHandler extends
         int rc = 0;
         try {
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             AccountCategoryDto dataObjDto = GeneralLedgerJaxbDtoFactory
                     .createGlAccountCatgDtoInstance(req.getProfile().getAccountCategory().get(0));
             newRec = (dataObjDto.getAcctCatgId() == 0);
@@ -174,14 +176,22 @@ public class GlAccountCategoryApiHandler extends
             updateData = this.buildJaxbListData(updateList);
             
             // Return code is either the total number of rows updated or the new group id
-            rs.setReturnCode(rc);
-            if (newRec) {
-                rs.setMessage("GL Account Category was created successfully");
-                rs.setExtMessage("The new acct category id is " + rc);
+            if (rc > 0) {
+                if (newRec) {
+                    rs.setMessage("GL Account Category was created successfully");
+                    rs.setExtMessage("The new acct category id is " + rc);
+                    rs.setRecordCount(1);
+                }
+                else {
+                    rs.setMessage("GL Account Category was modified successfully");
+                    rs.setExtMessage("Total number of rows modified: " + rc);
+                    rs.setRecordCount(rc);
+                }
             }
             else {
-                rs.setMessage("GL Account Category was modified successfully");
+                rs.setMessage("GL Account Category was not modified due to it does not exist");
                 rs.setExtMessage("Total number of rows modified: " + rc);
+                rs.setRecordCount(rc);
             }
             this.api.commitTrans();
             

@@ -243,10 +243,10 @@ public class GlAccountCategoryMessageHandlerTest extends BaseAccountingMessageHa
         AccountingGeneralLedgerResponse actualRepsonse = 
                 (AccountingGeneralLedgerResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertEquals(1, actualRepsonse.getProfile().getAccountCategory().size());
-        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, 
                 actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals("GL Account Category was modified successfully",
+        Assert.assertEquals("GL Account Category was not modified due to it does not exist",
                 actualRepsonse.getReplyStatus().getMessage());
         Assert.assertTrue(actualRepsonse.getReplyStatus().getExtMessage()
                 .contains("Total number of rows modified: 0"));
