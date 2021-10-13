@@ -439,6 +439,16 @@ public class SecurityMockDtoData {
         return list;
     }
     
+    public static final List<UserDto> createSingleUserMockData() {
+        List<UserDto> list = new ArrayList<>();
+        int loginId = SecurityMockOrmDataFactory.TEST_USER_ID;
+        VwUser o = SecurityMockOrmDataFactory.createOrmVwUser(loginId,
+                SecurityMockOrmDataFactory.TEST_GROUP_ID, "UserName_" + loginId,
+                "test1234" + loginId, "2018-01-01", "ShortName_" + loginId);
+        UserDto d = Rmt2OrmDtoFactory.getUserDtoInstance(o);
+        list.add(d);
+        return list;
+    }
     public static final List<UserDto> createVwUserMockData() {
         List<UserDto> list = new ArrayList<>();
         int loginId = SecurityMockOrmDataFactory.TEST_USER_ID;

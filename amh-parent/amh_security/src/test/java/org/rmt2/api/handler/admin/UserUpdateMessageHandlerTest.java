@@ -18,6 +18,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.rmt2.api.handler.BaseAuthenticationMessageHandlerTest;
+import org.rmt2.api.handler.SecurityMockDtoData;
 import org.rmt2.api.handler.SecurityMockOrmDataFactory;
 import org.rmt2.api.handlers.AuthenticationMessageHandlerConst;
 import org.rmt2.api.handlers.admin.user.UserMessageHandlerConst;
@@ -67,6 +68,12 @@ public class UserUpdateMessageHandlerTest extends BaseAuthenticationMessageHandl
         when(UserApiFactory.createApiInstance()).thenReturn(mockApi);
         doNothing().when(this.mockApi).close();
 
+        try {
+            when(this.mockApi.getUser(isA(UserDto.class))).thenReturn(SecurityMockDtoData.createSingleUserMockData());
+        } catch (UserApiException e) {
+            Assert.fail("Unable to setup mock stub for fetching user group record");
+        }
+
         return;
     }
     
@@ -103,7 +110,7 @@ public class UserUpdateMessageHandlerTest extends BaseAuthenticationMessageHandl
         AuthenticationResponse actualRepsonse =
                 (AuthenticationResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertNotNull(actualRepsonse.getProfile());
-        Assert.assertNotNull(actualRepsonse.getProfile().getUserInfo().get(0));
+        Assert.assertNotNull(actualRepsonse.getProfile().getUserInfo());
         Assert.assertEquals(1, actualRepsonse.getProfile().getUserInfo().size());
         Assert.assertEquals(1, actualRepsonse.getReplyStatus().getRecordCount().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
@@ -139,7 +146,9 @@ public class UserUpdateMessageHandlerTest extends BaseAuthenticationMessageHandl
 
         AuthenticationResponse actualRepsonse =
                 (AuthenticationResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertNotNull(actualRepsonse.getProfile());
+        Assert.assertNotNull(actualRepsonse.getProfile().getUserInfo());
+        Assert.assertEquals(1, actualRepsonse.getProfile().getUserInfo().size());
         Assert.assertEquals(1, actualRepsonse.getReplyStatus().getRecordCount().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());

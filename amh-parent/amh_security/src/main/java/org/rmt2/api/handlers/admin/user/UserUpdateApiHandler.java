@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.dto.UserDto;
+import org.dto.adapter.orm.Rmt2OrmDtoFactory;
+import org.modules.users.UserApiException;
 import org.rmt2.api.handlers.AuthenticationMessageHandlerConst;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.jaxb.AuthenticationRequest;
@@ -60,18 +62,21 @@ public class UserUpdateApiHandler extends UserApiHandler {
                     // Update DTO with new group id. This is probably
                     // done at the DAO level.
                     dto.setLoginUid(rc);
-
-                    // Include profile data in response
-                    List<UserDto> list = new ArrayList<>();
-                    list.add(dto);
-                    this.jaxbObj = UserJaxbDtoFactory.createJaxbInstance(list);
                 }
                 else {
                     this.rs.setMessage(UserMessageHandlerConst.MESSAGE_UPDATE_SUCCESS);
                     this.rs.setExtMessage("Total number of user objects modified: " + rc);
                     this.rs.setRecordCount(rc);
-
-                    // Do not include profile data in response
+                }
+                // call api to verify changes
+                try {
+                    List<UserDto> list = new ArrayList<>();
+                    UserDto criteria = Rmt2OrmDtoFactory.getNewUserInstance();
+                    criteria.setLoginUid(dto.getLoginUid());
+                    list = api.getUser(criteria);
+                    this.jaxbObj = UserJaxbDtoFactory.createJaxbInstance(list);
+                } catch (UserApiException e) {
+                    // do not return payload
                     this.jaxbObj = null;
                 }
             }
