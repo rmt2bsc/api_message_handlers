@@ -18,6 +18,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.rmt2.api.handler.BaseAuthenticationMessageHandlerTest;
+import org.rmt2.api.handler.SecurityMockDtoData;
 import org.rmt2.api.handler.SecurityMockOrmDataFactory;
 import org.rmt2.api.handlers.AuthenticationMessageHandlerConst;
 import org.rmt2.api.handlers.admin.resource.ResourceMessageHandlerConst;
@@ -69,6 +70,13 @@ public class ResourceUpdateMessageHandlerTest extends BaseAuthenticationMessageH
         when(ResourceRegistryApiFactory.createWebServiceRegistryApiInstance()).thenReturn(mockApi);
         doNothing().when(this.mockApi).close();
 
+        try {
+            when(this.mockApi.getResource(isA(ResourceDto.class))).thenReturn(
+                    SecurityMockDtoData.createSingleUserResourceMockData());
+        } catch (ResourceRegistryApiException e) {
+            Assert.fail("Unable to setup mock stub for fetching resource type record");
+        }
+
         return;
     }
     
@@ -106,6 +114,7 @@ public class ResourceUpdateMessageHandlerTest extends BaseAuthenticationMessageH
                 (AuthenticationResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertNotNull(actualRepsonse.getProfile());
         Assert.assertNotNull(actualRepsonse.getProfile().getResourcesInfo());
+        Assert.assertNotNull(actualRepsonse.getProfile().getResourcesInfo().getResource());
         Assert.assertEquals(1, actualRepsonse.getProfile().getResourcesInfo().getResource().size());
         Assert.assertEquals(1, actualRepsonse.getReplyStatus().getRecordCount().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
@@ -140,7 +149,10 @@ public class ResourceUpdateMessageHandlerTest extends BaseAuthenticationMessageH
 
         AuthenticationResponse actualRepsonse =
                 (AuthenticationResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertNotNull(actualRepsonse.getProfile());
+        Assert.assertNotNull(actualRepsonse.getProfile().getResourcesInfo());
+        Assert.assertNotNull(actualRepsonse.getProfile().getResourcesInfo().getResource());
+        Assert.assertEquals(1, actualRepsonse.getProfile().getResourcesInfo().getResource().size());
         Assert.assertEquals(1, actualRepsonse.getReplyStatus().getRecordCount().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
