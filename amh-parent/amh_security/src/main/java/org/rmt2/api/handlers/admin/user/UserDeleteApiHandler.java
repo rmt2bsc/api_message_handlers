@@ -51,11 +51,11 @@ public class UserDeleteApiHandler extends UserApiHandler {
             this.jaxbObj = null;
             if (rc > 0) {
                 this.rs.setMessage(UserMessageHandlerConst.MESSAGE_DELETE_SUCCESS);
-                this.rs.setExtMessage("The user id is " + rc);
+                this.rs.setExtMessage("The user id is " + dto.getLoginUid());
             }
             else {
                 this.rs.setMessage(UserMessageHandlerConst.MESSAGE_NOT_FOUND);
-                this.rs.setExtMessage("No users were deleted due records not found");
+                this.rs.setExtMessage("No records were deleted due user was not found: " + dto.getLoginUid());
             }
             this.rs.setRecordCount(rc);
             api.commitTrans();
