@@ -178,12 +178,17 @@ public class ResourceJaxbDtoFactory extends RMT2Base {
         }
 
         ResourceType r = null;
+        ResourcetypeType rt = null;
+        ResourcesubtypeType rst = null;
         if (dto instanceof WebServiceDto) {
             r = ResourceJaxbDtoFactory.createJaxbResourceInstance((WebServiceDto) dto);
         }
-
-        ResourcetypeType rt = ResourceJaxbDtoFactory.createJaxbResourceTypeInstance(dto);
-        ResourcesubtypeType rst = ResourceJaxbDtoFactory.createJaxbResourceSubTypeInstance(dto);
+        if (dto.getTypeId() > 0 && dto.getUid() == 0 && dto.getSubTypeId() == 0) {
+            rt = ResourceJaxbDtoFactory.createJaxbResourceTypeInstance(dto);
+        }
+        if (dto.getTypeId() > 0 && dto.getSubTypeId() > 0 && dto.getUid() == 0) {
+            rst = ResourceJaxbDtoFactory.createJaxbResourceSubTypeInstance(dto);
+        }
         ResourcesInfoType obj = ResourcesInfoTypeBuilder.Builder.create()
                 .addResource(r)
                 .addResourceType(rt)
@@ -202,15 +207,28 @@ public class ResourceJaxbDtoFactory extends RMT2Base {
      * @return an instance of {@link ResourcesInfoType}
      */
     public static final ResourcesInfoType createJaxbResourcesInfoInstance(List<ResourceDto> results) {
-        List<ResourceType> rList = new ArrayList<>();
-        List<ResourcetypeType> rtList = new ArrayList<>();
-        List<ResourcesubtypeType> rstList = new ArrayList<>();
+        List<ResourceType> rList = null;
+        List<ResourcetypeType> rtList = null;
+        List<ResourcesubtypeType> rstList = null;
         for (ResourceDto item : results) {
             if (item instanceof WebServiceDto) {
+                if (rList == null) {
+                    rList = new ArrayList<>();
+                }
                 rList.add(ResourceJaxbDtoFactory.createJaxbResourceInstance((WebServiceDto) item));
             }
-            rtList.add(ResourceJaxbDtoFactory.createJaxbResourceTypeInstance(item));
-            rstList.add(ResourceJaxbDtoFactory.createJaxbResourceSubTypeInstance(item));
+            if (item.getTypeId() > 0 && item.getUid() == 0 && item.getSubTypeId() == 0) {
+                if (rtList == null) {
+                    rtList = new ArrayList<>();
+                }
+                rtList.add(ResourceJaxbDtoFactory.createJaxbResourceTypeInstance(item));
+            }
+            if (item.getTypeId() > 0 && item.getSubTypeId() > 0 && item.getUid() == 0) {
+                if (rstList == null) {
+                    rstList = new ArrayList<>();
+                }
+                rstList.add(ResourceJaxbDtoFactory.createJaxbResourceSubTypeInstance(item));
+            }
         }
         ResourcesInfoType obj = ResourcesInfoTypeBuilder.Builder.create()
                 .withResources(rList)

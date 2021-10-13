@@ -1,8 +1,12 @@
 package org.rmt2.api.handlers.admin.resource.type;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.dto.ResourceDto;
+import org.dto.adapter.orm.Rmt2OrmDtoFactory;
 import org.modules.resource.ResourceRegistryApi;
+import org.modules.resource.ResourceRegistryApiException;
 import org.modules.resource.ResourceRegistryApiFactory;
 import org.rmt2.api.handlers.AuthenticationMessageHandlerConst;
 import org.rmt2.api.handlers.admin.resource.ResourceJaxbDtoFactory;
@@ -64,17 +68,25 @@ public class ResourceTypeUpdateApiHandler extends ResourcesInfoApiHandler {
                     // done at the DAO level.
                     dto.setTypeId(rc);
 
-                    // Include profile data in response
-                    this.jaxbObj = ResourceJaxbDtoFactory.createJaxbResourcesInfoInstance(dto);
+
                 }
                 else {
                     this.rs.setMessage(ResourceTypeMessageHandlerConst.MESSAGE_UPDATE_SUCCESS);
                     this.rs.setExtMessage("Total number of resource type objects modified: " + rc);
                     this.rs.setRecordCount(rc);
-
+                }
+                // Verify changes and include in response message
+                try {
+                    ResourceDto criteria = Rmt2OrmDtoFactory.getNewResourceTypeInstance();
+                    criteria.setTypeId(dto.getTypeId());
+                    List<ResourceDto> list = api.getResourceType(criteria);
+                    // Include profile data in response
+                    this.jaxbObj = ResourceJaxbDtoFactory.createJaxbResourcesInfoInstance(list);
+                } catch (ResourceRegistryApiException e) {
                     // Do not include profile data in response
                     this.jaxbObj = null;
                 }
+
             }
             api.commitTrans();
         } catch (Exception e) {
