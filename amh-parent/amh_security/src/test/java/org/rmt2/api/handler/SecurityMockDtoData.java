@@ -307,6 +307,17 @@ public class SecurityMockDtoData {
         return list;
     }
     
+    public static final List<ResourceDto> createSingleUserResourceSubtypeMockData() {
+        List<ResourceDto> list = new ArrayList<>();
+        int userResourceSubtypeId = SecurityMockOrmDataFactory.TEST_RESOURCE_SUBTYPE_ID;
+        UserResourceSubtype o = SecurityMockOrmDataFactory.createOrmUserResourceSubtype(userResourceSubtypeId,
+                SecurityMockOrmDataFactory.TEST_RESOURCE_TYPE_ID);
+        ResourceDto d = Rmt2OrmDtoFactory.getResourceDtoInstance(o);
+        list.add(d);
+
+        return list;
+    }
+
     public static final List<ResourceDto> createUserResourceSubtypeMockData() {
         List<ResourceDto> list = new ArrayList<>();
         int userResourceSubtypeId = SecurityMockOrmDataFactory.TEST_RESOURCE_SUBTYPE_ID;

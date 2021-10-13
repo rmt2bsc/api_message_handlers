@@ -1,8 +1,12 @@
 package org.rmt2.api.handlers.admin.resource.subtype;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.dto.ResourceDto;
+import org.dto.adapter.orm.Rmt2OrmDtoFactory;
 import org.modules.resource.ResourceRegistryApi;
+import org.modules.resource.ResourceRegistryApiException;
 import org.modules.resource.ResourceRegistryApiFactory;
 import org.rmt2.api.handlers.AuthenticationMessageHandlerConst;
 import org.rmt2.api.handlers.admin.resource.ResourceJaxbDtoFactory;
@@ -71,6 +75,18 @@ public class ResourceSubTypeUpdateApiHandler extends ResourcesInfoApiHandler {
                     this.rs.setExtMessage("Total number of resource sub type objects modified: " + rc);
                     this.rs.setRecordCount(rc);
 
+                    // Do not include profile data in response
+                    this.jaxbObj = null;
+                }
+
+                // Verify changes and include in response message
+                try {
+                    ResourceDto criteria = Rmt2OrmDtoFactory.getNewResourceSubTypeInstance();
+                    criteria.setSubTypeId(dto.getSubTypeId());
+                    List<ResourceDto> list = api.getResourceSubType(criteria);
+                    // Include profile data in response
+                    this.jaxbObj = ResourceJaxbDtoFactory.createJaxbResourcesInfoInstance(list);
+                } catch (ResourceRegistryApiException e) {
                     // Do not include profile data in response
                     this.jaxbObj = null;
                 }
