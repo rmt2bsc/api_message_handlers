@@ -304,8 +304,8 @@ public class CustomerQueryMessageHandlerTest extends BaseAccountingMessageHandle
 
         AccountingTransactionResponse actualRepsonse = 
                 (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-        Assert.assertNull(actualRepsonse.getProfile());
-        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getRecordCount().intValue());
+        Assert.assertNotNull(actualRepsonse.getProfile());
+        Assert.assertEquals(1, actualRepsonse.getReplyStatus().getRecordCount().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Customer transaction history data not found!", actualRepsonse.getReplyStatus().getMessage());
@@ -339,7 +339,8 @@ public class CustomerQueryMessageHandlerTest extends BaseAccountingMessageHandle
         Assert.assertEquals(0, actualRepsonse.getReplyStatus().getRecordCount().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals("Customer data not found or too many customers were fetched", actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals("Either customer data not found, too many customers were returned, or error is unknown",
+                actualRepsonse.getReplyStatus().getMessage());
     }
     
     @Test

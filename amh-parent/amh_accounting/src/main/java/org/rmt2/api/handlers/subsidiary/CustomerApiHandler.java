@@ -303,16 +303,16 @@ public class CustomerApiHandler extends
                 List<CustomerXactHistoryDto> dtoXactHistList = this.api.getTransactionHistory(criteriaDto.getCustomerId());
                 if (dtoXactHistList == null) {
                     rs.setMessage("Customer transaction history data not found!");
-                    rs.setRecordCount(0);
+                    rs.setRecordCount(1);
                 }
                 else {
-                    queryDtoResults = this.buildJaxbListData(dtoCustList.get(0), dtoXactHistList);
                     rs.setMessage("Customer transaction history record(s) found");
                     rs.setRecordCount(dtoCustList.size());
                 }
+                queryDtoResults = this.buildJaxbListData(dtoCustList.get(0), dtoXactHistList);
             }
             else {
-                rs.setMessage("Customer data not found or too many customers were fetched");
+                rs.setMessage("Either customer data not found, too many customers were returned, or error is unknown");
                 rs.setRecordCount(0);
             }
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
@@ -349,6 +349,10 @@ public class CustomerApiHandler extends
     }
     
     private Map<Integer, XactDto> buildActivityToXactMap(List<CustomerXactHistoryDto> transHistory) {
+        if (transHistory == null) {
+            // Customer does not have transaction history
+            return null;
+        }
         Map<Integer, XactDto> map = new HashMap<>();
         
         XactApi xactApi = XactApiFactory.createDefaultXactApi();
