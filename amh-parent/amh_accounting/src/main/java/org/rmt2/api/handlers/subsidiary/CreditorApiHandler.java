@@ -76,6 +76,12 @@ public class CreditorApiHandler extends
 
         if (r != null) {
             // This means an error occurred.
+            // IS-70: Added logic to close API instance in order to prevent
+            // memory leaks from left over open DB connections
+            if (this.api != null) {
+                this.api.close();
+                this.api = null;
+            }
             return r;
         }
         switch (command) {
@@ -137,6 +143,7 @@ public class CreditorApiHandler extends
             rs.setExtMessage(e.getMessage());
         } finally {
             this.api.close();
+            this.api = null;
         }
 
         String xml = this.buildResponse(queryDtoResults, rs);
@@ -157,27 +164,34 @@ public class CreditorApiHandler extends
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         List<CreditorType> queryDtoResults = null;
         int rc = 0;
-
+        boolean newCreditor = false;
+        List<CreditorDto> dtoList = new ArrayList<>();
+        CreditorDto profileDto = null;
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
-            CreditorDto profileDto = SubsidiaryJaxbDtoFactory
-                    .createCreditorDtoInstance(req.getProfile().getCreditors().getCreditor().get(0));
+            profileDto = SubsidiaryJaxbDtoFactory.createCreditorDtoInstance(req.getProfile().getCreditors().getCreditor().get(0));
+            newCreditor = profileDto.getCreditorId() == 0;
+
             api.beginTrans();
             rc = this.api.update(profileDto);
-            if (rc <= 0) {
-                rs.setMessage("Creditor data not found for update");
+            if (rc > 0) {
+                if (newCreditor) {
+                    profileDto.setCreditorId(rc);
+                    rs.setMessage("Creditor record(s) created successfully");
+                    rs.setRecordCount(1);
+                }
+                else {
+                    rs.setMessage("Creditor record(s) modified successfully");
+                    rs.setRecordCount(rc);
+                }
+            }
+            else {
+                rs.setMessage("Creditor data not found for update operation");
                 String extraMsg = "Creditor Id: " + profileDto.getCreditorId() + ", Creditor Name: " + profileDto.getContactName();
                 rs.setExtMessage(extraMsg);
                 rs.setRecordCount(0);
-            }
-            else {
-                List<CreditorDto> dtoList = new ArrayList<>();
-                dtoList.add(profileDto);
-                queryDtoResults = this.buildJaxbListData(dtoList);
-                rs.setMessage("Creditor record(s) updated successfully");
-                rs.setRecordCount(rc);
             }
             this.responseObj.setHeader(req.getHeader());
             this.api.commitTrans();
@@ -189,8 +203,11 @@ public class CreditorApiHandler extends
             this.api.rollbackTrans();
         } finally {
             this.api.close();
+            this.api = null;
         }
 
+        dtoList.add(profileDto);
+        queryDtoResults = this.buildJaxbListData(dtoList);
         String xml = this.buildResponse(queryDtoResults, rs);
         results.setPayload(xml);
         return results;
@@ -230,6 +247,7 @@ public class CreditorApiHandler extends
             this.api.rollbackTrans();
         } finally {
             this.api.close();
+            this.api = null;
         }
 
         String xml = this.buildResponse(null, rs);
@@ -261,16 +279,16 @@ public class CreditorApiHandler extends
                 List<CreditorXactHistoryDto> dtoList = this.api.getTransactionHistory(criteriaDto.getCreditorId());
                 if (dtoList == null) {
                     rs.setMessage("Creditor transaction history data not found!");
-                    rs.setRecordCount(0);
+                    rs.setRecordCount(1);
                 }
                 else {
-                    queryDtoResults = this.buildJaxbListData(dtoCredList.get(0), dtoList);
                     rs.setMessage("Creditor transaction history record(s) found");
                     rs.setRecordCount(dtoCredList.size());
                 }
+                queryDtoResults = this.buildJaxbListData(dtoCredList.get(0), dtoList);
             }
             else {
-                rs.setMessage("Creditor data not found or too many creditors were fetched");
+                rs.setMessage("Either creditor data not found, too many creditors were returned, or error is unknown");
                 rs.setRecordCount(0);
             }
             
@@ -283,6 +301,7 @@ public class CreditorApiHandler extends
             rs.setExtMessage(e.getMessage());
         } finally {
             this.api.close();
+            this.api = null;
         }
 
         String xml = this.buildResponse(queryDtoResults, rs);
@@ -308,8 +327,11 @@ public class CreditorApiHandler extends
     }
     
     private Map<Integer, XactDto> buildActivityToXactMap(List<CreditorXactHistoryDto> transHistory) {
+        if (transHistory == null) {
+            return null;
+        }
+
         Map<Integer, XactDto> map = new HashMap<>();
-        
         XactApi xactApi = XactApiFactory.createDefaultXactApi();
         for (CreditorXactHistoryDto item : transHistory) {
             try {
@@ -321,6 +343,7 @@ public class CreditorApiHandler extends
                 logger.error("Unable to fetch transaction details for creditor transaction history item, " + item.getActivityId(), e);
             }
         }
+        xactApi.close();
         return map;
     }
     

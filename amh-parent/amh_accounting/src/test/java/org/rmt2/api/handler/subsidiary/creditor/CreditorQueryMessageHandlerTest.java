@@ -304,8 +304,8 @@ public class CreditorQueryMessageHandlerTest extends BaseAccountingMessageHandle
 
         AccountingTransactionResponse actualRepsonse = 
                 (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-        Assert.assertNull(actualRepsonse.getProfile());
-        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getRecordCount().intValue());
+        Assert.assertNotNull(actualRepsonse.getProfile());
+        Assert.assertEquals(1, actualRepsonse.getReplyStatus().getRecordCount().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals("Creditor transaction history data not found!", actualRepsonse.getReplyStatus().getMessage());
@@ -339,7 +339,8 @@ public class CreditorQueryMessageHandlerTest extends BaseAccountingMessageHandle
         Assert.assertEquals(0, actualRepsonse.getReplyStatus().getRecordCount().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals("Creditor data not found or too many creditors were fetched", actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals("Either creditor data not found, too many creditors were returned, or error is unknown",
+                actualRepsonse.getReplyStatus().getMessage());
     }
     
     @Test

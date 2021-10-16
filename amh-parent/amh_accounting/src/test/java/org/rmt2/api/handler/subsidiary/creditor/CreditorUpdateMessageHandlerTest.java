@@ -106,7 +106,7 @@ public class CreditorUpdateMessageHandlerTest extends BaseAccountingMessageHandl
         Assert.assertEquals(1, actualRepsonse.getProfile().getCreditors().getCreditor().size());
         Assert.assertEquals(1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals("Creditor record(s) updated successfully", actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals("Creditor record(s) modified successfully", actualRepsonse.getReplyStatus().getMessage());
     }
     
  
@@ -135,7 +135,7 @@ public class CreditorUpdateMessageHandlerTest extends BaseAccountingMessageHandl
         Assert.assertEquals(0, actualRepsonse.getReplyStatus().getRecordCount().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS,
                 actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals("Creditor data not found for update",
+        Assert.assertEquals("Creditor data not found for update operation",
                 actualRepsonse.getReplyStatus().getMessage());
         Assert.assertEquals("Creditor Id: 3333, Creditor Name: Business Type Name",
                 actualRepsonse.getReplyStatus().getExtMessage());
@@ -164,7 +164,7 @@ public class CreditorUpdateMessageHandlerTest extends BaseAccountingMessageHandl
 
         AccountingTransactionResponse actualRepsonse = 
                 (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertNotNull(actualRepsonse.getProfile());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals("Failure to update creditor(s)", actualRepsonse.getReplyStatus().getMessage());

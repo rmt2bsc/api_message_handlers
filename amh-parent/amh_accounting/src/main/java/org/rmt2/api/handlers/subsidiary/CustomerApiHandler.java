@@ -366,6 +366,7 @@ public class CustomerApiHandler extends
                 logger.error("Unable to fetch transaction details for customer transaction history item, " + item.getActivityId(), e);
             }
         }
+        xactApi.close();
         return map;
     }
     
