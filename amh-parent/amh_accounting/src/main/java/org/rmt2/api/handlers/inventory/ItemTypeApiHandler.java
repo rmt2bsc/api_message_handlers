@@ -69,6 +69,11 @@ public class ItemTypeApiHandler extends
 
         if (r != null) {
             // This means an error occurred.
+            // IS-70: Added logic to close API in cases of an error so to
+            // prevent memory leaks.
+            if (this.api != null) {
+                this.api.close();
+            }
             return r;
         }
         switch (command) {
