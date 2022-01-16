@@ -126,6 +126,9 @@ public class InventoryJaxbDtoFactory extends RMT2Base {
         if (jaxbObj.getVendorItemNo() != null) {
             dto.setVendorItemNo(jaxbObj.getVendorItemNo());
         }
+        if (jaxbObj.getActive() != null) {
+            dto.setActive(jaxbObj.getActive().intValue());
+        }
         
         return dto;
     }
