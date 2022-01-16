@@ -120,18 +120,19 @@ public class ItemApiHandler extends
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+            rs.setRecordCount(1);
             criteriaDto = InventoryJaxbDtoFactory
                     .createItemMasterDtoCriteriaInstance(req.getCriteria().getItemCriteria());
 
             api.beginTrans();
             int rc = this.api.activateItemMaster(criteriaDto.getItemId());
             rs.setMessage("Inventory item was activated successfully");
-            rs.setReturnCode(rc);
             this.responseObj.setHeader(req.getHeader());
             this.api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
+            rs.setRecordCount(0);
             rs.setMessage("Failure to activate inventory item, " + criteriaDto.getItemId());
             rs.setExtMessage(e.getMessage());
             this.api.rollbackTrans();
@@ -160,17 +161,19 @@ public class ItemApiHandler extends
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+            rs.setRecordCount(1);
             criteriaDto = InventoryJaxbDtoFactory
                     .createItemMasterDtoCriteriaInstance(req.getCriteria().getItemCriteria());
             api.beginTrans();
             int rc = this.api.deactivateItemMaster(criteriaDto.getItemId());
             rs.setMessage("Inventory item was deactivated successfully");
-            rs.setReturnCode(rc);
             this.responseObj.setHeader(req.getHeader());
             this.api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
+            rs.setRecordCount(0);
             rs.setMessage("Failure to deactivate inventory item, " + criteriaDto.getItemId());
             rs.setExtMessage(e.getMessage());
             this.api.rollbackTrans();
@@ -185,7 +188,7 @@ public class ItemApiHandler extends
     
     /**
      * Handler for invoking the appropriate API in order to add inventory item
-     * retail overrided.
+     * retail override.
      * 
      * @param req
      *            an instance of {@link InventoryRequest}
