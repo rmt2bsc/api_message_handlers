@@ -202,6 +202,7 @@ public class ItemApiHandler extends
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             criteriaDto = InventoryJaxbDtoFactory
                     .createItemMasterDtoCriteriaInstance(req.getCriteria().getItemCriteria());
             api.beginTrans();
@@ -209,12 +210,13 @@ public class ItemApiHandler extends
                     .getItems().getItem());
             int rc = this.api.addInventoryOverride(criteriaDto.getVendorId(), itemIdList);
             rs.setMessage("Inventory item retail override was applied");
-            rs.setReturnCode(rc);
+            rs.setRecordCount(rc);
             this.responseObj.setHeader(req.getHeader());
             this.api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
+            rs.setRecordCount(0);
             rs.setMessage("Failure to apply inventory item retail override, " + criteriaDto.getItemId());
             rs.setExtMessage(e.getMessage());
             this.api.rollbackTrans();
@@ -229,7 +231,7 @@ public class ItemApiHandler extends
     
     /**
      * Handler for invoking the appropriate API in order to remove inventory item
-     * retail overrided.
+     * retail override.
      * 
      * @param req
      *            an instance of {@link InventoryRequest}
@@ -243,6 +245,7 @@ public class ItemApiHandler extends
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             criteriaDto = InventoryJaxbDtoFactory
                     .createItemMasterDtoCriteriaInstance(req.getCriteria().getItemCriteria());
             api.beginTrans();
@@ -250,12 +253,13 @@ public class ItemApiHandler extends
                     .getItems().getItem());
             int rc = this.api.removeInventoryOverride(criteriaDto.getVendorId(), itemIdList);
             rs.setMessage("Inventory item retail override was removed");
-            rs.setReturnCode(rc);
+            rs.setRecordCount(rc);
             this.responseObj.setHeader(req.getHeader());
             this.api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
+            rs.setRecordCount(0);
             rs.setMessage("Failure to remove inventory item retail override, " + criteriaDto.getItemId());
             rs.setExtMessage(e.getMessage());
             this.api.rollbackTrans();
