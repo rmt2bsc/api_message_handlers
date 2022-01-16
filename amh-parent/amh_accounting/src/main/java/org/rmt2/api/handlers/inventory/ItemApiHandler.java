@@ -332,6 +332,7 @@ public class ItemApiHandler extends
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             vendorId = req.getCriteria().getVendorItemCriteria().getCreditorId().intValue();
             
             List<ItemMasterDto> dtoList = this.api.getVendorUnassignItems(vendorId);
@@ -343,11 +344,11 @@ public class ItemApiHandler extends
                 rs.setMessage("Vendor unassigned item record(s) found for vendor id, " + vendorId);
                 rs.setRecordCount(dtoList.size());
             }
-            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
+            rs.setRecordCount(0);
             rs.setMessage("Failure to retrieve Vendor unassigned item(s) for vendor id, " + vendorId);
             rs.setExtMessage(e.getMessage());
         } finally {
