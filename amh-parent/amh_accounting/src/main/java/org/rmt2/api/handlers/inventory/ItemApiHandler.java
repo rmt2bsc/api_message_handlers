@@ -386,15 +386,14 @@ public class ItemApiHandler extends
             if (newRec) {
                 rs.setMessage("Inventory item was created successfully");
                 rs.setExtMessage("The new acct id is " + rc);
+                rs.setRecordCount(updateList.size());
             }
             else {
                 rs.setMessage("Inventory item was modified successfully");
                 rs.setExtMessage("Total number of rows modified: " + rc);
+                rs.setRecordCount(rc);
             }
-
-            // Record count is either the total number of rows updated or the
-            // new item master id
-            rs.setRecordCount(rc);
+            
             this.api.commitTrans();
             
         } catch (Exception e) {
