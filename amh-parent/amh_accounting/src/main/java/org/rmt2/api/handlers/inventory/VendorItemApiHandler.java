@@ -99,7 +99,7 @@ public class VendorItemApiHandler extends
 
     /**
      * Handler for invoking the appropriate API in order to fetch one or more
-     * Vendor Item type ojects.
+     * Vendor Item type objects.
      * 
      * @param req
      *            an instance of {@link InventoryRequest}
@@ -113,6 +113,8 @@ public class VendorItemApiHandler extends
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+            rs.setRecordCount(0);
             VendorItemDto criteriaDto = InventoryJaxbDtoFactory
                     .createVendorItemDtoCriteriaInstance(req.getCriteria().getVendorItemCriteria());
             
@@ -127,7 +129,6 @@ public class VendorItemApiHandler extends
                 rs.setMessage("Vendor item record(s) found");
                 rs.setRecordCount(dtoList.size());
             }
-            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
@@ -159,6 +160,8 @@ public class VendorItemApiHandler extends
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+            rs.setRecordCount(0);
             VendorItemDto criteriaDto = InventoryJaxbDtoFactory
                     .createVendorItemDtoCriteriaInstance(req.getCriteria().getVendorItemCriteria());
             vendorId = criteriaDto.getVendorId();
@@ -171,7 +174,6 @@ public class VendorItemApiHandler extends
                 rs.setMessage("Vendor assigned item record(s) found for vendor id, " + vendorId);
                 rs.setRecordCount(dtoList.size());
             }
-            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
@@ -203,6 +205,8 @@ public class VendorItemApiHandler extends
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+            rs.setRecordCount(0);
             criteriaDto = InventoryJaxbDtoFactory
                     .createVendorItemDtoCriteriaInstance(req.getCriteria().getVendorItemCriteria());
             List<SimpleItemType> items = req.getCriteria().getVendorItemCriteria().getItems().getItem();
@@ -211,15 +215,13 @@ public class VendorItemApiHandler extends
             api.beginTrans();
             int rc = this.api.assignVendorItems(criteriaDto.getVendorId(), itemIdList);
             rs.setMessage(rc + " inventory items were assigned to vendor, " + criteriaDto.getVendorId());
-            rs.setReturnCode(rc);
+            rs.setRecordCount(rc);
             this.responseObj.setHeader(req.getHeader());
             this.api.commitTrans();
         } catch (Exception e) {
-            logger.error("Error occurred during API Message Handler operation, "
-                    + this.command, e);
+            logger.error("Error occurred during API Message Handler operation, " + this.command, e);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setMessage("Failure to assign inventory items to vendor, "
-                    + criteriaDto.getVendorId());
+            rs.setMessage("Failure to assign inventory items to vendor, " + criteriaDto.getVendorId());
             rs.setExtMessage(e.getMessage());
             this.api.rollbackTrans();
         } finally {
@@ -247,6 +249,7 @@ public class VendorItemApiHandler extends
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             criteriaDto = InventoryJaxbDtoFactory
                     .createVendorItemDtoCriteriaInstance(req.getCriteria().getVendorItemCriteria());
             List<SimpleItemType> items = req.getCriteria().getVendorItemCriteria().getItems().getItem();
@@ -254,15 +257,13 @@ public class VendorItemApiHandler extends
             api.beginTrans();
             int rc = this.api.removeVendorItems(criteriaDto.getVendorId(), itemIdList);
             rs.setMessage(rc + " inventory items were removed from vendor, " + criteriaDto.getVendorId());
-            rs.setReturnCode(rc);
+            rs.setRecordCount(rc);
             this.responseObj.setHeader(req.getHeader());
             this.api.commitTrans();
         } catch (Exception e) {
-            logger.error("Error occurred during API Message Handler operation, "
-                    + this.command, e);
+            logger.error("Error occurred during API Message Handler operation, " + this.command, e);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setMessage("Failure to remove inventory items from vendor, "
-                    + criteriaDto.getVendorId());
+            rs.setMessage("Failure to remove inventory items from vendor, " + criteriaDto.getVendorId());
             rs.setExtMessage(e.getMessage());
             this.api.rollbackTrans();
         } finally {
@@ -289,19 +290,25 @@ public class VendorItemApiHandler extends
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             viDto = InventoryJaxbDtoFactory
                     .createVendorItemDtoInstance(req.getProfile().getVendorItem().get(0));
 
             api.beginTrans();
             int rc = this.api.updateVendorItem(viDto);
-            rs.setMessage("Vendor inventory item was updated");
-            rs.setReturnCode(rc);
+            if (rc > 0) {
+            	rs.setMessage("Vendor inventory item was updated");	
+            }
+            else {
+            	rs.setMessage("No vendor inventory item(s) were updated");
+            }
+            rs.setRecordCount(rc);
             this.responseObj.setHeader(req.getHeader());
             this.api.commitTrans();
         } catch (Exception e) {
-            logger.error("Error occurred during API Message Handler operation, "
-                    + this.command, e);
+            logger.error("Error occurred during API Message Handler operation, " + this.command, e);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
+            rs.setRecordCount(0);
             rs.setMessage("Failure to update vendor inventory item");
             rs.setExtMessage(e.getMessage());
             this.api.rollbackTrans();
