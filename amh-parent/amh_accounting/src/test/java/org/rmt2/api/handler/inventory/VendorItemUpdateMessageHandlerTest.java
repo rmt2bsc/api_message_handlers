@@ -112,7 +112,7 @@ public class VendorItemUpdateMessageHandlerTest extends BaseAccountingMessageHan
 
         InventoryResponse actualRepsonse = 
                 (InventoryResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-        Assert.assertEquals(UPDATE_RC, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS,
                 actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals(UPDATE_RC + " inventory items were assigned to vendor, " + TEST_VENDOR_ID,
@@ -277,7 +277,7 @@ public class VendorItemUpdateMessageHandlerTest extends BaseAccountingMessageHan
 
         InventoryResponse actualRepsonse = 
                 (InventoryResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-        Assert.assertEquals(UPDATE_RC, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS,
                 actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals(UPDATE_RC + " inventory items were removed from vendor, " + TEST_VENDOR_ID,
