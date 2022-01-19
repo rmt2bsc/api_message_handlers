@@ -217,9 +217,6 @@ public class XactApiHandler extends
         } finally {
             this.api.close();
         }
-
-        
-        
         String xml = this.buildResponse(tranRresults, rs);
         results.setPayload(xml);
         return results;
