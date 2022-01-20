@@ -194,6 +194,8 @@ public class XactApiHandler extends
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+            rs.setRecordCount(0);
             XactDto xactDto = TransactionJaxbDtoFactory.createXactDtoInstance(reqXact);
             List<XactTypeItemActivityDto> itemsDtoList = TransactionJaxbDtoFactory
                     .createXactItemDtoInstance(reqXact.getLineitems().getLineitem());
@@ -204,8 +206,7 @@ public class XactApiHandler extends
             tranRresults.add(XactResults);
             rs.setMessage("New Accounting Transaction was created: " + XactResults.getXactId());
             rs.setRecordCount(1);
-            
-            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+           
             this.responseObj.setHeader(req.getHeader());
             this.api.commitTrans();
         } catch (Exception e) {
