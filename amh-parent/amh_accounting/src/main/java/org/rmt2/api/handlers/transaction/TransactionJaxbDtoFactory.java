@@ -662,5 +662,20 @@ public class TransactionJaxbDtoFactory extends RMT2Base {
         list.add(x);
         return list;
     }
+    
+	/**
+	 * Retrieves the list of transaction id's from the XactBasicCriteriaType element
+	 * of the transaction criteria request object.
+	 * 
+	 * @param jaxbObj an instance of {@link XactBasicCriteriaType}
+	 * @return List<Integer>
+	 */
+    public static List<Integer> createDeleteXactIdList(XactBasicCriteriaType jaxbObj) {
+        if (jaxbObj == null || jaxbObj.getXactIdList() == null) {
+            return null;
+        }
+        return jaxbObj.getXactIdList().getXactId();
+    }
+    
 }
 

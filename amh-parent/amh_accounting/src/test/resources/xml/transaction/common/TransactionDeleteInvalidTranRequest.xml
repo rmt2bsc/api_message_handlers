@@ -1,0 +1,24 @@
+<AccountingTransactionRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>accounting</application>
+        <module>transaction</module>
+        <transaction>INCORRECT_TRAN_CODE</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>01/20/2022 22:13:37</delivery_date>
+        <session_id>ABCDEFGHIJKLMNOPQRSTUVWXYZ</session_id>
+    </header>
+    <criteria>
+        <xact_criteria>
+            <target_level>HEADER</target_level>
+            <basic_criteria>
+                <xact_id_list>
+                    <xact_id>1111111</xact_id>
+                    <xact_id>2222222</xact_id>
+                    <xact_id>3333333</xact_id>
+                </xact_id_list>
+            </basic_criteria>
+        </xact_criteria>
+    </criteria>
+</AccountingTransactionRequest>

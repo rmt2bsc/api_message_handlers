@@ -20,6 +20,7 @@ import org.rmt2.jaxb.AccountingTransactionResponse;
 import org.rmt2.jaxb.ObjectFactory;
 import org.rmt2.jaxb.ReplyStatusType;
 import org.rmt2.jaxb.TransactionDetailGroup;
+import org.rmt2.jaxb.XactBasicCriteriaType;
 import org.rmt2.jaxb.XactType;
 
 import com.InvalidDataException;
@@ -54,6 +55,14 @@ public class XactApiHandler extends
     public static final String MSG_REQUIRED_NO_TRANSACTIONS_INCORRECT = "Transaction profile is required to contain one and only one transaction for the create transaction operation";
     public static final String MSG_REVERSE_SUCCESS = "Existing Accounting Transaction, %s1, was reversed: %s2";
     public static final String MSG_DETAILS_NOT_SUPPORTED = "Transaction level \"DETAILS\" is not supported at this time";
+    
+    public static final String MSG_DELETE_SUCCESS = "Accounting transaction record(s) were deleted successfully";
+    public static final String MSG_DELETE_SUCCESS_EXT = "The following transaction(s) were deleted: " + ApiMessageHandlerConst.MSG_PLACEHOLDER;
+    public static final String MSG_DELETE_XACT_NOT_FOUND = "No accounting transaction record(s) were found";
+    public static final String MSG_DELETE_XACT_NOT_FOUND_EXT = "The following transaction(s) were deleted: " + ApiMessageHandlerConst.MSG_PLACEHOLDER;
+    public static final String MSG_DELETE_API_ERROR = "An API error prevented the deletion of transaction(s): " + ApiMessageHandlerConst.MSG_PLACEHOLDER;    
+    
+    
     
     
     private XactApi api;
@@ -109,6 +118,10 @@ public class XactApiHandler extends
                 
             case ApiTransactionCodes.ACCOUNTING_TRANSACTION_REVERSE:
                 r = this.reverse(this.requestObj);
+                break;
+                
+            case ApiTransactionCodes.ACCOUNTING_TRANSACTION_DELETE:
+                r = this.delete(this.requestObj);
                 break;
                 
             default:
@@ -276,6 +289,68 @@ public class XactApiHandler extends
     }
     
     /**
+     * Handler for invoking the appropriate API in order to create a general accounting 
+     * Transaction object.
+     * 
+     * @param req
+     *            an instance of {@link AccountingTransactionRequest}
+     * @return an instance of {@link MessageHandlerResults}
+     */
+    protected MessageHandlerResults delete(AccountingTransactionRequest req) {
+        MessageHandlerResults results = new MessageHandlerResults();
+        MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
+        XactBasicCriteriaType reqCriteria = req.getCriteria().getXactCriteria().getBasicCriteria();
+        StringBuilder xactIdStringList = null;
+        
+        try {
+            // Set reply status
+            rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+            rs.setRecordCount(0);
+            
+            // Build list of transaction id's that are to be deleted.  This is typically used to construct error messages.
+            List<Integer> xactIdList = TransactionJaxbDtoFactory.createDeleteXactIdList(reqCriteria);
+            if (xactIdList != null) {
+            	xactIdStringList = new StringBuilder();
+        		for (Integer xactId : xactIdList) {
+        			if (xactIdStringList.length() > 0) {
+        				xactIdStringList.append(", ");
+        			}
+        			xactIdStringList.append(xactId);
+        		}
+            }
+            
+            int rc = this.api.deleteXact(xactIdList);
+            rs.setRecordCount(rc);
+            if (rc > 0) {
+            	rs.setMessage(XactApiHandler.MSG_DELETE_SUCCESS);
+                rs.setExtMessage(RMT2String.replace(XactApiHandler.MSG_DELETE_SUCCESS_EXT, 
+                		xactIdStringList.toString(), ApiMessageHandlerConst.MSG_PLACEHOLDER));	
+            }
+            else {
+            	rs.setMessage(XactApiHandler.MSG_DELETE_XACT_NOT_FOUND);
+            	rs.setExtMessage(RMT2String.replace(XactApiHandler.MSG_DELETE_XACT_NOT_FOUND_EXT, 
+                		xactIdStringList.toString(), ApiMessageHandlerConst.MSG_PLACEHOLDER));	
+            }
+           
+            this.responseObj.setHeader(req.getHeader());
+            this.api.commitTrans();
+        } catch (Exception e) {
+            logger.error("Error occurred during API Message Handler operation, " + this.command, e );
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
+            rs.setMessage(RMT2String.replace(XactApiHandler.MSG_DELETE_API_ERROR, 
+            		xactIdStringList.toString(), ApiMessageHandlerConst.MSG_PLACEHOLDER));	
+            rs.setExtMessage(e.getMessage()); 
+            this.api.rollbackTrans();
+        } finally {
+            this.api.close();
+        }
+        String xml = this.buildResponse(null, rs);
+        results.setPayload(xml);
+        return results;
+    }
+    
+    /**
      * Builds a List of XactType objects from a List of XactDto objects.
      * 
      * @param results List<{@link XactDto}>
@@ -386,6 +461,7 @@ public class XactApiHandler extends
         // Validate request for fetch operations
         switch (this.command) {
             case ApiTransactionCodes.ACCOUNTING_TRANSACTION_GET:
+            case ApiTransactionCodes.ACCOUNTING_TRANSACTION_DELETE:
                 this.validateSearchRequest(req);
                 break;
                 
