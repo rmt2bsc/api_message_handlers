@@ -57,9 +57,9 @@ public class XactApiHandler extends
     public static final String MSG_DETAILS_NOT_SUPPORTED = "Transaction level \"DETAILS\" is not supported at this time";
     
     public static final String MSG_DELETE_SUCCESS = "Accounting transaction record(s) were deleted successfully";
-    public static final String MSG_DELETE_SUCCESS_EXT = "The following transaction(s) were deleted: " + ApiMessageHandlerConst.MSG_PLACEHOLDER;
+    public static final String MSG_DELETE_SUCCESS_EXT = "The following transaction(s) were targeted for deletion: " + ApiMessageHandlerConst.MSG_PLACEHOLDER;
     public static final String MSG_DELETE_XACT_NOT_FOUND = "No accounting transaction record(s) were found";
-    public static final String MSG_DELETE_XACT_NOT_FOUND_EXT = "The following transaction(s) were deleted: " + ApiMessageHandlerConst.MSG_PLACEHOLDER;
+    public static final String MSG_DELETE_XACT_NOT_FOUND_EXT = "The following transaction(s) were targeted for deletion: " + ApiMessageHandlerConst.MSG_PLACEHOLDER;
     public static final String MSG_DELETE_API_ERROR = "An API error prevented the deletion of transaction(s): " + ApiMessageHandlerConst.MSG_PLACEHOLDER;    
     
     
