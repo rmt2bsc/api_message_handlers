@@ -337,7 +337,7 @@ public class CashDisbursementUpdateMessageHandlerTest extends BaseAccountingMess
         Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         
-        String msg = RMT2String.replace(CreateCashDisbursementApiHandler.MSG_CREATE_SUCCESS,
+        String msg = RMT2String.replace(CreateCashDisbursementApiHandler.MSG_CREATE_CREDITOR_SUCCESS,
                 String.valueOf(CommonXactMockData.NEW_XACT_ID), "%s");
         Assert.assertEquals(msg, actualRepsonse.getReplyStatus().getMessage());
         
