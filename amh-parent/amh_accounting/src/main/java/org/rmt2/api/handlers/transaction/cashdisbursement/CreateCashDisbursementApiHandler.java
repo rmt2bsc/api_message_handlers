@@ -42,6 +42,8 @@ public class CreateCashDisbursementApiHandler extends XactApiHandler {
     public static final String MSG_MISSING_CREDITOR_PROFILE_DATA = "Creditor profile is required when creating a cash disbursement for a creditor";
     public static final String MSG_UNABLE_TO_VERIFY_NEW_TRANS = "Warning: Unable to verify newly created cash disbursement transaction, %s";
     public static final String MSG_UNABLE_TO_VERIFY_NEW_CREDITOR_TRANS = "Warning: Unable to verify newly created creditor cash disbursement transaction, %s";
+    public static final String MSG_REVERSE_CREDITOR_SUCCESS = "New reverse creditor cash disbursement transaction was created: %s";
+    public static final String MSG_UNABLE_TO_VERIFY_REVERSE_CREDITOR_TRANS = "Warning: Unable to verify reversed creditor cash disbursement transaction, %s";
     
     private DisbursementsApi api;
     
@@ -89,6 +91,10 @@ public class CreateCashDisbursementApiHandler extends XactApiHandler {
                 r = this.updateForCreditor(this.requestObj);
                 break;
                 
+            case ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_CREDITOR_REVERSE:
+            	r = this.reverseForCreditor(this.requestObj);
+            	break;
+            	
             default:
                 r = this.createErrorReply(MessagingConstants.RETURN_CODE_FAILURE,
                         MessagingConstants.RETURN_STATUS_BAD_REQUEST,
@@ -141,7 +147,7 @@ public class CreateCashDisbursementApiHandler extends XactApiHandler {
                 tranRresults = TransactionJaxbDtoFactory.buildJaxbCreditorTransaction(newDto.get(0), null);
             }
 
-            String msg = RMT2String.replace(MSG_CREATE_SUCCESS, String.valueOf(newXactId), "%s");
+            String msg = RMT2String.replace(MSG_REVERSE_CREDITOR_SUCCESS, String.valueOf(newXactId), "%s");
             rs.setMessage(msg);
             rs.setRecordCount(1);
             
@@ -163,7 +169,7 @@ public class CreateCashDisbursementApiHandler extends XactApiHandler {
     }
     
     /**
-     * Handler for invoking the appropriate API in order to create a cash
+     * Handler for invoking the appropriate API in order to create a creditor cash
      * disbursement accounting transaction object for a given creditor.
      * 
      * @param req
@@ -226,6 +232,69 @@ public class CreateCashDisbursementApiHandler extends XactApiHandler {
         return results;
     }
 
+    /**
+     * Handler for invoking the appropriate API in order to reverse a creditor cash
+     * disbursement accounting transaction object for a given creditor.
+     * 
+     * @param req
+     *            an instance of {@link AccountingTransactionRequest}
+     * @return an instance of {@link MessageHandlerResults}
+     */
+    protected MessageHandlerResults reverseForCreditor(AccountingTransactionRequest req) {
+        MessageHandlerResults results = new MessageHandlerResults();
+        MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
+        XactType reqXact = req.getProfile().getTransactions().getTransaction().get(0);
+        List<XactType> tranRresults = new ArrayList<>();
+        
+        try {
+            // Set reply status
+            rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+            rs.setRecordCount(0);
+            
+            XactDto xactDto = TransactionJaxbDtoFactory.createXactDtoInstance(reqXact);
+            List<XactTypeItemActivityDto> itemsDtoList =
+                    TransactionJaxbDtoFactory.createXactItemDtoInstance(reqXact.getLineitems().getLineitem());
+            CreditorDto credDto = TransactionJaxbDtoFactory.createCreditorDtoInstance(reqXact); 
+            
+            // Force transaction type to creditor cash disbursement
+            xactDto.setXactTypeId(XactConst.XACT_TYPE_CASH_DISBURSE_ACCOUNT);
+
+            api.beginTrans();
+            int newXactId = this.api.updateTrans(xactDto, itemsDtoList, credDto.getCreditorId());
+            xactDto.setXactId(newXactId);
+
+            // Verify new transaction
+            XactDto newXactCriteriaDto = Rmt2XactDtoFactory.createXactBaseInstance(null);
+            newXactCriteriaDto.setXactId(newXactId);
+            List<XactDto> newDto = this.api.get(newXactCriteriaDto, null);
+            if (newDto == null) {
+            	String msgExt = RMT2String.replace(MSG_UNABLE_TO_VERIFY_REVERSE_CREDITOR_TRANS, String.valueOf(newXactId), "%s");
+                rs.setExtMessage(msgExt);
+            }
+            else {
+                tranRresults = TransactionJaxbDtoFactory.buildJaxbCreditorTransaction(newDto.get(0), credDto.getCreditorId());
+            }
+
+            String msg = RMT2String.replace(MSG_REVERSE_CREDITOR_SUCCESS, String.valueOf(newXactId), "%s");
+            rs.setMessage(msg);
+            rs.setRecordCount(1);
+            this.responseObj.setHeader(req.getHeader());
+            this.api.commitTrans();
+        } catch (Exception e) {
+            logger.error("Error occurred during API Message Handler operation, " + this.command, e );
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
+            rs.setMessage(CreateCashDisbursementApiHandler.MSG_FAILURE);
+            rs.setExtMessage(e.getMessage());
+            this.api.rollbackTrans();
+        } finally {
+            this.api.close();
+        }
+        
+        String xml = this.buildResponse(tranRresults, rs);
+        results.setPayload(xml);
+        return results;
+    }
     /* (non-Javadoc)
      * @see org.rmt2.api.handlers.transaction.XactApiHandler#validateRequest(org.rmt2.jaxb.AccountingTransactionRequest)
      */
@@ -242,6 +311,7 @@ public class CreateCashDisbursementApiHandler extends XactApiHandler {
                 
             case ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_CREATE:
             case ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_CREDITOR_CREATE:
+            case ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_CREDITOR_REVERSE:
                 // Transaction profile must exist
                 this.validateUpdateRequest(req);
                 break;
@@ -263,14 +333,14 @@ public class CreateCashDisbursementApiHandler extends XactApiHandler {
         super.validateUpdateRequest(req);
         
         // Verify that creditor profile exist
-        if (ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_CREDITOR_CREATE.equalsIgnoreCase(this.command)) {
-            try {
-                Verifier.verifyNotNull(req.getProfile().getTransactions().getTransaction().get(0).getCreditor());
-            }
-            catch (VerifyException e) {
-                throw new InvalidRequestException(CreateCashDisbursementApiHandler.MSG_MISSING_CREDITOR_PROFILE_DATA, e);    
-            }    
-        }
+		if (ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_CREDITOR_CREATE.equalsIgnoreCase(this.command)
+				|| ApiTransactionCodes.ACCOUNTING_CASHDISBURSE_CREDITOR_REVERSE.equalsIgnoreCase(this.command)) {
+			try {
+				Verifier.verifyNotNull(req.getProfile().getTransactions().getTransaction().get(0).getCreditor());
+			} catch (VerifyException e) {
+				throw new InvalidRequestException(CreateCashDisbursementApiHandler.MSG_MISSING_CREDITOR_PROFILE_DATA, e);
+			}
+		}
     }
 
     /* (non-Javadoc)
