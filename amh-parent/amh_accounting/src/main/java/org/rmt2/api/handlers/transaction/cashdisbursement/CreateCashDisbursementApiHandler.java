@@ -203,7 +203,6 @@ public class CreateCashDisbursementApiHandler extends XactApiHandler {
                 rs.setExtMessage(msgExt);
             }
             else {
-//                rs.setExtMessage(newDto.get(0).getXactReason());
                 tranRresults = TransactionJaxbDtoFactory.buildJaxbCreditorTransaction(newDto.get(0), credDto.getCreditorId());
             }
 
