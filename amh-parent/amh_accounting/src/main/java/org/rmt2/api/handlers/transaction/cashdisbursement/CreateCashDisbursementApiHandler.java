@@ -188,7 +188,7 @@ public class CreateCashDisbursementApiHandler extends XactApiHandler {
             CreditorDto credDto = TransactionJaxbDtoFactory.createCreditorDtoInstance(reqXact); 
             
             // Force transaction type to creditor cash disbursement
-            xactDto.setXactTypeId(XactConst.XACT_TYPE_CREDITOR_PURCHASE);
+            xactDto.setXactTypeId(XactConst.XACT_TYPE_CASH_DISBURSE_ACCOUNT);
 
             api.beginTrans();
             int newXactId = this.api.updateTrans(xactDto, itemsDtoList, credDto.getCreditorId());
