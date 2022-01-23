@@ -253,7 +253,7 @@ public class CreateCashDisbursementApiHandler extends XactApiHandler {
 
     /**
      * Verifies that the creditor profile exists for the create creditor cash
-     * disbursment transaction.
+     * disbursement transaction.
      * 
      * @param req
      * @throws InvalidDataException
