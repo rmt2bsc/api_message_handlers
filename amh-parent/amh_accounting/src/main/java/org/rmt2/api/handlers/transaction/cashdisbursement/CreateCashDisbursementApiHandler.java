@@ -209,14 +209,14 @@ public class CreateCashDisbursementApiHandler extends XactApiHandler {
             String msg = RMT2String.replace(MSG_CREATE_CREDITOR_SUCCESS, String.valueOf(newXactId), "%s");
             rs.setMessage(msg);
             rs.setRecordCount(1);
-            
-            
             this.responseObj.setHeader(req.getHeader());
+            this.api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage(CreateCashDisbursementApiHandler.MSG_FAILURE);
             rs.setExtMessage(e.getMessage());
+            this.api.rollbackTrans();
         } finally {
             this.api.close();
         }
