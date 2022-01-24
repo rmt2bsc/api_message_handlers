@@ -161,6 +161,7 @@ public class CreateCashDisbursementApiHandler extends XactApiHandler {
             this.api.rollbackTrans();
         } finally {
             this.api.close();
+            this.api = null;
         }
         
         String xml = this.buildResponse(tranRresults, rs);
@@ -211,7 +212,7 @@ public class CreateCashDisbursementApiHandler extends XactApiHandler {
             else {
                 tranRresults = TransactionJaxbDtoFactory.buildJaxbCreditorTransaction(newDto.get(0), credDto.getCreditorId());
             }
-
+            
             String msg = RMT2String.replace(MSG_CREATE_CREDITOR_SUCCESS, String.valueOf(newXactId), "%s");
             rs.setMessage(msg);
             rs.setRecordCount(1);
@@ -225,6 +226,7 @@ public class CreateCashDisbursementApiHandler extends XactApiHandler {
             this.api.rollbackTrans();
         } finally {
             this.api.close();
+            this.api = null;
         }
         
         String xml = this.buildResponse(tranRresults, rs);
