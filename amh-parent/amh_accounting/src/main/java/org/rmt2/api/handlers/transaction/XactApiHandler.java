@@ -62,10 +62,6 @@ public class XactApiHandler extends
     public static final String MSG_DELETE_XACT_NOT_FOUND_EXT = "The following transaction(s) were targeted for deletion: " + ApiMessageHandlerConst.MSG_PLACEHOLDER;
     public static final String MSG_DELETE_API_ERROR = "An API error prevented the deletion of transaction(s): " + ApiMessageHandlerConst.MSG_PLACEHOLDER;    
     
-    
-    
-    
-    private XactApi api;
     protected ObjectFactory jaxbObjFactory;
     protected String targetLevel;
 
@@ -77,7 +73,6 @@ public class XactApiHandler extends
      */
     public XactApiHandler() {
         super();
-        this.api = XactApiFactory.createDefaultXactApi();
         this.jaxbObjFactory = new ObjectFactory();
         this.responseObj = jaxbObjFactory.createAccountingTransactionResponse();
         
@@ -104,7 +99,6 @@ public class XactApiHandler extends
         MessageHandlerResults r = super.processMessage(command, payload);
 
         if (r != null) {
-            // This means an error occurred.
             return r;
         }
         switch (command) {
@@ -147,7 +141,11 @@ public class XactApiHandler extends
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         List<XactType> queryDtoResults = null;
 
+        // IS-71:  Changed the scope to local to prevent conflicts class scoped api variable in XactApiHandler
+        XactApi api = null;
         try {
+        	api = XactApiFactory.createDefaultXactApi();
+        	
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             XactDto criteriaDto = TransactionJaxbDtoFactory
@@ -157,7 +155,7 @@ public class XactApiHandler extends
             switch (this.targetLevel) {
                 case ApiMessageHandlerConst.TARGET_LEVEL_HEADER:
                 case ApiMessageHandlerConst.TARGET_LEVEL_FULL:
-                    List<XactDto> dtoList = this.api.getXact(criteriaDto);
+                    List<XactDto> dtoList = api.getXact(criteriaDto);
                     if (dtoList == null) {
                         rs.setMessage(XactApiHandler.MSG_DATA_NOT_FOUND);
                         rs.setRecordCount(0);
@@ -182,7 +180,7 @@ public class XactApiHandler extends
             rs.setMessage("Failure to retrieve Transaction(s)");
             rs.setExtMessage(e.getMessage());
         } finally {
-            this.api.close();
+            api.close();
         }
 
         String xml = this.buildResponse(queryDtoResults, rs);
@@ -204,7 +202,10 @@ public class XactApiHandler extends
         XactType reqXact = req.getProfile().getTransactions().getTransaction().get(0);
         List<XactType> tranRresults = new ArrayList<>();
         
+        // IS-71:  Changed the scope to local to prevent conflicts class scoped api variable in XactApiHandler
+        XactApi api = null;
         try {
+        	api = XactApiFactory.createDefaultXactApi();
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
@@ -213,7 +214,7 @@ public class XactApiHandler extends
             List<XactTypeItemActivityDto> itemsDtoList = TransactionJaxbDtoFactory
                     .createXactItemDtoInstance(reqXact.getLineitems().getLineitem());
             
-            int newXactId = this.api.update(xactDto, itemsDtoList);
+            int newXactId = api.update(xactDto, itemsDtoList);
             xactDto.setXactId(newXactId);
             XactType XactResults = TransactionJaxbDtoFactory.createXactJaxbInstance(xactDto, 0, itemsDtoList);
             tranRresults.add(XactResults);
@@ -221,15 +222,15 @@ public class XactApiHandler extends
             rs.setRecordCount(1);
            
             this.responseObj.setHeader(req.getHeader());
-            this.api.commitTrans();
+            api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to create Transaction");
             rs.setExtMessage(e.getMessage());
-            this.api.rollbackTrans();
+            api.rollbackTrans();
         } finally {
-            this.api.close();
+            api.close();
         }
         String xml = this.buildResponse(tranRresults, rs);
         results.setPayload(xml);
@@ -253,7 +254,11 @@ public class XactApiHandler extends
         int newXactId = 0;
         int oldXactId = 0;
         
+        // IS-71:  Changed the scope to local to prevent conflicts class scoped api variable in XactApiHandler
+        XactApi api = null;
         try {
+        	api = XactApiFactory.createDefaultXactApi();
+        	
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
@@ -263,7 +268,7 @@ public class XactApiHandler extends
                     .createXactItemDtoInstance(reqXact.getLineitems().getLineitem());
             
             oldXactId = xactDto.getXactId();
-            newXactId = this.api.reverse(xactDto, itemsDtoList);
+            newXactId = api.reverse(xactDto, itemsDtoList);
             xactDto.setXactId(newXactId);
             XactType XactResults = TransactionJaxbDtoFactory.createXactJaxbInstance(xactDto, 0, itemsDtoList);
             tranRresults.add(XactResults);
@@ -272,15 +277,15 @@ public class XactApiHandler extends
             rs.setMessage(msg);
             rs.setRecordCount(1);
             this.responseObj.setHeader(req.getHeader());
-            this.api.commitTrans();
+            api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage("Failure to reverse Transaction: " + oldXactId);
             rs.setExtMessage(e.getMessage());
-            this.api.rollbackTrans();
+            api.rollbackTrans();
         } finally {
-            this.api.close();
+            api.close();
         }
 
         String xml = this.buildResponse(tranRresults, rs);
@@ -302,7 +307,11 @@ public class XactApiHandler extends
         XactBasicCriteriaType reqCriteria = req.getCriteria().getXactCriteria().getBasicCriteria();
         StringBuilder xactIdStringList = null;
         
+        // IS-71:  Changed the scope to local to prevent conflicts class scoped api variable in XactApiHandler
+        XactApi api = null;
         try {
+        	api = XactApiFactory.createDefaultXactApi();
+        	
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
@@ -320,7 +329,7 @@ public class XactApiHandler extends
         		}
             }
             
-            int rc = this.api.deleteXact(xactIdList);
+            int rc = api.deleteXact(xactIdList);
             rs.setRecordCount(rc);
             if (rc > 0) {
             	rs.setMessage(XactApiHandler.MSG_DELETE_SUCCESS);
@@ -334,16 +343,16 @@ public class XactApiHandler extends
             }
            
             this.responseObj.setHeader(req.getHeader());
-            this.api.commitTrans();
+            api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage(RMT2String.replace(XactApiHandler.MSG_DELETE_API_ERROR, 
             		xactIdStringList.toString(), ApiMessageHandlerConst.MSG_PLACEHOLDER));	
             rs.setExtMessage(e.getMessage()); 
-            this.api.rollbackTrans();
+            api.rollbackTrans();
         } finally {
-            this.api.close();
+            api.close();
         }
         String xml = this.buildResponse(null, rs);
         results.setPayload(xml);
@@ -359,22 +368,30 @@ public class XactApiHandler extends
     private List<XactType> buildJaxbTransaction(List<XactDto> results) {
         List<XactType> list = new ArrayList<>();
         
-        for (XactDto item : results) {
-            List<XactTypeItemActivityDto> xactItems = null;
-            
-            // retrieve line items if requested
-            if (this.targetLevel.equals(ApiMessageHandlerConst.TARGET_LEVEL_FULL)) {
-                try {
-                    xactItems = this.api.getXactTypeItemActivityExt(item.getXactId());
-                } catch (XactApiException e) {
-                    logger.error("Unable to fetch line items for transaction id, " + item.getXactId());
-                }    
-            }
-            
-            XactType jaxbObj = TransactionJaxbDtoFactory.createXactJaxbInstance(item, 0, xactItems);
-            list.add(jaxbObj);
-        }
-        return list;
+        // IS-71:  Utilize XactApi in local scope
+		XactApi api = null;
+		try {
+			api = XactApiFactory.createDefaultXactApi();
+			for (XactDto item : results) {
+				List<XactTypeItemActivityDto> xactItems = null;
+
+				// retrieve line items if requested
+				if (this.targetLevel.equals(ApiMessageHandlerConst.TARGET_LEVEL_FULL)) {
+					try {
+						xactItems = api.getXactTypeItemActivityExt(item.getXactId());
+					} catch (XactApiException e) {
+						logger.error("Unable to fetch line items for transaction id, " + item.getXactId());
+					}
+				}
+
+				XactType jaxbObj = TransactionJaxbDtoFactory.createXactJaxbInstance(item, 0, xactItems);
+				list.add(jaxbObj);
+			}
+		} finally {
+			api.close();
+			api = null;
+		}
+		return list;
     }
     
     /**

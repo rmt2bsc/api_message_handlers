@@ -45,14 +45,11 @@ public class CreateCashDisbursementApiHandler extends XactApiHandler {
     public static final String MSG_REVERSE_CREDITOR_SUCCESS = "New reverse creditor cash disbursement transaction was created: %s";
     public static final String MSG_UNABLE_TO_VERIFY_REVERSE_CREDITOR_TRANS = "Warning: Unable to verify reversed creditor cash disbursement transaction, %s";
     
-    private DisbursementsApi api;
-    
     /**
      * 
      */
     public CreateCashDisbursementApiHandler() {
         super();
-        this.api = DisbursementsApiFactory.createApi();
         logger.info(CreateCashDisbursementApiHandler.class.getName() + " was instantiated successfully");
     }
 
@@ -118,7 +115,11 @@ public class CreateCashDisbursementApiHandler extends XactApiHandler {
         XactType reqXact = req.getProfile().getTransactions().getTransaction().get(0);
         List<XactType> tranRresults = new ArrayList<>();
         
-        try {
+        // IS-71:  Changed the scope to local to prevent conflicts class scoped api variable in XactApiHandler
+        DisbursementsApi api = null;
+		try {
+			api = DisbursementsApiFactory.createApi();
+			
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
@@ -132,13 +133,13 @@ public class CreateCashDisbursementApiHandler extends XactApiHandler {
             xactDto.setXactTypeId(XactConst.XACT_TYPE_CASH_DISBURSE);
 
             api.beginTrans();
-            int newXactId = this.api.updateTrans(xactDto, itemsDtoList);
+            int newXactId = api.updateTrans(xactDto, itemsDtoList);
             xactDto.setXactId(newXactId);
 
             // Verify new transaction.
             XactDto newXactCriteriaDto = Rmt2XactDtoFactory.createXactBaseInstance(null);
             newXactCriteriaDto.setXactId(newXactId);
-            List<XactDto> newDto = this.api.get(newXactCriteriaDto, null);
+            List<XactDto> newDto = api.get(newXactCriteriaDto, null);
             if (newDto == null) {
             	String msgExt = RMT2String.replace(MSG_UNABLE_TO_VERIFY_NEW_TRANS, String.valueOf(newXactId), "%s");
                 rs.setExtMessage(msgExt);
@@ -147,21 +148,21 @@ public class CreateCashDisbursementApiHandler extends XactApiHandler {
                 tranRresults = TransactionJaxbDtoFactory.buildJaxbCreditorTransaction(newDto.get(0), null);
             }
 
-            String msg = RMT2String.replace(MSG_REVERSE_CREDITOR_SUCCESS, String.valueOf(newXactId), "%s");
+            String msg = RMT2String.replace(MSG_CREATE_SUCCESS, String.valueOf(newXactId), "%s");
             rs.setMessage(msg);
             rs.setRecordCount(1);
             
             this.responseObj.setHeader(req.getHeader());
-            this.api.commitTrans();
+            api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage(CreateCashDisbursementApiHandler.MSG_FAILURE);
             rs.setExtMessage(e.getMessage());
-            this.api.rollbackTrans();
+            api.rollbackTrans();
         } finally {
-            this.api.close();
-            this.api = null;
+            api.close();
+            api = null;
         }
         
         String xml = this.buildResponse(tranRresults, rs);
@@ -183,7 +184,11 @@ public class CreateCashDisbursementApiHandler extends XactApiHandler {
         XactType reqXact = req.getProfile().getTransactions().getTransaction().get(0);
         List<XactType> tranRresults = new ArrayList<>();
         
-        try {
+        // IS-71:  Changed the scope to local to prevent conflicts class scoped api variable in XactApiHandler
+        DisbursementsApi api = null;
+		try {
+			api = DisbursementsApiFactory.createApi();
+			
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
@@ -198,13 +203,13 @@ public class CreateCashDisbursementApiHandler extends XactApiHandler {
             xactDto.setXactTypeId(XactConst.XACT_TYPE_CASH_DISBURSE_ACCOUNT);
 
             api.beginTrans();
-            int newXactId = this.api.updateTrans(xactDto, itemsDtoList, credDto.getCreditorId());
+            int newXactId = api.updateTrans(xactDto, itemsDtoList, credDto.getCreditorId());
             xactDto.setXactId(newXactId);
 
             // Verify new transaction
             XactDto newXactCriteriaDto = Rmt2XactDtoFactory.createXactBaseInstance(null);
             newXactCriteriaDto.setXactId(newXactId);
-            List<XactDto> newDto = this.api.get(newXactCriteriaDto, null);
+            List<XactDto> newDto = api.get(newXactCriteriaDto, null);
             if (newDto == null) {
             	String msgExt = RMT2String.replace(MSG_UNABLE_TO_VERIFY_NEW_CREDITOR_TRANS, String.valueOf(newXactId), "%s");
                 rs.setExtMessage(msgExt);
@@ -217,16 +222,16 @@ public class CreateCashDisbursementApiHandler extends XactApiHandler {
             rs.setMessage(msg);
             rs.setRecordCount(1);
             this.responseObj.setHeader(req.getHeader());
-            this.api.commitTrans();
+            api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage(CreateCashDisbursementApiHandler.MSG_FAILURE);
             rs.setExtMessage(e.getMessage());
-            this.api.rollbackTrans();
+            api.rollbackTrans();
         } finally {
-            this.api.close();
-            this.api = null;
+            api.close();
+            api = null;
         }
         
         String xml = this.buildResponse(tranRresults, rs);
@@ -248,7 +253,11 @@ public class CreateCashDisbursementApiHandler extends XactApiHandler {
         XactType reqXact = req.getProfile().getTransactions().getTransaction().get(0);
         List<XactType> tranRresults = new ArrayList<>();
         
-        try {
+        // IS-71:  Changed the scope to local to prevent conflicts class scoped api variable in XactApiHandler
+        DisbursementsApi api = null;
+		try {
+			api = DisbursementsApiFactory.createApi();
+			
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
@@ -263,13 +272,13 @@ public class CreateCashDisbursementApiHandler extends XactApiHandler {
             xactDto.setXactTypeId(XactConst.XACT_TYPE_CASH_DISBURSE_ACCOUNT);
 
             api.beginTrans();
-            int newXactId = this.api.updateTrans(xactDto, itemsDtoList, credDto.getCreditorId());
+            int newXactId = api.updateTrans(xactDto, itemsDtoList, credDto.getCreditorId());
             xactDto.setXactId(newXactId);
 
             // Verify new transaction
             XactDto newXactCriteriaDto = Rmt2XactDtoFactory.createXactBaseInstance(null);
             newXactCriteriaDto.setXactId(newXactId);
-            List<XactDto> newDto = this.api.get(newXactCriteriaDto, null);
+            List<XactDto> newDto = api.get(newXactCriteriaDto, null);
             if (newDto == null) {
             	String msgExt = RMT2String.replace(MSG_UNABLE_TO_VERIFY_REVERSE_CREDITOR_TRANS, String.valueOf(newXactId), "%s");
                 rs.setExtMessage(msgExt);
@@ -282,15 +291,15 @@ public class CreateCashDisbursementApiHandler extends XactApiHandler {
             rs.setMessage(msg);
             rs.setRecordCount(1);
             this.responseObj.setHeader(req.getHeader());
-            this.api.commitTrans();
+            api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage(CreateCashDisbursementApiHandler.MSG_FAILURE);
             rs.setExtMessage(e.getMessage());
-            this.api.rollbackTrans();
+            api.rollbackTrans();
         } finally {
-            this.api.close();
+            api.close();
         }
         
         String xml = this.buildResponse(tranRresults, rs);

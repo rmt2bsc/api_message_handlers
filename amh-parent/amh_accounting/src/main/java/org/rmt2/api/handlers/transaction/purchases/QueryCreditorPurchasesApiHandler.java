@@ -41,14 +41,11 @@ public class QueryCreditorPurchasesApiHandler extends XactApiHandler {
     public static final String MSG_DATA_NOT_FOUND = "Creditor purchases data not found!";
     public static final String MSG_FAILURE = "Failure to retrieve Creditor purchases transaction(s)";
     
-    private CreditorPurchasesApi api;
-    
     /**
      * 
      */
     public QueryCreditorPurchasesApiHandler() {
         super();
-        this.api = CreditorPurchasesApiFactory.createApi();
         logger.info(QueryCreditorPurchasesApiHandler.class.getName() + " was instantiated successfully");
     }
 
@@ -108,7 +105,11 @@ public class QueryCreditorPurchasesApiHandler extends XactApiHandler {
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         List<XactType> queryDtoResults = null;
 
+        // IS-71:  Changed the scope to local to prevent conflicts class scoped api variable in XactApiHandler
+        CreditorPurchasesApi api = null;
         try {
+        	api = CreditorPurchasesApiFactory.createApi();
+        	
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             XactCreditChargeDto criteriaDto = CreditorPurchasesJaxbDtoFactory
@@ -120,7 +121,7 @@ public class QueryCreditorPurchasesApiHandler extends XactApiHandler {
             switch (this.targetLevel) {
                 case ApiMessageHandlerConst.TARGET_LEVEL_HEADER:
                 case ApiMessageHandlerConst.TARGET_LEVEL_FULL:
-                    List<XactCreditChargeDto> dtoList = this.api.get(criteriaDto, customCriteriaDto);
+                    List<XactCreditChargeDto> dtoList = api.get(criteriaDto, customCriteriaDto);
                     if (dtoList == null) {
                         rs.setMessage(QueryCreditorPurchasesApiHandler.MSG_DATA_NOT_FOUND);
                         rs.setRecordCount(0);
@@ -145,7 +146,7 @@ public class QueryCreditorPurchasesApiHandler extends XactApiHandler {
             rs.setMessage(QueryCreditorPurchasesApiHandler.MSG_FAILURE);
             rs.setExtMessage(e.getMessage());
         } finally {
-            this.api.close();
+            api.close();
         }
 
         String xml = this.buildResponse(queryDtoResults, rs);
@@ -173,27 +174,35 @@ public class QueryCreditorPurchasesApiHandler extends XactApiHandler {
     private List<XactType> buildJaxbTransaction(List<XactCreditChargeDto> results, XactCustomCriteriaDto customCriteriaDto) {
         List<XactType> list = new ArrayList<>();
         
-        for (XactCreditChargeDto item : results) {
-            List<XactTypeItemActivityDto> xactItems = null;
-            
-            // retrieve line items if requested
-            if (this.targetLevel.equals(ApiMessageHandlerConst.TARGET_LEVEL_FULL)) {
-                try {
-                    xactItems = this.api.getItems(item.getXactId());
-                } catch (CreditorPurchasesApiException e) {
-                    logger.error("Unable to fetch line items for transaction id, " + item.getXactId());
-                }    
-            }
-            
-            XactType jaxbObj = TransactionJaxbDtoFactory.createXactJaxbInstance(item, 0, xactItems);
-            
-            // Build and associate Creditor object
-            CreditorType creditor = CreditorTypeBuilder.Builder.create()
-                    .withCreditorId(item.getCreditorId())
-                    .withAccountNo(item.getAccountNumber()).build();
-            jaxbObj.setCreditor(creditor);
-            list.add(jaxbObj);
-        }
+		// IS-71: Changed the scope to local to prevent conflicts class scoped api
+		// variable in XactApiHandler
+		CreditorPurchasesApi api = null;
+		try {
+			api = CreditorPurchasesApiFactory.createApi();
+			for (XactCreditChargeDto item : results) {
+				List<XactTypeItemActivityDto> xactItems = null;
+
+				// retrieve line items if requested
+				if (this.targetLevel.equals(ApiMessageHandlerConst.TARGET_LEVEL_FULL)) {
+					try {
+						xactItems = api.getItems(item.getXactId());
+					} catch (CreditorPurchasesApiException e) {
+						logger.error("Unable to fetch line items for transaction id, " + item.getXactId());
+					}
+				}
+
+				XactType jaxbObj = TransactionJaxbDtoFactory.createXactJaxbInstance(item, 0, xactItems);
+
+				// Build and associate Creditor object
+				CreditorType creditor = CreditorTypeBuilder.Builder.create().withCreditorId(item.getCreditorId())
+						.withAccountNo(item.getAccountNumber()).build();
+				jaxbObj.setCreditor(creditor);
+				list.add(jaxbObj);
+			}
+		} finally {
+			api.close();
+			api = null;
+		}
         return list;
     }
     

@@ -40,14 +40,11 @@ public class QueryDisbursementApiHandler extends XactApiHandler {
     public static final String MSG_DATA_NOT_FOUND = "Cash disbursement data not found!";
     public static final String MSG_FAILURE = "Failure to retrieve Cash disbursement transaction(s)";
     
-    private DisbursementsApi api;
-    
     /**
      * 
      */
     public QueryDisbursementApiHandler() {
         super();
-        this.api = DisbursementsApiFactory.createApi();
         logger.info(QueryDisbursementApiHandler.class.getName() + " was instantiated successfully");
     }
 
@@ -107,7 +104,11 @@ public class QueryDisbursementApiHandler extends XactApiHandler {
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         List<XactType> queryDtoResults = null;
 
-        try {
+        // IS-71:  Changed the scope to local to prevent conflicts class scoped api variable in XactApiHandler
+        DisbursementsApi api = null;
+		try {
+			api = DisbursementsApiFactory.createApi();
+			
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             XactDto criteriaDto = TransactionJaxbDtoFactory
@@ -119,7 +120,7 @@ public class QueryDisbursementApiHandler extends XactApiHandler {
             switch (this.targetLevel) {
                 case ApiMessageHandlerConst.TARGET_LEVEL_HEADER:
                 case ApiMessageHandlerConst.TARGET_LEVEL_FULL:
-                    List<XactDto> dtoList = this.api.get(criteriaDto, customCriteriaDto);
+                    List<XactDto> dtoList = api.get(criteriaDto, customCriteriaDto);
                     if (dtoList == null) {
                         rs.setMessage(QueryDisbursementApiHandler.MSG_DATA_NOT_FOUND);
                         rs.setRecordCount(0);
@@ -144,7 +145,7 @@ public class QueryDisbursementApiHandler extends XactApiHandler {
             rs.setMessage(QueryDisbursementApiHandler.MSG_FAILURE);
             rs.setExtMessage(e.getMessage());
         } finally {
-            this.api.close();
+            api.close();
         }
 
         String xml = this.buildResponse(queryDtoResults, rs);
@@ -172,24 +173,34 @@ public class QueryDisbursementApiHandler extends XactApiHandler {
     private List<XactType> buildJaxbTransaction(List<XactDto> results, XactCustomCriteriaDto customCriteriaDto) {
         List<XactType> list = new ArrayList<>();
         
-        for (XactDto item : results) {
-            List<XactTypeItemActivityDto> xactItems = null;
-            
-            // retrieve line items if requested
-            if (this.targetLevel.equals(ApiMessageHandlerConst.TARGET_LEVEL_FULL)) {
-                XactTypeItemActivityDto itemCriteria = Rmt2XactDtoFactory.createXactTypeItemActivityInstance((XactTypeItemActivity) null);
-                itemCriteria.setXactId(item.getXactId());
-                try {
-                    xactItems = this.api.getItems(itemCriteria, customCriteriaDto);
-                } catch (XactApiException e) {
-                    logger.error("Unable to fetch line items for transaction id, " + item.getXactId());
-                }    
-            }
-            
-            XactType jaxbObj = TransactionJaxbDtoFactory.createXactJaxbInstance(item, 0, xactItems);
-            list.add(jaxbObj);
-        }
-        return list;
+        // IS-71:  Changed the scope to local to prevent conflicts class scoped api variable in XactApiHandler
+		DisbursementsApi api = null;
+		try {
+			api = DisbursementsApiFactory.createApi();
+
+			for (XactDto item : results) {
+				List<XactTypeItemActivityDto> xactItems = null;
+
+				// retrieve line items if requested
+				if (this.targetLevel.equals(ApiMessageHandlerConst.TARGET_LEVEL_FULL)) {
+					XactTypeItemActivityDto itemCriteria = Rmt2XactDtoFactory
+							.createXactTypeItemActivityInstance((XactTypeItemActivity) null);
+					itemCriteria.setXactId(item.getXactId());
+					try {
+						xactItems = api.getItems(itemCriteria, customCriteriaDto);
+					} catch (XactApiException e) {
+						logger.error("Unable to fetch line items for transaction id, " + item.getXactId());
+					}
+				}
+
+				XactType jaxbObj = TransactionJaxbDtoFactory.createXactJaxbInstance(item, 0, xactItems);
+				list.add(jaxbObj);
+			}
+		} finally {
+			api.close();
+			api = null;
+		}
+		return list;
     }
     
     /* (non-Javadoc)

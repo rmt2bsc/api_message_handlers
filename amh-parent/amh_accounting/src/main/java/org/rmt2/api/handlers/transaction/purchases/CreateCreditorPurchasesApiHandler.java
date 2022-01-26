@@ -39,14 +39,11 @@ public class CreateCreditorPurchasesApiHandler extends XactApiHandler {
     public static final String MSG_CREATE_SUCCESS = "New creditor purchases transaction was created: %s";
     public static final String MSG_MISSING_CREDITOR_PROFILE_DATA = "Creditor profile is required when creating a Creditor purchases for a creditor";
     
-    private CreditorPurchasesApi api;
-    
     /**
      * 
      */
     public CreateCreditorPurchasesApiHandler() {
         super();
-        this.api = CreditorPurchasesApiFactory.createApi();
         logger.info(CreateCreditorPurchasesApiHandler.class.getName() + " was instantiated successfully");
     }
 
@@ -106,7 +103,11 @@ public class CreateCreditorPurchasesApiHandler extends XactApiHandler {
         XactType reqXact = req.getProfile().getTransactions().getTransaction().get(0);
         List<XactType> tranRresults = new ArrayList<>();
         
+        // IS-71:  Changed the scope to local to prevent conflicts class scoped api variable in XactApiHandler
+        CreditorPurchasesApi api = null;
         try {
+        	api = CreditorPurchasesApiFactory.createApi();
+        	
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             XactCreditChargeDto xactDto = CreditorPurchasesJaxbDtoFactory.createCreditorPurchasesDtoInstance(reqXact);
@@ -114,11 +115,11 @@ public class CreateCreditorPurchasesApiHandler extends XactApiHandler {
                     .createXactItemDtoInstance(reqXact.getLineitems().getLineitem());
             
             api.beginTrans();
-            int newXactId = this.api.update(xactDto, itemsDtoList);
+            int newXactId = api.update(xactDto, itemsDtoList);
             reqXact.setXactId(BigInteger.valueOf(newXactId));
 
             // Get transaction confirmation message.
-            XactCreditChargeDto dto = this.api.get(newXactId);
+            XactCreditChargeDto dto = api.get(newXactId);
             if (dto == null) {
                 rs.setExtMessage("Unable to obtain confirmation message for transaction");
             }
@@ -134,15 +135,15 @@ public class CreateCreditorPurchasesApiHandler extends XactApiHandler {
             
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.responseObj.setHeader(req.getHeader());
-            this.api.commitTrans();
+            api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage(CreateCreditorPurchasesApiHandler.MSG_CREATE_FAILURE);
             rs.setExtMessage(e.getMessage());
-            this.api.rollbackTrans();
+            api.rollbackTrans();
         } finally {
-            this.api.close();
+            api.close();
         }
         
         String xml = this.buildResponse(tranRresults, rs);

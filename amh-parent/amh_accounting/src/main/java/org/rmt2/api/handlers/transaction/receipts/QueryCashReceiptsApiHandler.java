@@ -35,14 +35,11 @@ public class QueryCashReceiptsApiHandler extends XactApiHandler {
     public static final String MSG_DATA_NOT_FOUND = "Cash receipt data not found!";
     public static final String MSG_FAILURE = "Failure to retrieve Cash receipt transaction(s)";
 
-    private CashReceiptApi api;
-
     /**
      * Default constructor
      */
     public QueryCashReceiptsApiHandler() {
         super();
-        this.api = CashReceiptApiFactory.createApi();
         logger.info(CreateCashReceiptsApiHandler.class.getName() + " was instantiated successfully");
     }
 
@@ -99,12 +96,16 @@ public class QueryCashReceiptsApiHandler extends XactApiHandler {
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         List<XactType> queryDtoResults = null;
-
+        
+        // IS-71:  Changed the scope to local to prevent conflicts class scoped api variable in XactApiHandler
+        CashReceiptApi api = null;
         try {
+        	api = CashReceiptApiFactory.createApi();
+        	
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             XactDto criteriaDto = TransactionJaxbDtoFactory.createBaseXactDtoCriteriaInstance(req.getCriteria().getXactCriteria().getBasicCriteria());
-            List<XactDto> dtoList = this.api.getXact(criteriaDto);
+            List<XactDto> dtoList = api.getXact(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage(QueryCashReceiptsApiHandler.MSG_DATA_NOT_FOUND);
                 rs.setRecordCount(0);
@@ -123,7 +124,7 @@ public class QueryCashReceiptsApiHandler extends XactApiHandler {
             rs.setMessage(QueryCashReceiptsApiHandler.MSG_FAILURE);
             rs.setExtMessage(e.getMessage());
         } finally {
-            this.api.close();
+            api.close();
         }
 
         String xml = this.buildResponse(queryDtoResults, rs);
@@ -161,19 +162,29 @@ public class QueryCashReceiptsApiHandler extends XactApiHandler {
     private List<XactType> buildJaxbTransaction(List<XactDto> results) {
         List<XactType> list = new ArrayList<>();
 
-        for (XactDto item : results) {
-            List<XactTypeItemActivityDto> xactItems = null;
+		// IS-71: Changed the scope to local to prevent conflicts class scoped api
+		// variable in XactApiHandler
+		CashReceiptApi api = null;
+		try {
+			api = CashReceiptApiFactory.createApi();
 
-            // retrieve line items
-            try {
-                xactItems = this.api.getXactTypeItemActivity(item.getXactId());
-            } catch (XactApiException e) {
-                logger.error("Unable to fetch cash receipt line items for transaction id, " + item.getXactId());
-            }
-            XactType jaxbObj = TransactionJaxbDtoFactory.createXactJaxbInstance(item, 0, xactItems);
-            list.add(jaxbObj);
-        }
-        return list;
+			for (XactDto item : results) {
+				List<XactTypeItemActivityDto> xactItems = null;
+
+				// retrieve line items
+				try {
+					xactItems = api.getXactTypeItemActivity(item.getXactId());
+				} catch (XactApiException e) {
+					logger.error("Unable to fetch cash receipt line items for transaction id, " + item.getXactId());
+				}
+				XactType jaxbObj = TransactionJaxbDtoFactory.createXactJaxbInstance(item, 0, xactItems);
+				list.add(jaxbObj);
+			}
+		} finally {
+			api.close();
+			api = null;
+		}
+		return list;
     }
 
     /*

@@ -40,14 +40,11 @@ public class CreateCashReceiptsApiHandler extends XactApiHandler {
     public static final String MSG_MISSING_CUSTOMER_PROFILE_DATA = "Customer profile is required when creating a cash receipt for a Customer";
     public static final String MSG_FAILURE = "Failure to create Cash receipt transaction";
 
-    private CashReceiptApi api;
-
     /**
      * Default constructor
      */
     public CreateCashReceiptsApiHandler() {
         super();
-        this.api = CashReceiptApiFactory.createApi();
         logger.info(CreateCashReceiptsApiHandler.class.getName() + " was instantiated successfully");
     }
 
@@ -107,7 +104,11 @@ public class CreateCashReceiptsApiHandler extends XactApiHandler {
         int newXactId = 0;
         int customerId = 0;
 
+        // IS-71:  Changed the scope to local to prevent conflicts class scoped api variable in XactApiHandler
+        CashReceiptApi api = null;
         try {
+        	api = CashReceiptApiFactory.createApi();
+        	
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             // Get transaction data
@@ -119,12 +120,12 @@ public class CreateCashReceiptsApiHandler extends XactApiHandler {
             CustomerDto criteriaDto = SubsidiaryJaxbDtoFactory.createCustomerDtoInstance(reqXact.getCustomer());
 
             api.beginTrans();
-            newXactId = this.api.receivePayment(xactDto, criteriaDto.getCustomerId());
+            newXactId = api.receivePayment(xactDto, criteriaDto.getCustomerId());
             xactDto.setXactId(newXactId);
             customerId = criteriaDto.getCustomerId();
 
             // Verify new transaction
-            XactDto newXactDto = this.api.getXactById(newXactId);
+            XactDto newXactDto = api.getXactById(newXactId);
             if (newXactDto == null) {
                 rs.setExtMessage("Unable to obtain confirmation message for new cash receipt transaction");
             }
@@ -139,7 +140,7 @@ public class CreateCashReceiptsApiHandler extends XactApiHandler {
 
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.responseObj.setHeader(req.getHeader());
-            this.api.commitTrans();
+            api.commitTrans();
 
             // Send Email Confirmation
             try {
@@ -153,10 +154,10 @@ public class CreateCashReceiptsApiHandler extends XactApiHandler {
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage(CreateCashReceiptsApiHandler.MSG_FAILURE);
             rs.setExtMessage(e.getMessage());
-            this.api.rollbackTrans();
+            api.rollbackTrans();
         } finally {
             // tranRresults.add(reqXact);
-            this.api.close();
+            api.close();
         }
 
         String xml = this.buildResponse(tranRresults, rs);
