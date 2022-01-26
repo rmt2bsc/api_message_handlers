@@ -647,6 +647,10 @@ public class TransactionJaxbDtoFactory extends RMT2Base {
      */
     public static final List<XactType> buildJaxbCreditPurchasesTransaction(XactCreditChargeDto xact) {
     
+    	 CreditorType c = CreditorTypeBuilder.Builder.create()
+                 .withCreditorId(xact.getCreditorId())
+                 .build();
+
         XacttypeType xt = XacttypeTypeBuilder.Builder.create()
                 .withXactTypeId(xact.getXactTypeId())
                 .withDescription(xact.getXactTypeDescription())
@@ -655,7 +659,9 @@ public class TransactionJaxbDtoFactory extends RMT2Base {
     
         XactType x = XactTypeBuilder.Builder.create()
                 .withXactId(xact.getXactId())
+                .withXactAmount(xact.getXactAmount())
                 .withXactType(xt)
+                .withCreditor(c)
                 .build();
     
         List<XactType> list = new ArrayList<>();
