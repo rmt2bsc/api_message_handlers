@@ -37,7 +37,10 @@ public class CreateCreditorPurchasesApiHandler extends XactApiHandler {
     private static final Logger logger = Logger.getLogger(CreateCreditorPurchasesApiHandler.class);
     public static final String MSG_CREATE_FAILURE = "Failure to create Creditor purchases transaction(s)";
     public static final String MSG_CREATE_SUCCESS = "New creditor purchases transaction was created: %s";
+    public static final String MSG_REVERSE_FAILURE = "Failure to reverse Creditor purchases transaction(s)";
+    public static final String MSG_REVERSE_SUCCESS = "Creditor purchases transaction was reversed: %s";
     public static final String MSG_MISSING_CREDITOR_PROFILE_DATA = "Creditor profile is required when creating a Creditor purchases for a creditor";
+    public static final String MSG_CANNOT_CONFIRM_CREATE = "Unable to  confirm creditor purchases transaction";
     
     /**
      * 
@@ -78,6 +81,10 @@ public class CreateCreditorPurchasesApiHandler extends XactApiHandler {
                 r = this.update(this.requestObj);
                 break;
                 
+            case ApiTransactionCodes.ACCOUNTING_CREDITPURCHASE_REVERSE:
+                r = this.reverse(this.requestObj);
+                break;
+                
             default:
                 r = this.createErrorReply(MessagingConstants.RETURN_CODE_FAILURE,
                         MessagingConstants.RETURN_STATUS_BAD_REQUEST,
@@ -108,38 +115,103 @@ public class CreateCreditorPurchasesApiHandler extends XactApiHandler {
         try {
         	api = CreditorPurchasesApiFactory.createApi();
         	
-            // Set reply status
+            // Initialize reply status properties
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
-            XactCreditChargeDto xactDto = CreditorPurchasesJaxbDtoFactory.createCreditorPurchasesDtoInstance(reqXact);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+            rs.setRecordCount(0);
+            
+            XactCreditChargeDto xactCreditorChargeDto = CreditorPurchasesJaxbDtoFactory.createCreditorPurchasesDtoInstance(reqXact);
             List<XactTypeItemActivityDto> itemsDtoList = TransactionJaxbDtoFactory
                     .createXactItemDtoInstance(reqXact.getLineitems().getLineitem());
             
             api.beginTrans();
-            int newXactId = api.update(xactDto, itemsDtoList);
+            int newXactId = api.update(xactCreditorChargeDto, itemsDtoList);
             reqXact.setXactId(BigInteger.valueOf(newXactId));
 
             // Get transaction confirmation message.
             XactCreditChargeDto dto = api.get(newXactId);
             if (dto == null) {
-                rs.setExtMessage("Unable to obtain confirmation message for transaction");
+                rs.setExtMessage(MSG_CANNOT_CONFIRM_CREATE);
             }
             else {
-                rs.setExtMessage(dto.getXactReason());
+                rs.setExtMessage(dto.getXactReason()); 
                 tranRresults = TransactionJaxbDtoFactory.buildJaxbCreditPurchasesTransaction(dto);
             }
 
             String msg = RMT2String.replace(MSG_CREATE_SUCCESS, String.valueOf(reqXact.getXactId()), "%s");
             rs.setMessage(msg);
-
             rs.setRecordCount(1);
             
-            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.responseObj.setHeader(req.getHeader());
             api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setMessage(CreateCreditorPurchasesApiHandler.MSG_CREATE_FAILURE);
+            rs.setMessage(MSG_CREATE_FAILURE);
+            rs.setExtMessage(e.getMessage());
+            api.rollbackTrans();
+        } finally {
+            api.close();
+        }
+        
+        String xml = this.buildResponse(tranRresults, rs);
+        results.setPayload(xml);
+        return results;
+    }
+    
+    /**
+     * Handler for invoking the appropriate API in order to reverse a creditor
+     * purchases accounting transaction object.
+     * 
+     * @param req
+     *            an instance of {@link AccountingTransactionRequest}
+     * @return an instance of {@link MessageHandlerResults}
+     */
+    @Override
+    protected MessageHandlerResults reverse(AccountingTransactionRequest req) {
+        MessageHandlerResults results = new MessageHandlerResults();
+        MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
+        XactType reqXact = req.getProfile().getTransactions().getTransaction().get(0);
+        List<XactType> tranRresults = new ArrayList<>();
+        
+        // IS-71:  Changed the scope to local to prevent conflicts class scoped api variable in XactApiHandler
+        CreditorPurchasesApi api = null;
+        try {
+        	api = CreditorPurchasesApiFactory.createApi();
+        	
+            // Initialize reply status properties
+            rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+            rs.setRecordCount(0);
+            
+            XactCreditChargeDto xactCreditorChargeDto = CreditorPurchasesJaxbDtoFactory.createCreditorPurchasesDtoInstance(reqXact);
+            List<XactTypeItemActivityDto> itemsDtoList = TransactionJaxbDtoFactory
+                    .createXactItemDtoInstance(reqXact.getLineitems().getLineitem());
+            
+            api.beginTrans();
+            int newXactId = api.update(xactCreditorChargeDto, itemsDtoList);
+            reqXact.setXactId(BigInteger.valueOf(newXactId));
+
+            // Get transaction confirmation message.
+            XactCreditChargeDto dto = api.get(newXactId);
+            if (dto == null) {
+                rs.setExtMessage(MSG_CANNOT_CONFIRM_CREATE);
+            }
+            else {
+                rs.setExtMessage(dto.getXactReason()); 
+                tranRresults = TransactionJaxbDtoFactory.buildJaxbCreditPurchasesTransaction(dto);
+            }
+
+            String msg = RMT2String.replace(MSG_REVERSE_SUCCESS, String.valueOf(reqXact.getXactId()), "%s");
+            rs.setMessage(msg);
+            rs.setRecordCount(1);
+            
+            this.responseObj.setHeader(req.getHeader());
+            api.commitTrans();
+        } catch (Exception e) {
+            logger.error("Error occurred during API Message Handler operation, " + this.command, e );
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
+            rs.setMessage(MSG_REVERSE_FAILURE);
             rs.setExtMessage(e.getMessage());
             api.rollbackTrans();
         } finally {
@@ -160,13 +232,14 @@ public class CreateCreditorPurchasesApiHandler extends XactApiHandler {
         super.validateUpdateRequest(req);
 
         // Verify that creditor profile exist
-        if (ApiTransactionCodes.ACCOUNTING_CREDITPURCHASE_CREATE.equalsIgnoreCase(this.command)) {
-            try {
-                Verifier.verifyNotNull(req.getProfile().getTransactions().getTransaction().get(0).getCreditor());
-            } catch (VerifyException e) {
-                throw new InvalidRequestException(CreateCreditorPurchasesApiHandler.MSG_MISSING_CREDITOR_PROFILE_DATA, e);
-            }
-        }
+		if (ApiTransactionCodes.ACCOUNTING_CREDITPURCHASE_CREATE.equalsIgnoreCase(this.command)
+				|| ApiTransactionCodes.ACCOUNTING_CREDITPURCHASE_REVERSE.equalsIgnoreCase(this.command)) {
+			try {
+				Verifier.verifyNotNull(req.getProfile().getTransactions().getTransaction().get(0).getCreditor());
+			} catch (VerifyException e) {
+				throw new InvalidRequestException(CreateCreditorPurchasesApiHandler.MSG_MISSING_CREDITOR_PROFILE_DATA, e);
+			}
+		}
     }
 
     

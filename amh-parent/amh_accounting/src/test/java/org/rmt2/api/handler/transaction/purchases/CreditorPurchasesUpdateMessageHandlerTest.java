@@ -143,6 +143,53 @@ public class CreditorPurchasesUpdateMessageHandlerTest extends BaseAccountingMes
     }
 
     @Test
+    public void testSuccess_Reverse() {
+        String request = RMT2File.getFileContentsAsString("xml/transaction/purchases/creditor/CreditorPurchasesReverseRequest.xml");
+
+        try {
+            when(this.mockApi.update(isA(XactCreditChargeDto.class), isA(List.class))).thenReturn(CreditorPurchasesMockData.NEW_XACT_ID);
+        } catch (CreditorPurchasesApiException e) {
+            Assert.fail("Unable to setup mock stub for updating a creditor purchases transaction");
+        }
+
+        XactCreditChargeDto newMockXactDto = Rmt2CreditChargeDtoFactory.createCreditChargeInstance();
+        newMockXactDto.setXactId(CreditorPurchasesMockData.NEW_XACT_ID);
+        newMockXactDto.setXactTypeId(XactConst.XACT_TYPE_CREDITOR_PURCHASE);
+        try {
+            when(this.mockApi.get(eq(CreditorPurchasesMockData.NEW_XACT_ID))).thenReturn(newMockXactDto);
+        } catch (CreditorPurchasesApiException e) {
+            Assert.fail("Unable to setup mock stub for updating a creditor purchases transaction");
+        }
+
+        MessageHandlerResults results = null;
+        CreateCreditorPurchasesApiHandler handler = new CreateCreditorPurchasesApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_CREDITPURCHASE_REVERSE, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingTransactionResponse actualRepsonse = (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertNotNull(actualRepsonse.getProfile());
+        Assert.assertNotNull(actualRepsonse.getProfile().getTransactions());
+        Assert.assertNotNull(actualRepsonse.getProfile().getTransactions().getTransaction());
+        Assert.assertEquals(1, actualRepsonse.getProfile().getTransactions().getTransaction().size());
+        Assert.assertEquals(1, actualRepsonse.getReplyStatus().getRecordCount().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
+        String msg = RMT2String.replace(CreateCreditorPurchasesApiHandler.MSG_REVERSE_SUCCESS,
+                String.valueOf(CreditorPurchasesMockData.NEW_XACT_ID), "%s");
+        Assert.assertEquals(msg, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertNotNull(actualRepsonse.getProfile().getTransactions().getTransaction().get(0));
+        Assert.assertNotNull(actualRepsonse.getProfile().getTransactions().getTransaction().get(0).getXactId());
+        Assert.assertEquals(CreditorPurchasesMockData.NEW_XACT_ID, actualRepsonse.getProfile().getTransactions().getTransaction()
+                .get(0).getXactId().intValue());
+    }
+    
+    @Test
     public void testError_Create_API_Error() {
         String request = RMT2File.getFileContentsAsString("xml/transaction/purchases/creditor/CreditorPurchasesUpdateRequest.xml");
 
