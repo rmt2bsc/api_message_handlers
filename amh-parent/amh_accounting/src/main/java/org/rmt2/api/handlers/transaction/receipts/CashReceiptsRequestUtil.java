@@ -109,7 +109,7 @@ public class CashReceiptsRequestUtil extends RMT2Base {
     }
 
     /**
-     * Emails a payment confirmation message to the email address on the
+     * Email a payment confirmation message to the email address on the
      * customer's profile.
      * 
      * @param customerId
@@ -202,9 +202,10 @@ public class CashReceiptsRequestUtil extends RMT2Base {
         String tender = null;
         XactDto criteria = Rmt2XactDtoFactory.createXactInstance((Xact) null);
         criteria.setXactId(xactId);
+        XactDao xactDao = null;
         try {
             XactDaoFactory xactDaoFactory = new XactDaoFactory();
-            XactDao xactDao = xactDaoFactory.createRmt2OrmXactDao(CommonAccountingConst.APP_NAME);
+            xactDao = xactDaoFactory.createRmt2OrmXactDao(CommonAccountingConst.APP_NAME);
             List<XactDto> xactDto = xactDao.fetchXact(criteria);
             if (xactDto != null && xactDto.size() == 1) {
                 xact = XactDaoFactory.createXact(xactDto.get(0));
@@ -224,6 +225,9 @@ public class CashReceiptsRequestUtil extends RMT2Base {
             }
         } catch (XactDaoException e) {
             throw new PaymentEmailConfirmationException(e);
+        }
+        finally {
+        	xactDao.close();
         }
 
         // Get Customer data
@@ -297,6 +301,9 @@ public class CashReceiptsRequestUtil extends RMT2Base {
         } catch (ContactsApiException e) {
             throw new PaymentEmailConfirmationException(e);
         }
+        finally {
+        	contactsApi.close();
+        }
     }
 
     private SalesOrder getSalesOrder(int salesOrderId) throws PaymentEmailConfirmationException {
@@ -315,6 +322,9 @@ public class CashReceiptsRequestUtil extends RMT2Base {
             }
         } catch (SalesOrderDaoException e) {
             throw new PaymentEmailConfirmationException(e);
+        }
+        finally {
+        	soDao.close();
         }
     }
 
@@ -335,6 +345,9 @@ public class CashReceiptsRequestUtil extends RMT2Base {
             }
         } catch (SubsidiaryDaoException e) {
             throw new PaymentEmailConfirmationException(e);
+        }
+        finally {
+        	custDao.close();
         }
     }
 }
