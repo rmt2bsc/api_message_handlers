@@ -1,0 +1,27 @@
+<AccountingTransactionRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>accounting</application>
+        <module>transaction</module>
+        <transaction>REVERSE_CASH_RECEIPT</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>11/01/2019 14:47:36</delivery_date>
+    </header>
+    <profile>
+        <transactions>
+            <transaction>
+                <xact_id>26376</xact_id>
+                <customer>
+                    <customer_id>1440</customer_id>
+                </customer>
+                <xact_amount>100.0</xact_amount>
+                <xact_date>2020-04-01</xact_date>
+                <xact_reason>Test creating a customer cash payment transaction via message handler</xact_reason>
+                <neg_instr_no>1111-1111-1111-1111</neg_instr_no>
+                <tender_id>11</tender_id>
+                <confirm_no>ADB-49384343</confirm_no>
+            </transaction>
+        </transactions>
+    </profile>
+</AccountingTransactionRequest>

@@ -153,6 +153,63 @@ public class CashReceiptsUpdateMessageHandlerTest extends BaseAccountingMessageH
         }
     }
 
+    /**
+     * Test the ReceivePayment reverse method successfully
+     */
+    @Test
+    public void testSuccess_Reverse() {
+        String request = RMT2File.getFileContentsAsString("xml/transaction/receipts/CashReceiptReversalRequest.xml");
+
+        try {
+            when(this.mockApi.receivePayment(isA(XactDto.class), isA(Integer.class))).thenReturn(CashReceiptsMockData.NEW_REVERSE_XACT_ID);
+        } catch (CashReceiptApiException e) {
+            Assert.fail("Unable to setup mock stub for creating a cash receipt transactions");
+        }
+
+        XactDto mockNewXactDto = Rmt2XactDtoFactory.createXactBaseInstance(null);
+        mockNewXactDto.setXactId(CashReceiptsMockData.NEW_XACT_ID);
+        mockNewXactDto.setXactTypeId(XactConst.XACT_TYPE_CASHRECEIPT);
+        mockNewXactDto.setXactAmount(100.00);
+        try {
+            when(this.mockApi.getXactById(eq(CashReceiptsMockData.NEW_XACT_ID))).thenReturn(mockNewXactDto);
+        } catch (XactApiException e) {
+            Assert.fail("Unable to setup mock stub for creating a cash receipt transactions");
+        }
+
+        MessageHandlerResults results = null;
+        CreateCashReceiptsApiHandler handler = new CreateCashReceiptsApiHandler();
+        try {
+            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_CASHRECEIPT_REVERSE, request);
+        } catch (MessageHandlerCommandException e) {
+            e.printStackTrace();
+            Assert.fail("An unexpected exception was thrown");
+        }
+        Assert.assertNotNull(results);
+        Assert.assertNotNull(results.getPayload());
+
+        AccountingTransactionResponse actualRepsonse = (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
+        Assert.assertEquals(0, actualRepsonse.getProfile().getTransactions().getTransaction().size());
+        Assert.assertEquals(1, actualRepsonse.getReplyStatus().getRecordCount().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
+
+        String expectedMsg = RMT2String.replace(CreateCashReceiptsApiHandler.MSG_REVERSE_SUCCESS,
+                String.valueOf(CashReceiptsMockData.NEW_REVERSE_XACT_ID), "%s");
+        Assert.assertEquals(expectedMsg, actualRepsonse.getReplyStatus().getMessage());
+
+        Assert.assertNotNull(actualRepsonse.getProfile());
+        Assert.assertNotNull(actualRepsonse.getProfile().getTransactions());
+        Assert.assertTrue(actualRepsonse.getProfile().getTransactions().getTransaction().size() < 1);
+        for (int ndx = 0; ndx < actualRepsonse.getProfile().getTransactions().getTransaction().size(); ndx++) {
+            XactType a = actualRepsonse.getProfile().getTransactions().getTransaction().get(ndx);
+            Assert.assertNotNull(a.getXactId());
+            Assert.assertEquals(CashReceiptsMockData.NEW_REVERSE_XACT_ID, a.getXactId().intValue());
+            Assert.assertNotNull(a.getXactType().getXactTypeId());
+            Assert.assertEquals(XactConst.XACT_TYPE_CASHRECEIPT, a.getXactType().getXactTypeId().intValue());
+            Assert.assertEquals(100.00, a.getXactAmount().doubleValue(), 0);
+        }
+    }
+    
     @Test
     public void testError_ReceivePayment_API_Error() {
         String request = RMT2File.getFileContentsAsString("xml/transaction/receipts/CashReceiptCreateRequest.xml");

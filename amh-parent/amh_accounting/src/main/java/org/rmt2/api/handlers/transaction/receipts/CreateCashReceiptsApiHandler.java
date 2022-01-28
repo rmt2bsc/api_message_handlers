@@ -40,8 +40,9 @@ public class CreateCashReceiptsApiHandler extends XactApiHandler {
     public static final String MSG_MISSING_CUSTOMER_PROFILE_DATA = "Customer profile is required when creating a cash receipt for a Customer";
     public static final String MSG_FAILURE = "Failure to create Cash receipt transaction";
     public static final String MSG_FAILURE_XACT_REQUIRED = "Transaction amount is required and must be numeric";
+    public static final String MSG_REVERSE_SUCCESS = "Cash receipt transaction reversal was created: %s";
+    public static final String MSG_REVERSE_FAILURE = "Failure to reverse cash receipt transaction";
     
-
     /**
      * Default constructor
      */
@@ -81,6 +82,11 @@ public class CreateCashReceiptsApiHandler extends XactApiHandler {
                 r = this.update(this.requestObj);
                 break;
 
+            case ApiTransactionCodes.ACCOUNTING_CASHRECEIPT_REVERSE:
+                // Handles cash receipt reversal
+                r = this.reverse(this.requestObj);
+                break;
+
             default:
                 r = this.createErrorReply(MessagingConstants.RETURN_CODE_FAILURE, MessagingConstants.RETURN_STATUS_BAD_REQUEST,
                         ERROR_MSG_TRANS_NOT_FOUND + command);
@@ -90,7 +96,7 @@ public class CreateCashReceiptsApiHandler extends XactApiHandler {
 
 
     /**
-     * Handler for invoking the appropriate API in order to create or reverse a
+     * Handler for invoking the appropriate API in order to create a
      * cash receipt accounting transaction object.
      * 
      * @param req
@@ -171,6 +177,88 @@ public class CreateCashReceiptsApiHandler extends XactApiHandler {
         return results;
     }
 
+    /**
+     * Handler for invoking the appropriate API in order to reverse a
+     * cash receipt accounting transaction object.
+     * 
+     * @param req
+     *            an instance of {@link AccountingTransactionRequest}
+     * @return an instance of {@link MessageHandlerResults}
+     */
+    @Override
+    protected MessageHandlerResults reverse(AccountingTransactionRequest req) {
+        MessageHandlerResults results = new MessageHandlerResults();
+        MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
+        XactType reqXact = req.getProfile().getTransactions().getTransaction().get(0);
+        List<XactType> tranRresults = new ArrayList<>();
+        int newXactId = 0;
+        int customerId = 0;
+
+        // IS-71:  Changed the scope to local to prevent conflicts class scoped api variable in XactApiHandler
+        CashReceiptApi api = null;
+        try {
+        	api = CashReceiptApiFactory.createApi();
+        	
+            // Set reply status
+            rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+            rs.setRecordCount(0);
+            
+            // Get transaction data
+            XactDto xactDto = TransactionJaxbDtoFactory.createXactDtoInstance(reqXact);
+            // Force transaction type to be cash receipts in the event user did
+            // not supply value
+            xactDto.setXactTypeId(XactConst.XACT_TYPE_CASHRECEIPT);
+            // Get customer data
+            CustomerDto criteriaDto = SubsidiaryJaxbDtoFactory.createCustomerDtoInstance(reqXact.getCustomer());
+
+            api.beginTrans();
+            newXactId = api.receivePayment(xactDto, criteriaDto.getCustomerId());
+            xactDto.setXactId(newXactId);
+            customerId = criteriaDto.getCustomerId();
+
+            // Verify new transaction
+            XactDto newXactDto = api.getXactById(newXactId);
+            if (newXactDto == null) {
+                rs.setExtMessage("Unable to obtain confirmation message for new cash receipt transaction");
+            }
+            else {
+                rs.setExtMessage(newXactDto.getXactReason());
+                tranRresults = TransactionJaxbDtoFactory.buildJaxbCustomerTransaction(newXactDto, criteriaDto.getCustomerId());
+            }
+
+            String msg = RMT2String.replace(MSG_REVERSE_SUCCESS, String.valueOf(newXactId), "%s");
+            rs.setMessage(msg);
+            rs.setRecordCount(1);
+            this.responseObj.setHeader(req.getHeader());
+            api.commitTrans();
+
+            // Send Email Confirmation
+            try {
+                CashReceiptsRequestUtil util = new CashReceiptsRequestUtil();
+                util.emailPaymentConfirmation(customerId, null, newXactId);
+            } catch (PaymentEmailConfirmationException e) {
+                logger.error(e);
+            } catch (Exception e) {
+            	logger.error("A genreal API error occurred attempting to send email confirmation", e);
+            }
+            
+        } catch (Exception e) {
+            logger.error("Error occurred during Cash Receipts API Message Handler reversal operation, " + this.command, e);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
+            rs.setMessage(CreateCashReceiptsApiHandler.MSG_REVERSE_FAILURE);
+            rs.setExtMessage(e.getMessage());
+            api.rollbackTrans();
+        } finally {
+            // tranRresults.add(reqXact);
+            api.close();
+        }
+
+        String xml = this.buildResponse(tranRresults, rs);
+        results.setPayload(xml);
+        return results;
+    }
+    
     /*
      * (non-Javadoc)
      * 
