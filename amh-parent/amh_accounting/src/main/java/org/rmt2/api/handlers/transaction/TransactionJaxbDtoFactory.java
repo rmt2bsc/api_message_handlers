@@ -40,6 +40,7 @@ import org.rmt2.util.accounting.transaction.XactItemTypeBuilder;
 import org.rmt2.util.accounting.transaction.XactTypeBuilder;
 import org.rmt2.util.accounting.transaction.XacttypeTypeBuilder;
 
+import com.InvalidDataException;
 import com.RMT2Base;
 import com.api.util.RMT2Date;
 import com.api.util.RMT2String2;
@@ -394,9 +395,9 @@ public class TransactionJaxbDtoFactory extends RMT2Base {
                 dto.setXactCodeDescription(jaxbObj.getXactCode().getDescription());
             }
         }
-        if (jaxbObj.getXactAmount() != null) {
-            dto.setXactAmount(jaxbObj.getXactAmount().doubleValue());    
-        }   
+        
+        dto.setXactAmount(jaxbObj.getXactAmount().doubleValue());    
+        
         if (jaxbObj.getXactDate() != null) {
             dto.setXactDate(jaxbObj.getXactDate().toGregorianCalendar().getTime());    
         } 

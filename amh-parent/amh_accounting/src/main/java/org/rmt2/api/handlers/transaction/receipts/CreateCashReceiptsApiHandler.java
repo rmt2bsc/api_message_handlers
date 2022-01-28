@@ -39,6 +39,8 @@ public class CreateCashReceiptsApiHandler extends XactApiHandler {
     public static final String MSG_CREATE_SUCCESS = "New cash receipt transaction was created: %s";
     public static final String MSG_MISSING_CUSTOMER_PROFILE_DATA = "Customer profile is required when creating a cash receipt for a Customer";
     public static final String MSG_FAILURE = "Failure to create Cash receipt transaction";
+    public static final String MSG_FAILURE_XACT_REQUIRED = "Transaction amount is required and must be numeric";
+    
 
     /**
      * Default constructor
@@ -111,6 +113,9 @@ public class CreateCashReceiptsApiHandler extends XactApiHandler {
         	
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+            rs.setRecordCount(0);
+            
             // Get transaction data
             XactDto xactDto = TransactionJaxbDtoFactory.createXactDtoInstance(reqXact);
             // Force transaction type to be cash receipts in the event user did
@@ -137,8 +142,6 @@ public class CreateCashReceiptsApiHandler extends XactApiHandler {
             String msg = RMT2String.replace(MSG_CREATE_SUCCESS, String.valueOf(newXactId), "%s");
             rs.setMessage(msg);
             rs.setRecordCount(1);
-
-            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.responseObj.setHeader(req.getHeader());
             api.commitTrans();
 
@@ -148,7 +151,10 @@ public class CreateCashReceiptsApiHandler extends XactApiHandler {
                 util.emailPaymentConfirmation(customerId, null, newXactId);
             } catch (PaymentEmailConfirmationException e) {
                 logger.error(e);
+            } catch (Exception e) {
+            	logger.error("A genreal API error occurred attempting to send email confirmation", e);
             }
+            
         } catch (Exception e) {
             logger.error("Error occurred during Cash Receipts API Message Handler operation, " + this.command, e);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
@@ -196,6 +202,12 @@ public class CreateCashReceiptsApiHandler extends XactApiHandler {
             Verifier.verifyNotNull(req.getProfile().getTransactions().getTransaction().get(0).getCustomer());
         } catch (VerifyException e) {
             throw new InvalidRequestException(CreateCashReceiptsApiHandler.MSG_MISSING_CUSTOMER_PROFILE_DATA, e);
+        }
+        
+        try {
+            Verifier.verifyNotNull(req.getProfile().getTransactions().getTransaction().get(0).getXactAmount());
+        } catch (VerifyException e) {
+            throw new InvalidRequestException(CreateCashReceiptsApiHandler.MSG_FAILURE_XACT_REQUIRED, e);
         }
     }
 

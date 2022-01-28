@@ -104,19 +104,19 @@ public class QueryCashReceiptsApiHandler extends XactApiHandler {
         	
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+            rs.setRecordCount(0);
+            
             XactDto criteriaDto = TransactionJaxbDtoFactory.createBaseXactDtoCriteriaInstance(req.getCriteria().getXactCriteria().getBasicCriteria());
             List<XactDto> dtoList = api.getXact(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage(QueryCashReceiptsApiHandler.MSG_DATA_NOT_FOUND);
-                rs.setRecordCount(0);
             }
             else {
                 queryDtoResults = this.buildJaxbTransaction(dtoList);
                 rs.setMessage(QueryCashReceiptsApiHandler.MSG_DATA_FOUND);
                 rs.setRecordCount(dtoList.size());
             }
-
-            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e);
