@@ -152,14 +152,17 @@ public class CreateCashReceiptsApiHandler extends XactApiHandler {
             api.commitTrans();
 
             // Send Email Confirmation
-            try {
-                CashReceiptsRequestUtil util = new CashReceiptsRequestUtil();
-                util.emailPaymentConfirmation(customerId, null, newXactId);
-            } catch (PaymentEmailConfirmationException e) {
-                logger.error(e);
-            } catch (Exception e) {
-            	logger.error("A genreal API error occurred attempting to send email confirmation", e);
-            }
+			// TODO: Email confirmation logic needs attention due to SMTP "Connection refused: connect"
+			// errors which causes the entire process to malfunction.  The problem stems from the fact 
+            // that the SMTP server will need to be setup to allow outside connections to send messages.
+//            try {
+//                CashReceiptsRequestUtil util = new CashReceiptsRequestUtil();
+//                util.emailPaymentConfirmation(customerId, null, newXactId);
+//            } catch (PaymentEmailConfirmationException e) {
+//                logger.error(e);
+//            } catch (Exception e) {
+//            	logger.error("A general API error occurred attempting to send email confirmation", e);
+//            }
             
         } catch (Exception e) {
             logger.error("Error occurred during Cash Receipts API Message Handler operation, " + this.command, e);
