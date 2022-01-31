@@ -108,6 +108,7 @@ public class UpdateSalesOrderApiHandler extends SalesOrderApiHandler {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+            rs.setRecordCount(0);
 
             // Create sales order
             api.beginTrans();
@@ -126,6 +127,7 @@ public class UpdateSalesOrderApiHandler extends SalesOrderApiHandler {
                 respSalesOrder.setOrderTotal(BigDecimal.valueOf(so.getOrderTotal()));
                 respSalesOrder.setInvoiced(so.isInvoiced());
                 respSOST.setDescription(statusDto.getSoStatusDescription());
+                respSOST.setStatusId(BigInteger.valueOf(statusHistDto.getSoStatusId()));
                 respSalesOrder.setStatus(respSOST);
             }
 
