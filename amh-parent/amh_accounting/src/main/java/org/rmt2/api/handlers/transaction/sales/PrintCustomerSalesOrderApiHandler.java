@@ -27,6 +27,8 @@ import org.modules.subsidiary.CustomerApi;
 import org.modules.subsidiary.SubsidiaryApiFactory;
 import org.modules.transaction.XactApi;
 import org.modules.transaction.XactApiFactory;
+import org.modules.transaction.sales.SalesApi;
+import org.modules.transaction.sales.SalesApiFactory;
 import org.rmt2.api.handler.util.MessageHandlerUtility;
 import org.rmt2.api.handler.util.PdfReportUtility;
 import org.rmt2.api.handlers.transaction.TransactionJaxbDtoFactory;
@@ -148,6 +150,10 @@ public class PrintCustomerSalesOrderApiHandler extends SalesOrderApiHandler {
         int recCount = 0;
         boolean error = false;
 
+        // IS-71: Changed the scope to local to prevent memory leaks as a result
+        // of sharing the API instance that was once contained in ancestor
+        // class, SalesORderApiHandler.
+        SalesApi api = SalesApiFactory.createApi();
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
@@ -217,7 +223,7 @@ public class PrintCustomerSalesOrderApiHandler extends SalesOrderApiHandler {
             error = true;
         } finally {
 //             jaxbResults.add(reqSalesOrder);
-            this.api.close();
+            api.close();
             String xml = this.buildResponse(jaxbResults, custMap, contactMap, null, rs);
 
             // Create PDF file from JAXB XML.

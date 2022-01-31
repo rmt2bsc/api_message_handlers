@@ -11,6 +11,8 @@ import org.dto.SalesOrderDto;
 import org.dto.SalesOrderItemDto;
 import org.dto.SalesOrderStatusDto;
 import org.dto.SalesOrderStatusHistDto;
+import org.modules.transaction.sales.SalesApi;
+import org.modules.transaction.sales.SalesApiFactory;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.AccountingTransactionRequest;
@@ -99,6 +101,11 @@ public class UpdateSalesOrderApiHandler extends SalesOrderApiHandler {
         SalesOrderType respSalesOrder = this.jaxbObjFactory.createSalesOrderType();
         SalesOrderStatusType respSOST = this.jaxbObjFactory.createSalesOrderStatusType();
         boolean newSalesOrder = false;
+        
+        // IS-71: Changed the scope to local to prevent memory leaks as a result
+        // of sharing the API instance that was once contained in ancestor
+        // class, SalesORderApiHandler.
+        SalesApi api = SalesApiFactory.createApi(); 
         try {
             SalesOrderDto salesOrderDto = SalesOrderJaxbDtoFactory.createSalesOrderHeaderDtoInstance(reqSalesOrder);
             List<SalesOrderItemDto> itemsDtoList = SalesOrderJaxbDtoFactory
@@ -112,16 +119,16 @@ public class UpdateSalesOrderApiHandler extends SalesOrderApiHandler {
 
             // Create sales order
             api.beginTrans();
-            int updateReturnCode = SalesOrderRequestUtil.updateSalesOrder(this.api, salesOrderDto, itemsDtoList, reqSalesOrder);
+            int updateReturnCode = SalesOrderRequestUtil.updateSalesOrder(api, salesOrderDto, itemsDtoList, reqSalesOrder);
 
             // Update the request with current sales order status information
-            SalesOrderRequestUtil.assignCurrentStatus(this.api, reqSalesOrder);
+            SalesOrderRequestUtil.assignCurrentStatus(api, reqSalesOrder);
 
             // Verify transaction
             int verifySalesOrderId = (newSalesOrder ? updateReturnCode : salesOrderDto.getSalesOrderId());
-            SalesOrderDto so = this.api.getSalesOrder(verifySalesOrderId);
-            SalesOrderStatusHistDto statusHistDto = this.api.getCurrentStatus(verifySalesOrderId);
-            SalesOrderStatusDto statusDto = this.api.getStatus(statusHistDto.getSoStatusId());
+            SalesOrderDto so = api.getSalesOrder(verifySalesOrderId);
+            SalesOrderStatusHistDto statusHistDto = api.getCurrentStatus(verifySalesOrderId);
+            SalesOrderStatusDto statusDto = api.getStatus(statusHistDto.getSoStatusId());
             if (so != null) {
                 respSalesOrder.setSalesOrderId(BigInteger.valueOf(so.getSalesOrderId()));
                 respSalesOrder.setOrderTotal(BigDecimal.valueOf(so.getOrderTotal()));
@@ -129,6 +136,8 @@ public class UpdateSalesOrderApiHandler extends SalesOrderApiHandler {
                 respSOST.setDescription(statusDto.getSoStatusDescription());
                 respSOST.setStatusId(BigInteger.valueOf(statusHistDto.getSoStatusId()));
                 respSalesOrder.setStatus(respSOST);
+                respSalesOrder.setCustomerId(BigInteger.valueOf(salesOrderDto.getCustomerId()));
+                respSalesOrder.setCustomerAccountNo(salesOrderDto.getAccountNo());
             }
 
             // Assign messages to the reply status that apply to the outcome of
@@ -139,7 +148,7 @@ public class UpdateSalesOrderApiHandler extends SalesOrderApiHandler {
             rs.setRecordCount(1);
 
             this.responseObj.setHeader(req.getHeader());
-            this.api.commitTrans();
+            api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
@@ -151,10 +160,10 @@ public class UpdateSalesOrderApiHandler extends SalesOrderApiHandler {
             }
             rs.setRecordCount(0);
             rs.setExtMessage(e.getMessage());
-            this.api.rollbackTrans();
+            api.rollbackTrans();
         } finally {
             tranRresults.add(respSalesOrder);
-            this.api.close();
+            api.close();
         }
 
         String xml = this.buildResponse(tranRresults, rs);

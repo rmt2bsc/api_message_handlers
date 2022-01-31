@@ -9,6 +9,8 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.dto.SalesInvoiceDto;
 import org.dto.SalesOrderItemDto;
+import org.modules.transaction.sales.SalesApi;
+import org.modules.transaction.sales.SalesApiFactory;
 import org.rmt2.api.ApiMessageHandlerConst;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
@@ -102,6 +104,10 @@ public class QuerySalesOrderApiHandler extends SalesOrderApiHandler {
         Map<Integer, List<SalesOrderItemDto>> resultsMap = new HashMap<>();
         int recCount = 0;
 
+        // IS-71: Changed the scope to local to prevent memory leaks as a result
+        // of sharing the API instance that was once contained in ancestor
+        // class, SalesORderApiHandler.
+        SalesApi api = SalesApiFactory.createApi();
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
@@ -142,7 +148,7 @@ public class QuerySalesOrderApiHandler extends SalesOrderApiHandler {
             rs.setExtMessage(e.getMessage());
         } finally {
 //             jaxbResults.add(reqSalesOrder);
-            this.api.close();
+            api.close();
         }
 
         String xml = this.buildResponse(jaxbResults, rs);

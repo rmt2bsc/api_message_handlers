@@ -12,6 +12,8 @@ import org.dto.SalesOrderDto;
 import org.dto.SalesOrderItemDto;
 import org.dto.SalesOrderStatusDto;
 import org.dto.SalesOrderStatusHistDto;
+import org.modules.transaction.sales.SalesApi;
+import org.modules.transaction.sales.SalesApiFactory;
 import org.rmt2.api.handlers.transaction.receipts.CashReceiptsRequestUtil;
 import org.rmt2.api.handlers.transaction.receipts.PaymentEmailConfirmationException;
 import org.rmt2.constants.ApiTransactionCodes;
@@ -110,6 +112,10 @@ public class UpdateSalesOrderAutoInvoiceCashReceiptApiHandler extends SalesOrder
         int salesOrderId = 0;
         int customerId = 0;
 
+        // IS-71: Changed the scope to local to prevent memory leaks as a result
+        // of sharing the API instance that was once contained in ancestor
+        // class, SalesORderApiHandler.
+        SalesApi api = SalesApiFactory.createApi();
         try {
             SalesOrderDto salesOrderDto = SalesOrderJaxbDtoFactory.createSalesOrderHeaderDtoInstance(reqSalesOrder);
             List<SalesOrderItemDto> itemsDtoList = SalesOrderJaxbDtoFactory.createSalesOrderItemsDtoInstance(reqSalesOrder.getSalesOrderItems()
@@ -120,7 +126,7 @@ public class UpdateSalesOrderAutoInvoiceCashReceiptApiHandler extends SalesOrder
 
             api.beginTrans();
             // Create sales order
-            SalesOrderRequestUtil.updateSalesOrder(this.api, salesOrderDto, itemsDtoList, reqSalesOrder);
+            SalesOrderRequestUtil.updateSalesOrder(api, salesOrderDto, itemsDtoList, reqSalesOrder);
             salesOrderId = salesOrderDto.getSalesOrderId();
             customerId = salesOrderDto.getCustomerId();
 
@@ -128,9 +134,9 @@ public class UpdateSalesOrderAutoInvoiceCashReceiptApiHandler extends SalesOrder
             xactId = SalesOrderRequestUtil.invoiceSalesOrder(api, salesOrderDto, itemsDtoList, true, reqSalesOrder);
 
             // Verify transaction
-            SalesInvoiceDto soiDto = this.api.getInvoice(salesOrderDto.getSalesOrderId());
-            SalesOrderStatusHistDto statusHistDto = this.api.getCurrentStatus(salesOrderDto.getSalesOrderId());
-            SalesOrderStatusDto statusDto = this.api.getStatus(statusHistDto.getSoStatusId());
+            SalesInvoiceDto soiDto = api.getInvoice(salesOrderDto.getSalesOrderId());
+            SalesOrderStatusHistDto statusHistDto = api.getCurrentStatus(salesOrderDto.getSalesOrderId());
+            SalesOrderStatusDto statusDto = api.getStatus(statusHistDto.getSoStatusId());
             if (soiDto != null) {
                 respSalesOrder.setSalesOrderId(BigInteger.valueOf(soiDto.getSalesOrderId()));
                 respSalesOrder.setOrderTotal(BigDecimal.valueOf(soiDto.getOrderTotal()));
@@ -157,7 +163,7 @@ public class UpdateSalesOrderAutoInvoiceCashReceiptApiHandler extends SalesOrder
 
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.responseObj.setHeader(req.getHeader());
-            this.api.commitTrans();
+            api.commitTrans();
 
             // Send Email Confirmation
             try {
@@ -176,11 +182,11 @@ public class UpdateSalesOrderAutoInvoiceCashReceiptApiHandler extends SalesOrder
                 rs.setMessage(SalesOrderHandlerConst.MSG_INVOICE_PAYMENT_FAILURE);
             }
             rs.setExtMessage(e.getMessage());
-            this.api.rollbackTrans();
+            api.rollbackTrans();
             rs.setRecordCount(0);
         } finally {
             tranRresults.add(respSalesOrder);
-            this.api.close();
+            api.close();
         }
 
         String xml = this.buildResponse(tranRresults, rs);

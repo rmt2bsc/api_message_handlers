@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.modules.transaction.sales.SalesApi;
+import org.modules.transaction.sales.SalesApiFactory;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.AccountingTransactionRequest;
@@ -86,6 +88,10 @@ public class CancelSalesOrderApiHandler extends SalesOrderApiHandler {
         List<SalesOrderType> reqSalesOrder = req.getProfile().getSalesOrders().getSalesOrder();
         List<SalesOrderType> tranRresults = new ArrayList<>();
 
+        // IS-71: Changed the scope to local to prevent memory leaks as a result
+        // of sharing the API instance that was once contained in ancestor
+        // class, SalesORderApiHandler.
+        SalesApi api = SalesApiFactory.createApi();
         try {
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             int cancelTotal = 0;
@@ -103,17 +109,17 @@ public class CancelSalesOrderApiHandler extends SalesOrderApiHandler {
 
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.responseObj.setHeader(req.getHeader());
-            this.api.commitTrans();
+            api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage(SalesOrderHandlerConst.MSG_CANCEL_FAILURE);
             rs.setExtMessage(e.getMessage());
             rs.setRecordCount(0);
-            this.api.rollbackTrans();
+            api.rollbackTrans();
         } finally {
             tranRresults.addAll(reqSalesOrder);
-            this.api.close();
+            api.close();
         }
 
         String xml = this.buildResponse(tranRresults, rs);

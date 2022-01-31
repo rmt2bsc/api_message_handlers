@@ -7,6 +7,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.dto.SalesOrderDto;
 import org.dto.XactDto;
+import org.modules.transaction.sales.SalesApi;
+import org.modules.transaction.sales.SalesApiFactory;
 import org.rmt2.api.handlers.transaction.TransactionJaxbDtoFactory;
 import org.rmt2.api.handlers.transaction.XactApiHandler;
 import org.rmt2.constants.ApiTransactionCodes;
@@ -96,6 +98,11 @@ public class CloseSalesOrderWithPaymentApiHandler extends SalesOrderApiHandler {
         List<SalesOrderType> tranRresults = null;
 
         List<SalesOrderDto> soDtoList = new ArrayList<>();
+        
+        // IS-71: Changed the scope to local to prevent memory leaks as a result
+        // of sharing the API instance that was once contained in ancestor
+        // class, SalesORderApiHandler.
+        SalesApi api = SalesApiFactory.createApi();
         try {
             for (SalesOrderType item : reqSalesOrders) {
                 SalesOrderDto salesOrderDto = SalesOrderJaxbDtoFactory.createSalesOrderHeaderDtoInstance(item);
@@ -106,7 +113,7 @@ public class CloseSalesOrderWithPaymentApiHandler extends SalesOrderApiHandler {
             // Call API method to close sales order
             api.beginTrans();
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
-            int rc = this.api.closeSalesOrderForPayment(soDtoList, xactDto);
+            int rc = api.closeSalesOrderForPayment(soDtoList, xactDto);
 
             // Assign messages to the reply status that apply to the outcome of
             // this operation
@@ -116,16 +123,16 @@ public class CloseSalesOrderWithPaymentApiHandler extends SalesOrderApiHandler {
 
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.responseObj.setHeader(req.getHeader());
-            this.api.commitTrans();
+            api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setMessage(SalesOrderHandlerConst.MSG_CREATE_FAILURE);
             rs.setExtMessage(e.getMessage());
-            this.api.rollbackTrans();
+            api.rollbackTrans();
         } finally {
             tranRresults = reqSalesOrders;
-            this.api.close();
+            api.close();
         }
 
         String xml = this.buildResponse(tranRresults, rs);
