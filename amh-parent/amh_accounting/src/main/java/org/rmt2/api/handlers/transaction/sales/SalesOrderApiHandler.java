@@ -3,8 +3,6 @@ package org.rmt2.api.handlers.transaction.sales;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.modules.transaction.sales.SalesApi;
-import org.modules.transaction.sales.SalesApiFactory;
 import org.rmt2.api.handler.util.MessageHandlerUtility;
 import org.rmt2.api.handlers.AccountingtMsgHandlerUtility;
 import org.rmt2.jaxb.AccountingTransactionRequest;
@@ -20,6 +18,10 @@ import com.api.messaging.handler.MessageHandlerCommonReplyStatus;
 
 /**
  * Sales Order common message API handler.
+ * <p>
+ * <b><u>Change Log</u></b><br>
+ * IS-71: Removed use of <i>api</i> member variable which was shared amongst all
+ * descendant classes, in order to prevent memory leaks.
  * 
  * @author roy.terrell
  *
@@ -28,7 +30,6 @@ public class SalesOrderApiHandler extends
         AbstractJaxbMessageHandler<AccountingTransactionRequest, AccountingTransactionResponse, List<SalesOrderType>> {
 
     private static final Logger logger = Logger.getLogger(SalesOrderApiHandler.class);
-    protected SalesApi api;
     protected ObjectFactory jaxbObjFactory;
     protected String targetLevel;
 
@@ -40,7 +41,6 @@ public class SalesOrderApiHandler extends
      */
     public SalesOrderApiHandler() {
         super();
-        this.api = SalesApiFactory.createApi();
         this.jaxbObjFactory = new ObjectFactory();
         this.responseObj = jaxbObjFactory.createAccountingTransactionResponse();
 
