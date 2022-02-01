@@ -145,6 +145,12 @@ public class QueryCustomerSalesOrderApiHandler extends SalesOrderApiHandler {
         // of sharing the API instance that was once contained in ancestor
         // class, SalesORderApiHandler.
         SalesApi api = SalesApiFactory.createApi();
+        
+        // Setup other API's for data access.
+        CustomerApi custApi = SubsidiaryApiFactory.createCustomerApi();
+        ContactsApi contactApi = ContactsApiFactory.createApi();
+        XactApi xactApi = XactApiFactory.createDefaultXactApi();
+        
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
@@ -154,17 +160,14 @@ public class QueryCustomerSalesOrderApiHandler extends SalesOrderApiHandler {
             SalesInvoiceDto criteriaDto = SalesOrderJaxbDtoFactory.createSalesInvoiceCriteriaDtoInstance(jaxbSalesOrderCriteria);
             salesOrders = api.getInvoice(criteriaDto);
             
-            // Get customer info
-            CustomerApi custApi = SubsidiaryApiFactory.createCustomerApi();
+            // Get customer info            
             Customer cust = new Customer();
             cust.setCustomerId(jaxbCustomerCriteria.getCustomer().getCustomerId().intValue());
             CustomerDto custDto = Rmt2SubsidiaryDtoFactory.createCustomerInstance(cust, null);
             List<CustomerDto> customer = custApi.getExt(custDto);
 
-            ContactsApi contactApi = ContactsApiFactory.createApi();
+            // Get contact info and assign to customer object
             if (customer != null && customer.size() == 1) {
-                // Get contact info and assign to customer object
-
                 // Get contact info for customer
                 BusinessContactDto criteria = Rmt2AddressBookDtoFactory.getBusinessInstance(null);
                 criteria.setContactId(customer.get(0).getContactId());
@@ -183,8 +186,7 @@ public class QueryCustomerSalesOrderApiHandler extends SalesOrderApiHandler {
             // Organize query results as a Map since we are dealing with sales
             // orders and their items
             if (salesOrders != null) {
-                recCount = salesOrders.size();
-                XactApi xactApi = XactApiFactory.createDefaultXactApi();
+                recCount = salesOrders.size();                
                 for (SalesInvoiceDto header : salesOrders) {
                     List<SalesOrderItemDto> items = api.getLineItems(header.getSalesOrderId());
                     itemsMap.put(header.getSalesOrderId(), items);
@@ -216,6 +218,9 @@ public class QueryCustomerSalesOrderApiHandler extends SalesOrderApiHandler {
         } finally {
 //             jaxbResults.add(reqSalesOrder);
             api.close();
+            custApi.close();
+            contactApi.close();
+            xactApi.close();
             String xml = this.buildResponse(jaxbResults, custMap, contactMap, rs);
             results.setPayload(xml);
         }
