@@ -144,6 +144,7 @@ public class UpdateSalesOrderAutoInvoiceApiHandler extends SalesOrderApiHandler 
                         .build();
                 respSalesOrder.setInvoiceDetails(sit);
                 respSOST.setDescription(statusDto.getSoStatusDescription());
+                respSOST.setStatusId(BigInteger.valueOf(statusDto.getSoStatusId()));
                 respSalesOrder.setStatus(respSOST);
             }
             
