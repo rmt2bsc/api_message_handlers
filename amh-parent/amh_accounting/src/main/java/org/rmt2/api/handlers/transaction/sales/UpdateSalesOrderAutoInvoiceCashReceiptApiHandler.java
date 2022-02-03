@@ -27,6 +27,7 @@ import org.rmt2.util.accounting.transaction.XactTypeBuilder;
 import org.rmt2.util.accounting.transaction.sales.SalesInvoiceTypeBuilder;
 
 import com.InvalidDataException;
+import com.api.config.AppPropertyPool;
 import com.api.messaging.InvalidRequestException;
 import com.api.messaging.handler.MessageHandlerCommandException;
 import com.api.messaging.handler.MessageHandlerCommonReplyStatus;
@@ -130,7 +131,7 @@ public class UpdateSalesOrderAutoInvoiceCashReceiptApiHandler extends SalesOrder
             salesOrderId = salesOrderDto.getSalesOrderId();
             customerId = salesOrderDto.getCustomerId();
 
-            // Invoice sales order which should produce a new transaction
+            // Invoice sales order and apply payment which should produce a new transaction
             xactId = SalesOrderRequestUtil.invoiceSalesOrder(api, salesOrderDto, itemsDtoList, true, reqSalesOrder);
 
             // Verify transaction
@@ -151,6 +152,7 @@ public class UpdateSalesOrderAutoInvoiceCashReceiptApiHandler extends SalesOrder
                         .build();
                 respSalesOrder.setInvoiceDetails(sit);
                 respSOST.setDescription(statusDto.getSoStatusDescription());
+                respSOST.setStatusId(BigInteger.valueOf(statusDto.getSoStatusId()));
                 respSalesOrder.setStatus(respSOST);
             }
 
@@ -166,11 +168,15 @@ public class UpdateSalesOrderAutoInvoiceCashReceiptApiHandler extends SalesOrder
             api.commitTrans();
 
             // Send Email Confirmation
-            try {
-                CashReceiptsRequestUtil util = new CashReceiptsRequestUtil();
-                util.emailPaymentConfirmation(customerId, salesOrderId, xactId);
-            } catch (PaymentEmailConfirmationException e) {
-                logger.error(e);
+            boolean generateEmailConfirmation =
+                    Boolean.valueOf(AppPropertyPool.getProperty("GenerateEmailConfirmation"));
+            if (generateEmailConfirmation) {
+                try {
+                    CashReceiptsRequestUtil util = new CashReceiptsRequestUtil();
+                    util.emailPaymentConfirmation(customerId, salesOrderId, xactId);
+                } catch (PaymentEmailConfirmationException e) {
+                    logger.error(e);
+                }
             }
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e);
