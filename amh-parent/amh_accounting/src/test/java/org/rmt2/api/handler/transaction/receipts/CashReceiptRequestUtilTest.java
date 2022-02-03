@@ -32,6 +32,7 @@ import org.rmt2.api.handlers.transaction.receipts.CashReceiptsRequestUtil;
 import org.rmt2.api.handlers.transaction.receipts.PaymentEmailConfirmationException;
 
 import com.InvalidDataException;
+import com.api.config.AppPropertyPool;
 import com.api.config.SystemConfigurator;
 import com.api.messaging.MessageException;
 import com.api.messaging.email.EmailMessageBean;
@@ -76,6 +77,8 @@ public class CashReceiptRequestUtilTest extends CashReceiptsMsgHandlerTestData {
     public void setUp() throws Exception {
         super.setUp();
         System.setProperty("javax.xml.transform.TransformerFactory", "net.sf.saxon.TransformerFactoryImpl");
+        PowerMockito.mockStatic(AppPropertyPool.class);
+        
     }
 
     /**
@@ -166,6 +169,7 @@ public class CashReceiptRequestUtilTest extends CashReceiptsMsgHandlerTestData {
         try {
             when(SubsidiaryDaoFactory.createRmt2OrmCustomerDao(eq(CommonAccountingConst.APP_NAME))).thenReturn(mockCustDao);
             when(mockCustDao.fetch(isA(CustomerDto.class))).thenReturn(createMockCustomerDto());
+            when(mockCustDao.fetch(isA(Integer.class))).thenReturn(createMockCustomerDto().get(0));
             when(mockCustDao.calculateBalance(isA(Integer.class))).thenReturn(755.94);
         } catch (Exception e) {
             e.printStackTrace();
