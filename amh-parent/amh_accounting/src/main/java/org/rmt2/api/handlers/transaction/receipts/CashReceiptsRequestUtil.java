@@ -6,9 +6,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.dao.mapping.orm.rmt2.SalesOrder;
 import org.dao.mapping.orm.rmt2.Xact;
-import org.dao.subsidiary.CustomerDao;
-import org.dao.subsidiary.SubsidiaryDaoException;
-import org.dao.subsidiary.SubsidiaryDaoFactory;
 import org.dao.transaction.XactDao;
 import org.dao.transaction.XactDaoException;
 import org.dao.transaction.XactDaoFactory;
@@ -22,13 +19,15 @@ import org.dto.SalesOrderDto;
 import org.dto.XactCodeDto;
 import org.dto.XactDto;
 import org.dto.adapter.orm.Rmt2AddressBookDtoFactory;
-import org.dto.adapter.orm.account.subsidiary.Rmt2SubsidiaryDtoFactory;
 import org.dto.adapter.orm.transaction.Rmt2XactDtoFactory;
 import org.dto.adapter.orm.transaction.sales.Rmt2SalesOrderDtoFactory;
 import org.modules.CommonAccountingConst;
 import org.modules.contacts.ContactsApi;
 import org.modules.contacts.ContactsApiException;
 import org.modules.contacts.ContactsApiFactory;
+import org.modules.subsidiary.CustomerApi;
+import org.modules.subsidiary.SubsidiaryApiFactory;
+import org.modules.subsidiary.SubsidiaryException;
 import org.rmt2.jaxb.CustomerPaymentConfirmation;
 import org.rmt2.jaxb.CustomerPaymentConfirmation.CustomerData;
 import org.rmt2.jaxb.CustomerPaymentConfirmation.SalesOrderData;
@@ -329,25 +328,45 @@ public class CashReceiptsRequestUtil extends RMT2Base {
     }
 
     private CustomerDto getCustomer(int customerId) throws PaymentEmailConfirmationException {
-        CustomerDao custDao = SubsidiaryDaoFactory.createRmt2OrmCustomerDao(CommonAccountingConst.APP_NAME);
-        CustomerDto custCriteria = Rmt2SubsidiaryDtoFactory.createCustomerInstance(null, null);
-        custCriteria.setCustomerId(customerId);
+        CustomerApi custApi = SubsidiaryApiFactory.createCustomerApi();
         try {
-            List<CustomerDto> custList = custDao.fetch(custCriteria);
-            if (custList != null && custList.size() == 1) {
-                this.bal = custDao.calculateBalance(customerId);
-                return custList.get(0);
-            }
-            else {
+            CustomerDto dto = custApi.get(customerId);
+            this.bal = custApi.getBalance(customerId);
+            if (dto == null) {
                 this.msg = "Unable to fetch customer details to perform cash receipts confirmation due to customer, "
                         + customerId + ", was not found";
                 throw new PaymentEmailConfirmationException(this.msg);
             }
-        } catch (SubsidiaryDaoException e) {
+            else {
+                return dto;
+            }
+        } catch (SubsidiaryException e) {
             throw new PaymentEmailConfirmationException(e);
         }
         finally {
-        	custDao.close();
+            custApi.close();
         }
+        
+        
+//        CustomerDao custDao = SubsidiaryDaoFactory.createRmt2OrmCustomerDao(CommonAccountingConst.APP_NAME);
+//        CustomerDto custCriteria = Rmt2SubsidiaryDtoFactory.createCustomerInstance(null, null);
+//        custCriteria.setCustomerId(customerId);
+//        try {
+//            List<CustomerDto> custList = custDao.fetch(custCriteria);
+//            if (custList != null && custList.size() == 1) {
+//                this.bal = custDao.calculateBalance(customerId);
+//                return custList.get(0);
+//            }
+//            else {
+//                this.msg = "Unable to fetch customer details to perform cash receipts confirmation due to customer, "
+//                        + customerId + ", was not found";
+//                throw new PaymentEmailConfirmationException(this.msg);
+//            }
+//        } catch (SubsidiaryDaoException e) {
+//            throw new PaymentEmailConfirmationException(e);
+//        }
+//        finally {
+//        	custDao.close();
+//        }
     }
 }
