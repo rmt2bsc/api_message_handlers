@@ -99,6 +99,10 @@ public class CloseSalesOrderWithPaymentApiHandler extends SalesOrderApiHandler {
 
         List<SalesOrderDto> soDtoList = new ArrayList<>();
         
+        rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+        rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+        rs.setRecordCount(0);
+        
         // IS-71: Changed the scope to local to prevent memory leaks as a result
         // of sharing the API instance that was once contained in ancestor
         // class, SalesORderApiHandler.
@@ -112,7 +116,6 @@ public class CloseSalesOrderWithPaymentApiHandler extends SalesOrderApiHandler {
 
             // Call API method to close sales order
             api.beginTrans();
-            rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             int rc = api.closeSalesOrderForPayment(soDtoList, xactDto);
 
             // Assign messages to the reply status that apply to the outcome of
@@ -120,8 +123,6 @@ public class CloseSalesOrderWithPaymentApiHandler extends SalesOrderApiHandler {
             String msg = RMT2String.replace(SalesOrderHandlerConst.MSG_CLOSE_SUCCESS, String.valueOf(rc), "%s");
             rs.setMessage(msg);
             rs.setRecordCount(1);
-
-            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.responseObj.setHeader(req.getHeader());
             api.commitTrans();
         } catch (Exception e) {
