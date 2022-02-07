@@ -94,6 +94,7 @@ public class RefundSalesOrderApiHandler extends SalesOrderApiHandler {
         SalesApi api = SalesApiFactory.createApi();
         try {
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             int refundTotal = 0;
             api.beginTrans();
             for (SalesOrderType so : reqSalesOrder) {
@@ -106,8 +107,6 @@ public class RefundSalesOrderApiHandler extends SalesOrderApiHandler {
             String msg = RMT2String.replace(SalesOrderHandlerConst.MSG_REFUND_SUCCESS, String.valueOf(refundTotal), "%s");
             rs.setMessage(msg);
             rs.setRecordCount(refundTotal);
-
-            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.responseObj.setHeader(req.getHeader());
             api.commitTrans();
         } catch (Exception e) {
