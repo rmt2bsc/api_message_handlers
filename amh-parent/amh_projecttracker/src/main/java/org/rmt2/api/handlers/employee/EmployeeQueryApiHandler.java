@@ -9,9 +9,12 @@ import org.dto.ContactDto;
 import org.dto.EmployeeDto;
 import org.dto.PersonalContactDto;
 import org.dto.adapter.orm.Rmt2AddressBookDtoFactory;
+import org.modules.ProjectTrackerApiConst;
 import org.modules.contacts.ContactsApi;
 import org.modules.contacts.ContactsApiException;
 import org.modules.contacts.ContactsApiFactory;
+import org.modules.employee.EmployeeApi;
+import org.modules.employee.EmployeeApiFactory;
 import org.rmt2.api.handler.util.MessageHandlerUtility;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
@@ -88,32 +91,35 @@ public class EmployeeQueryApiHandler extends EmployeeApiHandler {
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         List<EmployeeType> queryDtoResults = null;
 
+        // IS-71: Use local scoped API instance for the purpose of preventing memory leaks
+        // caused by dangling API instances. 
+        EmployeeApi api = EmployeeApiFactory.createApi(ProjectTrackerApiConst.APP_NAME);
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+            rs.setRecordCount(0);
+            
             EmployeeDto criteriaDto = EmployeeJaxbDtoFactory
                     .createEmployeeDtoCriteriaInstance(req.getCriteria().getEmployeeCriteria());
             
-            List<EmployeeDto> dtoList = this.api.getEmployeeExt(criteriaDto);
+            List<EmployeeDto> dtoList = api.getEmployeeExt(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage(EmployeeMessageHandlerConst.MESSAGE_NOT_FOUND);
-                rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             }
             else {
                 queryDtoResults = this.buildJaxbResults(dtoList);
                 rs.setMessage(EmployeeMessageHandlerConst.MESSAGE_FOUND);
                 rs.setRecordCount(dtoList.size());
-                rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             }
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setRecordCount(0);
             rs.setMessage(EmployeeMessageHandlerConst.MESSAGE_FETCH_ERROR);
             rs.setExtMessage(e.getMessage());
         } finally {
-            this.api.close();
+            api.close();
         }
 
         String xml = this.buildResponse(queryDtoResults, rs);

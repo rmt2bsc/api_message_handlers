@@ -7,8 +7,11 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.dto.EmployeeDto;
 import org.dto.PersonalContactDto;
+import org.modules.ProjectTrackerApiConst;
 import org.modules.contacts.ContactsApi;
 import org.modules.contacts.ContactsApiFactory;
+import org.modules.employee.EmployeeApi;
+import org.modules.employee.EmployeeApiFactory;
 import org.rmt2.api.handler.util.MessageHandlerUtility;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
@@ -82,13 +85,19 @@ public class EmployeeUpdateApiHandler extends EmployeeApiHandler {
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         EmployeeDto employeeDto = null;
-        ContactsApi contactApi = null;
+        
         boolean newEmployee = false;
         boolean newContact = false;
 
+        // IS-71: Use local scoped API instance for the purpose of preventing memory leaks
+        // caused by dangling API instances. 
+        EmployeeApi api = EmployeeApiFactory.createApi(ProjectTrackerApiConst.APP_NAME);
+        ContactsApi contactApi = ContactsApiFactory.createApi();
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+            
             employeeDto = EmployeeJaxbDtoFactory
                     .createEmploiyeeDtoInstance(req.getProfile().getEmployee().get(0));
             PersonalContactDto contactDto = EmployeeJaxbDtoFactory
@@ -96,7 +105,6 @@ public class EmployeeUpdateApiHandler extends EmployeeApiHandler {
             newEmployee = employeeDto.getEmployeeId() == 0;
 
             // Perform contact update first.
-            contactApi = ContactsApiFactory.createApi();
             contactApi.beginTrans();
             int contactRc = 0;
             if (contactDto != null) {
@@ -111,10 +119,9 @@ public class EmployeeUpdateApiHandler extends EmployeeApiHandler {
             }
 
             // Perform employee updates
-            this.api.beginTrans();
-            int empRc = this.api.update(employeeDto);
-
-            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+            api.beginTrans();
+            int empRc = api.update(employeeDto);
+            
             if (newEmployee) {
                 rs.setMessage(EmployeeMessageHandlerConst.MESSAGE_UPDATE_NEW_SUCCESS);
                 rs.setRecordCount(1);
@@ -125,7 +132,7 @@ public class EmployeeUpdateApiHandler extends EmployeeApiHandler {
                 rs.setRecordCount(empRc);
             }
             this.responseObj.setHeader(req.getHeader());
-            this.api.commitTrans();
+            api.commitTrans();
             contactApi.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
@@ -138,10 +145,10 @@ public class EmployeeUpdateApiHandler extends EmployeeApiHandler {
                 rs.setMessage(EmployeeMessageHandlerConst.MESSAGE_UPDATE_EXISTING_ERROR);
             }
             rs.setExtMessage(e.getMessage());
-            this.api.rollbackTrans();
+            api.rollbackTrans();
             contactApi.rollbackTrans();
         } finally {
-            this.api.close();
+            api.close();
             contactApi.close();
         }
 
