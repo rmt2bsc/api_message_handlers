@@ -449,7 +449,7 @@
 			</fo:table-cell>
 			<fo:table-cell>
 				<fo:block text-align="right" font-weight="bold" font-size="11pt">
-					<xsl:value-of select="format-number(invoice_total, '$#,##0.00')"/>
+					<xsl:value-of select="format-number(../order_total, '$#,##0.00')"/>
 				</fo:block>
 			</fo:table-cell>
 		</fo:table-row>
