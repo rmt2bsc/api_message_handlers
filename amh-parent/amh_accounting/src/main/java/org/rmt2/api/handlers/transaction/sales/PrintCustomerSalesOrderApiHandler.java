@@ -153,28 +153,33 @@ public class PrintCustomerSalesOrderApiHandler extends SalesOrderApiHandler {
         // IS-71: Changed the scope to local to prevent memory leaks as a result
         // of sharing the API instance that was once contained in ancestor
         // class, SalesORderApiHandler.
-        SalesApi api = SalesApiFactory.createApi();
+        SalesApi salesApi = SalesApiFactory.createApi();
+        // IS-70: Change the scope of the remaining API declarations so that
+        // they can be made available in the top most finally clause to be
+        // closed.
+        CustomerApi custApi = SubsidiaryApiFactory.createCustomerApi();
+        ContactsApi contactApi = ContactsApiFactory.createApi();
+        XactApi xactApi = XactApiFactory.createDefaultXactApi();
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+            rs.setRecordCount(0);
 
             // Use SalesInvoiceDto instance instead of SalesOrderDto for the
             // purpose of obtaining extra sales order data
             SalesInvoiceDto criteriaDto = SalesOrderJaxbDtoFactory.createSalesInvoiceCriteriaDtoInstance(jaxbSalesOrderCriteria);
-            salesOrders = api.getInvoice(criteriaDto);
+            salesOrders = salesApi.getInvoice(criteriaDto);
             
             // Get customer info
-            CustomerApi custApi = SubsidiaryApiFactory.createCustomerApi();
             Customer cust = new Customer();
             cust.setCustomerId(jaxbCustomerCriteria.getCustomer().getCustomerId().intValue());
             CustomerDto custDto = Rmt2SubsidiaryDtoFactory.createCustomerInstance(cust, null);
             List<CustomerDto> customer = custApi.getExt(custDto);
 
-            ContactsApi contactApi = ContactsApiFactory.createApi();
+            // Get general contact info
             if (customer != null && customer.size() == 1) {
                 // Get contact info and assign to customer object
-
-                // Get contact info for customer
                 BusinessContactDto criteria = Rmt2AddressBookDtoFactory.getBusinessInstance(null);
                 criteria.setContactId(customer.get(0).getContactId());
                 List<ContactDto> custContacts = contactApi.getContact(criteria);
@@ -193,15 +198,19 @@ public class PrintCustomerSalesOrderApiHandler extends SalesOrderApiHandler {
             // orders and their items
             if (salesOrders != null) {
                 recCount = salesOrders.size();
-                XactApi xactApi = XactApiFactory.createDefaultXactApi();
                 for (SalesInvoiceDto header : salesOrders) {
-                    List<SalesOrderItemDto> items = api.getLineItemsExt(header.getSalesOrderId());
+                    List<SalesOrderItemDto> items = salesApi.getLineItemsExt(header.getSalesOrderId());
                     itemsMap.put(header.getSalesOrderId(), items);
-                    Xact orm = new Xact();
-                    orm.setXactId(jaxbXactCriteria.getBasicCriteria().getXactId().intValue());
-                    XactDto xactDto = Rmt2XactDtoFactory.createXactBaseInstance(orm);
-                    List<XactDto> xact = xactApi.getXact(xactDto);
-                    xactMap.put(header.getSalesOrderId(), xact);
+                    
+                    // Include transaction details only if available in the request
+                    if (jaxbXactCriteria != null && jaxbXactCriteria.getBasicCriteria() != null 
+                            && jaxbXactCriteria.getBasicCriteria().getXactId() != null) {
+                        Xact orm = new Xact();
+                        orm.setXactId(jaxbXactCriteria.getBasicCriteria().getXactId().intValue());
+                        XactDto xactDto = Rmt2XactDtoFactory.createXactBaseInstance(orm);
+                        List<XactDto> xact = xactApi.getXact(xactDto);
+                        xactMap.put(header.getSalesOrderId(), xact);
+                    }
                 }
             }
 
@@ -212,8 +221,6 @@ public class PrintCustomerSalesOrderApiHandler extends SalesOrderApiHandler {
             // this operation
             rs.setMessage(SalesOrderHandlerConst.MSG_PRINT_SUCCESS);
             rs.setRecordCount(recCount);
-
-            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e);
@@ -222,8 +229,13 @@ public class PrintCustomerSalesOrderApiHandler extends SalesOrderApiHandler {
             rs.setExtMessage(e.getMessage());
             error = true;
         } finally {
-//             jaxbResults.add(reqSalesOrder);
-            api.close();
+            // IS-70: Close API instances to prevent memory leaks
+            salesApi.close();
+            custApi.close();
+            contactApi.close();
+            xactApi.close();
+            
+            // Build message handler response
             String xml = this.buildResponse(jaxbResults, custMap, contactMap, null, rs);
 
             // Create PDF file from JAXB XML.
@@ -240,7 +252,6 @@ public class PrintCustomerSalesOrderApiHandler extends SalesOrderApiHandler {
                     jaxbResults = this.createJaxbReportResponse(salesOrders, custMap);
                     xml = this.buildResponse(jaxbResults, custMap, contactMap, pdf, rs);
                 }
-
             }
             results.setPayload(xml);
         }
@@ -289,10 +300,14 @@ public class PrintCustomerSalesOrderApiHandler extends SalesOrderApiHandler {
             sit.setInvoiceDate(RMT2Date.toXmlDate(header.getInvoiceDate()));
             sit.setInvoiceNo(header.getInvoiceNo());
             sot.setInvoiceDetails(sit);
-            XactDto xactDto = xactMap.get(header.getSalesOrderId()).get(0);
-            XactType xact = TransactionJaxbDtoFactory.createXactJaxbInstance(xactDto, 0, null);
-            sot.getInvoiceDetails().setTransaction(xact);
-
+            if (xactMap.get(header.getSalesOrderId()) != null) {
+                XactDto xactDto = xactMap.get(header.getSalesOrderId()).get(0);
+                XactType xact = TransactionJaxbDtoFactory.createXactJaxbInstance(xactDto, 0, null);
+                sot.getInvoiceDetails().setTransaction(xact);
+            } else {
+                XactType xact = TransactionJaxbDtoFactory.createXactJaxbInstance(null, 0, null);
+                sot.getInvoiceDetails().setTransaction(xact);
+            }
             jaxbResults.add(sot);
         }
         return jaxbResults;
@@ -333,16 +348,7 @@ public class PrintCustomerSalesOrderApiHandler extends SalesOrderApiHandler {
         } catch (VerifyException e) {
             throw new InvalidRequestException(SalesOrderHandlerConst.MSG_MISSING_CUSTOMER_STRUCTURE);
         }
-        
         try {
-            Verifier.verifyNotNull(req.getCriteria().getXactCriteria());
-            Verifier.verifyNotNull(req.getCriteria().getXactCriteria().getBasicCriteria());
-        } catch (VerifyException e) {
-            throw new InvalidRequestException(SalesOrderHandlerConst.MSG_MISSING_XACT_STRUCTURE);
-        }
-
-        try {
-            Verifier.verifyNotNull(req.getCriteria().getXactCriteria().getBasicCriteria().getXactId());
             Verifier.verifyNotNull(req.getCriteria().getCustomerCriteria().getCustomer().getCustomerId());
             Verifier.verifyPositive(req.getCriteria().getSalesCriteria().getSalesOrderId());
         } catch (VerifyException e) {
