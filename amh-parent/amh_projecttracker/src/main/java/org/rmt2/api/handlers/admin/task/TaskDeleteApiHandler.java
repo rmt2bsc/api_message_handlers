@@ -5,6 +5,9 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.dto.TaskDto;
+import org.modules.ProjectTrackerApiConst;
+import org.modules.admin.ProjectAdminApi;
+import org.modules.admin.ProjectAdminApiFactory;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.ProjectProfileRequest;
@@ -74,30 +77,32 @@ public class TaskDeleteApiHandler extends TaskApiHandler {
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         TaskDto task2Dto = null;
 
+        // IS-71: Use local scoped API instance for the purpose of preventing memory leaks
+        // caused by dangling API instances. 
+        ProjectAdminApi api = ProjectAdminApiFactory.createApi(ProjectTrackerApiConst.APP_NAME); 
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             rs.setRecordCount(0);
+            
             task2Dto = TaskJaxbDtoFactory.createTaskDtoInstance(req.getProfile().getTask().get(0));
             
-            this.api.beginTrans();
-            int rc = this.api.deleteTask(task2Dto);
-
+            api.beginTrans();
+            int rc = api.deleteTask(task2Dto);
             rs.setMessage(TaskMessageHandlerConst.MESSAGE_DELETE_TASK_SUCCESS);
             rs.setRecordCount(rc);
 
             this.responseObj.setHeader(req.getHeader());
-            this.api.commitTrans();
+            api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setRecordCount(0);
             rs.setMessage(TaskMessageHandlerConst.MESSAGE_DELETE_TASK_FAILED);
             rs.setExtMessage(e.getMessage());
-            this.api.rollbackTrans();
+            api.rollbackTrans();
         } finally {
-            this.api.close();
+            api.close();
         }
 
         // Add Project Type type data to the project profile element

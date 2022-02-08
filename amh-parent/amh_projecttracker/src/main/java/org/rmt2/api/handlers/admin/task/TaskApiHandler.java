@@ -5,9 +5,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.dto.TaskDto;
-import org.modules.ProjectTrackerApiConst;
-import org.modules.admin.ProjectAdminApi;
-import org.modules.admin.ProjectAdminApiFactory;
 import org.rmt2.api.ApiMessageHandlerConst;
 import org.rmt2.api.handler.util.MessageHandlerUtility;
 import org.rmt2.jaxb.ObjectFactory;
@@ -39,14 +36,15 @@ public class TaskApiHandler extends
     
     private static final Logger logger = Logger.getLogger(TaskApiHandler.class);
     protected ObjectFactory jaxbObjFactory;
-    protected ProjectAdminApi api;
+    // IS-71: Removed class member variable, api, which used to be shared with
+    // descendant classes. This will eliminate the possibility of memory leaks
+    // caused by dangling API instances. 
 
     /**
      * @param payload
      */
     public TaskApiHandler() {
         super();
-        this.api = ProjectAdminApiFactory.createApi(ProjectTrackerApiConst.APP_NAME);
         this.jaxbObjFactory = new ObjectFactory();
         this.responseObj = jaxbObjFactory.createProjectProfileResponse();
         logger.info(TaskApiHandler.class.getName() + " was instantiated successfully");

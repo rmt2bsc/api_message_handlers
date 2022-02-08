@@ -5,6 +5,9 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.dto.TaskDto;
+import org.modules.ProjectTrackerApiConst;
+import org.modules.admin.ProjectAdminApi;
+import org.modules.admin.ProjectAdminApiFactory;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.ProjectProfileRequest;
@@ -76,16 +79,20 @@ public class TaskUpdateApiHandler extends TaskApiHandler {
         TaskDto task2Dto = null;
         boolean newTask = false;
 
+        // IS-71: Use local scoped API instance for the purpose of preventing memory leaks
+        // caused by dangling API instances. 
+        ProjectAdminApi api = ProjectAdminApiFactory.createApi(ProjectTrackerApiConst.APP_NAME); 
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             rs.setRecordCount(0);
+            
             task2Dto = TaskJaxbDtoFactory.createTaskDtoInstance(req.getProfile().getTask().get(0));
             newTask = task2Dto.getTaskId() == 0;
             
-            this.api.beginTrans();
-            int rc = this.api.updateTask(task2Dto);
+            api.beginTrans();
+            int rc = api.updateTask(task2Dto);
             if (newTask) {
                 rs.setMessage(TaskMessageHandlerConst.MESSAGE_NEW_TASK_UPDATE_SUCCESS);
                 rs.setRecordCount(1);
@@ -97,11 +104,10 @@ public class TaskUpdateApiHandler extends TaskApiHandler {
                 rs.setRecordCount(rc);
             }
             this.responseObj.setHeader(req.getHeader());
-            this.api.commitTrans();
+            api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setRecordCount(0);
             if (newTask) {
                 rs.setMessage(TaskMessageHandlerConst.MESSAGE_NEW_TASK_UPDATE_FAILED);
             }
@@ -109,9 +115,9 @@ public class TaskUpdateApiHandler extends TaskApiHandler {
                 rs.setMessage(TaskMessageHandlerConst.MESSAGE_EXISTING_TASK_UPDATE_FAILED);
             }
             rs.setExtMessage(e.getMessage());
-            this.api.rollbackTrans();
+            api.rollbackTrans();
         } finally {
-            this.api.close();
+            api.close();
         }
 
         // Add Project Type type data to the project profile element

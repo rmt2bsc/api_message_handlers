@@ -6,6 +6,9 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.dto.TaskDto;
+import org.modules.ProjectTrackerApiConst;
+import org.modules.admin.ProjectAdminApi;
+import org.modules.admin.ProjectAdminApiFactory;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.ProjectProfileRequest;
@@ -73,14 +76,17 @@ public class TaskQueryApiHandler extends TaskApiHandler {
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         List<TaskType> queryDtoResults = null;
 
+        // IS-71: Use local scoped API instance for the purpose of preventing memory leaks
+        // caused by dangling API instances. 
+        ProjectAdminApi api = ProjectAdminApiFactory.createApi(ProjectTrackerApiConst.APP_NAME); 
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             rs.setRecordCount(0);
-            TaskDto criteriaDto = TaskJaxbDtoFactory.createTaskDtoCriteriaInstance(req.getCriteria());
             
-            List<TaskDto> dtoList = this.api.getTask(criteriaDto);
+            TaskDto criteriaDto = TaskJaxbDtoFactory.createTaskDtoCriteriaInstance(req.getCriteria());
+            List<TaskDto> dtoList = api.getTask(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage(TaskMessageHandlerConst.MESSAGE_NOT_FOUND);
             }
@@ -93,11 +99,10 @@ public class TaskQueryApiHandler extends TaskApiHandler {
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setRecordCount(0);
             rs.setMessage(TaskMessageHandlerConst.MESSAGE_FETCH_ERROR);
             rs.setExtMessage(e.getMessage());
         } finally {
-            this.api.close();
+            api.close();
         }
 
         String xml = this.buildResponse(queryDtoResults, rs);
