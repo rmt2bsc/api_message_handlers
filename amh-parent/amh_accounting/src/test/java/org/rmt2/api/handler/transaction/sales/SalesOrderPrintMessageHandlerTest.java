@@ -401,58 +401,6 @@ public class SalesOrderPrintMessageHandlerTest extends BaseAccountingMessageHand
     }
 
     @Test
-    public void testValidation_Missing_Transaction_Criteria() {
-        String request = RMT2File
-                .getFileContentsAsString("xml/transaction/sales/SalesOrderPrintRequestMissingTransactionCriteria.xml");
-
-        MessageHandlerResults results = null;
-        PrintCustomerSalesOrderApiHandler handler = new PrintCustomerSalesOrderApiHandler();
-        try {
-            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_PRINT, request);
-        } catch (MessageHandlerCommandException e) {
-            e.printStackTrace();
-            Assert.fail("An unexpected exception was thrown");
-        }
-
-        Assert.assertNotNull(results);
-        Assert.assertNotNull(results.getPayload());
-
-        AccountingTransactionResponse actualRepsonse = (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload()
-                .toString());
-
-        Assert.assertNull(actualRepsonse.getProfile());
-        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(SalesOrderHandlerConst.MSG_MISSING_XACT_STRUCTURE, actualRepsonse.getReplyStatus().getMessage());
-    }
-
-    @Test
-    public void testValidation_Missing_Transaction_Criteria2() {
-        String request = RMT2File
-                .getFileContentsAsString("xml/transaction/sales/SalesOrderPrintRequestMissingTransactionCriteria2.xml");
-
-        MessageHandlerResults results = null;
-        PrintCustomerSalesOrderApiHandler handler = new PrintCustomerSalesOrderApiHandler();
-        try {
-            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_PRINT, request);
-        } catch (MessageHandlerCommandException e) {
-            e.printStackTrace();
-            Assert.fail("An unexpected exception was thrown");
-        }
-
-        Assert.assertNotNull(results);
-        Assert.assertNotNull(results.getPayload());
-
-        AccountingTransactionResponse actualRepsonse = (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload()
-                .toString());
-
-        Assert.assertNull(actualRepsonse.getProfile());
-        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(SalesOrderHandlerConst.MSG_MISSING_XACT_STRUCTURE, actualRepsonse.getReplyStatus().getMessage());
-    }
-
-    @Test
     public void testValidation_Missing_SalesOrderId_Criteria() {
         String request = RMT2File
                 .getFileContentsAsString("xml/transaction/sales/SalesOrderPrintRequestMissingSalesOrderId.xml");
@@ -504,29 +452,5 @@ public class SalesOrderPrintMessageHandlerTest extends BaseAccountingMessageHand
         Assert.assertEquals(SalesOrderHandlerConst.MSG_MISSING_PRINT_PARAMETERS, actualRepsonse.getReplyStatus().getMessage());
     }
 
-    @Test
-    public void testValidation_Missing_XactId_Criteria() {
-        String request = RMT2File
-                .getFileContentsAsString("xml/transaction/sales/SalesOrderPrintRequestMissingXactId.xml");
 
-        MessageHandlerResults results = null;
-        PrintCustomerSalesOrderApiHandler handler = new PrintCustomerSalesOrderApiHandler();
-        try {
-            results = handler.processMessage(ApiTransactionCodes.ACCOUNTING_SALESORDER_PRINT, request);
-        } catch (MessageHandlerCommandException e) {
-            e.printStackTrace();
-            Assert.fail("An unexpected exception was thrown");
-        }
-
-        Assert.assertNotNull(results);
-        Assert.assertNotNull(results.getPayload());
-
-        AccountingTransactionResponse actualRepsonse = (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload()
-                .toString());
-
-        Assert.assertNull(actualRepsonse.getProfile());
-        Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(SalesOrderHandlerConst.MSG_MISSING_PRINT_PARAMETERS, actualRepsonse.getReplyStatus().getMessage());
-    }
 }
