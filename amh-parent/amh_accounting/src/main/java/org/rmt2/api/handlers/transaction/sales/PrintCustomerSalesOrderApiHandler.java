@@ -339,7 +339,7 @@ public class PrintCustomerSalesOrderApiHandler extends SalesOrderApiHandler {
         try {
             Verifier.verifyNotNull(req.getCriteria().getSalesCriteria());
         } catch (VerifyException e) {
-            throw new InvalidRequestException(SalesOrderHandlerConst.MSG_MISSING_SALESORDER_STRUCTURE);
+            throw new InvalidRequestException(SalesOrderHandlerConst.MSG_MISSING_SALESORDER_CRITERIA_STRUCTURE);
         }
 
         try {

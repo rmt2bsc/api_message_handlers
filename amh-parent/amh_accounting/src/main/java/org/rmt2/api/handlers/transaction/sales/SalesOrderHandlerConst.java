@@ -10,7 +10,7 @@ public class SalesOrderHandlerConst {
     public static final String MSG_MISSING_SALESORDER_STRUCTURE = "Sales order structure is required for create sales order operation";
     public static final String MSG_MISSING_CUSTOMER_STRUCTURE = "Customer criteria structure is required";
     public static final String MSG_MISSING_XACT_STRUCTURE = "Transaction criteria structure is required for create sales order operation";
-    public static final String MSG_MISSING_PRINT_PARAMETERS = "Sales Order print operation requires sales order id, customer id, and transaction id as selection criteria";
+    public static final String MSG_MISSING_PRINT_PARAMETERS = "Sales Order print operation requires sales order id and customer id as selection criteria";
     public static final String MSG_SALESORDER_LIST_EMPTY = "Sales order list cannot be empty for create sales order operation";
     public static final String MSG_SALESORDER_LIST_CONTAINS_TOO_MANY = "Sales order list must contain only 1 entry for create sales order operation";
     public static final String MSG_REVERSE_SUCCESS = "Existing Sales order transaction, %s1, was reversed: %s2";
@@ -43,4 +43,5 @@ public class SalesOrderHandlerConst {
     public static final String MSG_MISSING_SUBJECT_CRITERIA = "Selection criteria is required for Accounting Sales Order fetch operation";
     public static final String MSG_MISSING_TARGET_LEVEL = "Sales order fetch request must contain a target level value";
     public static final String MSG_TARGET_LEVEL_DETAILS_NOT_SUPPORTED = "Sales order details only target level is not supported";
+    public static final String MSG_MISSING_SALESORDER_CRITERIA_STRUCTURE = "Sales order structure is required for the print sales order operation";
 }

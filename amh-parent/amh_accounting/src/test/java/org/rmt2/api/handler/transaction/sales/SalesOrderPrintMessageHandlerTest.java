@@ -345,7 +345,7 @@ public class SalesOrderPrintMessageHandlerTest extends BaseAccountingMessageHand
         Assert.assertNull(actualRepsonse.getProfile());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(SalesOrderHandlerConst.MSG_MISSING_SALESORDER_STRUCTURE, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(SalesOrderHandlerConst.MSG_MISSING_SALESORDER_CRITERIA_STRUCTURE, actualRepsonse.getReplyStatus().getMessage());
     }
 
     @Test
