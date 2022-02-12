@@ -149,8 +149,8 @@ public class ClientImportApiHandler extends ClientApiHandler {
                 // Package customer/business contact data to be imported as the
                 // client profile in the project tracker system
                 ClientDto client = this.buildClientDataForUpdate(custObj, bcDto);
-                int clientId = api.updateClient(client);
-                ClientDto verifiedClient = this.getImportedClient(api, clientId);
+                int rc = api.updateClientWithoutNotification(client);
+                ClientDto verifiedClient = this.getImportedClient(api, client.getClientId());
                 if (verifiedClient != null) {
                     dtoList.add(verifiedClient);    
                 }
