@@ -1,0 +1,22 @@
+<ProjectProfileRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>projecttracker</application>
+        <module>admin</module>
+        <transaction>IMPORT_CLIENT</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>02/11/2022 21:54:23</delivery_date>
+    </header>
+    <profile>
+        <client>
+            <client_id>100</client_id>
+        </client>
+        <client>
+            <client_id>200</client_id>
+        </client>
+        <client>
+            <client_id>300</client_id>
+        </client>
+    </profile>
+</ProjectProfileRequest>

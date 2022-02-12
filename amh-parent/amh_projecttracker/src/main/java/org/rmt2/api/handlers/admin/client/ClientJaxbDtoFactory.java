@@ -1,5 +1,8 @@
 package org.rmt2.api.handlers.admin.client;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.dto.ClientDto;
 import org.dto.adapter.orm.ProjectObjectFactory;
 import org.rmt2.jaxb.BusinessType;
@@ -7,6 +10,7 @@ import org.rmt2.jaxb.ClientCriteriaType;
 import org.rmt2.jaxb.ClientType;
 import org.rmt2.jaxb.CustomerType;
 import org.rmt2.jaxb.ProjectCriteriaGroup;
+import org.rmt2.jaxb.ProjectProfileRequest;
 import org.rmt2.jaxb.RecordTrackingType;
 import org.rmt2.util.RecordTrackingTypeBuilder;
 import org.rmt2.util.accounting.subsidiary.CustomerTypeBuilder;
@@ -54,6 +58,27 @@ public class ClientJaxbDtoFactory extends RMT2Base {
         return dto;
     }
     
+    /**
+     * Obtains a list of customer identifiers from the Project Profile Request object.
+     * 
+     * @param jaxbObj
+     *            an instance of {@link ProjectProfileRequest}
+     * @return List of integers representing the customer identifiers
+     */
+    public static final List<Integer> getCustomerImportIdentifiers(ProjectProfileRequest jaxbObj) {
+        if (jaxbObj == null || jaxbObj.getProfile() == null || jaxbObj.getProfile().getClient() == null) {
+            return null;
+        }
+        List<Integer> custIdList = new ArrayList<>();
+        List<ClientType> clients = jaxbObj.getProfile().getClient();
+        for (ClientType clientObj : clients) {
+            if (clientObj.getClientId() != null) {
+                custIdList.add(clientObj.getClientId().intValue());
+            }
+        }
+        return custIdList;
+    }
+        
     /**
      * Created an instance of ClientDto from an ClientType object
      * 

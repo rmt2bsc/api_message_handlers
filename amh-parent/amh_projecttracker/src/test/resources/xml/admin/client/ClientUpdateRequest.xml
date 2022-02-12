@@ -1,0 +1,29 @@
+<ProjectProfileRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>projecttracker</application>
+        <module>admin</module>
+        <transaction>UPDATE_CLIENT</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>02/11/2022 21:55:03</delivery_date>
+    </header>
+    <profile>
+        <client>
+            <client_id>100</client_id>
+            <name>ProjectTracker Client Name 1</name>
+            <customer>
+                <customer_id>4444</customer_id>
+                <business_contact_details>
+                    <business_id>111</business_id>
+                    <contact_firstname>Roy</contact_firstname>
+                    <contact_lastname>Terrell</contact_lastname>
+                    <contact_phone>9992228888</contact_phone>
+                    <contact_ext>123</contact_ext>
+                    <contact_email>royterrell@gte.net</contact_email>
+                </business_contact_details>
+                <account_no>111-222-111</account_no>
+            </customer>
+        </client>
+    </profile>
+</ProjectProfileRequest>

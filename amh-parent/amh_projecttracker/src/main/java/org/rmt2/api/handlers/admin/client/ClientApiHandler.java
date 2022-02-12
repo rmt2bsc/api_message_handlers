@@ -3,9 +3,6 @@ package org.rmt2.api.handlers.admin.client;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.modules.ProjectTrackerApiConst;
-import org.modules.admin.ProjectAdminApi;
-import org.modules.admin.ProjectAdminApiFactory;
 import org.rmt2.api.handler.util.MessageHandlerUtility;
 import org.rmt2.jaxb.ClientType;
 import org.rmt2.jaxb.ObjectFactory;
@@ -26,6 +23,10 @@ import com.api.util.assistants.VerifyException;
 /**
  * Handles and routes client related messages to the Project Tracker
  * Administration API.
+ * <p>
+ * <b><u>Change Log</u></b><br>
+ * IS-71: Removed use of <i>api</i> member variable which was shared amongst all
+ * descendant classes, in order to prevent memory leaks.
  * 
  * @author roy.terrell
  *
@@ -35,14 +36,12 @@ public class ClientApiHandler extends
     
     private static final Logger logger = Logger.getLogger(ClientApiHandler.class);
     protected ObjectFactory jaxbObjFactory;
-    protected ProjectAdminApi api;
 
     /**
      * @param payload
      */
     public ClientApiHandler() {
         super();
-        this.api = ProjectAdminApiFactory.createApi(ProjectTrackerApiConst.APP_NAME);
         this.jaxbObjFactory = new ObjectFactory();
         this.responseObj = jaxbObjFactory.createProjectProfileResponse();
         logger.info(ClientApiHandler.class.getName() + " was instantiated successfully");
