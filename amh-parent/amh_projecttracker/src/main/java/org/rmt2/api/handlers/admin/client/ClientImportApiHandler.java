@@ -126,7 +126,7 @@ public class ClientImportApiHandler extends ClientApiHandler {
                 CustomerDto custObj = custApi.get(custId);
                 if (custObj == null) {
                     // Skip iteration due to erroneous customer and append to Ext Message.
-                    this.addExtMessageContent(prefixMsg + "the profile could not be found in the Accounting system.");
+                    this.addExtMessageContent(prefixMsg + "the customer profile could not be found in the Accounting system.");
                     continue;
                 }
                 
@@ -136,11 +136,6 @@ public class ClientImportApiHandler extends ClientApiHandler {
                 List<ContactDto> contactList = contactApi.getContact(criteria);
                 if (contactList == null) {
                     // Skip iteration due to erroneous business contact and append to Ext Message
-                    this.addExtMessageContent(prefixMsg + "the associated business contact profile [" +  custObj.getContactId() + "] could not be found in the Address Book system.");
-                    continue;
-                }
-                if (contactList.size() > 1) {
-                    // Skip iteration due to too many business contacts returned and append to Ext Message
                     this.addExtMessageContent(prefixMsg + "the associated business contact profile [" +  custObj.getContactId() + "] could not be found in the Address Book system.");
                     continue;
                 }
@@ -241,12 +236,6 @@ public class ClientImportApiHandler extends ClientApiHandler {
             Verifier.verifyNotNull(req.getProfile());
         } catch (VerifyException e) {
             throw new InvalidRequestException(ApiMessageHandlerConst.MSG_MISSING_PROFILE_DATA);
-        }
-
-        try {
-            Verifier.verifyNotNull(req.getProfile().getClient());
-        } catch (VerifyException e) {
-            throw new InvalidRequestException(ClientMessageHandlerConst.MESSAGE_CUSTOMER_IMPORT_MISSING_CLIENT_STRUCTURE);
         }
     }
 
