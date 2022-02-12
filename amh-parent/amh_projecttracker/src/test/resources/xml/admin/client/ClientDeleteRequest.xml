@@ -1,0 +1,19 @@
+<ProjectProfileRequest>
+    <header>
+        <routing>XXXXXXX</routing>
+        <application>projecttracker</application>
+        <module>admin</module>
+        <transaction>DELETE_CLIENT</transaction>
+        <delivery_mode>XXXXXXX</delivery_mode>
+        <message_mode>REQUEST</message_mode>
+        <delivery_date>02/12/2022 13:24:12</delivery_date>
+    </header>
+    <criteria>
+        <client_criteria>
+            <client_id>200</client_id>
+            <business_id>333</business_id>
+            <client_name>ProjectTracker Client Name</client_name>
+            <account_no>111-222-333</account_no>
+        </client_criteria>
+    </criteria>
+</ProjectProfileRequest>

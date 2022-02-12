@@ -17,6 +17,7 @@ public class ApiMessageHandlerConst {
     public static final String MSG_MISSING_TARGET_LEVEL = "Fetch request must contain a target level value";
     public static final String MSG_INCORRECT_TARGET_LEVEL = "Fetch request contains an invalid target level: " + MSG_PLACEHOLDER;
     public static final String MSG_MISSING_PROFILE_DATA = "Profile data is required for update type operations";
+    public static final String MSG_MISSING_CRITERIA_DATA = "Criteria data is required for update type operations";
     public static final String MEDIA_LINK_PROCESSING_SKIPPED = "%s project is not applicable for this attachment";
     public static final String MEDIA_LINK_VALID_APPNAME_ACCOUNTING = "Accounting";
     public static final String MEDIA_LINK_VALID_MODULENAME_ACCOUNTING = "transaction";
