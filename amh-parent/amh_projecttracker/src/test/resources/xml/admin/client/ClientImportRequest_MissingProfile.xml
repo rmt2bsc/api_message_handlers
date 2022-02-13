@@ -8,9 +8,5 @@
         <message_mode>REQUEST</message_mode>
         <delivery_date>02/11/2022 21:54:23</delivery_date>
     </header>
-    <profile>
-        <client>
-            <client_id>100</client_id>
-        </client>
-    </profile>
+    
 </ProjectProfileRequest>

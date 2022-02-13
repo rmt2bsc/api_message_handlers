@@ -3,14 +3,10 @@
         <routing>XXXXXXX</routing>
         <application>projecttracker</application>
         <module>admin</module>
-        <transaction>IMPORT_CLIENT</transaction>
+        <transaction>DELETE_CLIENT</transaction>
         <delivery_mode>XXXXXXX</delivery_mode>
         <message_mode>REQUEST</message_mode>
-        <delivery_date>02/11/2022 21:54:23</delivery_date>
+        <delivery_date>02/12/2022 13:24:12</delivery_date>
     </header>
-    <profile>
-        <client>
-            <client_id>100</client_id>
-        </client>
-    </profile>
+    
 </ProjectProfileRequest>

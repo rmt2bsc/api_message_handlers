@@ -91,7 +91,7 @@ public class ClientDeleteApiHandler extends ClientApiHandler {
                 rs.setMessage(ClientMessageHandlerConst.MESSAGE_DELETE_SUCCESSFUL);
             }
             else {
-                rs.setMessage(ClientMessageHandlerConst.MESSAGE_DLETE_RECORDS_NOT_FOUND);
+                rs.setMessage(ClientMessageHandlerConst.MESSAGE_DELETE_RECORDS_NOT_FOUND);
             }
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {

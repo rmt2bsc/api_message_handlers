@@ -112,7 +112,7 @@ public class ClientImportApiHandler extends ClientApiHandler {
             // local project tracker external datasouce.
             api.beginTrans();
             for (int custId : custIdList) {
-                String prefixMsg = "Unable to import customer profile identified by customer ID, " + custId + ", was skipped due to ";
+                String prefixMsg = "Unable to import customer profile identified by customer ID, " + custId + ".  Record was skipped due to ";
                 
                 // Verify that client profile has not already been imported
                 Object obj = this.getImportedClient(api, custId);
@@ -230,7 +230,7 @@ public class ClientImportApiHandler extends ClientApiHandler {
     
     @Override
     protected void validateRequest(ProjectProfileRequest req) throws InvalidDataException {
-        super.validateRequest(req);
+//        super.validateRequest(req);
         
         try {
             Verifier.verifyNotNull(req.getProfile());
