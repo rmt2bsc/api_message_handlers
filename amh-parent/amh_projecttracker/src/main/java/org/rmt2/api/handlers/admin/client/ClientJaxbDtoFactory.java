@@ -109,6 +109,11 @@ public class ClientJaxbDtoFactory extends RMT2Base {
                 if (jaxbObj.getCustomer().getBusinessContactDetails().getBusinessId() != null) {
                     dto.setBusinessId(jaxbObj.getCustomer().getBusinessContactDetails().getBusinessId().intValue());
                 }
+                dto.setClientContactFirstname(jaxbObj.getCustomer().getBusinessContactDetails().getContactFirstname());
+                dto.setClientContactLastname(jaxbObj.getCustomer().getBusinessContactDetails().getContactLastname());
+                dto.setClientContactPhone(jaxbObj.getCustomer().getBusinessContactDetails().getContactPhone());
+                dto.setClientContactExt(jaxbObj.getCustomer().getBusinessContactDetails().getContactExt());
+                dto.setClientContactEmail(jaxbObj.getCustomer().getBusinessContactDetails().getContactEmail());
             }
         }
 
