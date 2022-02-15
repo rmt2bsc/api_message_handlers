@@ -5,6 +5,9 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.dto.Project2Dto;
+import org.modules.ProjectTrackerApiConst;
+import org.modules.admin.ProjectAdminApi;
+import org.modules.admin.ProjectAdminApiFactory;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.ProjectProfileRequest;
@@ -24,6 +27,8 @@ import com.api.messaging.handler.MessageHandlerResults;
 public class ProjectDeleteApiHandler extends ProjectApiHandler {
     
     private static final Logger logger = Logger.getLogger(ProjectDeleteApiHandler.class);
+    private ProjectAdminApi api;
+    
     /**
      * @param payload
      */
@@ -72,6 +77,10 @@ public class ProjectDeleteApiHandler extends ProjectApiHandler {
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         Project2Dto project2Dto = null;
 
+        // IS-71: Changed the scope to local to prevent memory leaks as a result
+        // of sharing the API instance that was once contained in ancestor
+        // class, ProjectApiHandler.
+        api = ProjectAdminApiFactory.createApi(ProjectTrackerApiConst.APP_NAME);
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);

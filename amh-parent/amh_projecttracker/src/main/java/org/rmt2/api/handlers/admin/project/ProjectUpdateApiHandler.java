@@ -14,6 +14,9 @@ import org.dto.adapter.orm.ProjectObjectFactory;
 import org.dto.adapter.orm.Rmt2AddressBookDtoFactory;
 import org.dto.adapter.orm.account.subsidiary.Rmt2SubsidiaryDtoFactory;
 import org.modules.CommonAccountingConst;
+import org.modules.ProjectTrackerApiConst;
+import org.modules.admin.ProjectAdminApi;
+import org.modules.admin.ProjectAdminApiFactory;
 import org.modules.contacts.ContactsApi;
 import org.modules.contacts.ContactsApiException;
 import org.modules.contacts.ContactsApiFactory;
@@ -53,8 +56,7 @@ public class ProjectUpdateApiHandler extends ProjectApiHandler {
     private BusinessContactDto verifiedContactDto;
     private CustomerDto verifiedCustomerDto;
     private boolean createClient;
-
-    // private boolean clientVerified;
+    private ProjectAdminApi api;
 
     /**
      * @param payload
@@ -108,6 +110,10 @@ public class ProjectUpdateApiHandler extends ProjectApiHandler {
         Project2Dto project2Dto = null;
         boolean newProject = false;
 
+        // IS-71: Changed the scope to local to prevent memory leaks as a result
+        // of sharing the API instance that was once contained in ancestor
+        // class, ProjectApiHandler.
+        api = ProjectAdminApiFactory.createApi(ProjectTrackerApiConst.APP_NAME);
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
@@ -117,7 +123,7 @@ public class ProjectUpdateApiHandler extends ProjectApiHandler {
             project2Dto = ProjectJaxbDtoFactory.createProjetDtoInstance(req.getProfile().getProject().get(0));
             newProject = project2Dto.getProjId() == 0;
             
-            this.api.beginTrans();
+            api.beginTrans();
 
             // If new project, determine if a project client needs to be
             // created.
@@ -147,7 +153,7 @@ public class ProjectUpdateApiHandler extends ProjectApiHandler {
                             .build();
 
                     ClientDto projClientDto = ClientJaxbDtoFactory.createClientDtoInstance(clientType);
-                    int rc = this.api.updateClientWithoutNotification(projClientDto);
+                    int rc = api.updateClientWithoutNotification(projClientDto);
                     if (rc == 1) {
                         project2Dto.setClientId(verifiedCustomerDto.getCustomerId());
                     }
@@ -157,7 +163,7 @@ public class ProjectUpdateApiHandler extends ProjectApiHandler {
                 }
             }
 
-            int rc = this.api.updateProject(project2Dto);
+            int rc = api.updateProject(project2Dto);
             if (newProject) {
                 rs.setMessage(ProjectMessageHandlerConst.MESSAGE_NEW_PROJECT_UPDATE_SUCCESS);
                 rs.setRecordCount(1);
@@ -169,7 +175,7 @@ public class ProjectUpdateApiHandler extends ProjectApiHandler {
                 rs.setRecordCount(rc);
             }
             this.responseObj.setHeader(req.getHeader());
-            this.api.commitTrans();
+            api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
@@ -181,9 +187,9 @@ public class ProjectUpdateApiHandler extends ProjectApiHandler {
                 rs.setMessage(ProjectMessageHandlerConst.MESSAGE_EXISTING_PROJECT_UPDATE_FAILED);
             }
             rs.setExtMessage(e.getMessage());
-            this.api.rollbackTrans();
+            api.rollbackTrans();
         } finally {
-            this.api.close();
+            api.close();
         }
 
         // Add Project Type type data to the project profile element
@@ -193,9 +199,6 @@ public class ProjectUpdateApiHandler extends ProjectApiHandler {
         results.setPayload(xml);
         return results;
     }
-    
-   
-    
     
     @Override
     protected void validateRequest(ProjectProfileRequest req) throws InvalidDataException {
@@ -256,7 +259,6 @@ public class ProjectUpdateApiHandler extends ProjectApiHandler {
                 Rmt2AddressBookDtoFactory.getContactInstance(null);
                 BusinessContactDto criteria = Rmt2AddressBookDtoFactory.getBusinessInstance(null);
                 criteria.setContactId(busId);
-
                 try {
                     List<ContactDto> contact = addressApi.getContact(criteria);
                     if (contact != null) {
@@ -266,8 +268,11 @@ public class ProjectUpdateApiHandler extends ProjectApiHandler {
                         throw new InvalidDataException(ProjectMessageHandlerConst.VALIDATION_BUSID_NOT_BUSINESS_CONTACT);
                     }
                 } catch (ContactsApiException e) {
-                    throw new InvalidDataException(
-                            "A address book API error occurred validating business id as a business contact", e);
+                    String errorMsg = "A address book API error occurred validating business id as a business contact";
+                    throw new InvalidDataException(errorMsg, e);
+                }
+                finally {
+                    addressApi.close();
                 }
 
                 // Verify that the business contact exists as a customer in the
@@ -286,6 +291,9 @@ public class ProjectUpdateApiHandler extends ProjectApiHandler {
                     }
                 } catch (CustomerApiException e) {
                     throw new InvalidDataException("A accounting API error occurred validating business id as a customer", e);
+                }
+                finally {
+                    custApi.close();
                 }
                 this.createClient = true;
             }

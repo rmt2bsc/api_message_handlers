@@ -6,9 +6,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.dto.Project2Dto;
 import org.dto.ProjectClientDto;
-import org.modules.ProjectTrackerApiConst;
-import org.modules.admin.ProjectAdminApi;
-import org.modules.admin.ProjectAdminApiFactory;
 import org.rmt2.api.ApiMessageHandlerConst;
 import org.rmt2.api.handler.util.MessageHandlerUtility;
 import org.rmt2.jaxb.ObjectFactory;
@@ -31,6 +28,10 @@ import com.api.util.assistants.VerifyException;
 /**
  * Handles and routes project related messages to the Project Tracker
  * Administration API.
+ * <p>
+ * <b><u>Change Log</u></b><br>
+ * IS-71: Removed use of <i>api</i> member variable which was shared amongst all
+ * descendant classes, in order to prevent memory leaks.
  * 
  * @author roy.terrell
  *
@@ -40,14 +41,12 @@ public class ProjectApiHandler extends
     
     private static final Logger logger = Logger.getLogger(ProjectApiHandler.class);
     protected ObjectFactory jaxbObjFactory;
-    protected ProjectAdminApi api;
 
     /**
      * @param payload
      */
     public ProjectApiHandler() {
         super();
-        this.api = ProjectAdminApiFactory.createApi(ProjectTrackerApiConst.APP_NAME);
         this.jaxbObjFactory = new ObjectFactory();
         this.responseObj = jaxbObjFactory.createProjectProfileResponse();
         logger.info(ProjectApiHandler.class.getName() + " was instantiated successfully");

@@ -5,6 +5,9 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.dto.ProjectClientDto;
+import org.modules.ProjectTrackerApiConst;
+import org.modules.admin.ProjectAdminApi;
+import org.modules.admin.ProjectAdminApiFactory;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.ProjectProfileRequest;
@@ -72,6 +75,10 @@ public class ProjectQueryApiHandler extends ProjectApiHandler {
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         List<ProjectType> queryDtoResults = null;
 
+        // IS-71: Changed the scope to local to prevent memory leaks as a result
+        // of sharing the API instance that was once contained in ancestor
+        // class, ProjectApiHandler.
+        ProjectAdminApi api = ProjectAdminApiFactory.createApi(ProjectTrackerApiConst.APP_NAME);
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
@@ -80,7 +87,7 @@ public class ProjectQueryApiHandler extends ProjectApiHandler {
             ProjectClientDto criteriaDto = ProjectJaxbDtoFactory.createProjectClientDtoCriteriaInstance(req.getCriteria()
                     .getProjectCriteria());
             
-            List<ProjectClientDto> dtoList = this.api.getProjectExt(criteriaDto);
+            List<ProjectClientDto> dtoList = api.getProjectExt(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage(ProjectMessageHandlerConst.MESSAGE_NOT_FOUND);
             }
@@ -97,7 +104,7 @@ public class ProjectQueryApiHandler extends ProjectApiHandler {
             rs.setMessage(ProjectMessageHandlerConst.MESSAGE_FETCH_ERROR);
             rs.setExtMessage(e.getMessage());
         } finally {
-            this.api.close();
+            api.close();
         }
 
         String xml = this.buildResponse(queryDtoResults, rs);
