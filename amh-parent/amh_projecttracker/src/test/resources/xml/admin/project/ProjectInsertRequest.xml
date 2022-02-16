@@ -6,15 +6,25 @@
         <transaction>UPDATE_PROJECT</transaction>
         <delivery_mode>XXXXXXX</delivery_mode>
         <message_mode>REQUEST</message_mode>
-        <delivery_date>05/13/2020 00:34:10</delivery_date>
+        <delivery_date>02/15/2022 20:59:14</delivery_date>
     </header>
     <profile>
         <project>
+            <project_id>0</project_id>
             <client>
-                <client_id>2</client_id>
+                <client_id>200</client_id>
+                <name>ProjectTracker Client Name</name>
+                <customer>
+                    <business_contact_details>
+                        <business_id>7777</business_id>
+                    </business_contact_details>
+                </customer>
+                <bill_rate>120.0</bill_rate>
+                <ot_bill_rate>130.0</ot_bill_rate>
             </client>
-            <description>Test Project for Business Server</description>
+            <description>Project Name</description>
             <effective_date>2020-01-01-06:00</effective_date>
+            <end_date>2020-05-01-05:00</end_date>
         </project>
     </profile>
 </ProjectProfileRequest>
