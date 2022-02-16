@@ -66,6 +66,10 @@ public class ProjectUpdateApiHandler extends ProjectApiHandler {
         this.verifiedContactDto = null;
         this.verifiedCustomerDto = null;
         this.createClient = false;
+        // IS-71: Changed the scope to local to prevent memory leaks as a result
+        // of sharing the API instance that was once contained in ancestor
+        // class, ProjectApiHandler.
+        this.api = ProjectAdminApiFactory.createApi(ProjectTrackerApiConst.APP_NAME);
         logger.info(ProjectUpdateApiHandler.class.getName() + " was instantiated successfully");
     }
 
@@ -110,10 +114,6 @@ public class ProjectUpdateApiHandler extends ProjectApiHandler {
         Project2Dto project2Dto = null;
         boolean newProject = false;
 
-        // IS-71: Changed the scope to local to prevent memory leaks as a result
-        // of sharing the API instance that was once contained in ancestor
-        // class, ProjectApiHandler.
-        api = ProjectAdminApiFactory.createApi(ProjectTrackerApiConst.APP_NAME);
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
