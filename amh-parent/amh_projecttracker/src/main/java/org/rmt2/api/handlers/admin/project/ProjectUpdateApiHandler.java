@@ -163,6 +163,7 @@ public class ProjectUpdateApiHandler extends ProjectApiHandler {
                 }
             }
 
+            // Now create or update the project entity
             int rc = api.updateProject(project2Dto);
             if (newProject) {
                 rs.setMessage(ProjectMessageHandlerConst.MESSAGE_NEW_PROJECT_UPDATE_SUCCESS);
@@ -179,7 +180,6 @@ public class ProjectUpdateApiHandler extends ProjectApiHandler {
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setRecordCount(0);
             if (newProject) {
                 rs.setMessage(ProjectMessageHandlerConst.MESSAGE_NEW_PROJECT_UPDATE_FAILED);
             }
@@ -224,7 +224,8 @@ public class ProjectUpdateApiHandler extends ProjectApiHandler {
         // the client id to be sent to the API
         if ((req.getProfile().getProject().get(0).getProjectId() == null ||
                 req.getProfile().getProject().get(0).getProjectId().intValue() == 0)
-                && req.getProfile().getProject().get(0).getClient().getClientId() == null) {
+                && (req.getProfile().getProject().get(0).getClient().getClientId() == null ||
+                req.getProfile().getProject().get(0).getClient().getClientId().intValue() == 0)) {
             try {
                 Verifier.verifyNotNull(req.getProfile().getProject().get(0).getClient().getCustomer());
                 Verifier.verifyNotNull(req.getProfile().getProject().get(0).getClient().getCustomer().getBusinessContactDetails());
@@ -236,13 +237,14 @@ public class ProjectUpdateApiHandler extends ProjectApiHandler {
                 throw new InvalidDataException(ProjectMessageHandlerConst.VALIDATION_BUSID_MISSING_FOR_NEW_PROJECT, e);
             }
 
-            // For new projects, verify client exist.
+            // For new projects, verify that the client exists using the
+            // customer's buisness id since the customer and client entities are
+            // identified by the same business contact id.
             int busId = req.getProfile().getProject().get(0).getClient().getCustomer().getBusinessContactDetails()
                     .getBusinessId().intValue();
             ClientDto clientCriteria = ProjectObjectFactory.createClientDtoInstance(null);
             clientCriteria.setBusinessId(busId);
             List<ClientDto> clientList = this.api.getClient(clientCriteria);
-
             if (clientList != null && clientList.size() == 1) {
                 // Client was found using business id
                 int verifiedClientId = clientList.get(0).getClientId();
