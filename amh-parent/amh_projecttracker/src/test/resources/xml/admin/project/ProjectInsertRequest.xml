@@ -22,7 +22,7 @@
                 <bill_rate>120.0</bill_rate>
                 <ot_bill_rate>130.0</ot_bill_rate>
             </client>
-            <description>Project Name</description>
+            <description>Test Project for Business Server</description>
             <effective_date>2020-01-01-06:00</effective_date>
             <end_date>2020-05-01-05:00</end_date>
         </project>
