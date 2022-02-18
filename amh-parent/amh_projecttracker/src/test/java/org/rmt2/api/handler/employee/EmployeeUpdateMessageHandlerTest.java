@@ -4,6 +4,9 @@ import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
+
+import org.dto.ContactDto;
 import org.dto.EmployeeDto;
 import org.dto.PersonalContactDto;
 import org.junit.After;
@@ -21,6 +24,7 @@ import org.modules.employee.EmployeeApiFactory;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.rmt2.api.ProjectTrackerMockData;
 import org.rmt2.api.handler.BaseProjectTrackerMessageHandlerTest;
 import org.rmt2.api.handlers.employee.EmployeeMessageHandlerConst;
 import org.rmt2.api.handlers.employee.EmployeeUpdateApiHandler;
@@ -83,6 +87,25 @@ public class EmployeeUpdateMessageHandlerTest extends BaseProjectTrackerMessageH
         PowerMockito.mockStatic(EmployeeApiFactory.class);
         when(EmployeeApiFactory.createApi(isA(String.class))).thenReturn(mockApi);
         doNothing().when(this.mockApi).close();
+        
+        List<EmployeeDto> mockEmployeeListData = ProjectTrackerMockData.createMockSingleExtEmployee();
+        mockEmployeeListData.get(0).setEmployeeId(2000);
+        mockEmployeeListData.get(0).setEmployeeFirstname("John");
+        mockEmployeeListData.get(0).setEmployeeLastname("Doe");
+        try {
+            when(mockApi.getEmployeeExt(isA(EmployeeDto.class))).thenReturn(mockEmployeeListData);
+        }
+        catch (Exception e) {
+            Assert.fail("Unable to setup mock stub for fetching employee records");
+        }
+        List<ContactDto> mockPersonalContactDto = ProjectTrackerMockData.createMockSinglePersonalContactDto();
+        try {
+            when(mockContactApi.getContact(isA(PersonalContactDto.class))).thenReturn(mockPersonalContactDto);
+        }
+        catch (Exception e) {
+            Assert.fail("Unable to setup mock stub for fetching personal contact data records");
+        }
+      
         return;
     }
     
@@ -208,7 +231,7 @@ public class EmployeeUpdateMessageHandlerTest extends BaseProjectTrackerMessageH
 
         ProjectProfileResponse actualRepsonse =
                 (ProjectProfileResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-        Assert.assertNotNull(actualRepsonse.getProfile());
+        Assert.assertNull(actualRepsonse.getProfile());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(EmployeeMessageHandlerConst.MESSAGE_UPDATE_NEW_ERROR, actualRepsonse.getReplyStatus()
@@ -244,7 +267,7 @@ public class EmployeeUpdateMessageHandlerTest extends BaseProjectTrackerMessageH
 
         ProjectProfileResponse actualRepsonse =
                 (ProjectProfileResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-        Assert.assertNotNull(actualRepsonse.getProfile());
+        Assert.assertNull(actualRepsonse.getProfile());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(EmployeeMessageHandlerConst.MESSAGE_UPDATE_NEW_ERROR, actualRepsonse.getReplyStatus()
@@ -275,7 +298,7 @@ public class EmployeeUpdateMessageHandlerTest extends BaseProjectTrackerMessageH
         
         ProjectProfileResponse actualRepsonse =
                 (ProjectProfileResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-        Assert.assertNotNull(actualRepsonse.getProfile());
+        Assert.assertNull(actualRepsonse.getProfile());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(EmployeeMessageHandlerConst.MESSAGE_UPDATE_EXISTING_ERROR, actualRepsonse.getReplyStatus()
@@ -311,7 +334,7 @@ public class EmployeeUpdateMessageHandlerTest extends BaseProjectTrackerMessageH
 
         ProjectProfileResponse actualRepsonse =
                 (ProjectProfileResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-        Assert.assertNotNull(actualRepsonse.getProfile());
+        Assert.assertNull(actualRepsonse.getProfile());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(EmployeeMessageHandlerConst.MESSAGE_UPDATE_EXISTING_ERROR, actualRepsonse.getReplyStatus()

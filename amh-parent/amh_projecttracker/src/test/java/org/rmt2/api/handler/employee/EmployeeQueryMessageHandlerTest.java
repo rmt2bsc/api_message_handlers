@@ -6,13 +6,17 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
+import org.dto.ContactDto;
 import org.dto.EmployeeDto;
+import org.dto.PersonalContactDto;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.modules.contacts.ContactsApi;
+import org.modules.contacts.ContactsApiFactory;
 import org.modules.employee.EmployeeApi;
 import org.modules.employee.EmployeeApiException;
 import org.modules.employee.EmployeeApiFactory;
@@ -42,10 +46,11 @@ import com.api.util.RMT2File;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ AbstractDaoClientImpl.class, Rmt2OrmClientFactory.class,
-        EmployeeQueryApiHandler.class, EmployeeApiFactory.class, SystemConfigurator.class })
+        EmployeeQueryApiHandler.class, EmployeeApiFactory.class, ContactsApiFactory.class, SystemConfigurator.class })
 public class EmployeeQueryMessageHandlerTest extends BaseProjectTrackerMessageHandlerTest {
     public static final int PROJECT_COUNT = 28;
     private EmployeeApi mockApi;
+    private ContactsApi mockContactApi;
 
 
     /**
@@ -68,10 +73,26 @@ public class EmployeeQueryMessageHandlerTest extends BaseProjectTrackerMessageHa
         PowerMockito.mockStatic(EmployeeApiFactory.class);
         when(EmployeeApiFactory.createApi(isA(String.class))).thenReturn(mockApi);
         doNothing().when(this.mockApi).close();
+        
+        mockContactApi = Mockito.mock(ContactsApi.class);
+        PowerMockito.mockStatic(ContactsApiFactory.class);
+        try {
+            when(ContactsApiFactory.createApi()).thenReturn(mockContactApi);
+            doNothing().when(this.mockContactApi).close();
+        }
+        catch (Exception e ) {
+            
+        }
+                
+        List<ContactDto> mockPersonalContactDto = ProjectTrackerMockData.createMockSinglePersonalContactDto();
+        try {
+            when(mockContactApi.getContact(isA(PersonalContactDto.class))).thenReturn(mockPersonalContactDto);
+        }
+        catch (Exception e) {
+            Assert.fail("Unable to setup mock stub for fetching personal contact data records");
+        }
         return;
     }
-
-
     
     /*
      * (non-Javadoc)

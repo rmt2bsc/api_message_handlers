@@ -18,16 +18,10 @@ import org.modules.employee.EmployeeApiFactory;
 import org.rmt2.api.handler.util.MessageHandlerUtility;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
-import org.rmt2.jaxb.AddressType;
 import org.rmt2.jaxb.EmployeeType;
 import org.rmt2.jaxb.ProjectDetailGroup;
 import org.rmt2.jaxb.ProjectProfileRequest;
 import org.rmt2.jaxb.ReplyStatusType;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-import org.rmt2.jaxb.ZipcodeType;
-import org.rmt2.util.addressbook.AddressTypeBuilder;
-import org.rmt2.util.addressbook.ZipcodeTypeBuilder;
 
 import com.InvalidDataException;
 import com.api.messaging.handler.MessageHandlerCommandException;
@@ -131,52 +125,22 @@ public class EmployeeQueryApiHandler extends EmployeeApiHandler {
         List<EmployeeType> list = new ArrayList<>();
         ContactsApi contactApi = ContactsApiFactory.createApi();
         for (EmployeeDto item : results) {
-            EmployeeType jaxbObj = EmployeeJaxbDtoFactory.createEmployeeDtoInstance(item);
-            
-            // Get and include address info
-            if (jaxbObj.getContactDetails() != null && jaxbObj.getContactDetails().getPersonId() != null
-                    && jaxbObj.getContactDetails().getPersonId().intValue() > 0) {
-                PersonalContactDto perCriteriaDto = Rmt2AddressBookDtoFactory.getPersonInstance(null, null);
-                perCriteriaDto.setContactId(jaxbObj.getContactDetails().getPersonId().intValue());
-                try {
-                    List<ContactDto> contactList = contactApi.getContact(perCriteriaDto);
-                    if (contactList != null && contactList.size() > 0) {
-                        PersonalContactDto contact = (PersonalContactDto) contactList.get(0);
-                        ZipcodeType zip = ZipcodeTypeBuilder.Builder.create()
-                                .withCity(contact.getCity())
-                                .withState(contact.getState())
-                                .withZipcode(contact.getZip())
-                                .build();
-
-                        AddressType addr = AddressTypeBuilder.Builder.create()
-                                .withAddrId(contact.getAddrId())
-                                .withAddressLine1(contact.getAddr1())
-                                .withAddressLine2(contact.getAddr2())
-                                .withAddressLine3(contact.getAddr3())
-                                .withAddressLine4(contact.getAddr4())
-                                .withPhoneHome(contact.getPhoneHome())
-                                .withPhoneMobile(contact.getPhoneCell())
-                                .withPhoneWork(contact.getPhoneWork())
-                                .withZipcode(zip)
-                                .build();
-
-                        jaxbObj.getContactDetails().setAddress(addr);
-                    }
-                    else {
-                        StringBuilder buf = new StringBuilder();
-                        buf.append("Unable to fetch personal contact information for employee, ");
-                        buf.append(jaxbObj.getContactDetails().getFirstName());
-                        buf.append(" ");
-                        buf.append(jaxbObj.getContactDetails().getLastName());
-                        buf.append(", using person id, ");
-                        buf.append(jaxbObj.getContactDetails().getPersonId().intValue());
-                        logger.error(buf.toString());
-                    }
-                } catch (ContactsApiException e) {
-                    e.printStackTrace();
+            PersonalContactDto personDto = null;
+            PersonalContactDto contactCriteria = Rmt2AddressBookDtoFactory.getPersonInstance(null, null);
+            contactCriteria.setContactId(item.getPersonId());
+            List<ContactDto> contactList = null;
+            try {
+                contactList = contactApi.getContact(contactCriteria);
+            } catch (ContactsApiException e) {
+                e.printStackTrace();
+            }
+            if (contactList != null && contactList.size() == 1) {
+                if (contactList.get(0) instanceof PersonalContactDto) {
+                    personDto = (PersonalContactDto) contactList.get(0);
                 }
             }
-            list.add(jaxbObj);
+            List<EmployeeType> jaxbObj = this.buildJaxbResults(item, personDto);
+            list.addAll(jaxbObj);
         }
         return list;
     }

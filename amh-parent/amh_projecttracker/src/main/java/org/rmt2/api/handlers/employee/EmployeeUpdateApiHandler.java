@@ -1,12 +1,14 @@
 package org.rmt2.api.handlers.employee;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.dto.ContactDto;
 import org.dto.EmployeeDto;
 import org.dto.PersonalContactDto;
+import org.dto.adapter.orm.EmployeeObjectFactory;
+import org.dto.adapter.orm.Rmt2AddressBookDtoFactory;
 import org.modules.ProjectTrackerApiConst;
 import org.modules.contacts.ContactsApi;
 import org.modules.contacts.ContactsApiFactory;
@@ -16,12 +18,9 @@ import org.rmt2.api.handler.util.MessageHandlerUtility;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.EmployeeType;
-import org.rmt2.jaxb.PersonType;
 import org.rmt2.jaxb.ProjectDetailGroup;
 import org.rmt2.jaxb.ProjectProfileRequest;
 import org.rmt2.jaxb.ReplyStatusType;
-import org.rmt2.util.addressbook.PersonTypeBuilder;
-import org.rmt2.util.projecttracker.employee.EmployeeTypeBuilder;
 
 import com.InvalidDataException;
 import com.api.messaging.handler.MessageHandlerCommandException;
@@ -85,6 +84,10 @@ public class EmployeeUpdateApiHandler extends EmployeeApiHandler {
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         EmployeeDto employeeDto = null;
+        EmployeeDto employeeObj = null;
+        List<EmployeeDto> empList = null;
+        List<ContactDto> contactList = null;
+        PersonalContactDto personObj = null;
         
         boolean newEmployee = false;
         boolean newContact = false;
@@ -131,6 +134,24 @@ public class EmployeeUpdateApiHandler extends EmployeeApiHandler {
                 rs.setMessage(EmployeeMessageHandlerConst.MESSAGE_UPDATE_EXISTING_SUCCESS);
                 rs.setRecordCount(empRc);
             }
+            
+            // IS-70: Retrieve employee and personal contact objects from the database
+            // to verify update operations.
+            EmployeeDto empCriteria = EmployeeObjectFactory.createEmployeeDtoInstance(null);
+            empCriteria.setEmployeeId(employeeDto.getEmployeeId());
+            empList = api.getEmployeeExt(empCriteria);
+            if (empList != null && empList.size() == 1) {
+                employeeObj = empList.get(0);
+            }
+            PersonalContactDto contactCriteria = Rmt2AddressBookDtoFactory.getPersonInstance(null, null);
+            contactCriteria.setContactId(employeeDto.getPersonId());
+            contactList = contactApi.getContact(contactCriteria);
+            if (contactList != null && contactList.size() == 1) {
+                if (contactList.get(0) instanceof PersonalContactDto) {
+                    personObj = (PersonalContactDto) contactList.get(0);
+                }
+            }
+             
             this.responseObj.setHeader(req.getHeader());
             api.commitTrans();
             contactApi.commitTrans();
@@ -152,30 +173,11 @@ public class EmployeeUpdateApiHandler extends EmployeeApiHandler {
             contactApi.close();
         }
 
-        List<EmployeeType> updateDtoResults = this.buildJaxbResults(employeeDto);
+        List<EmployeeType> updateDtoResults = this.buildJaxbResults(employeeObj, personObj);
         String xml = this.buildResponse(updateDtoResults, rs);
         results.setPayload(xml);
         return results;
     }
-    
-    private List<EmployeeType> buildJaxbResults(EmployeeDto results) {
-        List<EmployeeType> list = new ArrayList<>();
-
-        PersonType pt = PersonTypeBuilder.Builder.create()
-                .withPersonId(results.getPersonId())
-                .withFirstName(results.getEmployeeFirstname())
-                .withLastName(results.getEmployeeLastname())
-                .build();
-
-        EmployeeType jaxbObj = EmployeeTypeBuilder.Builder.create()
-                .withEmployeeId(results.getEmployeeId())
-                .withContactDetails(pt)
-                .build();
-
-        list.add(jaxbObj);
-        return list;
-    }
-    
     
     @Override
     protected void validateRequest(ProjectProfileRequest req) throws InvalidDataException {

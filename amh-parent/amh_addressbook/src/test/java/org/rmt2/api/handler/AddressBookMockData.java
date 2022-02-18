@@ -6,6 +6,7 @@ import java.util.List;
 import org.dao.mapping.orm.rmt2.GeneralCodes;
 import org.dao.mapping.orm.rmt2.GeneralCodesGroup;
 import org.dao.mapping.orm.rmt2.VwBusinessAddress;
+import org.dao.mapping.orm.rmt2.VwPersonAddress;
 import org.dao.mapping.orm.rmt2.Zipcode;
 import org.dto.BusinessContactDto;
 import org.dto.ContactDto;
@@ -550,6 +551,30 @@ public class AddressBookMockData {
         dto.setTimeZoneId(1004);
         dto.setTimeZoneDescr("Timezone5");
         list.add(dto);
+        return list;
+    }
+    
+    
+    public static final List<ContactDto> createMockSinglePersonalContactDto() {
+        List<ContactDto> list = new ArrayList<ContactDto>();
+        VwPersonAddress per = new VwPersonAddress();
+        per.setPersonId(1351);
+        per.setPerFirstname("firstname_1");
+        per.setPerLastname("lastname_1");
+        per.setPerEmail(per.getPerFirstname() + "." + per.getPerLastname() + "@gte.net");
+        per.setAddrPhoneHome("9999999991");
+        per.setAddrPhoneCell("2149994444");
+        per.setAddrId(2001);
+        per.setAddr1("address_line1_1");
+        per.setAddr2("address_line2_1");
+        per.setAddr3("address_line3_1");
+        per.setAddr4("address_line4_1");
+        per.setZipCity("Dallas");
+        per.setZipState("Tx");
+        per.setAddrZip(75232);
+        per.setAddrPhoneMain("2143738001");
+        ContactDto perDto = Rmt2AddressBookDtoFactory.getPersonInstance(per);
+        list.add(perDto);
         return list;
     }
 }

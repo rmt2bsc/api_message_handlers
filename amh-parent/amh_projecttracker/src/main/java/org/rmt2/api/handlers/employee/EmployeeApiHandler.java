@@ -1,17 +1,31 @@
 package org.rmt2.api.handlers.employee;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.dto.EmployeeDto;
+import org.dto.PersonalContactDto;
 import org.rmt2.api.handler.util.MessageHandlerUtility;
+import org.rmt2.jaxb.AddressType;
+import org.rmt2.jaxb.EmployeeTitleType;
 import org.rmt2.jaxb.EmployeeType;
+import org.rmt2.jaxb.EmployeetypeType;
 import org.rmt2.jaxb.ObjectFactory;
+import org.rmt2.jaxb.PersonType;
 import org.rmt2.jaxb.ProjectDetailGroup;
 import org.rmt2.jaxb.ProjectProfileRequest;
 import org.rmt2.jaxb.ProjectProfileResponse;
 import org.rmt2.jaxb.ReplyStatusType;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
+import org.rmt2.jaxb.ZipcodeType;
+import org.rmt2.util.addressbook.AddressTypeBuilder;
+import org.rmt2.util.addressbook.PersonTypeBuilder;
+import org.rmt2.util.addressbook.ZipcodeTypeBuilder;
+import org.rmt2.util.projecttracker.employee.EmployeeTitleTypeBuilder;
+import org.rmt2.util.projecttracker.employee.EmployeeTypeBuilder;
+import org.rmt2.util.projecttracker.employee.EmployeetypeTypeBuilder;
 
 import com.InvalidDataException;
 import com.api.messaging.InvalidRequestException;
@@ -58,6 +72,78 @@ public class EmployeeApiHandler extends
         }
     }
 
+    // IS-70: Made common to descendant classes.
+    /**
+     * Uses employee and personal contact data transfer objects to build a JAXB
+     * employee type object which will contain employee and personal contact
+     * information (including contact address data).
+     * 
+     * @param emp
+     *            instance of {@link EmployeeDto}
+     * @param person
+     *            instance of {@link PersonalContactDto}
+     * @return {@link EmployeeType}
+     */
+    protected List<EmployeeType> buildJaxbResults(EmployeeDto emp, PersonalContactDto person) {
+        if (emp == null && person == null) {
+            return null;
+        }
+        List<EmployeeType> list = new ArrayList<>();
+
+        ZipcodeType zip = ZipcodeTypeBuilder.Builder.create()
+                .withCity(person.getCity())
+                .withState(person.getState())
+                .withZipcode(person.getZip())
+                .build();
+        
+        AddressType addr = AddressTypeBuilder.Builder.create()
+                .withAddrId(person.getAddrId())
+                .withAddressLine1(person.getAddr1())
+                .withAddressLine2(person.getAddr2())
+                .withAddressLine3(person.getAddr3())
+                .withAddressLine4(person.getAddr4())
+                .withPhoneHome(person.getPhoneHome())
+                .withPhoneMobile(person.getPhoneCell())
+                .withZipcode(zip)
+                .build();
+        
+        PersonType pt = PersonTypeBuilder.Builder.create()
+                .withPersonId(emp.getPersonId())
+                .withFirstName(emp.getEmployeeFirstname())
+                .withLastName(emp.getEmployeeLastname())
+                .withEmail(emp.getEmployeeEmail())
+                .withSocialSecurityNumber(emp.getSsn())
+                .withAddress(addr)
+                .build();
+
+        EmployeetypeType empType = EmployeetypeTypeBuilder.Builder.create()
+                .withEmployeeTypeId(emp.getEmployeeTypeId())
+                .withDescription(emp.getEmployeeType())
+                .build();
+        
+        EmployeeTitleType empTitle = EmployeeTitleTypeBuilder.Builder.create()
+                .withEmployeeTitleId(emp.getEmployeeTitleId())
+                .withDescription(emp.getEmployeeTitle())
+                .build();
+        
+        EmployeeType jaxbObj = EmployeeTypeBuilder.Builder.create()
+                .withEmployeeId(emp.getEmployeeId())
+                .withManagerId(emp.getManagerId())
+                .withManagerFlag(emp.getIsManager() == 1 ? true : false)
+                .withEmployeeTitleType(empTitle)
+                .withEmployeeType(empType)
+                .withLoginName(emp.getLoginName())
+                .withLoginId(emp.getLoginId())
+                .withStartDate(emp.getStartDate())
+                .withTermDate(emp.getTerminationDate())
+                .withProjectCount(emp.getProjectCount())
+                .withContactDetails(pt)
+                .build();
+
+        list.add(jaxbObj);
+        return list;
+    }
+    
     @Override
     protected String buildResponse(List<EmployeeType> payload,  MessageHandlerCommonReplyStatus replyStatus) {
         if (replyStatus != null) {
