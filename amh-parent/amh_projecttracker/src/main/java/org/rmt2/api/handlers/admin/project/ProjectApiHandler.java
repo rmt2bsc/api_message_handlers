@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.dto.Project2Dto;
 import org.dto.ProjectClientDto;
 import org.rmt2.api.ApiMessageHandlerConst;
 import org.rmt2.api.handler.util.MessageHandlerUtility;
@@ -14,9 +13,6 @@ import org.rmt2.jaxb.ProjectProfileRequest;
 import org.rmt2.jaxb.ProjectProfileResponse;
 import org.rmt2.jaxb.ProjectType;
 import org.rmt2.jaxb.ReplyStatusType;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-import org.rmt2.util.projecttracker.admin.ProjectTypeBuilder;
 
 import com.InvalidDataException;
 import com.api.messaging.InvalidRequestException;
@@ -125,19 +121,15 @@ public class ProjectApiHandler extends
      * response for update and delete operations.
      * 
      * @param dto
-     *            instance of {@link Project2Dto}
+     *            instance of {@link ProjectClientDto}
      * @return List of {@link ProjectType} instances
      */
-    protected List<ProjectType> buildJaxbUpdateResults(Project2Dto dto) {
+    protected List<ProjectType> buildJaxbUpdateResults(ProjectClientDto dto) {
         List<ProjectType> results = new ArrayList<>();
         if (dto == null) {
             return results;
         }
-        ProjectType pt = ProjectTypeBuilder.Builder.create()
-                .withProjectId(dto.getProjId())
-                .withProjectName(dto.getProjectDescription())
-                .build();
-
+        ProjectType pt = ProjectJaxbDtoFactory.createProjectJaxbInstance(dto);
         results.add(pt);
         return results;
     }

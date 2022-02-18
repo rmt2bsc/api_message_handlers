@@ -106,8 +106,8 @@ public class ProjectJaxbDtoFactory extends RMT2Base {
                 .withDateUpdate(dto.getDateUpdated())
                 .withUserId(dto.getUpdateUserId())
                 .build();
-
-        ProjectType client = ProjectTypeBuilder.Builder.create()
+    
+        ProjectType proj = ProjectTypeBuilder.Builder.create()
                 .withClientId(dto.getClientId())
                 .withClientName(dto.getClientName())
                 .withClientBusinessId(dto.getBusinessId())
@@ -120,7 +120,7 @@ public class ProjectJaxbDtoFactory extends RMT2Base {
                 .withRecordTracking(tracking)
                 .build();
 
-        return client;
+        return proj;
     }
 
     /**

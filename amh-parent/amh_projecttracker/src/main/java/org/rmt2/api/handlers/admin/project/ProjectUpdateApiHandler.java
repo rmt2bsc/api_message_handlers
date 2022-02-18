@@ -10,6 +10,7 @@ import org.dto.ClientDto;
 import org.dto.ContactDto;
 import org.dto.CustomerDto;
 import org.dto.Project2Dto;
+import org.dto.ProjectClientDto;
 import org.dto.adapter.orm.ProjectObjectFactory;
 import org.dto.adapter.orm.Rmt2AddressBookDtoFactory;
 import org.dto.adapter.orm.account.subsidiary.Rmt2SubsidiaryDtoFactory;
@@ -57,6 +58,7 @@ public class ProjectUpdateApiHandler extends ProjectApiHandler {
     private CustomerDto verifiedCustomerDto;
     private boolean createClient;
     private ProjectAdminApi api;
+   
 
     /**
      * @param payload
@@ -86,6 +88,9 @@ public class ProjectUpdateApiHandler extends ProjectApiHandler {
 
         if (r != null) {
             // This means an error occurred.
+            if (this.api != null) {
+                this.api.close();
+            }
             return r;
         }
         switch (command) {
@@ -113,6 +118,7 @@ public class ProjectUpdateApiHandler extends ProjectApiHandler {
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         Project2Dto project2Dto = null;
         boolean newProject = false;
+        List<ProjectClientDto> verifyResults = null;
 
         try {
             // Set reply status
@@ -141,6 +147,7 @@ public class ProjectUpdateApiHandler extends ProjectApiHandler {
                             .build();
 
                     CustomerType ct = CustomerTypeBuilder.Builder.create()
+                            .withCustomerId(this.verifiedCustomerDto.getCustomerId())
                             .withBusinessType(bt)
                             .withAccountNo(verifiedCustomerDto.getAccountNo())
                             .build();
@@ -175,6 +182,13 @@ public class ProjectUpdateApiHandler extends ProjectApiHandler {
                 rs.setMessage(ProjectMessageHandlerConst.MESSAGE_EXISTING_PROJECT_UPDATE_SUCCESS);
                 rs.setRecordCount(rc);
             }
+            
+            // Verify that updates were successful
+            ProjectClientDto criteria = ProjectObjectFactory.createProjectClientDtoInstance(null);
+            criteria.setProjId(project2Dto.getProjId());
+            verifyResults = this.api.getProjectExt(criteria);
+            
+            // Complete transaction
             this.responseObj.setHeader(req.getHeader());
             api.commitTrans();
         } catch (Exception e) {
@@ -193,7 +207,7 @@ public class ProjectUpdateApiHandler extends ProjectApiHandler {
         }
 
         // Add Project Type type data to the project profile element
-        List<ProjectType> updateDtoResults = this.buildJaxbUpdateResults(project2Dto);
+        List<ProjectType> updateDtoResults = this.buildJaxbUpdateResults(verifyResults != null ? verifyResults.get(0) : null);
 
         String xml = this.buildResponse(updateDtoResults, rs);
         results.setPayload(xml);
