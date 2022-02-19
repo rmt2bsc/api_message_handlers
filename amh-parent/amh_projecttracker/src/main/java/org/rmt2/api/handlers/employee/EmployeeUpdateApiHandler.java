@@ -137,7 +137,7 @@ public class EmployeeUpdateApiHandler extends EmployeeApiHandler {
             
             // IS-70: Retrieve employee and personal contact objects from the database
             // to verify update operations.
-            EmployeeDto empCriteria = EmployeeObjectFactory.createEmployeeDtoInstance(null);
+            EmployeeDto empCriteria = EmployeeObjectFactory.createEmployeeExtendedDtoInstance(null);
             empCriteria.setEmployeeId(employeeDto.getEmployeeId());
             empList = api.getEmployeeExt(empCriteria);
             if (empList != null && empList.size() == 1) {
@@ -153,8 +153,8 @@ public class EmployeeUpdateApiHandler extends EmployeeApiHandler {
             }
              
             this.responseObj.setHeader(req.getHeader());
-            api.commitTrans();
             contactApi.commitTrans();
+            api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
@@ -169,8 +169,8 @@ public class EmployeeUpdateApiHandler extends EmployeeApiHandler {
             api.rollbackTrans();
             contactApi.rollbackTrans();
         } finally {
-            api.close();
             contactApi.close();
+            api.close();
         }
 
         List<EmployeeType> updateDtoResults = this.buildJaxbResults(employeeObj, personObj);
