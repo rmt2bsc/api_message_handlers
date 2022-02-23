@@ -1,11 +1,10 @@
 package org.rmt2.api.handlers.employee;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.modules.ProjectTrackerApiConst;
-import org.modules.employee.EmployeeApi;
-import org.modules.employee.EmployeeApiFactory;
+import org.dto.ProjectEmployeeDto;
 import org.rmt2.api.handler.util.MessageHandlerUtility;
 import org.rmt2.jaxb.EmployeeProjectType;
 import org.rmt2.jaxb.ObjectFactory;
@@ -35,14 +34,16 @@ public class EmployeeProjectApiHandler extends
     
     private static final Logger logger = Logger.getLogger(EmployeeProjectApiHandler.class);
     protected ObjectFactory jaxbObjFactory;
-    protected EmployeeApi api;
+
+    // IS-71: Removed class member variable, api, which used to be shared with
+    // descendant classes. This will eliminate the possibility of memory leaks
+    // caused by dangling API instances. 
 
     /**
      * @param payload
      */
     public EmployeeProjectApiHandler() {
         super();
-        this.api = EmployeeApiFactory.createApi(ProjectTrackerApiConst.APP_NAME);
         this.jaxbObjFactory = new ObjectFactory();
         this.responseObj = jaxbObjFactory.createProjectProfileResponse();
         logger.info(EmployeeProjectApiHandler.class.getName() + " was instantiated successfully");
@@ -60,6 +61,15 @@ public class EmployeeProjectApiHandler extends
         }
     }
 
+    protected List<EmployeeProjectType> buildJaxbResults(List<ProjectEmployeeDto> results) {
+        List<EmployeeProjectType> list = new ArrayList<>();
+        for (ProjectEmployeeDto item : results) {
+            EmployeeProjectType jaxbObj = EmployeeProjectJaxbDtoFactory.createEmployeeJaxbInstance(item);
+            list.add(jaxbObj);
+        }
+        return list;
+    }
+    
     @Override
     protected String buildResponse(List<EmployeeProjectType> payload, MessageHandlerCommonReplyStatus replyStatus) {
         if (replyStatus != null) {

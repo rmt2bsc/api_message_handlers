@@ -1,11 +1,13 @@
 package org.rmt2.api.handlers.employee;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.dto.ProjectEmployeeDto;
+import org.modules.ProjectTrackerApiConst;
+import org.modules.employee.EmployeeApi;
+import org.modules.employee.EmployeeApiFactory;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.EmployeeProjectType;
@@ -74,6 +76,9 @@ public class EmployeeProjectQueryApiHandler extends EmployeeProjectApiHandler {
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         List<EmployeeProjectType> queryDtoResults = null;
 
+        // IS-71: Use local scoped API instance for the purpose of preventing memory leaks
+        // caused by dangling API instances.
+        EmployeeApi api = EmployeeApiFactory.createApi(ProjectTrackerApiConst.APP_NAME);
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
@@ -83,7 +88,7 @@ public class EmployeeProjectQueryApiHandler extends EmployeeProjectApiHandler {
             ProjectEmployeeDto criteriaDto = EmployeeProjectJaxbDtoFactory
                     .createDtoCriteriaInstance(req.getCriteria().getEmployeeProjectCriteria());
             
-            List<ProjectEmployeeDto> dtoList = this.api.getProjectEmployee(criteriaDto);
+            List<ProjectEmployeeDto> dtoList = api.getProjectEmployee(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage(EmployeeProjectMessageHandlerConst.MESSAGE_NOT_FOUND);
             }
@@ -99,7 +104,7 @@ public class EmployeeProjectQueryApiHandler extends EmployeeProjectApiHandler {
             rs.setMessage(EmployeeProjectMessageHandlerConst.MESSAGE_FETCH_ERROR);
             rs.setExtMessage(e.getMessage());
         } finally {
-            this.api.close();
+            api.close();
         }
 
         String xml = this.buildResponse(queryDtoResults, rs);
@@ -107,15 +112,7 @@ public class EmployeeProjectQueryApiHandler extends EmployeeProjectApiHandler {
         return results;
     }
     
-    private List<EmployeeProjectType> buildJaxbResults(List<ProjectEmployeeDto> results) {
-        List<EmployeeProjectType> list = new ArrayList<>();
-        for (ProjectEmployeeDto item : results) {
-            EmployeeProjectType jaxbObj = EmployeeProjectJaxbDtoFactory.createEmployeeJaxbInstance(item);
-            list.add(jaxbObj);
-        }
-        return list;
-    }
-    
+
     @Override
     protected void validateRequest(ProjectProfileRequest req) throws InvalidDataException {
         super.validateRequest(req);

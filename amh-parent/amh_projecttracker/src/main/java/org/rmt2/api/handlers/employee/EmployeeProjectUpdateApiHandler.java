@@ -1,18 +1,19 @@
 package org.rmt2.api.handlers.employee;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.dao.mapping.orm.rmt2.VwEmployeeProjects;
 import org.dto.ProjectEmployeeDto;
 import org.dto.adapter.orm.ProjectObjectFactory;
+import org.modules.ProjectTrackerApiConst;
+import org.modules.employee.EmployeeApi;
+import org.modules.employee.EmployeeApiFactory;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.EmployeeProjectType;
 import org.rmt2.jaxb.ProjectProfileRequest;
-import org.rmt2.util.projecttracker.employee.EmployeeProjectTypeBuilder;
 
 import com.InvalidDataException;
 import com.api.messaging.handler.MessageHandlerCommandException;
@@ -81,6 +82,9 @@ public class EmployeeProjectUpdateApiHandler extends EmployeeProjectApiHandler {
         List<EmployeeProjectType> updateDtoResults = null;
         boolean newRec = false;
 
+        // IS-71: Use local scoped API instance for the purpose of preventing memory leaks
+        // caused by dangling API instances.
+        EmployeeApi api = EmployeeApiFactory.createApi(ProjectTrackerApiConst.APP_NAME);
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
@@ -91,7 +95,7 @@ public class EmployeeProjectUpdateApiHandler extends EmployeeProjectApiHandler {
                     .createEmploiyeeDtoInstance(req.getProfile().getEmployeeProject().get(0));
             newRec = profileDto.getEmpProjId() < 1;
             
-            int rc = this.api.update(profileDto);
+            int rc = api.update(profileDto);
             if (newRec) {
                 rs.setMessage(EmployeeProjectMessageHandlerConst.MESSAGE_UPDATE_NEW_SUCCESS);
                 rs.setRecordCount(1);
@@ -106,10 +110,10 @@ public class EmployeeProjectUpdateApiHandler extends EmployeeProjectApiHandler {
             VwEmployeeProjects vep = null;
             ProjectEmployeeDto criteriaDto = ProjectObjectFactory.createEmployeeProjectDtoInstance(vep);
             criteriaDto.setEmpProjId(profileDto.getEmpProjId());
-            List<ProjectEmployeeDto> dtoList = this.api.getProjectEmployee(criteriaDto);
+            List<ProjectEmployeeDto> dtoList = api.getProjectEmployee(criteriaDto);
             
             // Setup response message payload
-            updateDtoResults = this.buildJaxbResults(dtoList.get(0));
+            updateDtoResults = this.buildJaxbResults(dtoList);
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
@@ -122,7 +126,7 @@ public class EmployeeProjectUpdateApiHandler extends EmployeeProjectApiHandler {
             }
             rs.setExtMessage(e.getMessage());
         } finally {
-            this.api.close();
+            api.close();
         }
 
         String xml = this.buildResponse(updateDtoResults, rs);
@@ -130,20 +134,7 @@ public class EmployeeProjectUpdateApiHandler extends EmployeeProjectApiHandler {
         return results;
     }
     
-    private List<EmployeeProjectType> buildJaxbResults(ProjectEmployeeDto profileData) {
-        List<EmployeeProjectType> list = new ArrayList<>();
-        EmployeeProjectType jaxbObj = EmployeeProjectTypeBuilder.Builder.create()
-                .withEmpProjId(profileData.getEmpProjId())
-                .withEmployeeId(profileData.getEmpId())
-                .withProjectId(profileData.getProjId())
-                .withClientId(profileData.getClientId())
-                .withClientName(profileData.getClientName())
-                .withProjectName(profileData.getProjectDescription())
-                .build();
 
-        list.add(jaxbObj);
-        return list;
-    }
     
     @Override
     protected void validateRequest(ProjectProfileRequest req) throws InvalidDataException {
