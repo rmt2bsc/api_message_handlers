@@ -24,6 +24,7 @@ import org.modules.employee.EmployeeApiFactory;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.rmt2.api.ApiMessageHandlerConst;
 import org.rmt2.api.ProjectTrackerMockData;
 import org.rmt2.api.handler.BaseProjectTrackerMessageHandlerTest;
 import org.rmt2.api.handlers.employee.EmployeeMessageHandlerConst;
@@ -33,12 +34,14 @@ import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.EmployeeType;
 import org.rmt2.jaxb.ProjectProfileResponse;
 
+import com.NotFoundException;
 import com.api.config.SystemConfigurator;
 import com.api.messaging.handler.MessageHandlerCommandException;
 import com.api.messaging.handler.MessageHandlerResults;
 import com.api.persistence.AbstractDaoClientImpl;
 import com.api.persistence.db.orm.Rmt2OrmClientFactory;
 import com.api.util.RMT2File;
+import com.api.util.RMT2String;
 
 /**
  * 
@@ -347,7 +350,7 @@ public class EmployeeUpdateMessageHandlerTest extends BaseProjectTrackerMessageH
         String request = RMT2File.getFileContentsAsString("xml/employee/EmployeeInsertRequest.xml");
 
         try {
-            when(this.mockContactApi.updateContact(isA(PersonalContactDto.class))).thenReturn(0);
+            when(this.mockContactApi.updateContact(isA(PersonalContactDto.class))).thenThrow(new NotFoundException());
         } catch (ContactsApiException e) {
             Assert.fail("Unable to setup mock stub for creating employee contact record");
         }
@@ -370,22 +373,16 @@ public class EmployeeUpdateMessageHandlerTest extends BaseProjectTrackerMessageH
 
         ProjectProfileResponse actualRepsonse =
                 (ProjectProfileResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-        Assert.assertEquals(1, actualRepsonse.getProfile().getEmployee().size());
-        Assert.assertEquals(1, actualRepsonse.getReplyStatus().getRecordCount().intValue());
-        Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertEquals(0, actualRepsonse.getReplyStatus().getRecordCount().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_FAILURE, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(EmployeeMessageHandlerConst.MESSAGE_UPDATE_NEW_SUCCESS, actualRepsonse.getReplyStatus().getMessage());
-        Assert.assertEquals(EmployeeMessageHandlerConst.MESSAGE_CONTACT_UPDATE_ERROR, actualRepsonse.getReplyStatus()
-                .getExtMessage());
+        Assert.assertEquals(EmployeeMessageHandlerConst.MESSAGE_UPDATE_NEW_ERROR, actualRepsonse.getReplyStatus().getMessage());
+        String errMsg = RMT2String.replace(EmployeeMessageHandlerConst.MESSAGE_UPDATE_INVALID_CONTACT_PROFILE, 
+                        "0", ApiMessageHandlerConst.MSG_PLACEHOLDER1);
+        errMsg = RMT2String.replace(errMsg, "John Doe", ApiMessageHandlerConst.MSG_PLACEHOLDER2);
+        Assert.assertEquals(errMsg, actualRepsonse.getReplyStatus().getExtMessage());
 
-        for (int ndx = 0; ndx < actualRepsonse.getProfile().getEmployee().size(); ndx++) {
-            EmployeeType a = actualRepsonse.getProfile().getEmployee().get(ndx);
-            Assert.assertNotNull(a.getEmployeeId());
-            Assert.assertEquals(EMPLOYEE_ID, a.getEmployeeId().intValue());
-            Assert.assertNotNull(a.getContactDetails());
-            Assert.assertEquals(EMPLOYEE_FIRSTNAME, a.getContactDetails().getFirstName());
-            Assert.assertEquals(EMPLOYEE_LASTNAME, a.getContactDetails().getLastName());
-        }
     }
 
 }

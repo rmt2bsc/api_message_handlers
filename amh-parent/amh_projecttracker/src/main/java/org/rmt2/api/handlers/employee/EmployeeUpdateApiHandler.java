@@ -14,6 +14,7 @@ import org.modules.contacts.ContactsApi;
 import org.modules.contacts.ContactsApiFactory;
 import org.modules.employee.EmployeeApi;
 import org.modules.employee.EmployeeApiFactory;
+import org.rmt2.api.ApiMessageHandlerConst;
 import org.rmt2.api.handler.util.MessageHandlerUtility;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
@@ -23,9 +24,12 @@ import org.rmt2.jaxb.ProjectProfileRequest;
 import org.rmt2.jaxb.ReplyStatusType;
 
 import com.InvalidDataException;
+import com.NotFoundException;
+import com.RMT2Exception;
 import com.api.messaging.handler.MessageHandlerCommandException;
 import com.api.messaging.handler.MessageHandlerCommonReplyStatus;
 import com.api.messaging.handler.MessageHandlerResults;
+import com.api.util.RMT2String;
 
 /**
  * Handles and routes employee update related messages to the ProjectTracker
@@ -112,9 +116,24 @@ public class EmployeeUpdateApiHandler extends EmployeeApiHandler {
             int contactRc = 0;
             if (contactDto != null) {
                 newContact = contactDto.getContactId() == 0;
-                contactRc = contactApi.updateContact(contactDto);
+                try {
+                    contactRc = contactApi.updateContact(contactDto);
+                }
+                catch (NotFoundException e) {
+                    // IS-70: Added logic to throw exception when call to
+                    // updateContact API method return zero. Employee contact
+                    // profile cannot be saved if related contact data changes
+                    // cannot be saved.
+                    String errMsg =
+                            RMT2String.replace(EmployeeMessageHandlerConst.MESSAGE_UPDATE_INVALID_CONTACT_PROFILE, 
+                                    String.valueOf(employeeDto.getEmployeeId()), 
+                                    ApiMessageHandlerConst.MSG_PLACEHOLDER1);
+                    errMsg = RMT2String.replace(errMsg, employeeDto.getEmployeeFirstname() + " " + employeeDto.getEmployeeLastname(), 
+                                    ApiMessageHandlerConst.MSG_PLACEHOLDER2);
+                    throw new RMT2Exception(errMsg);
+                }
                 if (contactRc < 1) {
-                    rs.setExtMessage(EmployeeMessageHandlerConst.MESSAGE_CONTACT_UPDATE_ERROR);
+                    rs.setExtMessage(EmployeeMessageHandlerConst.MESSAGE_CONTACT_NO_UPDATES);
                 }
             }
             if (newContact) {
