@@ -77,25 +77,25 @@ public class EmployeeProjectQueryApiHandler extends EmployeeProjectApiHandler {
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+            rs.setRecordCount(0);
+            
             ProjectEmployeeDto criteriaDto = EmployeeProjectJaxbDtoFactory
                     .createDtoCriteriaInstance(req.getCriteria().getEmployeeProjectCriteria());
             
             List<ProjectEmployeeDto> dtoList = this.api.getProjectEmployee(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage(EmployeeProjectMessageHandlerConst.MESSAGE_NOT_FOUND);
-                rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             }
             else {
                 queryDtoResults = this.buildJaxbResults(dtoList);
                 rs.setMessage(EmployeeProjectMessageHandlerConst.MESSAGE_FOUND);
                 rs.setRecordCount(dtoList.size());
-                rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             }
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setRecordCount(0);
             rs.setMessage(EmployeeProjectMessageHandlerConst.MESSAGE_FETCH_ERROR);
             rs.setExtMessage(e.getMessage());
         } finally {
