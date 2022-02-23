@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.dao.mapping.orm.rmt2.VwEmployeeProjects;
 import org.dto.ProjectEmployeeDto;
+import org.dto.adapter.orm.ProjectObjectFactory;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.EmployeeProjectType;
@@ -83,6 +85,8 @@ public class EmployeeProjectUpdateApiHandler extends EmployeeProjectApiHandler {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+            rs.setRecordCount(0);
+            
             profileDto = EmployeeProjectJaxbDtoFactory
                     .createEmploiyeeDtoInstance(req.getProfile().getEmployeeProject().get(0));
             newRec = profileDto.getEmpProjId() < 1;
@@ -97,12 +101,19 @@ public class EmployeeProjectUpdateApiHandler extends EmployeeProjectApiHandler {
                 rs.setMessage(EmployeeProjectMessageHandlerConst.MESSAGE_UPDATE_EXISTING_SUCCESS);
                 rs.setRecordCount(rc);
             }
-            updateDtoResults = this.buildJaxbResults(profileDto);
+            
+            // Get recently updated employee project instance for verification
+            VwEmployeeProjects vep = null;
+            ProjectEmployeeDto criteriaDto = ProjectObjectFactory.createEmployeeProjectDtoInstance(vep);
+            criteriaDto.setEmpProjId(profileDto.getEmpProjId());
+            List<ProjectEmployeeDto> dtoList = this.api.getProjectEmployee(criteriaDto);
+            
+            // Setup response message payload
+            updateDtoResults = this.buildJaxbResults(dtoList.get(0));
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setRecordCount(0);
             if (newRec) {
                 rs.setMessage(EmployeeProjectMessageHandlerConst.MESSAGE_UPDATE_NEW_ERROR);
             }
