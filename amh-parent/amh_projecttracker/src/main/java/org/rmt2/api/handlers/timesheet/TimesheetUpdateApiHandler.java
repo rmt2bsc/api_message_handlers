@@ -33,7 +33,7 @@ import com.api.util.assistants.VerifyException;
 public class TimesheetUpdateApiHandler extends TimesheetApiHandler {
     
     private static final Logger logger = Logger.getLogger(TimesheetUpdateApiHandler.class);
-    TimesheetApi api;
+    
     
     /**
      * @param payload
@@ -88,7 +88,7 @@ public class TimesheetUpdateApiHandler extends TimesheetApiHandler {
 
         // IS-71: Use local scoped API instance for the purpose of preventing memory leaks
         // caused by dangling API instances. 
-        this.api = TimesheetApiFactory.createApi(ProjectTrackerApiConst.APP_NAME);        
+        TimesheetApi api = TimesheetApiFactory.createApi(ProjectTrackerApiConst.APP_NAME);        
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
@@ -102,8 +102,8 @@ public class TimesheetUpdateApiHandler extends TimesheetApiHandler {
             
             newTimesheet = timesheetDto.getTimesheetId() > 0 ? false : true;
 
-            this.api.beginTrans();
-            int rc = this.api.updateTimesheet(timesheetDto, workLogDto);
+            api.beginTrans();
+            int rc = api.updateTimesheet(timesheetDto, workLogDto);
             if (newTimesheet) {
                 rs.setMessage(TimesheetMessageHandlerConst.MESSAGE_UPDATE_NEW_SUCCESS);
             }
@@ -117,7 +117,7 @@ public class TimesheetUpdateApiHandler extends TimesheetApiHandler {
 
             updateDtoResults = this.buildJaxbUpdateResults(timesheetDto);
             this.responseObj.setHeader(req.getHeader());
-            this.api.commitTrans();
+            api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
@@ -128,9 +128,9 @@ public class TimesheetUpdateApiHandler extends TimesheetApiHandler {
                 rs.setMessage(TimesheetMessageHandlerConst.MESSAGE_UPDATE_EXISTING_ERROR);
             }
             rs.setExtMessage(e.getMessage());
-            this.api.rollbackTrans();
+            api.rollbackTrans();
         } finally {
-            this.api.close();
+            api.close();
         }
 
         String xml = this.buildResponse(updateDtoResults, rs);
