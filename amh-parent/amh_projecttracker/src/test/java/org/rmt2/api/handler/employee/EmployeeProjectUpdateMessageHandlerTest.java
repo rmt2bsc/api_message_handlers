@@ -4,6 +4,8 @@ import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
+
 import org.dto.ProjectEmployeeDto;
 import org.junit.After;
 import org.junit.Assert;
@@ -17,6 +19,7 @@ import org.modules.employee.EmployeeApiFactory;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.rmt2.api.ProjectTrackerMockData;
 import org.rmt2.api.handler.BaseProjectTrackerMessageHandlerTest;
 import org.rmt2.api.handlers.employee.EmployeeProjectMessageHandlerConst;
 import org.rmt2.api.handlers.employee.EmployeeProjectUpdateApiHandler;
@@ -68,6 +71,13 @@ public class EmployeeProjectUpdateMessageHandlerTest extends BaseProjectTrackerM
         PowerMockito.mockStatic(EmployeeApiFactory.class);
         when(EmployeeApiFactory.createApi(isA(String.class))).thenReturn(mockApi);
         doNothing().when(this.mockApi).close();
+        
+        List<ProjectEmployeeDto> mockListData = ProjectTrackerMockData.createMockSingleVwEmployeeProjects2();
+        try {
+            when(this.mockApi.getProjectEmployee(isA(ProjectEmployeeDto.class))).thenReturn(mockListData);
+        } catch (EmployeeApiException e) {
+            Assert.fail("Unable to setup mock stub for fetching employee/project records");
+        }
         return;
     }
 

@@ -333,6 +333,21 @@ public class ProjectTrackerMockData {
      * 
      * @return
      */
+    public static final List<ProjectEmployeeDto> createMockSingleVwEmployeeProjects2() {
+        List<ProjectEmployeeDto> list = new ArrayList<>();
+        VwEmployeeProjects o = ProjectTrackerOrmDataFactory.createMockOrmVwEmployeeProjects(55551, 4440, "Project 2220",
+                        1110, "1110 Company", 1350, "000-111", 2220,
+                        "2018-01-01", "2018-02-01", "2018-01-01", "2018-02-01",
+                        50.00, 55.00, 0.00, 70.00, 80.00);
+        ProjectEmployeeDto dto = ProjectObjectFactory.createEmployeeProjectDtoInstance(o);
+        list.add(dto);
+        return list;
+    }
+    
+    /**
+     * 
+     * @return
+     */
     public static final List<ProjectEmployeeDto> createMockVwEmployeeProjects() {
         List<ProjectEmployeeDto> list = new ArrayList<>();
         VwEmployeeProjects o = ProjectTrackerOrmDataFactory.createMockOrmVwEmployeeProjects(55551, 4440, "Project 2220",
