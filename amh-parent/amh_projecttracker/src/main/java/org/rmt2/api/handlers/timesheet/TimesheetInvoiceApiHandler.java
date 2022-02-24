@@ -5,10 +5,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.dto.TimesheetDto;
-import org.modules.ProjectTrackerApiConst;
 import org.modules.timesheet.TimesheetTransmissionException;
-import org.modules.timesheet.invoice.InvoiceTimesheetApi;
-import org.modules.timesheet.invoice.InvoiceTimesheetApiFactory;
 import org.rmt2.api.handler.util.MessageHandlerUtility;
 import org.rmt2.jaxb.ObjectFactory;
 import org.rmt2.jaxb.ProjectDetailGroup;
@@ -44,7 +41,10 @@ public class TimesheetInvoiceApiHandler extends
     
     private static final Logger logger = Logger.getLogger(TimesheetInvoiceApiHandler.class);
     protected ObjectFactory jaxbObjFactory;
-    protected InvoiceTimesheetApi api;
+
+    // IS-71: Removed class member variable, api, which used to be shared with
+    // descendant classes. This will eliminate the possibility of memory leaks
+    // caused by dangling API instances. 
 
     /**
      * Default constructor for TimesheetInvoiceApiHandler
@@ -53,7 +53,6 @@ public class TimesheetInvoiceApiHandler extends
      */
     public TimesheetInvoiceApiHandler() {
         super();
-        this.api = InvoiceTimesheetApiFactory.createApi(ProjectTrackerApiConst.APP_NAME);
         this.jaxbObjFactory = new ObjectFactory();
         this.responseObj = jaxbObjFactory.createProjectProfileResponse();
         logger.info(TimesheetInvoiceApiHandler.class.getName() + " was instantiated successfully");

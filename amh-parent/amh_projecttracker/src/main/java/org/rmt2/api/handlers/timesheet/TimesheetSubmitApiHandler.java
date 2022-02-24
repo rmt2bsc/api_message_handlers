@@ -15,12 +15,15 @@ import org.dto.ProjectTaskDto;
 import org.dto.TimesheetDto;
 import org.dto.adapter.orm.EmployeeObjectFactory;
 import org.dto.adapter.orm.ProjectObjectFactory;
+import org.modules.ProjectTrackerApiConst;
 import org.modules.admin.ProjectAdminApi;
 import org.modules.admin.ProjectAdminApiException;
 import org.modules.admin.ProjectAdminApiFactory;
 import org.modules.employee.EmployeeApi;
 import org.modules.employee.EmployeeApiException;
 import org.modules.employee.EmployeeApiFactory;
+import org.modules.timesheet.TimesheetApi;
+import org.modules.timesheet.TimesheetApiFactory;
 import org.modules.timesheet.TimesheetTransmissionException;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
@@ -51,7 +54,8 @@ public class TimesheetSubmitApiHandler extends TimesheetApiHandler {
     private static final Logger logger = Logger.getLogger(TimesheetSubmitApiHandler.class);
     private static final String SUBJECT_TRANSMISSION_PREFIX = "Time Sheet Submission for ";
     private double totalHours;
-
+    TimesheetApi api;
+    
     /**
      * @param payload
      */
@@ -102,10 +106,15 @@ public class TimesheetSubmitApiHandler extends TimesheetApiHandler {
         List<TimesheetType> updateDtoResults = null;
         boolean okToSendEmail = false;
 
+        // IS-71: Use local scoped API instance for the purpose of preventing memory leaks
+        // caused by dangling API instances. 
+        this.api = TimesheetApiFactory.createApi(ProjectTrackerApiConst.APP_NAME);        
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+            rs.setRecordCount(0);
+            
             timesheetDto = TimesheetJaxbDtoFactory.createTimesheetDtoInstance(req.getProfile().getTimesheet().get(0));
 
             this.api.beginTrans();
@@ -139,7 +148,6 @@ public class TimesheetSubmitApiHandler extends TimesheetApiHandler {
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setRecordCount(0);
             rs.setMessage(TimesheetMessageHandlerConst.MESSAGE_SUBMIT_ERROR);
             rs.setExtMessage(e.getMessage());
             this.api.rollbackTrans();

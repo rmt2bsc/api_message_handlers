@@ -5,6 +5,9 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.dto.TimesheetDto;
+import org.modules.ProjectTrackerApiConst;
+import org.modules.timesheet.TimesheetApi;
+import org.modules.timesheet.TimesheetApiFactory;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.ProjectProfileRequest;
@@ -73,32 +76,35 @@ public class TimesheetQueryApiHandler extends TimesheetApiHandler {
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
         List<TimesheetType> queryDtoResults = null;
 
+        // IS-71: Use local scoped API instance for the purpose of preventing memory leaks
+        // caused by dangling API instances. 
+        TimesheetApi api = TimesheetApiFactory.createApi(ProjectTrackerApiConst.APP_NAME);
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
+            rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+            rs.setRecordCount(0);
+            
             TimesheetDto criteriaDto = TimesheetJaxbDtoFactory
                     .createTimesheetDtoCriteriaInstance(req.getCriteria().getTimesheetCriteria());
             
-            List<TimesheetDto> dtoList = this.api.getExt(criteriaDto);
+            List<TimesheetDto> dtoList = api.getExt(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage(TimesheetMessageHandlerConst.MESSAGE_NOT_FOUND);
-                rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             }
             else {
                 queryDtoResults = this.buildJaxbQueryResults(dtoList);
                 rs.setMessage(TimesheetMessageHandlerConst.MESSAGE_FOUND);
                 rs.setRecordCount(dtoList.size());
-                rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
             }
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setRecordCount(0);
             rs.setMessage(TimesheetMessageHandlerConst.MESSAGE_FETCH_ERROR);
             rs.setExtMessage(e.getMessage());
         } finally {
-            this.api.close();
+            api.close();
         }
 
         String xml = this.buildResponse(queryDtoResults, rs);

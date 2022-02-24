@@ -5,6 +5,9 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.dto.TimesheetDto;
+import org.modules.ProjectTrackerApiConst;
+import org.modules.timesheet.invoice.InvoiceTimesheetApi;
+import org.modules.timesheet.invoice.InvoiceTimesheetApiFactory;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.ProjectProfileRequest;
@@ -76,15 +79,20 @@ public class TimesheetInvoiceSingleApiHandler extends TimesheetInvoiceApiHandler
         List<TimesheetType> updateDtoResults = null;
         TimesheetDto criteriaDto = null;
 
+        // IS-71: Use local scoped API instance for the purpose of preventing memory leaks
+        // caused by dangling API instances. 
+        InvoiceTimesheetApi api = InvoiceTimesheetApiFactory.createApi(ProjectTrackerApiConst.APP_NAME);
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
+            rs.setRecordCount(0);
+            
             criteriaDto = TimesheetJaxbDtoFactory
                     .createTimesheetDtoCriteriaInstance(req.getCriteria().getTimesheetCriteria());
 
-            this.api.beginTrans();
-            int rc = this.api.invoice(criteriaDto.getTimesheetId());
+            api.beginTrans();
+            int rc = api.invoice(criteriaDto.getTimesheetId());
             if (rc > 0) {
                 rs.setMessage(TimesheetMessageHandlerConst.MESSAGE_INVOICE_SUCCESS);
                 criteriaDto.setInvoiceRefNo(String.valueOf(rc));
@@ -95,21 +103,19 @@ public class TimesheetInvoiceSingleApiHandler extends TimesheetInvoiceApiHandler
                 String errMsg = RMT2String.replace(TimesheetMessageHandlerConst.MESSAGE_INVOICE_RECORD_NOT_FOUND,
                         String.valueOf(criteriaDto.getTimesheetId()), "%s");
                 rs.setMessage(errMsg);
-                rs.setRecordCount(0);
             }
 
             this.responseObj.setHeader(req.getHeader());
-            this.api.commitTrans();
+            api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
-            rs.setRecordCount(0);
             rs.setMessage(RMT2String.replace(TimesheetMessageHandlerConst.MESSAGE_INVOICE_ERROR,
                     String.valueOf(criteriaDto.getTimesheetId()), "%s"));
             rs.setExtMessage(e.getMessage());
-            this.api.rollbackTrans();
+            api.rollbackTrans();
         } finally {
-            this.api.close();
+            api.close();
         }
 
         String xml = this.buildResponse(updateDtoResults, rs);

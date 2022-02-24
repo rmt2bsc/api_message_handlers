@@ -6,6 +6,9 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.dto.TimesheetDto;
+import org.modules.ProjectTrackerApiConst;
+import org.modules.timesheet.TimesheetApi;
+import org.modules.timesheet.TimesheetApiFactory;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.ProjectProfileRequest;
@@ -79,6 +82,9 @@ public class TimesheetDeleteApiHandler extends TimesheetApiHandler {
         TimesheetDto timesheetDto = null;
         List<TimesheetType> updateDtoResults = null;
 
+        // IS-71: Use local scoped API instance for the purpose of preventing memory leaks
+        // caused by dangling API instances. 
+        TimesheetApi api = TimesheetApiFactory.createApi(ProjectTrackerApiConst.APP_NAME);
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
@@ -86,8 +92,8 @@ public class TimesheetDeleteApiHandler extends TimesheetApiHandler {
             timesheetDto = TimesheetJaxbDtoFactory
                     .createTimesheetDtoInstance(req.getProfile().getTimesheet().get(0));
 
-            this.api.beginTrans();
-            int rc = this.api.deleteTimesheet(timesheetDto.getTimesheetId());
+            api.beginTrans();
+            int rc = api.deleteTimesheet(timesheetDto.getTimesheetId());
             if (rc > 0) {
                 rs.setMessage(TimesheetMessageHandlerConst.MESSAGE_DELETE_SUCCESS);
             }
@@ -100,16 +106,16 @@ public class TimesheetDeleteApiHandler extends TimesheetApiHandler {
 
             updateDtoResults = this.buildJaxbUpdateResults(timesheetDto);
             this.responseObj.setHeader(req.getHeader());
-            this.api.commitTrans();
+            api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e );
             rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             rs.setRecordCount(0);
             rs.setMessage(TimesheetMessageHandlerConst.MESSAGE_DELETE_ERROR);
             rs.setExtMessage(e.getMessage());
-            this.api.rollbackTrans();
+            api.rollbackTrans();
         } finally {
-            this.api.close();
+            api.close();
         }
 
         String xml = this.buildResponse(updateDtoResults, rs);

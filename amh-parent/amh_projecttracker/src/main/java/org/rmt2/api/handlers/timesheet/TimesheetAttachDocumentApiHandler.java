@@ -48,8 +48,6 @@ public class TimesheetAttachDocumentApiHandler extends
     public static final String MSG_MISSING_PROFILE_DATA = "Media application link request profile is required";
     public static final String MSG_MISSING_ATTACHMENT_SECTION = "Media attachment section is missing from the profile";
     
-    
-    private TimesheetApi api;
     protected ObjectFactory jaxbObjFactory;
     protected String targetLevel;
 
@@ -61,8 +59,6 @@ public class TimesheetAttachDocumentApiHandler extends
      */
     public TimesheetAttachDocumentApiHandler() {
         super();
-        TimesheetApiFactory f = new TimesheetApiFactory();
-        this.api = f.createApi(ProjectTrackerApiConst.APP_NAME);
         this.jaxbObjFactory = new ObjectFactory();
         this.responseObj = jaxbObjFactory.createMediaApplicationLinkResponse();
         
@@ -125,14 +121,16 @@ public class TimesheetAttachDocumentApiHandler extends
         // Ensure that this handler is the intended audience for this attachment
         if (reqData.getProjectName().equalsIgnoreCase(ApiMessageHandlerConst.MEDIA_LINK_VALID_APPNAME_PROJECTTRACKER) &&
                 reqData.getModuleName().equalsIgnoreCase(ApiMessageHandlerConst.MEDIA_LINK_VALID_MODULENAME_PROJECTTRACKER)) {
+            
+            TimesheetApi api = TimesheetApiFactory.createApi(ProjectTrackerApiConst.APP_NAME);
             try {
-                TimesheetDto xactDto = this.api.get(reqData.getPropertyId());
+                TimesheetDto xactDto = api.get(reqData.getPropertyId());
                 if (xactDto == null) {
                     msg = TimesheetAttachDocumentApiHandler.MSG_UPDATE_NOTFOUND;
                 }
                 else {
                     xactDto.setDocumentId(reqData.getContentId());
-                    int rc = this.api.updateTimesheet(xactDto);
+                    int rc = api.updateTimesheet(xactDto);
 
                     // Setup response message
                     if (rc == 1) {
@@ -146,7 +144,7 @@ public class TimesheetAttachDocumentApiHandler extends
                     }
                     rs.setRecordCount(rc);
                     this.responseObj.setHeader(req.getHeader());
-                    this.api.commitTrans();
+                    api.commitTrans();
                 }
                 rs.setMessage(msg);
             } catch (Exception e) {
@@ -154,9 +152,9 @@ public class TimesheetAttachDocumentApiHandler extends
                 rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
                 rs.setMessage(MSG_API_ERROR);
                 rs.setExtMessage(e.getMessage());
-                this.api.rollbackTrans();
+                api.rollbackTrans();
             } finally {
-                this.api.close();
+                api.close();
             }
         }
         else {

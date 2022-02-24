@@ -11,9 +11,12 @@ import org.dao.timesheet.TimesheetConst;
 import org.dto.EmployeeDto;
 import org.dto.TimesheetDto;
 import org.dto.adapter.orm.EmployeeObjectFactory;
+import org.modules.ProjectTrackerApiConst;
 import org.modules.employee.EmployeeApi;
 import org.modules.employee.EmployeeApiException;
 import org.modules.employee.EmployeeApiFactory;
+import org.modules.timesheet.TimesheetApi;
+import org.modules.timesheet.TimesheetApiFactory;
 import org.modules.timesheet.TimesheetTransmissionException;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
@@ -43,7 +46,8 @@ public class TimesheetPostSubmitApiHandler extends TimesheetApiHandler {
     
     private static final Logger logger = Logger.getLogger(TimesheetPostSubmitApiHandler.class);
     private static final String SUBJECT_CONFIRM_PREFIX = "Time Sheet $confirmStatus$ (Period ending $endingPeriod$)";
-
+    TimesheetApi api;
+    
     /**
      * @param payload
      */
@@ -96,7 +100,9 @@ public class TimesheetPostSubmitApiHandler extends TimesheetApiHandler {
         boolean okToSendEmail = false;
         String transCode = req.getHeader().getTransaction();
 
-
+        // IS-71: Use local scoped API instance for the purpose of preventing memory leaks
+        // caused by dangling API instances. 
+        this.api = TimesheetApiFactory.createApi(ProjectTrackerApiConst.APP_NAME);
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
