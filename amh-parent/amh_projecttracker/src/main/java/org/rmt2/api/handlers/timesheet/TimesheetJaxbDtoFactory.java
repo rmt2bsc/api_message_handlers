@@ -46,6 +46,8 @@ import org.rmt2.util.projecttracker.timesheet.TimesheetTypeBuilder;
 
 import com.RMT2Base;
 import com.api.util.RMT2Date;
+import com.api.util.assistants.Verifier;
+import com.api.util.assistants.VerifyException;
 
 /**
  * A factory for converting Employee project tracker administration related JAXB
@@ -218,8 +220,18 @@ public class TimesheetJaxbDtoFactory extends RMT2Base {
      * @return Map<ProjectTaskDto, List<EventDto>>
      */
     public static final Map<ProjectTaskDto, List<EventDto>> createTimesheetWorkLogDtoInstance(TimesheetType jaxbObj) {
+        try {
+            Verifier.verifyNotNull(jaxbObj);
+            Verifier.verifyNotNull(jaxbObj.getWorkLog());
+        }
+        catch (VerifyException e) {
+            return null;
+        }
+        
+        // We have data to work with
         Map<ProjectTaskDto, List<EventDto>> hours = new HashMap<>();
-        for (ProjectTaskType ptt : jaxbObj.getWorkLog()) {
+        List<ProjectTaskType> timeEntries = jaxbObj.getWorkLog().getTimeEntry();
+        for (ProjectTaskType ptt : timeEntries) {
             ProjectTaskDto key = TimesheetJaxbDtoFactory.createProjectTaskDtoInstance(ptt);
             if (jaxbObj.getTimesheetId() != null) {
                 key.setTimesheetId(jaxbObj.getTimesheetId().intValue());
@@ -512,7 +524,7 @@ public class TimesheetJaxbDtoFactory extends RMT2Base {
                 .withClient(ct)
                 .withEmployee(et)
                 .withStatus(tst)
-                .addWorkLog(hours)
+                .addTimeEntry(hours)
                 .withRecordTracking(rtt)
                 .build();
 
