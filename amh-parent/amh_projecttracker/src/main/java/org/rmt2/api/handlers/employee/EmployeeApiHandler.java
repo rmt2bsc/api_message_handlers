@@ -90,23 +90,27 @@ public class EmployeeApiHandler extends
         }
         List<EmployeeType> list = new ArrayList<>();
 
-        ZipcodeType zip = ZipcodeTypeBuilder.Builder.create()
-                .withCity(person.getCity())
-                .withState(person.getState())
-                .withZipcode(person.getZip())
-                .build();
-        
-        AddressType addr = AddressTypeBuilder.Builder.create()
-                .withAddrId(person.getAddrId())
-                .withAddressLine1(person.getAddr1())
-                .withAddressLine2(person.getAddr2())
-                .withAddressLine3(person.getAddr3())
-                .withAddressLine4(person.getAddr4())
-                .withPhoneHome(person.getPhoneHome())
-                .withPhoneMobile(person.getPhoneCell())
-                .withZipcode(zip)
-                .build();
-        
+        ZipcodeType zip = null;
+        AddressType addr = null;
+        if (person != null) {
+            zip = ZipcodeTypeBuilder.Builder.create()
+                    .withCity(person.getCity())
+                    .withState(person.getState())
+                    .withZipcode(person.getZip())
+                    .build();
+
+            addr = AddressTypeBuilder.Builder.create()
+                    .withAddrId(person.getAddrId())
+                    .withAddressLine1(person.getAddr1())
+                    .withAddressLine2(person.getAddr2())
+                    .withAddressLine3(person.getAddr3())
+                    .withAddressLine4(person.getAddr4())
+                    .withPhoneHome(person.getPhoneHome())
+                    .withPhoneMobile(person.getPhoneCell())
+                    .withZipcode(zip)
+                    .build();
+        }
+
         PersonType pt = PersonTypeBuilder.Builder.create()
                 .withPersonId(emp.getPersonId())
                 .withFirstName(emp.getEmployeeFirstname())
