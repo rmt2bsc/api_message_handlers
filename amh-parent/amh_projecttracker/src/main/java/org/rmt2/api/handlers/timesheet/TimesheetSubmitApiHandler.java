@@ -178,7 +178,10 @@ public class TimesheetSubmitApiHandler extends TimesheetApiHandler {
             List<EmployeeDto> employees = empApi.getEmployeeExt(empCriteria);
             EmployeeDto employee = employees.get(0);
 
-            EmployeeDto manager = empApi.getEmployee(employee.getManagerId());
+            EmployeeDto manager = null;
+            if (employee.getManagerId() > 1) {
+                manager = empApi.getEmployee(employee.getManagerId());
+            }
 
             // get client profile
             projApi = ProjectAdminApiFactory.createApi(this.api.getSharedDao());
@@ -258,7 +261,9 @@ public class TimesheetSubmitApiHandler extends TimesheetApiHandler {
         EmailMessageBean email = new EmailMessageBean();
         StringBuffer buf = new StringBuffer();
         // Setup basic email components
-        email.setToAddress(manager.getEmployeeEmail());
+        if (manager != null) {
+            email.setToAddress(manager.getEmployeeEmail());
+        }
         email.setFromAddress(employee.getEmployeeEmail());
         buf.append(TimesheetSubmitApiHandler.SUBJECT_TRANSMISSION_PREFIX);
         buf.append(" ");
