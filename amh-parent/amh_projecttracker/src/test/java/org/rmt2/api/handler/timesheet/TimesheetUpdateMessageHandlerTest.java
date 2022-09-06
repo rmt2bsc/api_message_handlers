@@ -90,12 +90,20 @@ public class TimesheetUpdateMessageHandlerTest extends BaseProjectTrackerMessage
     @Test
     public void testSuccess_Create() {
         String request = RMT2File.getFileContentsAsString("xml/timesheet/TimesheetInsertRequest.xml");
+        TimesheetDto mockData = TimesheetMockData.createSingleMockExtTimesheet();
+
         try {
             when(this.mockApi.updateTimesheet(isA(TimesheetDto.class), isA(Map.class))).thenReturn(TIMESHEET_ID);
         } catch (TimesheetApiException e) {
             Assert.fail("Unable to setup mock stub for creating timesheet record");
         }
         
+        try {
+            when(this.mockApi.getExt(isA(Integer.class))).thenReturn(mockData);
+        } catch (TimesheetApiException e) {
+            Assert.fail("Unable to setup mock stub for fetching timesheet records");
+        }
+
         MessageHandlerResults results = null;
         TimesheetUpdateApiHandler handler = new TimesheetUpdateApiHandler();
         try {
@@ -125,16 +133,26 @@ public class TimesheetUpdateMessageHandlerTest extends BaseProjectTrackerMessage
             Assert.assertNotNull(a.getEmployee().getContactDetails().getLastName());
             Assert.assertEquals(EMPLOYEE_FIRSTNAME, a.getEmployee().getContactDetails().getFirstName());
             Assert.assertEquals(EMPLOYEE_LASTNAME, a.getEmployee().getContactDetails().getLastName());
+            Assert.assertEquals(10, a.getBillableHours().intValue());
+            Assert.assertEquals(0, a.getNonBillableHours().intValue());
         }
     }
     
     @Test
     public void testSuccess_Modify() {
         String request = RMT2File.getFileContentsAsString("xml/timesheet/TimesheetUpdateRequest.xml");
+        TimesheetDto mockData = TimesheetMockData.createSingleMockExtTimesheet();
+
         try {
             when(this.mockApi.updateTimesheet(isA(TimesheetDto.class), isA(Map.class))).thenReturn(TIMESHEET_ID);
         } catch (TimesheetApiException e) {
             Assert.fail("Unable to setup mock stub for modifying timesheet record");
+        }
+
+        try {
+            when(this.mockApi.getExt(isA(Integer.class))).thenReturn(mockData);
+        } catch (TimesheetApiException e) {
+            Assert.fail("Unable to setup mock stub for fetching timesheet records");
         }
 
         MessageHandlerResults results = null;
@@ -167,6 +185,8 @@ public class TimesheetUpdateMessageHandlerTest extends BaseProjectTrackerMessage
             Assert.assertNotNull(a.getEmployee().getContactDetails().getLastName());
             Assert.assertEquals(EMPLOYEE_FIRSTNAME, a.getEmployee().getContactDetails().getFirstName());
             Assert.assertEquals(EMPLOYEE_LASTNAME, a.getEmployee().getContactDetails().getLastName());
+            Assert.assertEquals(10, a.getBillableHours().intValue());
+            Assert.assertEquals(0, a.getNonBillableHours().intValue());
         }
     }
 

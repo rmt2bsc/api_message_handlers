@@ -112,8 +112,12 @@ public class TimesheetUpdateApiHandler extends TimesheetApiHandler {
             }
             rs.setRecordCount(1);
 
-            // Ensure timeshet id has a value in the event the timesheet is new
-            timesheetDto.setTimesheetId(rc);
+            // Ensure timeshet id, non billable hours, and billable hours are
+            // included in the response message
+            TimesheetDto dto = api.getExt(rc);
+            timesheetDto.setTimesheetId(dto.getTimesheetId());
+            timesheetDto.setBillHrs(dto.getBillHrs());
+            timesheetDto.setNonBillHrs(dto.getNonBillHrs());
 
             updateDtoResults = this.buildJaxbUpdateResults(timesheetDto);
             this.responseObj.setHeader(req.getHeader());

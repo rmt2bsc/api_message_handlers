@@ -263,6 +263,13 @@ public class TimesheetMockData {
         return list;
     }
     
+    public static final TimesheetDto createSingleMockExtTimesheet() {
+        VwTimesheetList o = ProjectTrackerOrmDataFactory.createMockOrmVwTimesheetList(900, 1110, 1234, 2220,
+                "INVREF1230", "2018-01-01", "2018-01-01", "ExtReNo1000",
+                3330, "DRAFT", "ACCT-111", 10, 0, 70.00, 80.00);
+        TimesheetDto dto = TimesheetObjectFactory.createTimesheetExtendedDtoInstance(o);
+        return dto;
+    }
     
     public static final List<TimesheetDto> createMockExtTimesheetList() {
         List<TimesheetDto> list = new ArrayList<>();
