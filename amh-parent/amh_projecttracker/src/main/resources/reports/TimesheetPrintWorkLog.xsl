@@ -178,7 +178,7 @@
 							            
 										<xsl:call-template name="work_log_header"/>
 										<fo:table-body>
-											<xsl:apply-templates select="ProjectProfileResponse/profile/timesheet/work_log"/>
+											<xsl:apply-templates select="ProjectProfileResponse/profile/timesheet/work_log/time_entry"/>
 											<xsl:call-template name="total_hours_line"/>
 										</fo:table-body>
 									</fo:table>
@@ -467,7 +467,7 @@
 	</xsl:template>
 	
 	<!-- Work log -->
-	<xsl:template match="work_log">
+	<xsl:template match="time_entry">
 		<fo:table-row>
 			<fo:table-cell  border-style="solid" border-width=".5pt" border-color="black">
 				<fo:block text-align="left">

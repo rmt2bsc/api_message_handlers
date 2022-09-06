@@ -59,8 +59,7 @@ public abstract class AbstractTimesheetPrintApiHandler extends
      */
     public AbstractTimesheetPrintApiHandler() {
         super();
-        TimesheetApiFactory f = new TimesheetApiFactory();
-        this.api = f.createApi(ProjectTrackerApiConst.APP_NAME);
+        this.api = TimesheetApiFactory.createApi(ProjectTrackerApiConst.APP_NAME);
         this.jaxbObjFactory = new ObjectFactory();
         this.responseObj = jaxbObjFactory.createProjectProfileResponse();
         logger.info(TimesheetApiHandler.class.getName() + " was instantiated successfully");
