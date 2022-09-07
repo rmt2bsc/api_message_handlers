@@ -1,18 +1,12 @@
 <MultimediaRequest>
     <header>
-        <routing>rmt2.queue.media</routing>
+        <routing>XXXXXXX</routing>
         <application>media</application>
         <module>lookup</module>
-        <transaction>GET_PROJECT_TYPE</transaction>
+        <transaction>GET_LOOKUP_VALUES</transaction>
         <delivery_mode>XXXXXXX</delivery_mode>
         <message_mode>REQUEST</message_mode>
         <delivery_date>09/06/2022 21:50:25</delivery_date>
         <session_id>ABCDEFGHIJKLMNOPQRSTUVWXYZ</session_id>
     </header>
-    <criteria>
-        <audio_video_criteria>
-            <project_type_id>200</project_type_id>
-            <project_type_name>Project Type Description Test</project_type_name>
-        </audio_video_criteria>
-    </criteria>
 </MultimediaRequest>
