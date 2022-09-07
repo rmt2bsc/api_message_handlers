@@ -13,10 +13,8 @@ public class TrackApiHandlerConst {
     public static final String MESSAGE_NOT_FOUND = "Media track data not found!";
     public static final String MESSAGE_FETCH_ERROR = "Failure to retrieve Media track data";
 
-    public static final String MESSAGE_UPDATE_NEW_SUCCESS = "New media track, " + ApiMessageHandlerConst.MSG_PLACEHOLDER
-            + ", was created successfully";
-    public static final String MESSAGE_UPDATE_EXISTING_SUCCESS = "Media track, " + ApiMessageHandlerConst.MSG_PLACEHOLDER
-            + ", was updated successfully";
+    public static final String MESSAGE_UPDATE_NEW_SUCCESS = "New media track was created successfully";
+    public static final String MESSAGE_UPDATE_EXISTING_SUCCESS = "Media track was updated successfully";
     public static final String MESSAGE_UPDATE_NO_CHANGE = "Media track, " + ApiMessageHandlerConst.MSG_PLACEHOLDER
             + ", did not have any updates applied";
     public static final String MESSAGE_UPDATE_ERROR = "Media track update failed";

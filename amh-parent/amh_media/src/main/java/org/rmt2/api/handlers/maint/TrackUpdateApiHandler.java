@@ -1,15 +1,24 @@
 package org.rmt2.api.handlers.maint;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.dto.ArtistDto;
+import org.dto.ProjectDto;
 import org.dto.TracksDto;
+import org.dto.adapter.orm.Rmt2MediaDtoFactory;
 import org.modules.audiovideo.AudioVideoApi;
 import org.modules.audiovideo.AudioVideoFactory;
 import org.rmt2.api.ApiMessageHandlerConst;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
+import org.rmt2.jaxb.ArtistType;
+import org.rmt2.jaxb.AudioVideoType;
+import org.rmt2.jaxb.AvProjectType;
 import org.rmt2.jaxb.MultimediaRequest;
+import org.rmt2.jaxb.TrackType;
 
 import com.InvalidDataException;
 import com.api.messaging.InvalidRequestException;
@@ -75,6 +84,7 @@ public class TrackUpdateApiHandler extends AudioVideoApiHandler {
     protected void processTransactionCode(MultimediaRequest req) {
         int rc = 0;
         try {
+            int trackId = 0;
             // Get criteria data
             TracksDto criteriaDto = TrackJaxbDtoFactory.createTracksDtoInstance(req.getProfile().getAudioVideoDetails()
                     .getArtist().get(0).getProjects().getProject().get(0).getTracks().getTrack().get(0));
@@ -87,14 +97,12 @@ public class TrackUpdateApiHandler extends AudioVideoApiHandler {
             String msg = null;
             if (rc > 0) {
                 if (isNew) {
-                    msg = RMT2String.replace(TrackApiHandlerConst.MESSAGE_UPDATE_NEW_SUCCESS, String.valueOf(rc),
-                            ApiMessageHandlerConst.MSG_PLACEHOLDER);
-                    this.rs.setMessage(msg);
+                    this.rs.setMessage(TrackApiHandlerConst.MESSAGE_UPDATE_NEW_SUCCESS);
+                    trackId = rc;
                 }
                 else {
-                    msg = RMT2String.replace(TrackApiHandlerConst.MESSAGE_UPDATE_EXISTING_SUCCESS,
-                            String.valueOf(criteriaDto.getTrackId()), ApiMessageHandlerConst.MSG_PLACEHOLDER);
-                    this.rs.setMessage(msg);
+                    this.rs.setMessage(TrackApiHandlerConst.MESSAGE_UPDATE_EXISTING_SUCCESS);
+                    trackId = criteriaDto.getTrackId();
                 }
             }
             else {
@@ -103,7 +111,40 @@ public class TrackUpdateApiHandler extends AudioVideoApiHandler {
                 this.rs.setMessage(msg);
             }
             this.rs.setRecordCount(1);
-            this.jaxbResults.add(null);
+
+            // Confirm project change
+            // Get Track data
+            TracksDto criteria1 = Rmt2MediaDtoFactory.getAvTrackInstance(null);
+            criteria1.setTrackId(trackId);
+            List<TracksDto> confirmDto1 = api.getTracks(criteria1);
+            List<TrackType> confirmJaxb1 = TrackJaxbDtoFactory.createTrackJaxbInstance(confirmDto1);
+
+            // Get Project data
+            ProjectDto criteria2 = Rmt2MediaDtoFactory.getAvProjectInstance(null);
+            criteria2.setProjectId(confirmDto1.get(0).getProjectId());
+            List<ProjectDto> confirmDto2 = api.getProject(criteria2);
+            List<AvProjectType> confirmJaxb2 = ArtistProjectJaxbDtoFactory.createProjectJaxbInstance(confirmDto2);
+
+            // Merge project and track data
+            confirmJaxb2.get(0).setTracks(this.jaxbObjFactory.createTracksType());
+            confirmJaxb2.get(0).getTracks().getTrack().addAll(confirmJaxb1);
+
+            // Get artist data
+            ArtistDto criteria3 = Rmt2MediaDtoFactory.getAvArtistInstance(null);
+            criteria3.setId(confirmDto2.get(0).getArtistId());
+            List<ArtistDto> confirmDto3 = api.getArtist(criteria3);
+            List<ArtistType> confirmJaxb3 = ArtistJaxbDtoFactory.createArtistJaxbInstance(confirmDto3);
+
+            // Merge artist and project data
+            confirmJaxb3.get(0).setProjects(this.jaxbObjFactory.createAvProjectsType());
+            confirmJaxb3.get(0).getProjects().getProject().addAll(confirmJaxb2);
+
+            AudioVideoType avt = this.jaxbObjFactory.createAudioVideoType();
+            avt.getArtist().addAll(confirmJaxb3);
+            List<AudioVideoType> list = new ArrayList<>();
+            list.add(avt);
+            this.jaxbResults.add(avt);
+
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e);

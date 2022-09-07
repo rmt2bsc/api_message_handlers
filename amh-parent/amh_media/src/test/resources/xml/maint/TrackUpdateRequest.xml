@@ -12,10 +12,8 @@
     <profile>
         <audio_video_details>
             <artist>
-                <artist_id>2</artist_id>
                 <projects>
                     <project>
-                        <project_id>2</project_id>
                         <tracks>
                             <track>
                                 <track_id>7</track_id>
