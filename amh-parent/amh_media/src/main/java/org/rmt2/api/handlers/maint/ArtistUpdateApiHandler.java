@@ -1,14 +1,19 @@
 package org.rmt2.api.handlers.maint;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.dto.ArtistDto;
+import org.dto.adapter.orm.Rmt2MediaDtoFactory;
 import org.modules.audiovideo.AudioVideoApi;
 import org.modules.audiovideo.AudioVideoFactory;
 import org.rmt2.api.ApiMessageHandlerConst;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
+import org.rmt2.jaxb.ArtistType;
+import org.rmt2.jaxb.AudioVideoType;
 import org.rmt2.jaxb.MultimediaRequest;
 
 import com.InvalidDataException;
@@ -85,16 +90,15 @@ public class ArtistUpdateApiHandler extends AudioVideoApiHandler {
             AudioVideoApi api = AudioVideoFactory.createApi();
             int rc = api.updateArtist(artistDto);
             String msg = null;
+            int artistId = 0;
             if (rc > 0) {
                 if (isNew) {
-                    msg = RMT2String.replace(ArtistApiHandlerConst.MESSAGE_UPDATE_NEW_SUCCESS, String.valueOf(rc),
-                            ApiMessageHandlerConst.MSG_PLACEHOLDER);
-                    this.rs.setMessage(msg);
+                    this.rs.setMessage(ArtistApiHandlerConst.MESSAGE_UPDATE_NEW_SUCCESS);
+                    artistId = rc;
                 }
                 else {
-                    msg = RMT2String.replace(ArtistApiHandlerConst.MESSAGE_UPDATE_EXISTING_SUCCESS,
-                            String.valueOf(artistDto.getId()), ApiMessageHandlerConst.MSG_PLACEHOLDER);
-                    this.rs.setMessage(msg);
+                    this.rs.setMessage(ArtistApiHandlerConst.MESSAGE_UPDATE_EXISTING_SUCCESS);
+                    artistId = artistDto.getId();
                 }
             }
             else {
@@ -103,7 +107,18 @@ public class ArtistUpdateApiHandler extends AudioVideoApiHandler {
                 this.rs.setMessage(msg);
             }
             this.rs.setRecordCount(1);
-            this.jaxbResults.add(null);
+
+            // Confirm artist change
+            ArtistDto criteria = Rmt2MediaDtoFactory.getAvArtistInstance(null);
+            criteria.setId(artistId);
+            List<ArtistDto> confirmDto = api.getArtist(criteria);
+            List<ArtistType> confirmJaxb = ArtistJaxbDtoFactory.createArtistJaxbInstance(confirmDto);
+            AudioVideoType avt = this.jaxbObjFactory.createAudioVideoType();
+            avt.getArtist().addAll(confirmJaxb);
+            List<AudioVideoType> list = new ArrayList<>();
+            list.add(avt);
+            this.jaxbResults.add(avt);
+
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e);
