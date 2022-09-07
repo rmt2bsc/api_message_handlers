@@ -82,22 +82,20 @@ public class MediaMockDtoFactory {
         o = MediaMockOrmFactory.createOrmAvProjectType(++ndx, "ProjectType" + ndx);
         d = Rmt2MediaDtoFactory.getAvProjectTypeInstance(o);
         list.add(d);
-
-        o = MediaMockOrmFactory.createOrmAvProjectType(++ndx, "ProjectType" + ndx);
-        d = Rmt2MediaDtoFactory.getAvProjectTypeInstance(o);
-        list.add(d);
-
-        o = MediaMockOrmFactory.createOrmAvProjectType(++ndx, "ProjectType" + ndx);
-        d = Rmt2MediaDtoFactory.getAvProjectTypeInstance(o);
-        list.add(d);
-
-        o = MediaMockOrmFactory.createOrmAvProjectType(++ndx, "ProjectType" + ndx);
-        d = Rmt2MediaDtoFactory.getAvProjectTypeInstance(o);
-        list.add(d);
         
         return list;
     }
     
+    public static final List<ProjectTypeDto> createProjectTypeSingleMockData() {
+        List<ProjectTypeDto> list = new ArrayList<>();
+        int ndx = MediaMockOrmFactory.TEST_PROJECTTYPE_ID;
+        AvProjectType o = MediaMockOrmFactory.createOrmAvProjectType(ndx, "ProjectType" + ndx);
+        ProjectTypeDto d = Rmt2MediaDtoFactory.getAvProjectTypeInstance(o);
+        list.add(d);
+
+        return list;
+    }
+
     public static final List<MediaTypeDto> createMediaTypeSingleMockData() {
         List<MediaTypeDto> list = new ArrayList<>();
         int ndx = MediaMockOrmFactory.TEST_MEDIA_TYPE_ID;
