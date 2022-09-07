@@ -4,6 +4,9 @@ import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
+
+import org.dto.ArtistDto;
 import org.dto.ProjectDto;
 import org.junit.After;
 import org.junit.Assert;
@@ -17,8 +20,8 @@ import org.modules.audiovideo.AudioVideoFactory;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.rmt2.api.ApiMessageHandlerConst;
 import org.rmt2.api.handler.BaseMediaMessageHandlerTest;
+import org.rmt2.api.handler.MediaMockDtoFactory;
 import org.rmt2.api.handlers.maint.ArtistProjectApiHandlerConst;
 import org.rmt2.api.handlers.maint.ArtistProjectUpdateApiHandler;
 import org.rmt2.constants.ApiTransactionCodes;
@@ -31,7 +34,6 @@ import com.api.messaging.handler.MessageHandlerResults;
 import com.api.persistence.AbstractDaoClientImpl;
 import com.api.persistence.db.orm.Rmt2OrmClientFactory;
 import com.api.util.RMT2File;
-import com.api.util.RMT2String;
 
 /**
  * 
@@ -69,6 +71,21 @@ public class ProjectUpdateMessageHandlerTest extends BaseMediaMessageHandlerTest
         PowerMockito.mockStatic(AudioVideoFactory.class);
         when(AudioVideoFactory.createApi()).thenReturn(mockApi);
         doNothing().when(this.mockApi).close();
+
+        List<ArtistDto> mockListData = MediaMockDtoFactory.createArtistMockData();
+        try {
+            when(this.mockApi.getArtist(isA(ArtistDto.class))).thenReturn(mockListData);
+        } catch (AudioVideoApiException e) {
+            Assert.fail("Unable to setup mock stub for fetching artist records");
+        }
+
+        List<ProjectDto> mockListData2 = MediaMockDtoFactory.createProjectMockData();
+        try {
+            when(this.mockApi.getProject(isA(ProjectDto.class))).thenReturn(mockListData2);
+        } catch (AudioVideoApiException e) {
+            Assert.fail("Unable to setup mock stub for fetching project records");
+        }
+
         return;
     }
 
@@ -108,14 +125,13 @@ public class ProjectUpdateMessageHandlerTest extends BaseMediaMessageHandlerTest
 
         MultimediaResponse actualRepsonse = (MultimediaResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertNotNull(actualRepsonse.getProfile());
-        Assert.assertNull(actualRepsonse.getProfile().getAudioVideoDetails());
+        Assert.assertNotNull(actualRepsonse.getProfile().getAudioVideoDetails());
         Assert.assertEquals(1, actualRepsonse.getReplyStatus().getRecordCount().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
 
-        String msg = RMT2String.replace(ArtistProjectApiHandlerConst.MESSAGE_UPDATE_EXISTING_SUCCESS, "3475",
-                ApiMessageHandlerConst.MSG_PLACEHOLDER);
-        Assert.assertEquals(msg, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(ArtistProjectApiHandlerConst.MESSAGE_UPDATE_EXISTING_SUCCESS, actualRepsonse.getReplyStatus()
+                .getMessage());
     }
     
     @Test
@@ -141,14 +157,12 @@ public class ProjectUpdateMessageHandlerTest extends BaseMediaMessageHandlerTest
 
         MultimediaResponse actualRepsonse = (MultimediaResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertNotNull(actualRepsonse.getProfile());
-        Assert.assertNull(actualRepsonse.getProfile().getAudioVideoDetails());
+        Assert.assertNotNull(actualRepsonse.getProfile().getAudioVideoDetails());
         Assert.assertEquals(1, actualRepsonse.getReplyStatus().getRecordCount().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
 
-        String msg = RMT2String.replace(ArtistProjectApiHandlerConst.MESSAGE_UPDATE_NEW_SUCCESS, String.valueOf(NEW_PROJECT_ID),
-                ApiMessageHandlerConst.MSG_PLACEHOLDER);
-        Assert.assertEquals(msg, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(ArtistProjectApiHandlerConst.MESSAGE_UPDATE_NEW_SUCCESS, actualRepsonse.getReplyStatus().getMessage());
     }
 
     @Test

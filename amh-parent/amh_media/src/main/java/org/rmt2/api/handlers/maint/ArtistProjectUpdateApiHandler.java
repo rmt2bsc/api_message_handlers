@@ -1,14 +1,21 @@
 package org.rmt2.api.handlers.maint;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.dto.ArtistDto;
 import org.dto.ProjectDto;
+import org.dto.adapter.orm.Rmt2MediaDtoFactory;
 import org.modules.audiovideo.AudioVideoApi;
 import org.modules.audiovideo.AudioVideoFactory;
 import org.rmt2.api.ApiMessageHandlerConst;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
+import org.rmt2.jaxb.ArtistType;
+import org.rmt2.jaxb.AudioVideoType;
+import org.rmt2.jaxb.AvProjectType;
 import org.rmt2.jaxb.MultimediaRequest;
 
 import com.InvalidDataException;
@@ -75,6 +82,7 @@ public class ArtistProjectUpdateApiHandler extends AudioVideoApiHandler {
     @Override
     protected void processTransactionCode(MultimediaRequest req) {
         try {
+            int projectId = 0;
             // Get artist profile data
             ProjectDto projectDto = ArtistProjectJaxbDtoFactory.createProjectDtoInstance(req.getProfile().getAudioVideoDetails()
                     .getArtist().get(0).getProjects().getProject().get(0));
@@ -87,14 +95,12 @@ public class ArtistProjectUpdateApiHandler extends AudioVideoApiHandler {
             String msg = null;
             if (rc > 0) {
                 if (isNew) {
-                    msg = RMT2String.replace(ArtistProjectApiHandlerConst.MESSAGE_UPDATE_NEW_SUCCESS, String.valueOf(rc),
-                            ApiMessageHandlerConst.MSG_PLACEHOLDER);
-                    this.rs.setMessage(msg);
+                    this.rs.setMessage(ArtistProjectApiHandlerConst.MESSAGE_UPDATE_NEW_SUCCESS);
+                    projectId = rc;
                 }
                 else {
-                    msg = RMT2String.replace(ArtistProjectApiHandlerConst.MESSAGE_UPDATE_EXISTING_SUCCESS,
-                            String.valueOf(projectDto.getProjectId()), ApiMessageHandlerConst.MSG_PLACEHOLDER);
-                    this.rs.setMessage(msg);
+                    this.rs.setMessage(ArtistProjectApiHandlerConst.MESSAGE_UPDATE_EXISTING_SUCCESS);
+                    projectId = projectDto.getProjectId();
                 }
             }
             else {
@@ -104,6 +110,30 @@ public class ArtistProjectUpdateApiHandler extends AudioVideoApiHandler {
                 this.rs.setMessage(msg);
             }
             this.rs.setRecordCount(1);
+
+            // Confirm project change
+            // Get Project data
+            ProjectDto criteria = Rmt2MediaDtoFactory.getAvProjectInstance(null);
+            criteria.setProjectId(projectId);
+            List<ProjectDto> confirmDto = api.getProject(criteria);
+            List<AvProjectType> confirmJaxb = ArtistProjectJaxbDtoFactory.createProjectJaxbInstance(confirmDto);
+            
+            // Get artist data
+            ArtistDto criteria2 = Rmt2MediaDtoFactory.getAvArtistInstance(null);
+            criteria2.setId(confirmDto.get(0).getArtistId());
+            List<ArtistDto> confirmDto2 = api.getArtist(criteria2);
+            List<ArtistType> confirmJaxb2 = ArtistJaxbDtoFactory.createArtistJaxbInstance(confirmDto2);
+            
+            // Merge artist and project data
+            confirmJaxb2.get(0).setProjects(this.jaxbObjFactory.createAvProjectsType());
+            confirmJaxb2.get(0).getProjects().getProject().addAll(confirmJaxb);
+            
+            AudioVideoType avt = this.jaxbObjFactory.createAudioVideoType();
+            avt.getArtist().addAll(confirmJaxb2);
+            List<AudioVideoType> list = new ArrayList<>();
+            list.add(avt);
+            this.jaxbResults.add(avt);
+
             this.jaxbResults.add(null);
             this.responseObj.setHeader(req.getHeader());
         } catch (Exception e) {
