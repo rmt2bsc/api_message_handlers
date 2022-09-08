@@ -18,7 +18,6 @@ import org.modules.document.DocumentContentApiFactory;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.rmt2.api.ApiMessageHandlerConst;
 import org.rmt2.api.handler.BaseMediaMessageHandlerTest;
 import org.rmt2.api.handlers.maint.DocumentManualUploadApiHandler;
 import org.rmt2.api.handlers.maint.MediaContentApiHandlerConst;
@@ -32,7 +31,6 @@ import com.api.messaging.handler.MessageHandlerResults;
 import com.api.persistence.AbstractDaoClientImpl;
 import com.api.persistence.db.orm.Rmt2OrmClientFactory;
 import com.api.util.RMT2File;
-import com.api.util.RMT2String;
 
 /**
  * 
@@ -113,9 +111,7 @@ public class DocumentManualUploadMessageHandlerTest extends BaseMediaMessageHand
         Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
 
-        String msg = RMT2String.replace(MediaContentApiHandlerConst.MESSAGE_UPLOAD_SUCCESS, "MSWord.docx",
-                ApiMessageHandlerConst.MSG_PLACEHOLDER);
-        Assert.assertEquals(msg, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(MediaContentApiHandlerConst.MESSAGE_UPLOAD_SUCCESS, actualRepsonse.getReplyStatus().getMessage());
     }
     
 

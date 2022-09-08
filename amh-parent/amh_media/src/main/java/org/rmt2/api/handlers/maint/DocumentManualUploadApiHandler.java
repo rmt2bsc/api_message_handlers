@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 import org.apache.log4j.Logger;
 import org.dto.ContentDto;
-import org.rmt2.api.ApiMessageHandlerConst;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.MultimediaRequest;
@@ -13,7 +12,6 @@ import com.InvalidDataException;
 import com.api.messaging.InvalidRequestException;
 import com.api.messaging.handler.MessageHandlerCommandException;
 import com.api.messaging.handler.MessageHandlerResults;
-import com.api.util.RMT2String;
 import com.api.util.assistants.Verifier;
 import com.api.util.assistants.VerifyException;
 
@@ -78,11 +76,8 @@ public class DocumentManualUploadApiHandler extends MediaContentApiHandler {
 
             // Make API call
             int rc = this.api.add(contentDto);
-            String msg = null;
             if (rc > 0) {
-                msg = RMT2String.replace(MediaContentApiHandlerConst.MESSAGE_UPLOAD_SUCCESS, contentDto.getFilename(),
-                            ApiMessageHandlerConst.MSG_PLACEHOLDER);
-                    this.rs.setMessage(msg);
+                this.rs.setMessage(MediaContentApiHandlerConst.MESSAGE_UPLOAD_SUCCESS);
             }
             this.rs.setRecordCount(1);
 
