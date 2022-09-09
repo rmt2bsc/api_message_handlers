@@ -47,10 +47,14 @@ import com.api.util.assistants.VerifyException;
  * <li>Path/Location: The relative path where the media files live on the
  * server. Alternatively, this parameter could serve as the full path to where
  * the media files live and ignores server_name, share_name, and root_path
- * parameters. This parameter is required.</li>
- * <li>Import File Path: The path to the external file containing the media
- * metadata to import into the system. All other paramters are ignored. This
- * parameter is required.</li>
+ * parameters. This parameter is required. When this parameter is used, the the
+ * actual input file (<i>data/video_batch_import.txt</i>) is expected to live
+ * relative to this location.
+ * <li>Import File Path: The full path to the external import file containing
+ * the media metadata to import into the system. The parameter must include the
+ * actual name of the actual import file containing the video metadata to import
+ * into the system. All other paramters are ignored. This parameter is required.
+ * </li>
  * </ol>
  * 
  * @author roy.terrell
@@ -125,11 +129,12 @@ public class VideoMetadataBatchImportApiHandler extends
             parms.setShareName(req.getCriteria().getAudioBatchImportCriteria().getShareName());
             parms.setRootPath(req.getCriteria().getAudioBatchImportCriteria().getRootPath());
 
-            // Required. Path can be full (ignore the previous parms, or can be
-            // relative to the previous parms
+            // Required. Path that points to the acutal video files and their
+            // respective .jpg's. Can be a full path (ignore the previous parms)
+            // or can be relative to the previous parms
             parms.setPath(req.getCriteria().getAudioBatchImportCriteria().getLocation());
-            // Required. Points to the file containing the metatdata for each
-            // video file.
+            // Required. Points to the import file containing the metatdata for
+            // each video file.
             parms.setImportFilePath(req.getCriteria().getAudioBatchImportCriteria().getImportFilePath());
 
             int rc = 0;

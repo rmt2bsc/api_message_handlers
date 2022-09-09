@@ -64,7 +64,7 @@ public class AudioBatchImportMessageHandlerTest extends BaseMediaMessageHandlerT
         super.setUp();
         mockApi = Mockito.mock(AvBatchFileProcessorApi.class);
         PowerMockito.mockStatic(AvBatchFileFactory.class);
-        when(AvBatchFileFactory.createRemoteAudioBatchImportApiInstance(isA(AvBatchImportParameters.class))).thenReturn(mockApi);
+        when(AvBatchFileFactory.createFtpAudioBatchImportApiProcessorInstance(isA(AvBatchImportParameters.class))).thenReturn(mockApi);
         doNothing().when(this.mockApi).close();
         return;
     }
