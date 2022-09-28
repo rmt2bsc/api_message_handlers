@@ -22,39 +22,39 @@
       <artifactId>amh-core</artifactId>
       <version>1.0-SNAPSHOT</version>
       <scope>compile</scope>
-    </dependency>
+      </dependency>
 		<dependency>
-				<groupId>org.rmt2.framework</groupId>
-				<artifactId>fw-core</artifactId>
-			</dependency>
-			<dependency>
-				<groupId>org.rmt2.framework</groupId>
-				<artifactId>fw-messaging</artifactId>
-			</dependency>
-			<dependency>
-				<groupId>org.rmt2.messaging</groupId>
-				<artifactId>service-message-dto-model</artifactId>
-			</dependency>
-			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.mockito</groupId>
-				<artifactId>mockito-all</artifactId>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.powermock</groupId>
-				<artifactId>powermock-api-mockito</artifactId>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.powermock</groupId>
-				<artifactId>powermock-module-junit4</artifactId>
-				<scope>test</scope>
-			</dependency>
+			<groupId>org.rmt2.framework</groupId>
+			<artifactId>fw-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.rmt2.framework</groupId>
+			<artifactId>fw-messaging</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.rmt2.messaging</groupId>
+			<artifactId>service-message-dto-model</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-all</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-api-mockito</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-module-junit4</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
