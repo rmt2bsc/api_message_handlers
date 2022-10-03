@@ -160,7 +160,7 @@ public class UserDeleteMessageHandlerTest extends BaseAuthenticationMessageHandl
         AuthenticationResponse actualRepsonse =
                 (AuthenticationResponse) jaxb.unMarshalMessage(results.getPayload().toString());
         Assert.assertEquals(0, actualRepsonse.getReplyStatus().getRecordCount().intValue());
-        Assert.assertEquals(MessagingConstants.RETURN_CODE_SUCCESS, actualRepsonse.getReplyStatus().getReturnCode().intValue());
+        Assert.assertEquals(MessagingConstants.RETURN_CODE_FAILURE, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals(UserMessageHandlerConst.MESSAGE_DELETE_ERROR, actualRepsonse.getReplyStatus()
                 .getMessage());

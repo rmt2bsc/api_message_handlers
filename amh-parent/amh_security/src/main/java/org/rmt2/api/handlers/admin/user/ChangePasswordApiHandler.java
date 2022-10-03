@@ -54,6 +54,7 @@ public class ChangePasswordApiHandler extends UserApiHandler {
             api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e);
+            this.rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             this.rs.setMessage(UserMessageHandlerConst.MESSAGE_CHANGE_PASSWORD_ERROR);
             this.rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             this.rs.setExtMessage(e.getMessage());

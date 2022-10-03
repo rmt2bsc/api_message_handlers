@@ -9,6 +9,7 @@ import org.dto.adapter.orm.Rmt2OrmDtoFactory;
 import org.modules.users.UserApiException;
 import org.rmt2.api.handlers.AuthenticationMessageHandlerConst;
 import org.rmt2.constants.ApiTransactionCodes;
+import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.AuthenticationRequest;
 
 import com.InvalidDataException;
@@ -83,6 +84,7 @@ public class UserUpdateApiHandler extends UserApiHandler {
             this.api.commitTrans();
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e);
+            this.rs.setReturnCode(MessagingConstants.RETURN_CODE_FAILURE);
             this.rs.setMessage(UserMessageHandlerConst.MESSAGE_UPDATE_ERROR);
             this.rs.setExtMessage(e.getMessage());
             this.api.rollbackTrans();
