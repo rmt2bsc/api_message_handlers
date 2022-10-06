@@ -21,6 +21,9 @@ public class UserMessageHandlerConst {
 
     public static final String MESSAGE_MISSING_USER_SECTION = "User section is required for create/update/delete operations";
     public static final String MESSAGE_MISSING_USER_CRITERIA_SECTION = "User criteria section is required for query operations";
+
+    public static final String PASSWORD_REDACTED = "**********";
+
     /**
      * 
      */

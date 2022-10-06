@@ -64,6 +64,12 @@ public class ChangePasswordApiHandler extends UserApiHandler {
             List<UserDto> list = new ArrayList<>();
             list.add(dto);
             this.jaxbObj = UserJaxbDtoFactory.createJaxbInstance(list);
+
+            // Redact the password since it comes back as the raw value the user
+            // entered.
+            if (this.jaxbObj.size() == 1) {
+                this.jaxbObj.get(0).setPassword(UserMessageHandlerConst.PASSWORD_REDACTED);
+            }
             api.close();
         }
         return;
