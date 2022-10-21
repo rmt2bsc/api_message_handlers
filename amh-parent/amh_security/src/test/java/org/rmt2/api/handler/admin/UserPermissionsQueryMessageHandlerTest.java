@@ -115,7 +115,14 @@ public class UserPermissionsQueryMessageHandlerTest extends BaseAuthenticationMe
             when(this.mockUserAppRoleApi.getAssignedRoles(isA(CategoryDto.class)))
                     .thenReturn(SecurityMockDtoData.createVwUserAppRolesMockData());
         } catch (SecurityModuleException e) {
-            Assert.fail("Unable to setup mock stub for fetching user application role record");
+            Assert.fail("Unable to setup mock stub for fetching user granted application role record");
+        }
+
+        try {
+            when(this.mockUserAppRoleApi.getRevokedRoles(isA(CategoryDto.class)))
+                    .thenReturn(SecurityMockDtoData.createVwUserAppRolesMockData());
+        } catch (SecurityModuleException e) {
+            Assert.fail("Unable to setup mock stub for fetching user revoked application role record");
         }
         
         MessageHandlerResults results = null;
@@ -151,6 +158,13 @@ public class UserPermissionsQueryMessageHandlerTest extends BaseAuthenticationMe
             Assert.assertEquals(2, a.getGrantedAppRoles().getUserAppRole().size());
             for (int ndx2 = 0; ndx2 < a.getGrantedAppRoles().getUserAppRole().size(); ndx2++) {
                 UserAppRoleType uart = a.getGrantedAppRoles().getUserAppRole().get(ndx2);
+                Assert.assertEquals(SecurityMockOrmDataFactory.TEST_USER_ID + uart.getAppRoleInfo().getAppInfo().getAppId()
+                        + uart.getAppRoleInfo().getRoleInfo().getRoleId(), uart.getUserAppRoleId(), 0);
+            }
+
+            Assert.assertEquals(2, a.getRevokedAppRoles().getUserAppRole().size());
+            for (int ndx2 = 0; ndx2 < a.getRevokedAppRoles().getUserAppRole().size(); ndx2++) {
+                UserAppRoleType uart = a.getRevokedAppRoles().getUserAppRole().get(ndx2);
                 Assert.assertEquals(SecurityMockOrmDataFactory.TEST_USER_ID + uart.getAppRoleInfo().getAppInfo().getAppId()
                         + uart.getAppRoleInfo().getRoleInfo().getRoleId(), uart.getUserAppRoleId(), 0);
             }

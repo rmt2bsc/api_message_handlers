@@ -276,6 +276,48 @@ public class UserJaxbDtoFactory extends RMT2Base {
         }
         return list;
     }
+    
+    /**
+     * Creates a List of UserType using a valid List of UserDto DTO objects
+     * containing the user group data.
+     * 
+     * @param users
+     *            List of {@link UserDto}
+     * @param grantedAppRolesMap
+     *            A Map of {@link CategoryDto} keyed by Integer representing the
+     *            user's granted permissions
+     * @param revokedAppRolesMap
+     *            A Map of {@link CategoryDto} keyed by Integer representing the
+     *            user's revokded permissions.
+     * @return a List of {@link UserType}
+     */
+    public static final List<UserType> createJaxbInstance(List<UserDto> results,
+            Map<Integer, List<CategoryDto>> grantedAppRolesMap, Map<Integer, List<CategoryDto>> revokedAppRolesMap) {
+
+        List<UserType> list = new ArrayList<>();
+        ObjectFactory f = new ObjectFactory();
+        for (UserDto item : results) {
+            UserType ut = UserJaxbDtoFactory.createJaxbInstance(item);
+            if (grantedAppRolesMap != null) {
+                List<CategoryDto> grantedAppRoles = grantedAppRolesMap.get(item.getLoginUid());
+                if (grantedAppRoles != null) {
+                    UserAppRolesType uart = f.createUserAppRolesType();
+                    ut.setGrantedAppRoles(uart);
+                    ut.getGrantedAppRoles().getUserAppRole().addAll(UserJaxbDtoFactory.createJaxbListInstance(grantedAppRoles));
+                }
+            }
+            if (revokedAppRolesMap != null) {
+                List<CategoryDto> revokedAppRoles = revokedAppRolesMap.get(item.getLoginUid());
+                if (revokedAppRoles != null) {
+                    UserAppRolesType uart = f.createUserAppRolesType();
+                    ut.setRevokedAppRoles(uart);
+                    ut.getRevokedAppRoles().getUserAppRole().addAll(UserJaxbDtoFactory.createJaxbListInstance(revokedAppRoles));
+                }
+            }
+            list.add(ut);
+        }
+        return list;
+    }
 
     /**
      * 
@@ -367,6 +409,7 @@ public class UserJaxbDtoFactory extends RMT2Base {
                 .withApplication(at)
                 .withRole(rt)
                 .withCode(dtoObj.getAppRoleCode())
+                .withName(dtoObj.getAppRoleName())
                 .build();
 
         UserAppRoleType uart = UserAppRoleTypeBuilder.Builder.create()

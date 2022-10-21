@@ -54,12 +54,12 @@ public class UserPermissionsQueryApiHandler extends UserAppRoleApiHandler {
      */
     @Override
     protected void processTransactionCode() {
-        CategoryDto dto = UserJaxbDtoFactory.createDtoInstance(this.requestObj.getCriteria().getUserAppRolesCriteria());
+        CategoryDto userAppRolesCriteriaDto = UserJaxbDtoFactory.createDtoInstance(this.requestObj.getCriteria().getUserAppRolesCriteria());
         List<UserDto> userList = null;
         UserApi userApi = UserApiFactory.createApiInstance();
         try {
             // call api
-            userList = userApi.getUser(dto);
+            userList = userApi.getUser(userAppRolesCriteriaDto);
             if (userList == null) {
                 this.rs.setMessage(UserMessageHandlerConst.MESSAGE_NOT_FOUND);
                 this.rs.setRecordCount(0);
@@ -68,12 +68,24 @@ public class UserPermissionsQueryApiHandler extends UserAppRoleApiHandler {
             else {
                 // Fetch each user's application/role and resource
                 // permissions
-                Map<Integer, List<CategoryDto>> userAppRolesMap = new HashMap<>();
+                Map<Integer, List<CategoryDto>> grantedAppRolesMap = new HashMap<>();
+                Map<Integer, List<CategoryDto>> revokedAppRolesMap = new HashMap<>();
                 for (UserDto user : userList) {
-                    CategoryDto userAppRoleCriteria = Rmt2OrmDtoFactory.getUserAppRoleDtoInstance(null, null);
-                    userAppRoleCriteria.setUsername(user.getUsername());
-                    List<CategoryDto> userAppRoles = this.api.getAssignedRoles(userAppRoleCriteria);
-                    userAppRolesMap.put(user.getLoginUid(), userAppRoles);
+
+                    // Get user's granted application roles
+                    CategoryDto grantedAppRoleCriteria = Rmt2OrmDtoFactory.getUserAppRoleDtoInstance(null, null);
+                    grantedAppRoleCriteria.setUsername(user.getUsername());
+                    grantedAppRoleCriteria.setApplicationId(userAppRolesCriteriaDto.getApplicationId());
+                    List<CategoryDto> userAppRoles = this.api.getAssignedRoles(grantedAppRoleCriteria);
+                    grantedAppRolesMap.put(user.getLoginUid(), userAppRoles);
+
+                    // Get application roles that have been revoked or
+                    // unassigned relative to the user
+                    CategoryDto revokedAppRoleCriteria = Rmt2OrmDtoFactory.getUserAppRoleDtoInstance(null, null);
+                    revokedAppRoleCriteria.setLoginUid(user.getLoginUid());
+                    revokedAppRoleCriteria.setApplicationId(userAppRolesCriteriaDto.getApplicationId());
+                    List<CategoryDto> revokedAppRoles = this.api.getRevokedRoles(revokedAppRoleCriteria);
+                    revokedAppRolesMap.put(user.getLoginUid(), revokedAppRoles);
                 }
 
                 this.rs.setMessage(UserMessageHandlerConst.MESSAGE_FOUND);
@@ -81,7 +93,7 @@ public class UserPermissionsQueryApiHandler extends UserAppRoleApiHandler {
                 
                 // Build the user JAXB object and attach all the user's
                 // application/role and resource permissions
-                this.jaxbObj = UserJaxbDtoFactory.createJaxbInstance(userList, userAppRolesMap);
+                this.jaxbObj = UserJaxbDtoFactory.createJaxbInstance(userList, grantedAppRolesMap, revokedAppRolesMap);
             }
         } catch (Exception e) {
             logger.error("Error occurred during API Message Handler operation, " + this.command, e);
