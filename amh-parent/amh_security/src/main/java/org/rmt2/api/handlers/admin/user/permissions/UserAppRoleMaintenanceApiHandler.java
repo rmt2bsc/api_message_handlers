@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.dto.ApplicationDto;
 import org.dto.CategoryDto;
 import org.dto.UserDto;
 import org.dto.adapter.orm.Rmt2OrmDtoFactory;
@@ -12,6 +13,7 @@ import org.modules.users.UserApi;
 import org.modules.users.UserApiFactory;
 import org.rmt2.api.ApiMessageHandlerConst;
 import org.rmt2.api.handlers.AuthenticationMessageHandlerConst;
+import org.rmt2.api.handlers.admin.application.ApplicationJaxbDtoFactory;
 import org.rmt2.api.handlers.admin.user.UserJaxbDtoFactory;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.jaxb.AuthenticationRequest;
@@ -57,8 +59,25 @@ public class UserAppRoleMaintenanceApiHandler extends UserAppRoleApiHandler {
     @Override
     protected void processTransactionCode() {
         UserDto dto = UserJaxbDtoFactory.createDtoInstance(this.requestObj.getProfile().getUserInfo().get(0));
-        CategoryDto userAppRoleDto = Rmt2OrmDtoFactory.getUserAppRoleDtoInstance(null);
+
+        // UI-12: Added logic to obtain the application ID that is associated
+        // with the user applicaltion roles
+        ApplicationDto appDto = ApplicationJaxbDtoFactory.createDtoInstance(this.requestObj.getProfile().getApplicationInfo()
+                .get(0));
+
+        // CategoryDto userAppRoleDto =
+        // Rmt2OrmDtoFactory.getUserAppRoleDtoInstance(null);
+
+        // UI-12: Changed logic to use VwUserAppRoles object to target the user
+        // application roles by username and application id.
+        CategoryDto userAppRoleDto = Rmt2OrmDtoFactory.getUserAppRoleDtoInstance(null, null); // use
+                                                                                              // VwUserAppRoles
         userAppRoleDto.setUsername(dto.getUsername());
+
+        // UI-12: Added logic to target all user application roles by
+        // application id.
+        userAppRoleDto.setApplicationId(appDto.getApplicationId());
+
         List<String> assignedAppRoleCodes = UserJaxbDtoFactory.createAppRoleCodeList(this.requestObj.getProfile().getUserInfo().get(0)
                 .getGrantedAppRoles());
         UserApi userApi = null;
