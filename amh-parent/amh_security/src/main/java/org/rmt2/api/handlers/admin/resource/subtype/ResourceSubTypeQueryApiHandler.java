@@ -53,7 +53,7 @@ public class ResourceSubTypeQueryApiHandler extends ResourcesInfoApiHandler {
         List<ResourceDto> list = null;
         try {
             // call api
-            list = api.getResourceSubType(dto);
+            list = api.getResourceSubTypeExt(dto);
             if (list == null) {
                 this.rs.setMessage(ResourceSubTypeMessageHandlerConst.MESSAGE_NOT_FOUND);
                 this.rs.setRecordCount(0);

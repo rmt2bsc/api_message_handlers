@@ -42,11 +42,14 @@ public class ResourceJaxbDtoFactory extends RMT2Base {
         if (jaxbObj.getUid() != null) {
             dto.setUid(jaxbObj.getUid());
         }
-        if (jaxbObj.getTypeId() != null) {
-            dto.setTypeId(jaxbObj.getTypeId());
+        if (jaxbObj.getTypeInfo() != null) {
+            dto.setTypeId(jaxbObj.getTypeInfo().getUid());
+            dto.setTypeDescription(jaxbObj.getTypeInfo().getDescription());
         }
-        if (jaxbObj.getSubtypeId() != null) {
-            dto.setSubTypeId(jaxbObj.getSubtypeId());
+        if (jaxbObj.getSubtypeInfo() != null) {
+            dto.setSubTypeId(jaxbObj.getSubtypeInfo().getUid());
+            dto.setSubTypeName(jaxbObj.getSubtypeInfo().getCode());
+            dto.setSubTypeDescription(jaxbObj.getSubtypeInfo().getDescription());
         }
         dto.setName(jaxbObj.getCode());
         dto.setDescription(jaxbObj.getDescription());
@@ -91,8 +94,9 @@ public class ResourceJaxbDtoFactory extends RMT2Base {
         if (jaxbObj.getUid() != null) {
             dto.setSubTypeId(jaxbObj.getUid());
         }
-        if (jaxbObj.getResourceTypeId() != null) {
-            dto.setTypeId(jaxbObj.getResourceTypeId());
+        if (jaxbObj.getTypeInfo() != null) {
+            dto.setTypeId(jaxbObj.getTypeInfo().getUid());
+            dto.setTypeDescription(jaxbObj.getTypeInfo().getDescription());
         }
         dto.setSubTypeName(jaxbObj.getCode());
         dto.setSubTypeDescription(jaxbObj.getDescription());
@@ -130,12 +134,24 @@ public class ResourceJaxbDtoFactory extends RMT2Base {
         if (dto == null) {
             return null;
         }
+
+        ResourcetypeType rtt = ResourcetypeTypeBuilder.Builder.create()
+                .withTypeId(dto.getTypeId())
+                .withDescription(dto.getTypeDescription())
+                .build();
+
+        ResourcesubtypeType rst = ResourceSubtypeTypeBuilder.Builder.create()
+                .withSubTypeId(dto.getSubTypeId())
+                .withName(dto.getSubTypeName())
+                .withDescription(dto.getSubTypeDescription())
+                .build();
+
         ResourceType obj = ResourceTypeBuilder.Builder.create()
                 .withResourceId(dto.getUid())
                 .withName(dto.getName())
                 .withDescription(dto.getDescription())
-                .withTypeId(dto.getTypeId())
-                .withSubTypeId(dto.getSubTypeId())
+                .withType(rtt)
+                .withSubType(rst)
                 .withSecuredFlag(dto.getSecured())
                 .withUrl(dto.getRequestUrl())
                 .withHost(dto.getHost())
@@ -155,9 +171,15 @@ public class ResourceJaxbDtoFactory extends RMT2Base {
         if (dto == null) {
             return null;
         }
+
+        ResourcetypeType rtt = ResourcetypeTypeBuilder.Builder.create()
+                .withTypeId(dto.getTypeId())
+                .withDescription(dto.getTypeDescription())
+                .build();
+
         ResourcesubtypeType obj = ResourceSubtypeTypeBuilder.Builder.create()
                 .withSubTypeId(dto.getSubTypeId())
-                .withTypeId(dto.getTypeId())
+                .withType(rtt)
                 .withName(dto.getSubTypeName())
                 .withDescription(dto.getSubTypeDescription())
                 .build();

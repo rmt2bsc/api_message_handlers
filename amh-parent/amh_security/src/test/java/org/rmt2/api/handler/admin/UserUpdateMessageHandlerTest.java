@@ -121,7 +121,7 @@ public class UserUpdateMessageHandlerTest extends BaseAuthenticationMessageHandl
         for (int ndx = 0; ndx < actualRepsonse.getProfile().getUserInfo().size(); ndx++) {
             UserType a = actualRepsonse.getProfile().getUserInfo().get(ndx);
             Assert.assertNotNull(a.getLoginId());
-            Assert.assertEquals(SecurityMockOrmDataFactory.TEST_USER_ID, a.getLoginId().intValue());
+            Assert.assertEquals(SecurityMockOrmDataFactory.TEST_USER_ID, a.getLoginId());
         }
     }
     

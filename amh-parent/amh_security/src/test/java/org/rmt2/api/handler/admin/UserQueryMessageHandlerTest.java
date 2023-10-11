@@ -115,7 +115,7 @@ public class UserQueryMessageHandlerTest extends BaseAuthenticationMessageHandle
         
         for (int ndx = 0; ndx < actualRepsonse.getProfile().getUserInfo().size(); ndx++) {
             UserType a = actualRepsonse.getProfile().getUserInfo().get(ndx);
-            Assert.assertEquals(SecurityMockOrmDataFactory.TEST_USER_ID + ndx, a.getLoginId().intValue(), 0);
+            Assert.assertEquals(SecurityMockOrmDataFactory.TEST_USER_ID + ndx, a.getLoginId(), 0);
         }
     }
     

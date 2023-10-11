@@ -439,24 +439,34 @@ public class SecurityMockDtoData {
         return list;
     }
     
-    public static final List<VwResourceType> createVwResourceTypeMockData() {
-        List<VwResourceType> list = new ArrayList<>();
+    public static final List<ResourceDto> createVwResourceTypeMockData() {
+        List<ResourceDto> list = new ArrayList<>();
         int appRoleId = SecurityMockOrmDataFactory.TEST_RESOURCE_TYPE_ID;
+
         VwResourceType o = SecurityMockOrmDataFactory.createOrmVwResourceType(
                 appRoleId, SecurityMockOrmDataFactory.TEST_RESOURCE_SUBTYPE_ID);
-        list.add(o);
+        ResourceDto d = Rmt2OrmDtoFactory.getVmResourceTypeDtoInstance(o);
+        list.add(d);
+
         o = SecurityMockOrmDataFactory.createOrmVwResourceType(++appRoleId,
                 SecurityMockOrmDataFactory.TEST_RESOURCE_SUBTYPE_ID);
-        list.add(o);
+        d = Rmt2OrmDtoFactory.getVmResourceTypeDtoInstance(o);
+        list.add(d);
+
         o = SecurityMockOrmDataFactory.createOrmVwResourceType(++appRoleId,
                 SecurityMockOrmDataFactory.TEST_RESOURCE_SUBTYPE_ID);
-        list.add(o);
+        d = Rmt2OrmDtoFactory.getVmResourceTypeDtoInstance(o);
+        list.add(d);
+
         o = SecurityMockOrmDataFactory.createOrmVwResourceType(++appRoleId,
                 SecurityMockOrmDataFactory.TEST_RESOURCE_SUBTYPE_ID);
-        list.add(o);
+        d = Rmt2OrmDtoFactory.getVmResourceTypeDtoInstance(o);
+        list.add(d);
+
         o = SecurityMockOrmDataFactory.createOrmVwResourceType(++appRoleId,
                 SecurityMockOrmDataFactory.TEST_RESOURCE_SUBTYPE_ID);
-        list.add(o);
+        d = Rmt2OrmDtoFactory.getVmResourceTypeDtoInstance(o);
+        list.add(d);
         
         return list;
     }

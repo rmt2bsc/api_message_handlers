@@ -119,7 +119,7 @@ public class UserLogoutMessageHandlerTest extends BaseAuthenticationMessageHandl
                 ApiMessageHandlerConst.MSG_PLACEHOLDER2);
         Assert.assertEquals(successMsg, actualRepsonse.getReplyStatus().getMessage());
 
-        Assert.assertNull(u.getLoginId());
+        Assert.assertEquals(0, u.getLoginId());
         Assert.assertEquals(u.getUserName(), "test_username");
         Assert.assertEquals(TOTAL_LOGONS, u.getTotalLogons(), 0);
     }

@@ -12,6 +12,7 @@
     <profile>
         <application_access_info>
             <user_info>
+                <user_login>10</user_login>
                 <user_name>test_username</user_name>
                 <password>kfd93939dk39</password>
             </user_info>

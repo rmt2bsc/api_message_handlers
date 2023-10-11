@@ -91,8 +91,8 @@ public class ResourceSubTypeQueryMessageHandlerTest extends BaseAuthenticationMe
         String request = RMT2File.getFileContentsAsString("xml/admin/resource/subtype/ResourceSubTypeQueryRequest.xml");
 
         try {
-            when(this.mockApi.getResourceSubType(isA(ResourceDto.class)))
-                    .thenReturn(SecurityMockDtoData.createUserResourceSubtypeMockData());
+            when(this.mockApi.getResourceSubTypeExt(isA(ResourceDto.class)))
+                    .thenReturn(SecurityMockDtoData.createVwResourceTypeMockData());
         } catch (ResourceRegistryApiException e) {
             Assert.fail("Unable to setup mock stub for fetching resource sub type record");
         }
@@ -121,7 +121,7 @@ public class ResourceSubTypeQueryMessageHandlerTest extends BaseAuthenticationMe
         
         for (int ndx = 0; ndx < actualRepsonse.getProfile().getResourcesInfo().getResourcesubtype().size(); ndx++) {
             ResourcesubtypeType a = actualRepsonse.getProfile().getResourcesInfo().getResourcesubtype().get(ndx);
-            Assert.assertEquals(SecurityMockOrmDataFactory.TEST_RESOURCE_SUBTYPE_ID + ndx, a.getUid(), 0);
+            Assert.assertEquals(SecurityMockOrmDataFactory.TEST_RESOURCE_TYPE_ID + ndx, a.getTypeInfo().getUid(), 0);
         }
     }
     
@@ -130,7 +130,7 @@ public class ResourceSubTypeQueryMessageHandlerTest extends BaseAuthenticationMe
         String request = RMT2File.getFileContentsAsString("xml/admin/resource/subtype/ResourceSubTypeQueryRequest.xml");
 
         try {
-            when(this.mockApi.getResourceSubType(isA(ResourceDto.class))).thenReturn(null);
+            when(this.mockApi.getResourceSubTypeExt(isA(ResourceDto.class))).thenReturn(null);
         } catch (ResourceRegistryApiException e) {
             Assert.fail("Unable to setup mock stub for fetching resource type record");
         }
@@ -159,7 +159,8 @@ public class ResourceSubTypeQueryMessageHandlerTest extends BaseAuthenticationMe
     public void testError_API_Error() {
         String request = RMT2File.getFileContentsAsString("xml/admin/resource/subtype/ResourceSubTypeQueryRequest.xml");
         try {
-            when(this.mockApi.getResourceSubType(isA(ResourceDto.class))).thenThrow(new ResourceRegistryApiException(API_ERROR));
+            when(this.mockApi.getResourceSubTypeExt(isA(ResourceDto.class))).thenThrow(
+                    new ResourceRegistryApiException(API_ERROR));
         } catch (ResourceRegistryApiException e) {
             Assert.fail("Unable to setup mock stub for fetching resource sub type record");
         }

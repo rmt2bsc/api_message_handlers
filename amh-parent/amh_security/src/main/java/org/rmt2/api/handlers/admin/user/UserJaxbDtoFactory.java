@@ -130,9 +130,7 @@ public class UserJaxbDtoFactory extends RMT2Base {
             return null;
         }
         UserDto dto = Rmt2OrmDtoFactory.getNewUserInstance();
-        if (jaxbObj.getLoginId() != null) {
-            dto.setLoginUid(jaxbObj.getLoginId());
-        }
+        dto.setLoginUid(jaxbObj.getLoginId());
 
         if (jaxbObj.getGroupInfo() != null && jaxbObj.getGroupInfo().getGrpId() != null) {
             dto.setGroupId(jaxbObj.getGroupInfo().getGrpId());
