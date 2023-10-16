@@ -180,6 +180,9 @@ public class AuthenticationAdminJaxbDtoFactory extends RMT2Base {
         if (jaxbObj.getRsrcSubtypeId() != null) {
             dto.setSubTypeId(jaxbObj.getRsrcSubtypeId());
         }
+        if (jaxbObj.getRsrcTypeId() != null) {
+            dto.setTypeId(jaxbObj.getRsrcTypeId());
+        }
         dto.setSubTypeName(jaxbObj.getRsrcSubtypeName());
         dto.setSubTypeDescription(jaxbObj.getRsrcSubtypeDescription());
         return dto;
