@@ -392,4 +392,136 @@ class BusinessContactCriteriaJaxbAdapter extends DefaultAddressAdapter implement
         return this.criteria.getState();
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.dto.BusinessContactDto#setEntityTypeGrpId(int)
+     */
+    @Override
+    public void setEntityTypeGrpId(int value) {
+        // TODO Auto-generated method stub
+
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.dto.BusinessContactDto#getEntityTypeGrpId()
+     */
+    @Override
+    public int getEntityTypeGrpId() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.dto.BusinessContactDto#setEntityTypeShortdesc(java.lang.String)
+     */
+    @Override
+    public void setEntityTypeShortdesc(String value) {
+        // TODO Auto-generated method stub
+
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.dto.BusinessContactDto#getEntityTypeShortdesc()
+     */
+    @Override
+    public String getEntityTypeShortdesc() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.dto.BusinessContactDto#setEntityTypeLongdesc(java.lang.String)
+     */
+    @Override
+    public void setEntityTypeLongdesc(String value) {
+        // TODO Auto-generated method stub
+
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.dto.BusinessContactDto#getEntityTypeLongtdesc()
+     */
+    @Override
+    public String getEntityTypeLongtdesc() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.dto.BusinessContactDto#setServTypeGrpId(int)
+     */
+    @Override
+    public void setServTypeGrpId(int value) {
+        // TODO Auto-generated method stub
+
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.dto.BusinessContactDto#getServTypeGrpId()
+     */
+    @Override
+    public int getServTypeGrpId() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.dto.BusinessContactDto#setServTypeShortdesc(java.lang.String)
+     */
+    @Override
+    public void setServTypeShortdesc(String value) {
+        // TODO Auto-generated method stub
+
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.dto.BusinessContactDto#getServTypeShortdesc()
+     */
+    @Override
+    public String getServTypeShortdesc() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.dto.BusinessContactDto#setServTypeLongdesc(java.lang.String)
+     */
+    @Override
+    public void setServTypeLongdesc(String value) {
+        // TODO Auto-generated method stub
+
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.dto.BusinessContactDto#getServTypeLongtdesc()
+     */
+    @Override
+    public String getServTypeLongtdesc() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

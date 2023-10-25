@@ -72,9 +72,15 @@ class BusinessContactJaxbAdapter extends AddressJaxbAdapter implements BusinessC
      */
     @Override
     public void setEntityTypeId(int value) {
-        CodeDetailType cdt = this.f.createCodeDetailType();
+        CodeDetailType cdt = null;
+        if (this.bus.getEntityType() == null) {
+            cdt = this.f.createCodeDetailType();
+            this.bus.setEntityType(cdt);
+        }
+        else {
+            cdt = this.bus.getEntityType();
+        }
         cdt.setCodeId(BigInteger.valueOf(value));
-        this.bus.setEntityType(cdt);
     }
 
     /*
@@ -97,9 +103,15 @@ class BusinessContactJaxbAdapter extends AddressJaxbAdapter implements BusinessC
      */
     @Override
     public void setServTypeId(int value) {
-        CodeDetailType cdt = this.f.createCodeDetailType();
+        CodeDetailType cdt = null;
+        if (this.bus.getServiceType() == null) {
+            cdt = this.f.createCodeDetailType();
+            this.bus.setServiceType(cdt);
+        }
+        else {
+            cdt = this.bus.getServiceType();
+        }
         cdt.setCodeId(BigInteger.valueOf(value));
-        this.bus.setServiceType(cdt);
     }
 
     /*
@@ -323,5 +335,139 @@ class BusinessContactJaxbAdapter extends AddressJaxbAdapter implements BusinessC
     @Override
     public List<Integer> getContactIdList() {
         return this.businessIdList;
+    }
+
+    /* (non-Javadoc)
+     * @see org.dto.BusinessContactDto#setEntityTypeGrpId(int)
+     */
+    @Override
+    public void setEntityTypeGrpId(int value) {
+        CodeDetailType cdt = this.getEntityTypeJaxbOject();
+        cdt.setGroupId(BigInteger.valueOf(value));
+    }
+
+    /* (non-Javadoc)
+     * @see org.dto.BusinessContactDto#getEntityTypeGrpId()
+     */
+    @Override
+    public int getEntityTypeGrpId() {
+        CodeDetailType cdt = this.getEntityTypeJaxbOject();
+        return cdt.getGroupId().intValue();
+    }
+
+    /* (non-Javadoc)
+     * @see org.dto.BusinessContactDto#setEntityTypeShortdesc(java.lang.String)
+     */
+    @Override
+    public void setEntityTypeShortdesc(String value) {
+        CodeDetailType cdt = this.getEntityTypeJaxbOject();
+        cdt.setShortdesc(value);
+    }
+
+    /* (non-Javadoc)
+     * @see org.dto.BusinessContactDto#getEntityTypeShortdesc()
+     */
+    @Override
+    public String getEntityTypeShortdesc() {
+        CodeDetailType cdt = this.getEntityTypeJaxbOject();
+        return cdt.getShortdesc();
+    }
+
+    /* (non-Javadoc)
+     * @see org.dto.BusinessContactDto#setEntityTypeLongdesc(java.lang.String)
+     */
+    @Override
+    public void setEntityTypeLongdesc(String value) {
+        CodeDetailType cdt = this.getEntityTypeJaxbOject();
+        cdt.setLongdesc(value);
+    }
+
+    /* (non-Javadoc)
+     * @see org.dto.BusinessContactDto#getEntityTypeLongtdesc()
+     */
+    @Override
+    public String getEntityTypeLongtdesc() {
+        CodeDetailType cdt = this.getEntityTypeJaxbOject();
+        return cdt.getLongdesc();
+    }
+
+    /* (non-Javadoc)
+     * @see org.dto.BusinessContactDto#setServTypeGrpId(int)
+     */
+    @Override
+    public void setServTypeGrpId(int value) {
+        CodeDetailType cdt = this.getServTypeJaxbOject();
+        cdt.setGroupId(BigInteger.valueOf(value));
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.dto.BusinessContactDto#getServTypeGrpId()
+     */
+    @Override
+    public int getServTypeGrpId() {
+        CodeDetailType cdt = this.getServTypeJaxbOject();
+        return cdt.getGroupId().intValue();
+    }
+
+    /* (non-Javadoc)
+     * @see org.dto.BusinessContactDto#setServTypeShortdesc(java.lang.String)
+     */
+    @Override
+    public void setServTypeShortdesc(String value) {
+        CodeDetailType cdt = this.getServTypeJaxbOject();
+        cdt.setShortdesc(value);
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.dto.BusinessContactDto#getServTypeShortdesc()
+     */
+    @Override
+    public String getServTypeShortdesc() {
+        CodeDetailType cdt = this.getServTypeJaxbOject();
+        return cdt.getShortdesc();
+    }
+
+    /* (non-Javadoc)
+     * @see org.dto.BusinessContactDto#setServTypeLongdesc(java.lang.String)
+     */
+    @Override
+    public void setServTypeLongdesc(String value) {
+        CodeDetailType cdt = this.getServTypeJaxbOject();
+        cdt.setLongdesc(value);
+    }
+
+    /* (non-Javadoc)
+     * @see org.dto.BusinessContactDto#getServTypeLongtdesc()
+     */
+    @Override
+    public String getServTypeLongtdesc() {
+        CodeDetailType cdt = this.getServTypeJaxbOject();
+        return cdt.getLongdesc();
+    }
+
+    private CodeDetailType getEntityTypeJaxbOject() {
+        CodeDetailType cdt = null;
+        if (this.bus.getEntityType() == null) {
+            cdt = this.f.createCodeDetailType();
+            this.bus.setEntityType(cdt);
+        }
+        else {
+            cdt = this.bus.getEntityType();
+        }
+        return cdt;
+    }
+
+    private CodeDetailType getServTypeJaxbOject() {
+        CodeDetailType cdt = null;
+        if (this.bus.getServiceType() == null) {
+            cdt = this.f.createCodeDetailType();
+            this.bus.setServiceType(cdt);
+        }
+        else {
+            cdt = this.bus.getServiceType();
+        }
+        return cdt;
     }
 }
