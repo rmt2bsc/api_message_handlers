@@ -9,6 +9,8 @@ import org.dto.DefaultAddressAdapter;
 import org.rmt2.jaxb.BusinessContactCriteria;
 import org.rmt2.jaxb.ObjectFactory;
 
+import com.api.util.RMT2Money;
+
 /**
  * Adapts a JAXB <i>BusinessContactCriteria</i> object to an
  * <i>BusinessContactDto</i>.
@@ -325,6 +327,69 @@ class BusinessContactCriteriaJaxbAdapter extends DefaultAddressAdapter implement
             intList.add(item.intValue());    
         }
         return intList;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.dto.DefaultAddressAdapter#setZip(int)
+     */
+    @Override
+    public void setZip(int value) {
+        this.criteria.setZipcode(String.valueOf(value));
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.dto.DefaultAddressAdapter#getZip()
+     */
+    @Override
+    public int getZip() {
+        if (this.criteria.getZipcode() != null && RMT2Money.isNumeric(this.criteria.getZipcode())) {
+            return Integer.valueOf(this.criteria.getZipcode());
+        }
+        return 0;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.dto.DefaultAddressAdapter#setCity(java.lang.String)
+     */
+    @Override
+    public void setCity(String value) {
+        this.criteria.setCity(value);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.dto.DefaultAddressAdapter#getCity()
+     */
+    @Override
+    public String getCity() {
+        return this.criteria.getCity();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.dto.DefaultAddressAdapter#setState(java.lang.String)
+     */
+    @Override
+    public void setState(String value) {
+        this.criteria.setState(value);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.dto.DefaultAddressAdapter#getState()
+     */
+    @Override
+    public String getState() {
+        return this.criteria.getState();
     }
 
 }
