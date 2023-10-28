@@ -214,7 +214,7 @@ class BusinessContactJaxbAdapter extends AddressJaxbAdapter implements BusinessC
      */
     @Override
     public void setContactExt(String value) {
-        return;
+        this.bus.setContactExt(value);
     }
 
     /*
@@ -224,7 +224,7 @@ class BusinessContactJaxbAdapter extends AddressJaxbAdapter implements BusinessC
      */
     @Override
     public String getContactExt() {
-        return null;
+        return this.bus.getContactExt();
     }
 
     /*
@@ -274,7 +274,7 @@ class BusinessContactJaxbAdapter extends AddressJaxbAdapter implements BusinessC
      */
     @Override
     public void setWebsite(String value) {
-        return;
+        this.bus.setWebsite(value);
     }
 
     /*
@@ -284,7 +284,7 @@ class BusinessContactJaxbAdapter extends AddressJaxbAdapter implements BusinessC
      */
     @Override
     public String getWebsite() {
-        return null;
+        return this.bus.getWebsite();
     }
 
     /*
