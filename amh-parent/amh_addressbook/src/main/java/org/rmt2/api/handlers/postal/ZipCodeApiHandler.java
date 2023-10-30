@@ -172,6 +172,9 @@ public class ZipCodeApiHandler extends AbstractJaxbMessageHandler<PostalRequest,
    private ZipcodeDto extractSelectionCriteria(ZipcodeCriteriaType criteria) {
        ZipcodeDto criteriaDto = Rmt2AddressBookDtoFactory.getNewZipCodeInstance();
        if (criteria != null) {
+            if (criteria.getZipId() != null) {
+                criteriaDto.setId(criteria.getZipId().intValue());
+            }
            if (criteria.getZipcode() != null) {
                criteriaDto.setZip(criteria.getZipcode().intValue());    
            }
