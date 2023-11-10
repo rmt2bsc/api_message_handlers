@@ -111,6 +111,9 @@ public class UpdateSalesOrderAutoInvoiceApiHandler extends SalesOrderApiHandler 
         // of sharing the API instance that was once contained in ancestor
         // class, SalesORderApiHandler.
         SalesApi api = SalesApiFactory.createApi();
+
+        // UI-37: Added for capturing the update user id
+        api.setApiUser(this.userId);
         try {
             SalesOrderDto salesOrderDto = SalesOrderJaxbDtoFactory.createSalesOrderHeaderDtoInstance(reqSalesOrder);
             List<SalesOrderItemDto> itemsDtoList = SalesOrderJaxbDtoFactory.createSalesOrderItemsDtoInstance(reqSalesOrder.getSalesOrderItems()

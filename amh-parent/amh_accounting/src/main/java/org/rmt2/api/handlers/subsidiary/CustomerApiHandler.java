@@ -74,6 +74,9 @@ public class CustomerApiHandler extends
     public CustomerApiHandler() {
         super();
         this.api = SubsidiaryApiFactory.createCustomerApi(CommonAccountingConst.APP_NAME);
+
+        // UI-37: Added for capturing the update user id
+        this.transApi = this.api;
         this.jaxbObjFactory = new ObjectFactory();
         this.responseObj = jaxbObjFactory.createAccountingTransactionResponse();
         logger.info(CustomerApiHandler.class.getName() + " was instantiated successfully");

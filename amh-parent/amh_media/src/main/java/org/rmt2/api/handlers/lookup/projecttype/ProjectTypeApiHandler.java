@@ -97,6 +97,10 @@ public class ProjectTypeApiHandler extends
                     .getAudioVideoCriteria());
             
             AudioVideoApi api = AudioVideoFactory.createApi();
+
+            // UI-37: Added for capturing the update user id
+            api.setApiUser(this.userId);
+
             List<ProjectTypeDto> dtoList = api.getProjectType(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage(ProjectTypeApiHandlerConst.MESSAGE_NOT_FOUND);

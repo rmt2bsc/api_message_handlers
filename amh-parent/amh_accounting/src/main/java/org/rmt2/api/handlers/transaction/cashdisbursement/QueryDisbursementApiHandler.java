@@ -108,6 +108,9 @@ public class QueryDisbursementApiHandler extends XactApiHandler {
         DisbursementsApi api = null;
 		try {
 			api = DisbursementsApiFactory.createApi();
+
+            // UI-37: Added for capturing the update user id
+            api.setApiUser(this.userId);
 			
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
@@ -177,6 +180,9 @@ public class QueryDisbursementApiHandler extends XactApiHandler {
 		DisbursementsApi api = null;
 		try {
 			api = DisbursementsApiFactory.createApi();
+
+            // UI-37: Added for capturing the update user id
+            this.transApi = api;
 
 			for (XactDto item : results) {
 				List<XactTypeItemActivityDto> xactItems = null;

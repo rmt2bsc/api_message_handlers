@@ -84,6 +84,10 @@ public class ConsolidatedMediaFetchApiHandler extends AudioVideoApiHandler {
 
             // Make API call
             AudioVideoApi api = AudioVideoFactory.createApi();
+
+            // UI-37: Added for capturing the update user id
+            api.setApiUser(this.userId);
+
             List<VwArtistDto> dtoList = api.getConsolidatedArtist(criteriaDto);
             if (dtoList == null) {
                 this.rs.setMessage(ConsolidatedMediaApiHandlerConst.MESSAGE_NOT_FOUND);

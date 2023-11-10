@@ -46,6 +46,10 @@ public abstract class MediaContentApiHandler extends
     public MediaContentApiHandler() {
         super();
         this.api = DocumentContentApiFactory.createMediaContentApi();
+
+        // UI-37: Added for capturing the update user id
+        this.transApi = this.api;
+
         this.jaxbObjFactory = new ObjectFactory();
         this.responseObj = jaxbObjFactory.createMultimediaResponse();
         this.rs = new MessageHandlerCommonReplyStatus();

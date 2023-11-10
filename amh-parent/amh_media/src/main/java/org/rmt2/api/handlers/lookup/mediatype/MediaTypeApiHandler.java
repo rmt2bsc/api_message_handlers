@@ -97,6 +97,10 @@ public class MediaTypeApiHandler extends
                     .getAudioVideoCriteria());
             
             AudioVideoApi api = AudioVideoFactory.createApi();
+
+            // UI-37: Added for capturing the update user id
+            api.setApiUser(this.userId);
+
             List<MediaTypeDto> dtoList = api.getMediaType(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage(MediaTypeApiHandlerConst.MESSAGE_NOT_FOUND);

@@ -72,6 +72,10 @@ public class ProjectUpdateApiHandler extends ProjectApiHandler {
         // of sharing the API instance that was once contained in ancestor
         // class, ProjectApiHandler.
         this.api = ProjectAdminApiFactory.createApi(ProjectTrackerApiConst.APP_NAME);
+
+        // UI-37: Added for capturing the update user id
+        this.transApi = this.api;
+
         logger.info(ProjectUpdateApiHandler.class.getName() + " was instantiated successfully");
     }
 

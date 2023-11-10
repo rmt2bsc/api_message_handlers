@@ -129,6 +129,10 @@ public class AudioMetadataBatchImportApiHandler extends
             
             int rc = 0;
             AvBatchFileProcessorApi api = AvBatchFileFactory.createFtpAudioBatchImportApiProcessorInstance(parms);
+
+            // UI-37: Added for capturing the update user id
+            api.setApiUser(this.userId);
+
             rc = api.processBatch();
             b = this.buildBatchResults(api);
             rs.setMessage(BatchImportConst.MESSAGE_SUCCESS);

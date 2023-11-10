@@ -44,6 +44,10 @@ public class RoleDeleteApiHandler extends RoleApiHandler {
     protected void processTransactionCode() {
         CategoryDto dto = RoleJaxbDtoFactory.createDtoInstance(this.requestObj.getProfile().getRoleInfo().get(0));
         RoleApi api = RoleSecurityApiFactory.createRoleApi();
+
+        // UI-37: Added for capturing the update user id
+        api.setApiUser(this.userId);
+
         int rc = 0;
         try {
             // call api

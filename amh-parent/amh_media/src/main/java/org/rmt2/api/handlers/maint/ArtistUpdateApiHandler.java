@@ -88,6 +88,10 @@ public class ArtistUpdateApiHandler extends AudioVideoApiHandler {
 
             // Make API call
             AudioVideoApi api = AudioVideoFactory.createApi();
+
+            // UI-37: Added for capturing the update user id
+            api.setApiUser(this.userId);
+
             int rc = api.updateArtist(artistDto);
             String msg = null;
             int artistId = 0;

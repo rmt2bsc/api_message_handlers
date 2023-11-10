@@ -108,7 +108,11 @@ public class TimesheetSubmitApiHandler extends TimesheetApiHandler {
 
         // IS-71: Use local scoped API instance for the purpose of preventing memory leaks
         // caused by dangling API instances. 
-        this.api = TimesheetApiFactory.createApi(ProjectTrackerApiConst.APP_NAME);        
+        this.api = TimesheetApiFactory.createApi(ProjectTrackerApiConst.APP_NAME);
+
+        // UI-37: Added for capturing the update user id
+        this.api.setApiUser(this.userId);
+
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);

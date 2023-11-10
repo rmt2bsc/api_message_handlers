@@ -84,6 +84,10 @@ public class ClientUpdateApiHandler extends ClientApiHandler {
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
 
         ProjectAdminApi api = ProjectAdminApiFactory.createApi(ProjectTrackerApiConst.APP_NAME);
+
+        // UI-37: Added for capturing the update user id
+        api.setApiUser(this.userId);
+
         ContactsApi contactApi = ContactsApiFactory.createApi();
         try {
             // Set reply status

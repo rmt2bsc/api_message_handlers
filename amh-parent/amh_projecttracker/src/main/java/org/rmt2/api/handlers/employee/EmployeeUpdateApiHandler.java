@@ -99,6 +99,10 @@ public class EmployeeUpdateApiHandler extends EmployeeApiHandler {
         // IS-71: Use local scoped API instance for the purpose of preventing memory leaks
         // caused by dangling API instances. 
         EmployeeApi api = EmployeeApiFactory.createApi(ProjectTrackerApiConst.APP_NAME);
+
+        // UI-37: Added for capturing the update user id
+        api.setApiUser(this.userId);
+
         ContactsApi contactApi = ContactsApiFactory.createApi();
         try {
             // Set reply status

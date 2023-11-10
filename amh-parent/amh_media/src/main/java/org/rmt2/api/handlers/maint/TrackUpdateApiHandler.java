@@ -93,6 +93,10 @@ public class TrackUpdateApiHandler extends AudioVideoApiHandler {
 
             // Make API call
             AudioVideoApi api = AudioVideoFactory.createApi();
+
+            // UI-37: Added for capturing the update user id
+            api.setApiUser(this.userId);
+
             rc = api.updateTrack(criteriaDto);
             String msg = null;
             if (rc > 0) {

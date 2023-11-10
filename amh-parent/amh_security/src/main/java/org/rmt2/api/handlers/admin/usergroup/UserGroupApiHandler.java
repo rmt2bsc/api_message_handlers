@@ -49,6 +49,10 @@ public abstract class UserGroupApiHandler extends
         this.responseObj = jaxbObjFactory.createAuthenticationResponse();
         this.jaxbObj = null;
         this.api = UserApiFactory.createApiInstance();
+
+        // UI-37: Added for capturing the update user id
+        this.transApi = this.api;
+
         logger.info(UserGroupApiHandler.class.getName() + " was instantiated successfully");
     }
 

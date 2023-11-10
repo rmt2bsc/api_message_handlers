@@ -49,6 +49,10 @@ public class EmployeeTitleApiHandler extends
     public EmployeeTitleApiHandler() {
         super();
         this.api = EmployeeApiFactory.createApi(ProjectTrackerApiConst.APP_NAME);
+
+        // UI-37: Added for capturing the update user id
+        this.transApi = this.api;
+
         this.jaxbObjFactory = new ObjectFactory();
         this.responseObj = jaxbObjFactory.createProjectProfileResponse();
         logger.info(EmployeeTitleApiHandler.class.getName() + " was instantiated successfully");

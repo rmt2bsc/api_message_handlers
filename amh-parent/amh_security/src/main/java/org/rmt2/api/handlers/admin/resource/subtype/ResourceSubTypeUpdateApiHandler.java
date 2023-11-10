@@ -52,6 +52,10 @@ public class ResourceSubTypeUpdateApiHandler extends ResourcesInfoApiHandler {
                 .getResourcesubtype().get(0));
         boolean newRec = (dto.getSubTypeId() == 0);
         ResourceRegistryApi api = ResourceRegistryApiFactory.createWebServiceRegistryApiInstance();
+
+        // UI-37: Added for capturing the update user id
+        api.setApiUser(this.userId);
+
         int rc = 0;
         try {
             // call api

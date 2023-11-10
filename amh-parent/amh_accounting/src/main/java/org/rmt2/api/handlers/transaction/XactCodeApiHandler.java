@@ -55,6 +55,9 @@ public class XactCodeApiHandler extends
     public XactCodeApiHandler() {
         super();
         this.api = XactApiFactory.createDefaultXactApi();
+
+        // UI-37: Added for capturing the update user id
+        this.transApi = this.api;
         this.jaxbObjFactory = new ObjectFactory();
         this.responseObj = jaxbObjFactory.createAccountingTransactionResponse();
         logger.info(XactCodeApiHandler.class.getName() + " was instantiated successfully");

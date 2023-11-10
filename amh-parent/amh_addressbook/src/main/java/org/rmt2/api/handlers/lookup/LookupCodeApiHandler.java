@@ -62,6 +62,9 @@ public class LookupCodeApiHandler extends
         // IS-70: added logic to close DB connections to prevent memeoy leaks
         LookupDataApiFactory f = new LookupDataApiFactory();
         this.api = f.createApi(AddressBookConstants.APP_NAME);
+
+        // UI-37: Added for capturing the update user id
+        this.transApi = this.api;
         logger.info(LookupCodeApiHandler.class.getName() + " was instantiated successfully");
     }
 

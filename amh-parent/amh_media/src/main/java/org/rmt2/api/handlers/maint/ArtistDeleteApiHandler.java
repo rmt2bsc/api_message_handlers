@@ -85,6 +85,10 @@ public class ArtistDeleteApiHandler extends AudioVideoApiHandler {
 
             // Make API call
             AudioVideoApi api = AudioVideoFactory.createApi();
+
+            // UI-37: Added for capturing the update user id
+            api.setApiUser(this.userId);
+
             int rc = api.deleteArtist(artistDto);
             String msg = null;
             msg = RMT2String.replace(ArtistApiHandlerConst.MESSAGE_DELETE_SUCCESS, String.valueOf(rc),

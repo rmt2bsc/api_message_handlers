@@ -48,6 +48,9 @@ public abstract class UserAuthenticationApiHandler extends
         this.responseObj = jaxbObjFactory.createAuthenticationResponse();
         this.jaxbObj = null;
         this.api = AuthenticatorFactory.createApi();
+
+        // UI-37: Added for capturing the update user id
+        this.transApi = this.api;
         logger.info(UserAuthenticationApiHandler.class.getName() + " was instantiated successfully");
     }
 

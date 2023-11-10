@@ -49,6 +49,10 @@ public abstract class UserAppRoleApiHandler extends
         this.responseObj = jaxbObjFactory.createAuthenticationResponse();
         this.jaxbObj = null;
         this.api = RoleSecurityApiFactory.createUserAppRoleApi();
+
+        // UI-37: Added for capturing the update user id
+        this.transApi = this.api;
+
         logger.info(UserAppRoleApiHandler.class.getName() + " was instantiated successfully");
     }
 

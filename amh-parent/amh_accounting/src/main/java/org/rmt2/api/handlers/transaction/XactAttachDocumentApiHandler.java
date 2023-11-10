@@ -63,6 +63,9 @@ public class XactAttachDocumentApiHandler extends
     public XactAttachDocumentApiHandler() {
         super();
         this.api = XactApiFactory.createDefaultXactApi();
+
+        // UI-37: Added for capturing the update user id
+        this.transApi = this.api;
         this.jaxbObjFactory = new ObjectFactory();
         this.responseObj = jaxbObjFactory.createMediaApplicationLinkResponse();
         

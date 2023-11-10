@@ -70,6 +70,9 @@ public class ContactProfileApiHandler extends
         this.jaxbObjFactory = new ObjectFactory();
         this.responseObj = jaxbObjFactory.createAddressBookResponse();
         this.api = ContactsApiFactory.createApi();
+
+        // UI-37: Added for capturing the update user id
+        this.transApi = this.api;
         logger.info(ContactProfileApiHandler.class.getName() + " was instantiated successfully");
     }
 

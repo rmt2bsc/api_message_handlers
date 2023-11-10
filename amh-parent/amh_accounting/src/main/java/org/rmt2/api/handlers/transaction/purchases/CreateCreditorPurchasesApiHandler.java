@@ -114,6 +114,9 @@ public class CreateCreditorPurchasesApiHandler extends XactApiHandler {
         CreditorPurchasesApi api = null;
         try {
         	api = CreditorPurchasesApiFactory.createApi();
+
+            // UI-37: Added for capturing the update user id
+            api.setApiUser(this.userId);
         	
             // Initialize reply status properties
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);

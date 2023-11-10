@@ -51,6 +51,9 @@ public class ItemTypeApiHandler extends
         super();
         InventoryApiFactory f = new InventoryApiFactory();
         this.api = f.createApi(CommonAccountingConst.APP_NAME);
+
+        // UI-37: Added for capturing the update user id
+        this.transApi = this.api;
         this.jaxbObjFactory = new ObjectFactory();
         this.responseObj = jaxbObjFactory.createInventoryResponse();
         logger.info(ItemTypeApiHandler.class.getName() + " was instantiated successfully");

@@ -60,6 +60,10 @@ public abstract class AbstractTimesheetPrintApiHandler extends
     public AbstractTimesheetPrintApiHandler() {
         super();
         this.api = TimesheetApiFactory.createApi(ProjectTrackerApiConst.APP_NAME);
+
+        // UI-37: Added for capturing the update user id
+        this.transApi = this.api;
+
         this.jaxbObjFactory = new ObjectFactory();
         this.responseObj = jaxbObjFactory.createProjectProfileResponse();
         logger.info(TimesheetApiHandler.class.getName() + " was instantiated successfully");

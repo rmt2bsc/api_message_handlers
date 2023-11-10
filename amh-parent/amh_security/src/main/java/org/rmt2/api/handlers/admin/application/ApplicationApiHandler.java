@@ -48,6 +48,9 @@ public abstract class ApplicationApiHandler extends
     public ApplicationApiHandler() {
         super();
         this.api = AppApiFactory.createApi();
+
+        // UI-37: Added for capturing the update user id
+        this.transApi = this.api;
         this.jaxbObjFactory = new ObjectFactory();
         this.responseObj = jaxbObjFactory.createAuthenticationResponse();
         this.jaxbObj = null;

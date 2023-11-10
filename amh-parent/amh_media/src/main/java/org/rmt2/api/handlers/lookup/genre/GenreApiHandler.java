@@ -96,6 +96,10 @@ public class GenreApiHandler extends
             GenreDto criteriaDto = GenreJaxbDtoFactory.createGenreDtoInstance(req.getCriteria().getAudioVideoCriteria());
             
             AudioVideoApi api = AudioVideoFactory.createApi();
+
+            // UI-37: Added for capturing the update user id
+            api.setApiUser(this.userId);
+
             List<GenreDto> dtoList = api.getGenre(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage(GenreApiHandlerConst.MESSAGE_NOT_FOUND);

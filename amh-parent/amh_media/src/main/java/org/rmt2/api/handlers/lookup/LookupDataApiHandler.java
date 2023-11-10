@@ -109,6 +109,9 @@ public class LookupDataApiHandler extends
             
             AudioVideoApi api = AudioVideoFactory.createApi();
 
+            // UI-37: Added for capturing the update user id
+            api.setApiUser(this.userId);
+
             // Get Genre data
             List<GenreType> genreListJaxb = null;
             GenreDto genreCriteriaDto = Rmt2MediaDtoFactory.getAvGenreInstance(null);

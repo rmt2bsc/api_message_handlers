@@ -79,6 +79,10 @@ public class ArtistFetchApiHandler extends AudioVideoApiHandler {
 
             // Make API call
             AudioVideoApi api = AudioVideoFactory.createApi();
+
+            // UI-37: Added for capturing the update user id
+            api.setApiUser(this.userId);
+
             List<ArtistDto> dtoList = api.getArtist(criteriaDto);
             if (dtoList == null) {
                 this.rs.setMessage(ArtistApiHandlerConst.MESSAGE_NOT_FOUND);

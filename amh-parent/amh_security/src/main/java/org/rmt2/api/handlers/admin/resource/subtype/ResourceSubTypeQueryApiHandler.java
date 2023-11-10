@@ -50,6 +50,10 @@ public class ResourceSubTypeQueryApiHandler extends ResourcesInfoApiHandler {
         ResourceDto dto = AuthenticationAdminJaxbDtoFactory.createResourceSubTypeCriteriaDtoInstance(this.requestObj
                 .getCriteria().getResourceCriteria());
         ResourceRegistryApi api = ResourceRegistryApiFactory.createWebServiceRegistryApiInstance();
+
+        // UI-37: Added for capturing the update user id
+        api.setApiUser(this.userId);
+
         List<ResourceDto> list = null;
         try {
             // call api

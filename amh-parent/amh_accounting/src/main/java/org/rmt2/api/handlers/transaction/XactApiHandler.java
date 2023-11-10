@@ -145,6 +145,9 @@ public class XactApiHandler extends
         XactApi api = null;
         try {
         	api = XactApiFactory.createDefaultXactApi();
+
+            // UI-37: Added for capturing the update user id
+            this.transApi = api;
         	
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
@@ -206,6 +209,10 @@ public class XactApiHandler extends
         XactApi api = null;
         try {
         	api = XactApiFactory.createDefaultXactApi();
+
+            // UI-37: Added for capturing the update user id
+            this.transApi = api;
+
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
@@ -258,6 +265,9 @@ public class XactApiHandler extends
         XactApi api = null;
         try {
         	api = XactApiFactory.createDefaultXactApi();
+
+            // UI-37: Added for capturing the update user id
+            this.transApi = api;
         	
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
@@ -311,6 +321,9 @@ public class XactApiHandler extends
         XactApi api = null;
         try {
         	api = XactApiFactory.createDefaultXactApi();
+
+            // UI-37: Added for capturing the update user id
+            this.transApi = api;
         	
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);

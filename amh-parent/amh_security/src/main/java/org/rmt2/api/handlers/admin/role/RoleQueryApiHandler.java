@@ -51,6 +51,10 @@ public class RoleQueryApiHandler extends RoleApiHandler {
         UserAppRolesCriteriaType jaxbCriteria = this.requestObj.getCriteria().getUserAppRolesCriteria();
         CategoryDto criteriaDto = AuthenticationAdminJaxbDtoFactory.createRoleCriteriaDtoInstance(jaxbCriteria);
         RoleApi api = RoleSecurityApiFactory.createRoleApi();
+
+        // UI-37: Added for capturing the update user id
+        api.setApiUser(this.userId);
+
         List<CategoryDto> list = null;
         try {
             // call api

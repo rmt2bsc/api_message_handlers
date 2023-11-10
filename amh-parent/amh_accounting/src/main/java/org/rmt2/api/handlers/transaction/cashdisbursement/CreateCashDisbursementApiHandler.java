@@ -119,6 +119,9 @@ public class CreateCashDisbursementApiHandler extends XactApiHandler {
         DisbursementsApi api = null;
 		try {
 			api = DisbursementsApiFactory.createApi();
+
+            // UI-37: Added for capturing the update user id
+            api.setApiUser(this.userId);
 			
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
@@ -188,6 +191,9 @@ public class CreateCashDisbursementApiHandler extends XactApiHandler {
         DisbursementsApi api = null;
 		try {
 			api = DisbursementsApiFactory.createApi();
+
+            // UI-37: Added for capturing the update user id
+            this.transApi = api;
 			
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
@@ -257,6 +263,9 @@ public class CreateCashDisbursementApiHandler extends XactApiHandler {
         DisbursementsApi api = null;
 		try {
 			api = DisbursementsApiFactory.createApi();
+
+            // UI-37: Added for capturing the update user id
+            this.transApi = api;
 			
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);

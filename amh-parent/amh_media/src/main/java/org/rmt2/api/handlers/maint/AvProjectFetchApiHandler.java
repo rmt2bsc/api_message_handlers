@@ -81,6 +81,10 @@ public class AvProjectFetchApiHandler extends AudioVideoApiHandler {
 
             // Make API call
             AudioVideoApi api = AudioVideoFactory.createApi();
+
+            // UI-37: Added for capturing the update user id
+            api.setApiUser(this.userId);
+
             List<ProjectDto> dtoList = api.getProject(criteriaDto);
             if (dtoList == null) {
                 this.rs.setMessage(ArtistProjectApiHandlerConst.MESSAGE_NOT_FOUND);

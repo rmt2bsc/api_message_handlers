@@ -92,6 +92,10 @@ public class CancelSalesOrderApiHandler extends SalesOrderApiHandler {
         // of sharing the API instance that was once contained in ancestor
         // class, SalesORderApiHandler.
         SalesApi api = SalesApiFactory.createApi();
+
+        // UI-37: Added for capturing the update user id
+        api.setApiUser(this.userId);
+
         try {
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);

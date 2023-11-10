@@ -79,6 +79,13 @@ public class TrackFetchApiHandler extends AudioVideoApiHandler {
 
             // Make API call
             AudioVideoApi api = AudioVideoFactory.createApi();
+
+            // UI-37: Added for capturing the update user id
+            api.setApiUser(this.userId);
+
+            // UI-37: Added for capturing the update user id
+            api.setApiUser(this.userId);
+
             List<TracksDto> dtoList = api.getTracks(criteriaDto);
             if (dtoList == null) {
                 this.rs.setMessage(TrackApiHandlerConst.MESSAGE_NOT_FOUND);

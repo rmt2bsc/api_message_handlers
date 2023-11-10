@@ -60,6 +60,10 @@ public abstract class AudioVideoApiHandler extends
     public AudioVideoApiHandler() {
         super();
         this.api = AudioVideoFactory.createApi();
+
+        // UI-37: Added for capturing the update user id
+        this.transApi = this.api;
+
         this.jaxbObjFactory = new ObjectFactory();
         this.responseObj = jaxbObjFactory.createMultimediaResponse();
         this.rs = new MessageHandlerCommonReplyStatus();

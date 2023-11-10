@@ -80,6 +80,9 @@ public class ClientQueryApiHandler extends ClientApiHandler {
         // of sharing the API instance that was once contained in ancestor
         // class, SalesORderApiHandler.
         ProjectAdminApi api = ProjectAdminApiFactory.createApi(ProjectTrackerApiConst.APP_NAME);
+
+        // UI-37: Added for capturing the update user id
+        api.setApiUser(this.userId);
         try {
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);

@@ -104,6 +104,10 @@ public class RegionApiHandler extends AbstractJaxbMessageHandler<PostalRequest, 
             CountryRegionDto criteriaDto = this.extractSelectionCriteria(req.getPostalCriteria().getProvince());
             
             api = PostalApiFactory.createApi(AddressBookConstants.APP_NAME);
+
+            // UI-37: Added for capturing the update user id
+            api.setApiUser(this.userId);
+
             List<CountryRegionDto> dtoList = api.getCountryRegion(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage("No Region/State/Province data found!");

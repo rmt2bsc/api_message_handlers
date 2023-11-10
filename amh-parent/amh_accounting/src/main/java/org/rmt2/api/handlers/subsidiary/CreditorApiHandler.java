@@ -58,6 +58,9 @@ public class CreditorApiHandler extends
     public CreditorApiHandler() {
         super();
         this.api = SubsidiaryApiFactory.createCreditorApi(CommonAccountingConst.APP_NAME);
+
+        // UI-37: Added for capturing the update user id
+        this.transApi = this.api;
         this.jaxbObjFactory = new ObjectFactory();
         this.responseObj = jaxbObjFactory.createAccountingTransactionResponse();
         logger.info(CreditorApiHandler.class.getName() + " was instantiated successfully");

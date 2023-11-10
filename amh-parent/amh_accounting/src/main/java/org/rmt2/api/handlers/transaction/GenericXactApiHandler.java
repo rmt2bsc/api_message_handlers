@@ -59,6 +59,9 @@ public class GenericXactApiHandler extends
     public GenericXactApiHandler() {
         super();
         this.api = XactApiFactory.createDefaultXactApi();
+
+        // UI-37: Added for capturing the update user id
+        this.transApi = this.api;
         this.jaxbObjFactory = new ObjectFactory();
         this.responseObj = jaxbObjFactory.createAccountingTransactionResponse();
         
