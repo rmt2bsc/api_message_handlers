@@ -2,6 +2,7 @@ package org.rmt2.api.handlers.generalledger;
 
 import org.dto.AccountCategoryDto;
 import org.dto.AccountDto;
+import org.dto.AccountExtDto;
 import org.dto.AccountTypeDto;
 import org.dto.adapter.orm.account.generalledger.Rmt2AccountDtoFactory;
 import org.rmt2.jaxb.GlAccountType;
@@ -26,6 +27,45 @@ import com.RMT2Base;
  * 
  */
 public class GeneralLedgerJaxbDtoFactory extends RMT2Base {
+
+    /**
+     * Creates an instance of <i>AccountExtDto</i> using a valid
+     * <i>GlCriteriaType</i> JAXB object.
+     * 
+     * @param criteria
+     *            an instance of {@link GlCriteriaType}
+     * @return an instance of {@link AccountExtDto}
+     */
+    public static final AccountExtDto createExtGlAccountDtoCriteriaInstance(GlCriteriaType jaxbCriteria) {
+        if (jaxbCriteria == null) {
+            return null;
+        }
+        AccountExtDto dto = Rmt2AccountDtoFactory.createAccountExtInstance(null);
+        if (jaxbCriteria.getAcctId() != null) {
+            dto.setAcctId(jaxbCriteria.getAcctId().intValue());
+        }
+        if (jaxbCriteria.getAcctType() != null && jaxbCriteria.getAcctType().getAcctTypeId() != null) {
+            dto.setAcctTypeId(jaxbCriteria.getAcctType().getAcctTypeId().intValue());
+        }
+        if (jaxbCriteria.getAcctCatg() != null && jaxbCriteria.getAcctCatg().getAcctCatgId() != null) {
+            dto.setAcctCatgId(jaxbCriteria.getAcctCatg().getAcctCatgId().intValue());
+        }
+        if (jaxbCriteria.getBalanceType() != null && jaxbCriteria.getBalanceType().getAccountBaltypeId() != null) {
+            dto.setBalanceTypeId(jaxbCriteria.getBalanceType().getAccountBaltypeId().intValue());
+        }
+        dto.setAcctNo(jaxbCriteria.getAccountNo());
+        dto.setAcctCode(jaxbCriteria.getAccountCode());
+        dto.setAcctName(jaxbCriteria.getAccountName());
+        dto.setAcctDescription(jaxbCriteria.getAccountDescription());
+        if (jaxbCriteria.getAcctCatg() != null) {
+            dto.setAcctCatgDescription(jaxbCriteria.getAcctCatg().getDescription());
+        }
+        if (jaxbCriteria.getAcctType() != null) {
+            dto.setAcctTypeDescription(jaxbCriteria.getAcctType().getDescription());
+        }
+
+        return dto;
+    }
 
     /**
      * Creates an instance of <i>AccountDto</i> using a valid
@@ -91,6 +131,46 @@ public class GeneralLedgerJaxbDtoFactory extends RMT2Base {
         return dto;
     }
     
+    /**
+     * 
+     * @param dto
+     * @return
+     */
+    public static final GlAccountType createGlAccountJaxbInstance(AccountExtDto dto) {
+        RecordTrackingType rtt = RecordTrackingTypeBuilder.Builder.create()
+                .withDateCreated(dto.getDateCreated())
+                .withDateUpdate(dto.getDateUpdated())
+                .withUserId(dto.getUpdateUserId())
+                .withIpCreated(dto.getIpCreated())
+                .withIpUpdate(dto.getIpUpdated()).build();
+
+        GlAccounttypeType gatt = GlAccounttypeTypeBuilder.Builder.create()
+                .withAcctTypeId(dto.getAcctTypeId())
+                .withDescription(dto.getAcctTypeDescription())
+                .build();
+
+        GlAccountcatgType gact = GlAccountCategoryTypeBuilder.Builder.create()
+                .withAcctCatgId(dto.getAcctCatgId())
+                .withDescription(dto.getAcctCatgDescription())
+                .build();
+
+        GlBalancetypeType gabt = GlAccountBalanceTypeBuilder.Builder.create()
+                .withAcctBalanceTypeId(dto.getBalanceTypeId()).build();
+
+        GlAccountType jaxbObj = GlAccountTypeBuilder.Builder.create()
+                .withAcctId(dto.getAcctId())
+                .withAcctSeq(dto.getAcctSeq())
+                .withAccountCode(dto.getAcctCode())
+                .withAccountDescription(dto.getAcctDescription())
+                .withAccountName(dto.getAcctName())
+                .withAccountNumber(dto.getAcctNo())
+                .withAccountType(gatt)
+                .withAccountCategory(gact)
+                .withBalanceType(gabt)
+                .withRecordTrackingType(rtt).build();
+        return jaxbObj;
+    }
+
     /**
      * 
      * @param dto

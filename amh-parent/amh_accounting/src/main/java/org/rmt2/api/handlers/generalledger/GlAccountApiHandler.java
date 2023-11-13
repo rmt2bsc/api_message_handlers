@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.dto.AccountDto;
+import org.dto.AccountExtDto;
 import org.modules.CommonAccountingConst;
 import org.modules.generalledger.GeneralLedgerApiException;
 import org.modules.generalledger.GeneralLedgerApiFactory;
@@ -117,16 +118,16 @@ public class GlAccountApiHandler extends
             // Set reply status
             rs.setReturnStatus(MessagingConstants.RETURN_STATUS_SUCCESS);
             rs.setReturnCode(MessagingConstants.RETURN_CODE_SUCCESS);
-            AccountDto criteriaDto = GeneralLedgerJaxbDtoFactory
-                    .createGlAccountDtoCriteriaInstance(req.getCriteria().getGlCriteria());
+            AccountExtDto criteriaDto = GeneralLedgerJaxbDtoFactory
+                    .createExtGlAccountDtoCriteriaInstance(req.getCriteria().getGlCriteria());
             
             rs.setRecordCount(0);
-            List<AccountDto> dtoList = this.api.getAccount(criteriaDto);
+            List<AccountExtDto> dtoList = this.api.getAccount(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage("GL Account data not found!");
             }
             else {
-                queryDtoResults = this.buildJaxbListData(dtoList);
+                queryDtoResults = this.buildJaxbListDataExt(dtoList);
                 rs.setMessage("GL Account record(s) found");
                 rs.setRecordCount(dtoList.size());
             }
@@ -262,6 +263,15 @@ public class GlAccountApiHandler extends
         return results;
     }
     
+    private List<GlAccountType> buildJaxbListDataExt(List<AccountExtDto> results) {
+        List<GlAccountType> list = new ArrayList<>();
+        for (AccountExtDto item : results) {
+            GlAccountType jaxbObj = GeneralLedgerJaxbDtoFactory.createGlAccountJaxbInstance(item);
+            list.add(jaxbObj);
+        }
+        return list;
+    }
+    
     private List<GlAccountType> buildJaxbListData(List<AccountDto> results) {
         List<GlAccountType> list = new ArrayList<>();
         for (AccountDto item : results) {
@@ -270,7 +280,6 @@ public class GlAccountApiHandler extends
         }
         return list;
     }
-    
     
     @Override
     protected void validateRequest(AccountingGeneralLedgerRequest req) throws InvalidDataException {
