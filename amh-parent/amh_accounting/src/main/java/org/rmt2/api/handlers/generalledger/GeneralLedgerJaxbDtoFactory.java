@@ -342,16 +342,19 @@ public class GeneralLedgerJaxbDtoFactory extends RMT2Base {
                 .withDateUpdate(dto.getDateUpdated())
                 .withUserId(dto.getUpdateUserId())
                 .withIpCreated(dto.getIpCreated())
-                .withIpUpdate(dto.getIpUpdated()).build();
+                .withIpUpdate(dto.getIpUpdated())
+                .build();
         
         GlAccounttypeType gatt = GlAccounttypeTypeBuilder.Builder.create()
-                .withAcctTypeId(dto.getAcctTypeId()).build();
+                .withAcctTypeId(dto.getAcctTypeId())
+                .build();
         
         GlAccountcatgType jaxbObj = GlAccountCategoryTypeBuilder.Builder.create()
                 .withAcctCatgId(dto.getAcctCatgId())
                 .withDescription(dto.getAcctCatgDescription())
                 .withAccountType(gatt)
-                .withRecordTrackingType(rtt).build();
+                .withRecordTrackingType(rtt)
+                .build();
         
         return jaxbObj;
     }
