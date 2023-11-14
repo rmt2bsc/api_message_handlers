@@ -6,8 +6,10 @@ import java.util.List;
 import org.dao.mapping.orm.rmt2.GlAccountCategory;
 import org.dao.mapping.orm.rmt2.GlAccountTypes;
 import org.dao.mapping.orm.rmt2.GlAccounts;
+import org.dao.mapping.orm.rmt2.VwAccount;
 import org.dto.AccountCategoryDto;
 import org.dto.AccountDto;
+import org.dto.AccountExtDto;
 import org.dto.AccountTypeDto;
 import org.dto.adapter.orm.account.generalledger.Rmt2AccountDtoFactory;
 import org.rmt2.api.AccountingMockDataFactory;
@@ -45,6 +47,33 @@ public class GlAccountMockData {
         return list;
     }
     
+    /**
+     * 
+     * @return
+     */
+    public static final List<AccountExtDto> createMockGlAccountsExt() {
+        List<AccountExtDto> list = new ArrayList<>();
+        VwAccount p = AccountingMockDataFactory.createMockOrmVwAccounts(100, 1, 120, 1, "AccountNo1", "AccountName1",
+                "AccountCode1", "AccountDescription1", 1);
+        AccountExtDto dto = Rmt2AccountDtoFactory.createAccountExtInstance(p);
+        list.add(dto);
+
+        p = AccountingMockDataFactory.createMockOrmVwAccounts(101, 2, 121, 1, "AccountNo2", "AccountName2", "AccountCode2",
+                "AccountDescription2", 1);
+        dto = Rmt2AccountDtoFactory.createAccountExtInstance(p);
+        list.add(dto);
+
+        p = AccountingMockDataFactory.createMockOrmVwAccounts(102, 3, 122, 1, "AccountNo3", "AccountName3", "AccountCode3",
+                "AccountDescription3", 1);
+        dto = Rmt2AccountDtoFactory.createAccountExtInstance(p);
+        list.add(dto);
+
+        p = AccountingMockDataFactory.createMockOrmVwAccounts(103, 4, 123, 1, "AccountNo4", "AccountName4", "AccountCode4",
+                "AccountDescription4", 1);
+        dto = Rmt2AccountDtoFactory.createAccountExtInstance(p);
+        list.add(dto);
+        return list;
+    }
     
     /**
      * 

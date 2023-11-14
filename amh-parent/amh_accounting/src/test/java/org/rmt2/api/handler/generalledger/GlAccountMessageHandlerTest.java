@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 
 import org.dto.AccountDto;
+import org.dto.AccountExtDto;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -93,10 +94,10 @@ public class GlAccountMessageHandlerTest extends BaseAccountingMessageHandlerTes
     @Test
     public void testSuccess_Fetch() {
         String request = RMT2File.getFileContentsAsString("xml/generalledger/account/AccountFetchRequest.xml");
-        List<AccountDto> mockListData = GlAccountMockData.createMockGlAccounts();
+        List<AccountExtDto> mockListData = GlAccountMockData.createMockGlAccountsExt();
 
         try {
-            when(this.mockApi.getAccount(isA(AccountDto.class))).thenReturn(mockListData);
+            when(this.mockApi.getAccount(isA(AccountExtDto.class))).thenReturn(mockListData);
         } catch (GeneralLedgerApiException e) {
             Assert.fail("Unable to setup mock stub for fetching a GL Accounts");
         }
@@ -146,7 +147,7 @@ public class GlAccountMessageHandlerTest extends BaseAccountingMessageHandlerTes
     public void testSuccess_Fetch_NoDataFound() {
         String request = RMT2File.getFileContentsAsString("xml/generalledger/account/AccountFetchRequest.xml");
         try {
-            when(this.mockApi.getAccount(isA(AccountDto.class))).thenReturn(null);
+            when(this.mockApi.getAccount(isA(AccountExtDto.class))).thenReturn(null);
         } catch (GeneralLedgerApiException e) {
             Assert.fail("Unable to setup mock stub for fetching a GL Accounts");
         }
@@ -175,7 +176,7 @@ public class GlAccountMessageHandlerTest extends BaseAccountingMessageHandlerTes
     public void testError_Fetch_API_Error() {
         String request = RMT2File.getFileContentsAsString("xml/generalledger/account/AccountFetchRequest.xml");
         try {
-            when(this.mockApi.getAccount(isA(AccountDto.class)))
+            when(this.mockApi.getAccount(isA(AccountExtDto.class)))
                 .thenThrow(new GeneralLedgerApiException("Test validation error: selection criteria is required"));
         } catch (GeneralLedgerApiException e) {
             Assert.fail("Unable to setup mock stub for fetching a GL Accounts");
