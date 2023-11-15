@@ -12,6 +12,7 @@ import org.dto.CustomerXactHistoryDto;
 import org.dto.XactDto;
 import org.dto.adapter.orm.account.subsidiary.Rmt2SubsidiaryDtoFactory;
 import org.rmt2.api.handlers.AccountingtMsgHandlerUtility;
+import org.rmt2.jaxb.AddressType;
 import org.rmt2.jaxb.BusinessType;
 import org.rmt2.jaxb.CreditorActivityType;
 import org.rmt2.jaxb.CreditorCriteriaType;
@@ -23,13 +24,16 @@ import org.rmt2.jaxb.CustomerCriteriaType;
 import org.rmt2.jaxb.CustomerType;
 import org.rmt2.jaxb.RecordTrackingType;
 import org.rmt2.jaxb.XactType;
+import org.rmt2.jaxb.ZipcodeType;
 import org.rmt2.util.RecordTrackingTypeBuilder;
 import org.rmt2.util.accounting.subsidiary.CreditorActivityTypeBuilder;
 import org.rmt2.util.accounting.subsidiary.CreditorTypeBuilder;
 import org.rmt2.util.accounting.subsidiary.CreditortypeTypeBuilder;
 import org.rmt2.util.accounting.subsidiary.CustomerActivityTypeBuilder;
 import org.rmt2.util.accounting.subsidiary.CustomerTypeBuilder;
+import org.rmt2.util.addressbook.AddressTypeBuilder;
 import org.rmt2.util.addressbook.BusinessTypeBuilder;
+import org.rmt2.util.addressbook.ZipcodeTypeBuilder;
 
 import com.RMT2Base;
 import com.api.util.RMT2String2;
@@ -231,9 +235,41 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
                 .withIpCreated(dto.getIpCreated())
                 .withIpUpdate(dto.getIpUpdated()).build();
         
+        ZipcodeType zipDetails = ZipcodeTypeBuilder.Builder.create()
+                .withZipcode(dto.getZip())
+                .withCity(dto.getCity())
+                .withState(dto.getState())
+                .build();
+
+        AddressType addressDetails = AddressTypeBuilder.Builder.create()
+                .withAddrId(dto.getAddrId())
+                .withAddressLine1(dto.getAddr1())
+                .withAddressLine2(dto.getAddr2())
+                .withAddressLine3(dto.getAddr3())
+                .withAddressLine4(dto.getAddr4())
+                .withZipcodeExtension(dto.getZipext())
+                .withPhoneFax(dto.getPhoneFax())
+                .withPhoneHome(dto.getPhoneHome())
+                .withPhoneMain(dto.getPhoneCompany())
+                .withPhoneMobile(dto.getPhoneCell())
+                .withPhonePager(dto.getPhonePager())
+                .withPhoneWork(dto.getPhoneWork())
+                .withPhoneWorkExt(dto.getPhoneExt())
+                .withZipcode(zipDetails)
+                .build();
+
         BusinessType businessContactDetails = BusinessTypeBuilder.Builder.create()
                 .withBusinessId(dto.getContactId())
-                .withLongname(dto.getContactName()).build();
+                .withLongname(dto.getContactName())
+                .withContactFirstname(dto.getContactFirstname())
+                .withContactLastname(dto.getContactLastname())
+                .withContactPhone(dto.getContactPhone())
+                .withContactPhoneExt(dto.getContactExt())
+                .withContactEmail(dto.getContactEmail())
+                .withTaxId(dto.getTaxId())
+                .withWebsite(dto.getWebsite())
+                .withAddress(addressDetails)
+                .build();
         
         List<CustomerActivityType> catList = null;
         double xactHistTotal = 0;
@@ -459,12 +495,45 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
                 .withIpCreated(dto.getIpCreated())
                 .withIpUpdate(dto.getIpUpdated()).build();
         
+        ZipcodeType zipDetails = ZipcodeTypeBuilder.Builder.create()
+                .withZipcode(dto.getZip())
+                .withCity(dto.getCity())
+                .withState(dto.getState())
+                .build();
+
+        AddressType addressDetails = AddressTypeBuilder.Builder.create()
+                .withAddrId(dto.getAddrId())
+                .withAddressLine1(dto.getAddr1())
+                .withAddressLine2(dto.getAddr2())
+                .withAddressLine3(dto.getAddr3())
+                .withAddressLine4(dto.getAddr4())
+                .withZipcodeExtension(dto.getZipext())
+                .withPhoneFax(dto.getPhoneFax())
+                .withPhoneHome(dto.getPhoneHome())
+                .withPhoneMain(dto.getPhoneCompany())
+                .withPhoneMobile(dto.getPhoneCell())
+                .withPhonePager(dto.getPhonePager())
+                .withPhoneWork(dto.getPhoneWork())
+                .withPhoneWorkExt(dto.getPhoneExt())
+                .withZipcode(zipDetails)
+                .build();
+
         BusinessType businessContactDetails = BusinessTypeBuilder.Builder.create()
                 .withBusinessId(dto.getContactId())
-                .withLongname(dto.getContactName()).build();
+                .withLongname(dto.getContactName())
+                .withContactFirstname(dto.getContactFirstname())
+                .withContactLastname(dto.getContactLastname())
+                .withContactPhone(dto.getContactPhone())
+                .withContactPhoneExt(dto.getContactExt())
+                .withContactEmail(dto.getContactEmail())
+                .withTaxId(dto.getTaxId())
+                .withWebsite(dto.getWebsite())
+                .withAddress(addressDetails)
+                .build();
         
         CreditortypeType creditorType = CreditortypeTypeBuilder.Builder.create()
-                .withCreditorTypeId(dto.getCreditorTypeId()).build();
+                .withCreditorTypeId(dto.getCreditorTypeId())
+                .build();
         
         List<CreditorActivityType> catList = null;
         double xactHistTotal = 0;
