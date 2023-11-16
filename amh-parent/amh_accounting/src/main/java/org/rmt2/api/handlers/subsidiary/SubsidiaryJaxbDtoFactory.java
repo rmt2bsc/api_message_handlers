@@ -272,7 +272,6 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
                 .build();
         
         List<CustomerActivityType> catList = null;
-        double xactHistTotal = 0;
         if (transactions != null) {
             catList = new ArrayList<>();
             for (CustomerXactHistoryDto trans : transactions) {
@@ -289,12 +288,9 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
                         .withXactId(trans.getXactId()).build();
                 
                 catList.add(cat);
-                xactHistTotal += trans.getActivityAmount();
             }
         }
         
-        // Calculate balance.
-        double balance = xactHistTotal;
         CustomerType jaxbObj = CustomerTypeBuilder.Builder.create()
                 .withCustomerId(dto.getCustomerId())
                 .withAcctId(dto.getAcctId())
@@ -303,7 +299,11 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
                 .withAccountNo(dto.getAccountNo())
                 .withCreditLimit(dto.getCreditLimit())
                 .withAcctDescription(dto.getDescription())
-                .withBalance(balance)
+
+                // UI-28: Get balance which is derived from the
+                // vw_creditor_balance database view.
+                .withBalance(dto.getBalance())
+
                 .withActive(dto.getActive())
                 .withTransactions(catList)
                 .withRecordTracking(rtt).build();
@@ -536,7 +536,6 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
                 .build();
         
         List<CreditorActivityType> catList = null;
-        double xactHistTotal = 0;
         if (transactions != null) {
             catList = new ArrayList<>();
             for (CreditorXactHistoryDto trans : transactions) {
@@ -554,12 +553,8 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
                         .withXactId(trans.getXactId()).build();
                 
                 catList.add(cat);
-                xactHistTotal += trans.getActivityAmount();
             }
         }
-        
-        // Calculate balance
-        double balance = xactHistTotal;
         
         CreditorType jaxbObj = CreditorTypeBuilder.Builder.create()
                 .withCreditorId(dto.getCreditorId())
@@ -570,7 +565,11 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
                 .withExtAccountNo(dto.getExtAccountNumber())
                 .withApr(dto.getApr())
                 .withCreditLimit(dto.getCreditLimit())
-                .withBalance(balance)
+
+                // UI-28: Get balance which is derived from the
+                // vw_creditor_balance database view.
+                .withBalance(dto.getBalance())
+
                 .withActive(dto.getActive())
                 .withTransactions(catList)
                 .withRecordTracking(rtt).build();

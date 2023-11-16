@@ -268,7 +268,11 @@ public class CreditorQueryMessageHandlerTest extends BaseAccountingMessageHandle
                 Assert.assertEquals(tran.getXactId(), tran.getXactId());
                 Assert.assertEquals(1200 + ndx2++, tran.getXactId().intValue());
             }
-            Assert.assertEquals(1419.74, a.getBalance().round(MathContext.DECIMAL64).doubleValue(), 0);
+            // UI-28: Changed comparison to zero due creditor get balance
+            // change.
+            // Assert.assertEquals(1419.74,
+            // a.getBalance().round(MathContext.DECIMAL64).doubleValue(), 0);
+            Assert.assertEquals(0, a.getBalance().round(MathContext.DECIMAL64).doubleValue(), 0);
         }
     }
     

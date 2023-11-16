@@ -268,7 +268,10 @@ public class CustomerQueryMessageHandlerTest extends BaseAccountingMessageHandle
             for (CustomerActivityType tran : a.getTransactions().getTransaction()) {
                 Assert.assertEquals(1200 + ndx2++, tran.getXactId().intValue());
             }
-            Assert.assertEquals(3000.00, a.getBalance().doubleValue(), 0);
+            // UI-28: Changed comparison to zero due creditor get balance
+            // change.
+            // Assert.assertEquals(3000.00, a.getBalance().doubleValue(), 0);
+            Assert.assertEquals(0, a.getBalance().doubleValue(), 0);
         }
     }
     
