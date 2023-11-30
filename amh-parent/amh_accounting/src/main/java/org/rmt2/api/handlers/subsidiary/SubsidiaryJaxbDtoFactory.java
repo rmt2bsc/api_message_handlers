@@ -14,6 +14,7 @@ import org.dto.adapter.orm.account.subsidiary.Rmt2SubsidiaryDtoFactory;
 import org.rmt2.api.handlers.AccountingtMsgHandlerUtility;
 import org.rmt2.jaxb.AddressType;
 import org.rmt2.jaxb.BusinessType;
+import org.rmt2.jaxb.CodeDetailType;
 import org.rmt2.jaxb.CreditorActivityType;
 import org.rmt2.jaxb.CreditorCriteriaType;
 import org.rmt2.jaxb.CreditorType;
@@ -33,6 +34,7 @@ import org.rmt2.util.accounting.subsidiary.CustomerActivityTypeBuilder;
 import org.rmt2.util.accounting.subsidiary.CustomerTypeBuilder;
 import org.rmt2.util.addressbook.AddressTypeBuilder;
 import org.rmt2.util.addressbook.BusinessTypeBuilder;
+import org.rmt2.util.addressbook.CodeDetailTypeBuilder;
 import org.rmt2.util.addressbook.ZipcodeTypeBuilder;
 
 import com.RMT2Base;
@@ -518,6 +520,16 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
                 .withZipcode(zipDetails)
                 .build();
 
+        // UI-28: Create CodeDetailType for Business Entity Type
+        CodeDetailType cdtEntity = CodeDetailTypeBuilder.Builder.create()
+                .withCodeId(dto.getEntityTypeId())
+                .build();
+
+        // UI-28: Create CodeDetailType for Business Service Type
+        CodeDetailType cdtServType = CodeDetailTypeBuilder.Builder.create()
+                .withCodeId(dto.getServTypeId())
+                .build();
+
         BusinessType businessContactDetails = BusinessTypeBuilder.Builder.create()
                 .withBusinessId(dto.getContactId())
                 .withLongname(dto.getContactName())
@@ -528,6 +540,10 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
                 .withContactEmail(dto.getContactEmail())
                 .withTaxId(dto.getTaxId())
                 .withWebsite(dto.getWebsite())
+                // UI-28: Added Entity Type Id to message
+                .withEntityType(cdtEntity)
+                // UI-28: Added Service Type Id to message
+                .withServiceType(cdtServType)
                 .withAddress(addressDetails)
                 .build();
         
