@@ -93,6 +93,17 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
                     && !jaxbCriteria.getContactDetails().getLongName().isEmpty()) {
                 dto.setContactName(jaxbCriteria.getContactDetails().getLongName());
             }
+            // UI-29: Added tax id as selection criteria.
+            if (jaxbCriteria.getContactDetails().getTaxId() != null
+                    && !jaxbCriteria.getContactDetails().getTaxId().isEmpty()) {
+                dto.setTaxId(jaxbCriteria.getContactDetails().getTaxId());
+            }
+            // UI-29: Added main phone number as selection criteria.
+            if (jaxbCriteria.getContactDetails().getAddress() != null
+                    && jaxbCriteria.getContactDetails().getAddress().getPhoneMain() != null
+                    && !jaxbCriteria.getContactDetails().getAddress().getPhoneMain().isEmpty()) {
+                dto.setPhoneCompany(jaxbCriteria.getContactDetails().getAddress().getPhoneMain());
+            }
         }
         
         return dto;
