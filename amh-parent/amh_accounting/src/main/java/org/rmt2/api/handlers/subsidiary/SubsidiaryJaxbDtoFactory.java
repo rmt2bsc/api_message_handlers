@@ -271,6 +271,16 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
                 .withZipcode(zipDetails)
                 .build();
 
+        // UI-29: Create CodeDetailType for Business Entity Type
+        CodeDetailType cdtEntity = CodeDetailTypeBuilder.Builder.create()
+                .withCodeId(dto.getEntityTypeId())
+                .build();
+
+        // UI-29: Create CodeDetailType for Business Service Type
+        CodeDetailType cdtServType = CodeDetailTypeBuilder.Builder.create()
+                .withCodeId(dto.getServTypeId())
+                .build();
+
         BusinessType businessContactDetails = BusinessTypeBuilder.Builder.create()
                 .withBusinessId(dto.getContactId())
                 .withLongname(dto.getContactName())
@@ -281,6 +291,10 @@ public class SubsidiaryJaxbDtoFactory extends RMT2Base {
                 .withContactEmail(dto.getContactEmail())
                 .withTaxId(dto.getTaxId())
                 .withWebsite(dto.getWebsite())
+                // UI-29: Added Entity Type Id to message
+                .withEntityType(cdtEntity)
+                // UI-29: Added Service Type Id to message
+                .withServiceType(cdtServType)
                 .withAddress(addressDetails)
                 .build();
         
