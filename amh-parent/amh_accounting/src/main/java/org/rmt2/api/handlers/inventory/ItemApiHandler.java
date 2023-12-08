@@ -296,7 +296,7 @@ public class ItemApiHandler extends
             ItemMasterDto criteriaDto = InventoryJaxbDtoFactory
                     .createItemMasterDtoCriteriaInstance(req.getCriteria().getItemCriteria());
             
-            List<ItemMasterDto> dtoList = this.api.getItem(criteriaDto);
+            List<ItemMasterDto> dtoList = this.api.getItemExt(criteriaDto);
             if (dtoList == null) {
                 rs.setMessage("Inventory item data not found!");
                 rs.setRecordCount(0);

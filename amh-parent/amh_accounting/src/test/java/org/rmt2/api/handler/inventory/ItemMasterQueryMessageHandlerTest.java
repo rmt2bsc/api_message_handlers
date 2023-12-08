@@ -93,10 +93,10 @@ public class ItemMasterQueryMessageHandlerTest extends BaseAccountingMessageHand
     @Test
     public void testSuccess_Fetch() {
         String request = RMT2File.getFileContentsAsString("xml/inventory/item/ItemFetchRequest.xml");
-        List<ItemMasterDto> mockListData = InventoryMockData.createMockItemMasterList();
+        List<ItemMasterDto> mockListData = InventoryMockData.createMockItemMasterListExt();
 
         try {
-            when(this.mockApi.getItem(isA(ItemMasterDto.class))).thenReturn(mockListData);
+            when(this.mockApi.getItemExt(isA(ItemMasterDto.class))).thenReturn(mockListData);
         } catch (InventoryApiException e) {
             Assert.fail("Unable to setup mock stub for fetching a Inventory item master Type");
         }
@@ -209,7 +209,7 @@ public class ItemMasterQueryMessageHandlerTest extends BaseAccountingMessageHand
     public void testSuccess_Fetch_NoDataFound() {
         String request = RMT2File.getFileContentsAsString("xml/inventory/item/ItemFetchRequest.xml");
         try {
-            when(this.mockApi.getItem(isA(ItemMasterDto.class))).thenReturn(null);
+            when(this.mockApi.getItemExt(isA(ItemMasterDto.class))).thenReturn(null);
         } catch (InventoryApiException e) {
             Assert.fail("Unable to setup mock stub for fetching a Inventory item master Type");
         }
@@ -241,7 +241,7 @@ public class ItemMasterQueryMessageHandlerTest extends BaseAccountingMessageHand
     public void testError_Fetch_API_Error() {
         String request = RMT2File.getFileContentsAsString("xml/inventory/item/ItemFetchRequest.xml");
         try {
-            when(this.mockApi.getItem(isA(ItemMasterDto.class)))
+            when(this.mockApi.getItemExt(isA(ItemMasterDto.class)))
                  .thenThrow(new InventoryApiException("Test validation error: selection criteria is required"));    
         } catch (InventoryApiException e) {
             Assert.fail("Unable to setup mock stub for fetching a Inventory item master Type");

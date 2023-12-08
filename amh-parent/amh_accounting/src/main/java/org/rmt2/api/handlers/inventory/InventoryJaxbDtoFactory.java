@@ -146,6 +146,16 @@ public class InventoryJaxbDtoFactory extends RMT2Base {
                 .withIpCreated(dto.getIpCreated())
                 .withIpUpdate(dto.getIpUpdated()).build();
         
+        InventoryItemtypeType itemType = InventoryItemtypeTypeBuilder.Builder.create()
+                .withItemTypeId(dto.getItemTypeId())
+                .withDescription(dto.getItemTypeDescription())
+                .build();
+
+        InventoryItemStatusType itemStatus = InventoryItemStatusTypeBuilder.Builder.create()
+                .withStatusId(dto.getItemStatusId())
+                .withDescription(dto.getItemStatusDescription())
+                .build();
+
         InventoryItemType jaxbObj = InventoryItemTypeBuilder.Builder.create()
                 .withItemId(dto.getItemId())
                 .withCreditorId(dto.getVendorId())
@@ -156,10 +166,12 @@ public class InventoryJaxbDtoFactory extends RMT2Base {
                 .withQtyOnHand(dto.getQtyOnHand())
                 .withVendorItemNo(dto.getVendorItemNo())
                 .withActive(dto.getActive() == 1 ? true : false)
-                .withItemTypeId(dto.getItemTypeId())
+                .withItemType(itemType)
+                .withItemStatus(itemStatus)
                 .withOverrideRetail(dto.getOverrideRetail())
                 .withRetailPrice(dto.getRetailPrice())
-                .withRecordTrackingType(rtt).build();
+                .withRecordTrackingType(rtt)
+                .build();
         return jaxbObj;
     }
     

@@ -7,6 +7,7 @@ import java.util.List;
 import org.dao.mapping.orm.rmt2.ItemMaster;
 import org.dao.mapping.orm.rmt2.ItemMasterStatus;
 import org.dao.mapping.orm.rmt2.ItemMasterType;
+import org.dao.mapping.orm.rmt2.VwItemMaster;
 import org.dao.mapping.orm.rmt2.VwItemStatusHistory;
 import org.dao.mapping.orm.rmt2.VwVendorItems;
 import org.dto.ItemMasterDto;
@@ -58,6 +59,26 @@ public class InventoryMockData {
         return i;
     }
     
+    public static final VwItemMaster createMockOrmVwItemMaster(int id,
+            int itemTypeId, String serialNo, String vendorItemNo,
+            int creditorId, String description, int qty, double unitCost,
+            boolean active) {
+        VwItemMaster i = new VwItemMaster();
+        i.setId(id);
+        i.setItemTypeId(itemTypeId);
+        i.setItemSerialNo(serialNo);
+        i.setVendorItemNo(vendorItemNo);
+        i.setVendorId(creditorId);
+        i.setDescription(description);
+        i.setQtyOnHand(qty);
+        i.setUnitCost(unitCost);
+        i.setActive(active ? 1 : 0);
+        i.setOverrideRetail(0);
+        i.setMarkup(5);
+        i.setRetailPrice((qty * unitCost) * i.getMarkup());
+        return i;
+    }
+
     public static final List<ItemMasterDto> createMockItemMasterList() {
         List<ItemMasterDto> list = new ArrayList<>();
         ItemMaster o = InventoryMockData.createMockOrmItemMaster(100, 1,
@@ -87,6 +108,35 @@ public class InventoryMockData {
         return list;
     }
     
+    public static final List<ItemMasterDto> createMockItemMasterListExt() {
+        List<ItemMasterDto> list = new ArrayList<>();
+        VwItemMaster o = InventoryMockData.createMockOrmVwItemMaster(100, 1,
+                "100-111-111", "11111110", 1351, "Item1", 1, 1.23, true);
+        ItemMasterDto p = Rmt2InventoryDtoFactory.createItemMasterInstance(o);
+        list.add(p);
+
+        o = InventoryMockData.createMockOrmVwItemMaster(101, 1,
+                "101-111-111", "11111111", 1352, "Item2", 2, 1.23, true);
+        p = Rmt2InventoryDtoFactory.createItemMasterInstance(o);
+        list.add(p);
+
+        o = InventoryMockData.createMockOrmVwItemMaster(102, 1,
+                "102-111-111", "11111112", 1353, "Item3", 3, 1.23, true);
+        p = Rmt2InventoryDtoFactory.createItemMasterInstance(o);
+        list.add(p);
+
+        o = InventoryMockData.createMockOrmVwItemMaster(103, 1,
+                "103-111-111", "11111113", 1354, "Item4", 4, 1.23, true);
+        p = Rmt2InventoryDtoFactory.createItemMasterInstance(o);
+        list.add(p);
+
+        o = InventoryMockData.createMockOrmVwItemMaster(104, 1,
+                "104-111-111", "11111114", 1355, "Item5", 5, 1.23, true);
+        p = Rmt2InventoryDtoFactory.createItemMasterInstance(o);
+        list.add(p);
+        return list;
+    }
+
     /**
      * 
      * @param id
