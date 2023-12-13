@@ -144,6 +144,11 @@ public class InventoryJaxbDtoFactory extends RMT2Base {
         if (jaxbObj.getRetailPrice() != null) {
             dto.setRetailPrice(jaxbObj.getRetailPrice().doubleValue());
         }
+        // UI-90: Get Change Reason text for item master
+        if (jaxbObj.getStatusHistory() != null && jaxbObj.getStatusHistory().size() == 1) {
+            String reason = jaxbObj.getStatusHistory().get(0).getReason();
+            dto.setChangeReason(reason);
+        }
         
         return dto;
     }
