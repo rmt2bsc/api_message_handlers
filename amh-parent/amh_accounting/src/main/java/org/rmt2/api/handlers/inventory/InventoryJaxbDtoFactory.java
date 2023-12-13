@@ -27,6 +27,7 @@ import org.rmt2.util.accounting.inventory.InventoryItemtypeTypeBuilder;
 import org.rmt2.util.accounting.inventory.VendorItemTypeBuilder;
 
 import com.RMT2Base;
+import com.api.util.RMT2String2;
 
 /**
  * A factory for converting inventory related JAXB objects to DTO and vice versa.
@@ -74,9 +75,17 @@ public class InventoryJaxbDtoFactory extends RMT2Base {
         }
         if (jaxbCriteria.getUnitCost() != null) {
             dto.setUnitCost(jaxbCriteria.getUnitCost().doubleValue());
+            // UI-30: Added the inclusion of unit cost predicate
+            if (RMT2String2.isNotEmpty(jaxbCriteria.getUnitCostPredicate())) {
+                dto.setUnitCostPredicate(jaxbCriteria.getUnitCostPredicate());
+            }
         }
         if (jaxbCriteria.getQtyOnHand() != null) {
             dto.setQtyOnHand(jaxbCriteria.getQtyOnHand().intValue());
+            // UI-30: Added the inclusion of quantity on hand predicate
+            if (RMT2String2.isNotEmpty(jaxbCriteria.getQtyOnHandPredicate())) {
+                dto.setQtyOnHandPredicate(jaxbCriteria.getQtyOnHandPredicate());
+            }
         }
         if (jaxbCriteria.getVendorItemNo() != null) {
             dto.setVendorItemNo(jaxbCriteria.getVendorItemNo());
