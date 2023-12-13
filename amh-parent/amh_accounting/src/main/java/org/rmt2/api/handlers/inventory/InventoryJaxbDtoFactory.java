@@ -138,6 +138,12 @@ public class InventoryJaxbDtoFactory extends RMT2Base {
         if (jaxbObj.getActive() != null) {
             dto.setActive(jaxbObj.getActive().intValue());
         }
+        if (jaxbObj.getOverrideRetail() != null) {
+            dto.setOverrideRetail(jaxbObj.getOverrideRetail().intValue());
+        }
+        if (jaxbObj.getRetailPrice() != null) {
+            dto.setRetailPrice(jaxbObj.getRetailPrice().doubleValue());
+        }
         
         return dto;
     }
