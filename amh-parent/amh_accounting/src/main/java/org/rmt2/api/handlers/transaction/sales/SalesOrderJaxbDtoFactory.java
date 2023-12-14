@@ -233,6 +233,14 @@ public class SalesOrderJaxbDtoFactory extends TransactionJaxbDtoFactory {
             dto.setOrderTotal(criteriaData.getSalesOrderTotal().doubleValue());
         }
 
+        // UI-31: Added xact id and invoice id to selection criteria.
+        if (criteriaData.getXactId() > 0) {
+            dto.setXactId(criteriaData.getXactId());
+        }
+        if (criteriaData.getInvoiceId() > 0) {
+            dto.setInvoiceId(criteriaData.getInvoiceId());
+        }
+
         return dto;
     }
 

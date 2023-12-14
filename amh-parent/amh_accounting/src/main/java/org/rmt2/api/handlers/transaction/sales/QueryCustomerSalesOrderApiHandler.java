@@ -34,7 +34,6 @@ import org.rmt2.constants.MessagingConstants;
 import org.rmt2.jaxb.AccountingTransactionRequest;
 import org.rmt2.jaxb.AddressType;
 import org.rmt2.jaxb.BusinessType;
-import org.rmt2.jaxb.CustomerCriteriaType;
 import org.rmt2.jaxb.CustomerListType;
 import org.rmt2.jaxb.CustomerType;
 import org.rmt2.jaxb.ObjectFactory;
@@ -44,7 +43,6 @@ import org.rmt2.jaxb.SalesOrderCriteria;
 import org.rmt2.jaxb.SalesOrderItemType;
 import org.rmt2.jaxb.SalesOrderType;
 import org.rmt2.jaxb.TransactionDetailGroup;
-import org.rmt2.jaxb.XactCriteriaType;
 import org.rmt2.jaxb.XactType;
 import org.rmt2.jaxb.ZipcodeType;
 import org.rmt2.util.accounting.subsidiary.CustomerTypeBuilder;
@@ -130,9 +128,10 @@ public class QueryCustomerSalesOrderApiHandler extends SalesOrderApiHandler {
     protected MessageHandlerResults doOperation(AccountingTransactionRequest req) {
         MessageHandlerResults results = new MessageHandlerResults();
         MessageHandlerCommonReplyStatus rs = new MessageHandlerCommonReplyStatus();
+
+        // UI-31: SalesORderCriteria should be the only criteria object required
         SalesOrderCriteria jaxbSalesOrderCriteria = req.getCriteria().getSalesCriteria();
-        XactCriteriaType jaxbXactCriteria = req.getCriteria().getXactCriteria();
-        CustomerCriteriaType jaxbCustomerCriteria = req.getCriteria().getCustomerCriteria();
+
         List<SalesOrderType> jaxbResults = new ArrayList<>();
         List<SalesInvoiceDto> salesOrders = new ArrayList<>();
         Map<Integer, List<SalesOrderItemDto>> itemsMap = new HashMap<>();
@@ -165,7 +164,10 @@ public class QueryCustomerSalesOrderApiHandler extends SalesOrderApiHandler {
             
             // Get customer info            
             Customer cust = new Customer();
-            cust.setCustomerId(jaxbCustomerCriteria.getCustomer().getCustomerId().intValue());
+            // UI-31: Since customer id is required in the SalesInvoiceDto
+            // criteria object, use that customer id to retrieve the target
+            // customer profile.
+            cust.setCustomerId(criteriaDto.getCustomerId());
             CustomerDto custDto = Rmt2SubsidiaryDtoFactory.createCustomerInstance(cust, null);
             List<CustomerDto> customer = custApi.getExt(custDto);
 
@@ -176,7 +178,9 @@ public class QueryCustomerSalesOrderApiHandler extends SalesOrderApiHandler {
                 criteria.setContactId(customer.get(0).getContactId());
                 List<ContactDto> custContacts = contactApi.getContact(criteria);
                 contactMap.put(customer.get(0).getContactId(), custContacts.get(0));
-                custMap.put(criteriaDto.getSalesOrderId(), customer.get(0));
+                // UI-31: Setup map with customer id as the key instead of sales
+                // order id
+                custMap.put(customer.get(0).getCustomerId(), customer.get(0));
             }
 
             // Get contact info for main company
@@ -194,7 +198,11 @@ public class QueryCustomerSalesOrderApiHandler extends SalesOrderApiHandler {
                     List<SalesOrderItemDto> items = api.getLineItems(header.getSalesOrderId());
                     itemsMap.put(header.getSalesOrderId(), items);
                     Xact orm = new Xact();
-                    orm.setXactId(jaxbXactCriteria.getBasicCriteria().getXactId().intValue());
+                    // UI-31: Change line of code to obtain xact id from the
+                    // current sales order object that was retrieved from the
+                    // database in the above logic instead of relying
+                    // on the passed in xact criteria object.
+                    orm.setXactId(header.getXactId());
                     XactDto xactDto = Rmt2XactDtoFactory.createXactBaseInstance(orm);
                     List<XactDto> xact = xactApi.getXact(xactDto);
                     xactMap.put(header.getSalesOrderId(), xact);
@@ -268,8 +276,10 @@ public class QueryCustomerSalesOrderApiHandler extends SalesOrderApiHandler {
 
 
     /**
-     * @see org.rmt2.api.handlers.transaction.XactApiHandler#validateRequest(org.
-     *      rmt2.jaxb.AccountingTransactionRequest)
+     * Validates the payload contains a SalesOrderCriteria object.
+     * 
+     * @param req
+     *            instance of {@link AccountingTransactionRequest}
      */
     @Override
     protected void validateRequest(AccountingTransactionRequest req) throws InvalidDataException {
@@ -286,26 +296,13 @@ public class QueryCustomerSalesOrderApiHandler extends SalesOrderApiHandler {
             throw new InvalidRequestException(SalesOrderHandlerConst.MSG_MISSING_SALESORDER_STRUCTURE);
         }
 
+        // UI-31: Changed logic to only require SalesOrderCriteria object which
+        // that object is required to contain the customer id value as the
+        // minimal selection criteria.
         try {
-            Verifier.verifyNotNull(req.getCriteria().getCustomerCriteria());
-            Verifier.verifyNotNull(req.getCriteria().getCustomerCriteria().getCustomer());
+            Verifier.verifyPositive(req.getCriteria().getSalesCriteria().getCustomerId());
         } catch (VerifyException e) {
-            throw new InvalidRequestException(SalesOrderHandlerConst.MSG_MISSING_CUSTOMER_STRUCTURE);
-        }
-        
-        try {
-            Verifier.verifyNotNull(req.getCriteria().getXactCriteria());
-            Verifier.verifyNotNull(req.getCriteria().getXactCriteria().getBasicCriteria());
-        } catch (VerifyException e) {
-            throw new InvalidRequestException(SalesOrderHandlerConst.MSG_MISSING_XACT_STRUCTURE);
-        }
-
-        try {
-            Verifier.verifyNotNull(req.getCriteria().getXactCriteria().getBasicCriteria().getXactId());
-            Verifier.verifyNotNull(req.getCriteria().getCustomerCriteria().getCustomer().getCustomerId());
-            Verifier.verifyPositive(req.getCriteria().getSalesCriteria().getSalesOrderId());
-        } catch (VerifyException e) {
-            throw new InvalidRequestException(SalesOrderHandlerConst.MSG_MISSING_PRINT_PARAMETERS);
+            throw new InvalidRequestException(SalesOrderHandlerConst.MSG_MISSING_CUSTOMER_ID);
         }
     }
 
@@ -354,7 +351,7 @@ public class QueryCustomerSalesOrderApiHandler extends SalesOrderApiHandler {
 
             // Add Customer data
             if (payload != null && payload.size() > 0) {
-                CustomerDto custDto = custMap.get(payload.get(0).getSalesOrderId().intValue());
+                CustomerDto custDto = custMap.get(payload.get(0).getCustomerId().intValue());
                 BusinessContactDto custContactDto = (BusinessContactDto) contactMap.get(custDto.getContactId());
                 ZipcodeType zt = ZipcodeTypeBuilder.Builder.create()
                         .withCity(custContactDto.getCity())

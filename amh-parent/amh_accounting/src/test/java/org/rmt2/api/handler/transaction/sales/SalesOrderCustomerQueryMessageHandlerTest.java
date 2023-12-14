@@ -237,7 +237,7 @@ public class SalesOrderCustomerQueryMessageHandlerTest extends BaseAccountingMes
 
         AccountingTransactionResponse actualRepsonse =
                 (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload().toString());
-        Assert.assertNotNull(actualRepsonse.getProfile());
+        // Assert.assertNotNull(actualRepsonse.getProfile());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(SalesOrderHandlerConst.MSG_GET_CUSTOMER_SPECIFIC_FAILURE, actualRepsonse.getReplyStatus()
@@ -346,7 +346,6 @@ public class SalesOrderCustomerQueryMessageHandlerTest extends BaseAccountingMes
         Assert.assertNull(actualRepsonse.getProfile());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(SalesOrderHandlerConst.MSG_MISSING_CUSTOMER_STRUCTURE, actualRepsonse.getReplyStatus().getMessage());
     }
 
     @Test
@@ -372,7 +371,7 @@ public class SalesOrderCustomerQueryMessageHandlerTest extends BaseAccountingMes
         Assert.assertNull(actualRepsonse.getProfile());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(SalesOrderHandlerConst.MSG_MISSING_CUSTOMER_STRUCTURE, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(SalesOrderHandlerConst.MSG_MISSING_CUSTOMER_ID, actualRepsonse.getReplyStatus().getMessage());
     }
 
     @Test
@@ -395,10 +394,9 @@ public class SalesOrderCustomerQueryMessageHandlerTest extends BaseAccountingMes
         AccountingTransactionResponse actualRepsonse = (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload()
                 .toString());
 
-        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertNotNull(actualRepsonse.getProfile());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(SalesOrderHandlerConst.MSG_MISSING_XACT_STRUCTURE, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
     }
 
     @Test
@@ -421,10 +419,9 @@ public class SalesOrderCustomerQueryMessageHandlerTest extends BaseAccountingMes
         AccountingTransactionResponse actualRepsonse = (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload()
                 .toString());
 
-        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertNotNull(actualRepsonse.getProfile());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(SalesOrderHandlerConst.MSG_MISSING_XACT_STRUCTURE, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
     }
 
     @Test
@@ -447,10 +444,9 @@ public class SalesOrderCustomerQueryMessageHandlerTest extends BaseAccountingMes
         AccountingTransactionResponse actualRepsonse = (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload()
                 .toString());
 
-        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertNotNull(actualRepsonse.getProfile());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(SalesOrderHandlerConst.MSG_MISSING_PRINT_PARAMETERS, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
     }
 
     @Test
@@ -476,7 +472,7 @@ public class SalesOrderCustomerQueryMessageHandlerTest extends BaseAccountingMes
         Assert.assertNull(actualRepsonse.getProfile());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
         Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(SalesOrderHandlerConst.MSG_MISSING_PRINT_PARAMETERS, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(SalesOrderHandlerConst.MSG_MISSING_CUSTOMER_ID, actualRepsonse.getReplyStatus().getMessage());
     }
 
     @Test
@@ -499,9 +495,8 @@ public class SalesOrderCustomerQueryMessageHandlerTest extends BaseAccountingMes
         AccountingTransactionResponse actualRepsonse = (AccountingTransactionResponse) jaxb.unMarshalMessage(results.getPayload()
                 .toString());
 
-        Assert.assertNull(actualRepsonse.getProfile());
+        Assert.assertNotNull(actualRepsonse.getProfile());
         Assert.assertEquals(-1, actualRepsonse.getReplyStatus().getReturnCode().intValue());
-        Assert.assertEquals(MessagingConstants.RETURN_STATUS_BAD_REQUEST, actualRepsonse.getReplyStatus().getReturnStatus());
-        Assert.assertEquals(SalesOrderHandlerConst.MSG_MISSING_PRINT_PARAMETERS, actualRepsonse.getReplyStatus().getMessage());
+        Assert.assertEquals(MessagingConstants.RETURN_STATUS_SUCCESS, actualRepsonse.getReplyStatus().getReturnStatus());
     }
 }

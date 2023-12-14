@@ -9,12 +9,8 @@
         <delivery_date>02/05/2020 23:09:47</delivery_date>
     </header>
     <criteria>
-        <customer_criteria>
-            <customer>
-                <customer_id>100</customer_id>
-            </customer>
-        </customer_criteria>
         <sales_criteria>
+            <customer_id>100</customer_id>
             <invoice_on_sales_order_creation>false</invoice_on_sales_order_creation>
             <apply_payment_on_sales_order_creation>false</apply_payment_on_sales_order_creation>
         </sales_criteria>

@@ -9,6 +9,7 @@ package org.rmt2.api.handlers.transaction.sales;
 public class SalesOrderHandlerConst {
     public static final String MSG_MISSING_SALESORDER_STRUCTURE = "Sales order structure is required for create sales order operation";
     public static final String MSG_MISSING_CUSTOMER_STRUCTURE = "Customer criteria structure is required";
+    public static final String MSG_MISSING_CUSTOMER_ID = "Customer Id is required within the Customer selectin criteria";
     public static final String MSG_MISSING_XACT_STRUCTURE = "Transaction criteria structure is required for create sales order operation";
     public static final String MSG_MISSING_PRINT_PARAMETERS = "Sales Order print operation requires sales order id and customer id as selection criteria";
     public static final String MSG_SALESORDER_LIST_EMPTY = "Sales order list cannot be empty for create sales order operation";
