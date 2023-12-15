@@ -10,6 +10,7 @@
     </header>
     <criteria>
         <sales_criteria>
+            <target_level>FULL</target_level>
             <customer_id>100</customer_id>
             <sales_order_id>1000</sales_order_id>
             <invoice_on_sales_order_creation>false</invoice_on_sales_order_creation>

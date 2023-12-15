@@ -195,16 +195,26 @@ public class QueryCustomerSalesOrderApiHandler extends SalesOrderApiHandler {
             if (salesOrders != null) {
                 recCount = salesOrders.size();                
                 for (SalesInvoiceDto header : salesOrders) {
-                    List<SalesOrderItemDto> items = api.getLineItems(header.getSalesOrderId());
-                    itemsMap.put(header.getSalesOrderId(), items);
-                    Xact orm = new Xact();
-                    // UI-31: Change line of code to obtain xact id from the
-                    // current sales order object that was retrieved from the
-                    // database in the above logic instead of relying
-                    // on the passed in xact criteria object.
-                    orm.setXactId(header.getXactId());
-                    XactDto xactDto = Rmt2XactDtoFactory.createXactBaseInstance(orm);
-                    List<XactDto> xact = xactApi.getXact(xactDto);
+                    List<XactDto> xact = null;
+                    if (jaxbSalesOrderCriteria.getTargetLevel() == jaxbSalesOrderCriteria.getTargetLevel().FULL) {
+                        List<SalesOrderItemDto> items = api.getLineItems(header.getSalesOrderId());
+                        itemsMap.put(header.getSalesOrderId(), items);
+                        Xact orm = new Xact();
+                        // UI-31: Change line of code to obtain xact id from the
+                        // current sales order object that was retrieved from
+                        // the
+                        // database in the above logic instead of relying
+                        // on the passed in xact criteria object.
+                        orm.setXactId(header.getXactId());
+                        XactDto xactDto = Rmt2XactDtoFactory.createXactBaseInstance(orm);
+                        xact = xactApi.getXact(xactDto);
+                    }
+                    else {
+                        XactDto xactDto = Rmt2XactDtoFactory.createXactBaseInstance(null);
+                        xact = new ArrayList<>();
+                        xactDto.setXactId(header.getXactId());
+                        xact.add(xactDto);
+                    }
                     xactMap.put(header.getSalesOrderId(), xact);
                 }
             }
