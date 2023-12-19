@@ -197,7 +197,9 @@ public class QueryCustomerSalesOrderApiHandler extends SalesOrderApiHandler {
                 for (SalesInvoiceDto header : salesOrders) {
                     List<XactDto> xact = null;
                     if (jaxbSalesOrderCriteria.getTargetLevel() == jaxbSalesOrderCriteria.getTargetLevel().FULL) {
-                        List<SalesOrderItemDto> items = api.getLineItems(header.getSalesOrderId());
+                        // UI-31: Call extended API method for getting sales
+                        // order items
+                        List<SalesOrderItemDto> items = api.getLineItemsExt(header.getSalesOrderId());
                         itemsMap.put(header.getSalesOrderId(), items);
                         Xact orm = new Xact();
                         // UI-31: Change line of code to obtain xact id from the
