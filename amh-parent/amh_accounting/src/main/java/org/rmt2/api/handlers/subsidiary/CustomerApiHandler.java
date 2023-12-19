@@ -11,11 +11,11 @@ import org.apache.log4j.Logger;
 import org.dto.CustomerDto;
 import org.dto.CustomerXactHistoryDto;
 import org.dto.XactDto;
+import org.dto.adapter.orm.transaction.Rmt2XactDtoFactory;
 import org.modules.CommonAccountingConst;
 import org.modules.subsidiary.CustomerApi;
 import org.modules.subsidiary.SubsidiaryApiFactory;
 import org.modules.transaction.XactApi;
-import org.modules.transaction.XactApiException;
 import org.modules.transaction.XactApiFactory;
 import org.rmt2.api.ApiMessageHandlerConst;
 import org.rmt2.api.handler.util.MessageHandlerUtility;
@@ -360,17 +360,26 @@ public class CustomerApiHandler extends
         
         XactApi xactApi = XactApiFactory.createDefaultXactApi();
         for (CustomerXactHistoryDto item : transHistory) {
-            try {
-                // UI-31
-                // TODO: Replace xact API calls with logic taht will simply grab
-                // the transaction data from "transHistory" parameter to prevent
-                // timeout issues.
-                XactDto dto = xactApi.getXactById(item.getXactId());
-                if (dto != null) {
-                    map.put(item.getActivityId(), dto);
-                }
-            } catch (XactApiException e) {
-                logger.error("Unable to fetch transaction details for customer transaction history item, " + item.getActivityId(), e);
+            // UI-31: Replace xact API calls with logic taht will simply grab
+            // the transaction data from "transHistory" parameter to prevent
+            // timeout issues.
+            XactDto xactDto = Rmt2XactDtoFactory.createXactBaseInstance(null);
+            xactDto.setXactId(item.getXactId());
+            xactDto.setXactTypeId(item.getXactTypeId());
+            xactDto.setXactSubtypeId(item.getXactSubtypeId());
+            xactDto.setXactDate(item.getXactDate());
+            xactDto.setXactAmount(item.getXactAmount());
+            xactDto.setXactTenderId(item.getXactTenderId());
+            xactDto.setXactNegInstrNo(item.getXactNegInstrNo());
+            xactDto.setXactBankTransInd(item.getXactBankTransInd());
+            xactDto.setXactConfirmNo(item.getXactConfirmNo());
+            xactDto.setXactReason(item.getXactReason());
+            xactDto.setDocumentId(item.getXactDocumentId());
+            xactDto.setXactPostedDate(item.getXactPostedDate());
+            xactDto.setXactTypeDescription(item.getXactTypeDescription());
+
+            if (xactDto != null) {
+                map.put(item.getActivityId(), xactDto);
             }
         }
         xactApi.close();
