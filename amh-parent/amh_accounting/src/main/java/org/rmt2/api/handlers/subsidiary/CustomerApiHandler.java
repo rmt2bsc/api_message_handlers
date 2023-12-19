@@ -361,6 +361,10 @@ public class CustomerApiHandler extends
         XactApi xactApi = XactApiFactory.createDefaultXactApi();
         for (CustomerXactHistoryDto item : transHistory) {
             try {
+                // UI-31
+                // TODO: Replace xact API calls with logic taht will simply grab
+                // the transaction data from "transHistory" parameter to prevent
+                // timeout issues.
                 XactDto dto = xactApi.getXactById(item.getXactId());
                 if (dto != null) {
                     map.put(item.getActivityId(), dto);
