@@ -201,17 +201,21 @@ public class QueryCustomerSalesOrderApiHandler extends SalesOrderApiHandler {
                         // order items
                         List<SalesOrderItemDto> items = api.getLineItemsExt(header.getSalesOrderId());
                         itemsMap.put(header.getSalesOrderId(), items);
-                        Xact orm = new Xact();
-                        // UI-31: Change line of code to obtain xact id from the
-                        // current sales order object that was retrieved from
-                        // the
-                        // database in the above logic instead of relying
-                        // on the passed in xact criteria object.
-                        orm.setXactId(header.getXactId());
-                        XactDto xactDto = Rmt2XactDtoFactory.createXactBaseInstance(orm);
-                        xact = xactApi.getXact(xactDto);
+
+                        // UI-31: Only attempt to get transaction data when
+                        // sales order has been invoiced.
+                        if (header.isInvoiced()) {
+                            Xact orm = new Xact();
+                            orm.setXactId(header.getXactId());
+                            XactDto xactDto = Rmt2XactDtoFactory.createXactBaseInstance(orm);
+                            xact = xactApi.getXact(xactDto);
+                        }
                     }
                     else {
+                        // UI-31: Change line of code to obtain xact id from the
+                        // current sales order object that was retrieved from
+                        // the database in the above logic instead of relying on
+                        // the passed in xact criteria object.
                         XactDto xactDto = Rmt2XactDtoFactory.createXactBaseInstance(null);
                         xact = new ArrayList<>();
                         xactDto.setXactId(header.getXactId());
@@ -276,10 +280,15 @@ public class QueryCustomerSalesOrderApiHandler extends SalesOrderApiHandler {
             sit.setInvoiceDate(RMT2Date.toXmlDate(header.getInvoiceDate()));
             sit.setInvoiceNo(header.getInvoiceNo());
             sot.setInvoiceDetails(sit);
-            XactDto xactDto = xactMap.get(header.getSalesOrderId()).get(0);
-            XactType xact = TransactionJaxbDtoFactory.createXactJaxbInstance(xactDto, 0, null);
-            sot.getInvoiceDetails().setTransaction(xact);
 
+            // UI-31: Only include transacction data when sales order has been
+            // invoiced.
+            List<XactDto> xactList = xactMap.get(header.getSalesOrderId());
+            if (xactList != null) {
+                XactDto xactDto = xactList.get(0);
+                XactType xact = TransactionJaxbDtoFactory.createXactJaxbInstance(xactDto, 0, null);
+                sot.getInvoiceDetails().setTransaction(xact);
+            }
             jaxbResults.add(sot);
         }
         return jaxbResults;
