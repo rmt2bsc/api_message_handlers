@@ -90,6 +90,17 @@ public class InventoryJaxbDtoFactory extends RMT2Base {
         if (jaxbCriteria.getVendorItemNo() != null) {
             dto.setVendorItemNo(jaxbCriteria.getVendorItemNo());
         }
+
+        // UI-31: Capture list of inventory item master id's
+        if (jaxbCriteria.getItems() != null && jaxbCriteria.getItems().getItem().size() > 0) {
+            Integer items[] = new Integer[jaxbCriteria.getItems().getItem().size()];
+            for (int ndx = 0; ndx < jaxbCriteria.getItems().getItem().size(); ndx++) {
+                if (jaxbCriteria.getItems().getItem().get(ndx).getItemId() != null) {
+                    items[ndx] = jaxbCriteria.getItems().getItem().get(ndx).getItemId().intValue();
+                }
+            }
+            dto.setItemIds(items);
+        }
         return dto;
     }
     
