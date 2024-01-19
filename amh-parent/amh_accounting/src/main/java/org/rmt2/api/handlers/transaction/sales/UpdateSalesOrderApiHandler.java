@@ -135,7 +135,8 @@ public class UpdateSalesOrderApiHandler extends SalesOrderApiHandler {
             SalesOrderStatusDto statusDto = api.getStatus(statusHistDto.getSoStatusId());
             if (so != null) {
                 respSalesOrder.setSalesOrderId(BigInteger.valueOf(so.getSalesOrderId()));
-                respSalesOrder.setOrderTotal(BigDecimal.valueOf(so.getOrderTotal()));
+                // UI-31: Obtain sales order total from memory only.
+                respSalesOrder.setOrderTotal(BigDecimal.valueOf(salesOrderDto.getOrderTotal()));
                 respSalesOrder.setInvoiced(so.isInvoiced());
                 respSOST.setDescription(statusDto.getSoStatusDescription());
                 respSOST.setStatusId(BigInteger.valueOf(statusHistDto.getSoStatusId()));
