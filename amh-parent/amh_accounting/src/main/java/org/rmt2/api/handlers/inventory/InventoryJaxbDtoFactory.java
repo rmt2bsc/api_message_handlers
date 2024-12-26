@@ -101,6 +101,11 @@ public class InventoryJaxbDtoFactory extends RMT2Base {
             }
             dto.setItemIds(items);
         }
+
+        // UI-31: Capthre custom selection criteria
+        if (jaxbCriteria.getCustomCriteria() != null) {
+            dto.setCriteria(jaxbCriteria.getCustomCriteria());
+        }
         return dto;
     }
     
