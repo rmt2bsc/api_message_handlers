@@ -257,11 +257,14 @@ public class SalesOrderJaxbDtoFactory extends TransactionJaxbDtoFactory {
             return null;
         }
 
-        RecordTrackingType tracking = RecordTrackingTypeBuilder.Builder.create()
-                .withDateCreated(dto.getDateCreated())
-                .withDateUpdate(dto.getDateUpdated())
-                .withUserId(dto.getUpdateUserId())
-                .build();
+        RecordTrackingType tracking = null;
+        if (dto.getSalesOrder() != null) {
+            tracking = RecordTrackingTypeBuilder.Builder.create()
+                    .withDateCreated(dto.getSalesOrder().getDateCreated())
+                    .withDateUpdate(dto.getSalesOrder().getDateUpdated())
+                    .withUserId(dto.getSalesOrder().getUserId())
+                    .build();
+        }
 
         SalesInvoiceType si = null;
         if (dto instanceof SalesInvoiceDto) {
